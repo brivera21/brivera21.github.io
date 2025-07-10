@@ -19,31 +19,26 @@ This blog will serve as a window into my research world, where I'll share:
 
 **Teaching Moments**: Observations from the classroom that connect neuroscience research to real-world learning, especially around mathematical concepts that challenge students.
 
-**Methodological Musings**: Thoughts on EEG/ERP techniques, experimental design, and the evolving landscape of educational neuroscience research methods.
+**Course Materials & Reflections**: Updates about my current courses and resources that might help students connect psychology and neuroscience to everyday learning.
+
+**Methodological Musings**: Thoughts on EEG/ERP techniques, experimental design, and the evolving landscape of educational neuroscience research methods—explained in ways that don't require a PhD to understand.
 
 **Interdisciplinary Connections**: How findings in numerical cognition relate to broader questions in psychology, education, and cognitive science.
 
 ## Why Blog About Research?
 
-As someone who bridges neuroscience, psychology, and education, I believe in the power of making research accessible and fostering dialogue. Science advances through conversation, and I hope this blog becomes a place where:
+I'm doing this because I think about math and the brain all day, and I want to share what I'm learning.
 
-- Fellow researchers can engage with ideas and share perspectives
-- Educators can discover how brain research might inform their practice
-- Students can see the human side of scientific inquiry
-- Anyone curious about how we learn mathematics can find insights
+If you're here, you probably care about learning, teaching, or how the mind works. Maybe you're a researcher working on similar problems, a teacher wondering if neuroscience has anything useful to offer, a student in one of my classes looking for additional resources, or someone curious about mathematical thinking or the brain in general.
+
+I'll write about studies I'm running, papers I'm reading, and ideas I'm wrestling with. Writing forces me to think more clearly and explain things in ways people can actually understand—which pushes me but also means I'm likely to make mistakes. I'll try to be clear about what we actually know versus what we're still figuring out. If you catch errors or see things differently, tell me.
 
 ## Looking Ahead
 
 I'm currently deep in analysis of EEG data exploring how the brain represents fraction magnitude—work that could reshape how we understand mathematical learning difficulties. I'll be sharing updates on this project and others as they develop.
 
-I'm also preparing for several upcoming conferences where I'll present new findings on semantic processing in mathematical contexts. Expect posts reflecting on those experiences and the conversations they spark.
-
 ## Join the Conversation
 
-Research is fundamentally collaborative. While this blog represents my perspective and work, I encourage readers to engage, question, and share their own insights. Whether you're a researcher, educator, student, or simply someone fascinated by how the mind works, your voice adds value to the conversation.
+Research is fundamentally collaborative. While this blog represents my perspective and work, I encourage readers to engage, question, and share their own insights. Whether you're a researcher, educator, current or former student, or simply someone fascinated by how the mind works, your voice adds value to the conversation.
 
-Thank you for joining me on this journey of discovery. Here's to understanding the beautiful complexity of how brains learn math!
-
----
-
-*What questions about numerical cognition or educational neuroscience would you like to see explored here? Feel free to reach out through my [contact page](/contact/) with suggestions or ideas for future posts.*
+Thank you
