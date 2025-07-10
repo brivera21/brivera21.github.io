@@ -1,1 +1,1 @@
-![Dr. Rivera](FULL.jpg)
+![Dr. Rivera](CONFERENCE.jpg)
