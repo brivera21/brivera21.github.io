@@ -1,1 +1,1 @@
-
+![Dr. Rivera](FULL.jpg)
