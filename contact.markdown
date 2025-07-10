@@ -4,7 +4,7 @@ title: Contact
 permalink: /contact/
 ---
 
-# Contact Informationß
+# Contact Information
 
 ## Office Information
 
