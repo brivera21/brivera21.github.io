@@ -1,0 +1,7 @@
+---
+layout: post
+title: "Test Post"
+date: 2025-07-10
+---
+
+This is a test post.
