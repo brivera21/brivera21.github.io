@@ -1,1 +1,19 @@
+---
+layout: post
+title: "Welcome to My Research Blog"
+date: 2025-07-10 14:30:00 -0500
+categories: research neuroscience
+---
 
+# Welcome to My Research Blog
+
+I'm excited to share insights from my research in numerical cognition and educational neuroscience. In this blog, I'll discuss:
+
+- Current research findings
+- Conference presentations
+- Thoughts on mathematical learning
+- Updates from the lab
+
+## Latest Research Update
+
+I'm currently working on multivariate EEG decoding of fraction processing...
