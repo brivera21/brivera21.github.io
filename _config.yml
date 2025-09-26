@@ -3,10 +3,9 @@ email: rivera21@stolaf.edu
 description: Professor & Researcher
 baseurl: ""
 url: "https://brivera21.github.io"
-bluesky_username: "@brianrivera.bsky.social"
-github_username: https://github.com/brivera21
 
 markdown: kramdown
 theme: minima
-plugins:
-  - jekyll-feed
+
+# Disable blog features
+show_excerpts: false
