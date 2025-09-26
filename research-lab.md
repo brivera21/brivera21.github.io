@@ -1,3 +1,9 @@
+---
+layout: default
+title: Research Lab
+permalink: /lab/
+---
+
 # Welcome to the Rivera Lab
 
 *An Introduction to Research in Numerical Cognition*
