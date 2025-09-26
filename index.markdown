@@ -18,4 +18,3 @@ My work investigates how the brain processes numerical information, with particu
 - [Contact](/contact/) - Get in touch for collaborations or inquiries
 
 ---
-*"Understanding how we learn mathematics helps us teach it better."*
