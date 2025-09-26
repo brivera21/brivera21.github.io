@@ -1,1 +1,1 @@
-![Dr. Rivera](images/FULL.jpg)
+![Dr. Rivera](images/GARDEN.jpg)
