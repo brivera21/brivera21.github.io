@@ -9,8 +9,11 @@ github_username: https://github.com/brivera21
 
 # Navigation menu
 header_pages:
-  - research-lab.md
   - about.md
+  - research-lab.md
+  - publications.md
+  - cv.md
+  - contact.md
 
 # Build settings
 markdown: kramdown
