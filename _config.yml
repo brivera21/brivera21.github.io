@@ -7,6 +7,11 @@ url: "https://brivera21.github.io"
 bluesky_username: "@brianrivera.bsky.social"
 github_username: https://github.com/brivera21
 
+# Navigation menu
+header_pages:
+  - research-lab.md
+  - about.md
+
 # Build settings
 markdown: kramdown
 theme: minima
