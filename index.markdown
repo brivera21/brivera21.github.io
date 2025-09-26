@@ -1,20 +1,9 @@
 ---
 layout: home
-title: Home
 ---
 
-# Welcome
+# Dr. Brian Rivera
 
-I am Dr. Brian Rivera, a Visiting Assistant Professor in the Department of Psychology at St. Olaf College. My research focuses on numerical cognition and the neural mechanisms underlying mathematical thinking.
+Welcome to my academic website. I am a Visiting Assistant Professor in the Department of Psychology at St. Olaf College, specializing in numerical cognition research.
 
-## Research Focus
-My work investigates how the brain processes numerical information, with particular emphasis on fraction processing and mathematical semantic understanding using EEG and fMRI methodologies.
-
-## Quick Links
-- [About Me](/about/) - Learn about my background and research journey
-- [Research Lab](/research-lab/) - Discover our current research projects
-- [Publications](/publications/) - View my academic publications and presentations
-- [Curriculum Vitae](/cv/) - Complete academic CV
-- [Contact](/contact/) - Get in touch for collaborations or inquiries
-
----
+[About](/about/) | [Research Lab](/research-lab/) | [Publications](/publications/) | [CV](/cv/) | [Contact](/contact/)
