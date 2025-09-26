@@ -14,20 +14,9 @@ Department of Psychology
 St. Olaf College  
 Northfield, MN
 
-**Email:** [brian.rivera@stolaf.edu](mailto:brian.rivera@stolaf.edu)  
-**Phone:** (323) 439-1555
+**Email:** rivera21@stolaf.edu
 
-## Research Affiliation
-
-**Assistant Research Professor**  
-Department of Psychology  
-University of Nebraska-Lincoln  
-238 Burnett Hall  
-Lincoln, NE 68588
-
-## Office Hours
-
-By appointment - please email to schedule a meeting.
+## Office Hours - Schedule an appintment [https://calendar.app.google/VXNuBWqytHShn7UNA]
 
 ## Academic Profiles
 
