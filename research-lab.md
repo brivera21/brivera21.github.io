@@ -34,7 +34,7 @@ Participants view linear equations (e.g., "y = 2x + 3") followed by coordinate g
 *No prior research experience is necessary.* We value curiosity and a willingness to learn above all else.
 
 ### The Research Journey
-A single experiment spans approximately one year. As a lab member, you'll participate in every stage of the research process:
+A single experiment can span up to a year. As a lab member, you'll participate in every stage of the research process:
 
 **1. Literature Review & Journal Club** - Examine existing research through scientific papers and regular group discussions to develop critical evaluation skills.
 
