@@ -4,8 +4,14 @@ description: Professor & Researcher
 baseurl: ""
 url: "https://brivera21.github.io"
 
+# Navigation
+header_pages:
+  - about.md
+  - research-lab.md
+  - publications.md
+  - cv.md
+  - contact.md
+
 markdown: kramdown
 theme: minima
-
-# Disable blog features
 show_excerpts: false
