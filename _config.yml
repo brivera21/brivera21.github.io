@@ -7,7 +7,13 @@ url: "https://brivera21.github.io"
 bluesky_username: "@brianrivera.bsky.social"
 github_username: https://github.com/brivera21
 
-# Navigation menu
+# Build settings
+markdown: kramdown
+theme: minima
+plugins:
+  - jekyll-feed
+
+# Navigation - this is the key part
 header_pages:
   - about.md
   - research-lab.md
@@ -15,12 +21,5 @@ header_pages:
   - cv.md
   - contact.md
 
-# Build settings
-markdown: kramdown
-theme: minima
-plugins:
-  - jekyll-feed
-
-# Minima theme settings
-minima:
-  skin: dark
+# Make sure minima shows navigation
+show_excerpts: true
