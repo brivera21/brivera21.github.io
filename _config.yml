@@ -20,3 +20,7 @@ markdown: kramdown
 theme: minima
 plugins:
   - jekyll-feed
+
+# Minima theme settings
+minima:
+  skin: dark
