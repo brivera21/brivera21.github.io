@@ -12,14 +12,3 @@ markdown: kramdown
 theme: minima
 plugins:
   - jekyll-feed
-
-# Navigation - this is the key part
-header_pages:
-  - about.md
-  - research-lab.md
-  - publications.md
-  - cv.md
-  - contact.md
-
-# Make sure minima shows navigation
-show_excerpts: true
