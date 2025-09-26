@@ -72,8 +72,6 @@ Interested students should contact Dr. Rivera to join our upcoming group meeting
 
 **Lab Location:** RNS 227
 
-**Contact:** [Your contact information]
+**Contact:** rivera21@stolaf.edu, Office: RNS 272
 
 ---
-
-*The skills developed in our lab – EEG methodology, experimental design, and data analysis – transfer across psychology and neuroscience disciplines, regardless of your primary research interests.*
