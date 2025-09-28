@@ -25,7 +25,4 @@ We welcome undergraduate students interested in gaining research experience in c
 
 ## Contact
 
-**Dr. Brian Rivera**  
-Department of Psychology  
-St. Olaf College  
 Email: rivera21@stolaf.edu
