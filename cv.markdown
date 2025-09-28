@@ -4,8 +4,6 @@ title: CV & Contact
 permalink: /cv/
 ---
 
-# Contact Information
-
 ## Office Information
 **Dr. Brian Rivera**  
 Visiting Assistant Professor  
