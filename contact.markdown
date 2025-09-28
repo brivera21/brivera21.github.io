@@ -26,10 +26,9 @@ Northfield, MN
 
 ## Research Inquiries
 I welcome inquiries from:
-- Prospective graduate students interested in numerical cognition research
+- Prospective students interested in numerical cognition research
 - Collaborators working on educational neuroscience projects
 - Colleagues interested in EEG/ERP methodologies
-- Educators seeking to apply neuroscience research to practice
 
 ---
-*I typically respond to emails within 24-48 hours during business days.*
+*I typically try to respond to emails within 24-48 hours during business days.*
