@@ -18,6 +18,10 @@ Psych 290 A Big History of the Brain
 Psych 237 Cognitive Psychology
 Psych 390 Electrophysiology of Complex Cognition
 
+## Student Resources
+
+Course materials, syllabi, and additional resources will be posted here as they become available.
+
 ## Teaching Philosophy
 
 I am driven by the practical implications of psychology and neuroscience, which motivates me to share my enthusiasm with students. I leverage my passion for these subjects as the foundation for communicating course content, whether in introductory or advanced research methods courses.
@@ -38,11 +42,3 @@ I strive to integrate examples that resonate with students' lives to enhance the
 - Research Methods in Educational Neuroscience
 - Introduction to Learning Skills & Strategies
 - Introduction to Educational Neuroscience (OLLI)
-
-## Student Resources
-
-Course materials, syllabi, and additional resources will be posted here as they become available.
-
----
-
-*"Teaching allows me to share my enthusiasm for psychology and neuroscience with others, helping students develop both understanding and curiosity about how the brain works."*
