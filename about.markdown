@@ -8,29 +8,6 @@ permalink: /about/
 
 I am a Visiting Assistant Professor in the Department of Psychology at St. Olaf College. I'm originally from northern Mexico (Chihuahua), I then moved to Los Angeles where I attended high school before completing my undergraduate degree at Franklin and Marshall College. There, I competed in Track and Field while majoring in Scientific and Philosophical Studies of the Mind.
 
-## Education
-
-**Ph.D. in Educational Psychology** (2021)  
-*Educational Neuroscience Concentration*  
-University of Alabama, Tuscaloosa, AL  
-Advisor: Firat Soylu, PhD  
-Dissertation: The neurocognitive mechanisms of arithmetic knowledge verification
-
-**B.A., Scientific and Philosophical Studies of the Mind** (2013)  
-Franklin & Marshall College, Lancaster, PA
-
-## Professional Experience
-
-**Visiting Assistant Professor** (2025-current)  
-Department of Psychology, St. Olaf College
-
-**Assistant Research Professor** (2023-2025)  
-Department of Psychology, University of Nebraska-Lincoln
-
-**Postdoctoral Research Associate** (2021-2023)  
-Department of Psychology, University of Nebraska-Lincoln  
-Advisor: Timothy Nelson, PhD
-
 ## Research Background
 
 I earned my PhD in Educational Psychology from the University of Alabama, with a concentration in Educational Neuroscience, where I used EEG and fMRI to investigate the development of numerical cognition. I subsequently worked on the Baby's First Years study at the University of Nebraska Lincoln, researching how poverty affects brain development in early childhood.
@@ -39,4 +16,4 @@ This diverse background—spanning philosophical inquiry, neuroscientific resear
 
 ## Personal Interests
 
-When not in the classroom or lab, I enjoy thinking about the brain, playing chess, watching movies, and spending time with my English Bulldog (Gus). I used to be a magician, a long time ago . Although I am retired now, it continues to influence how I think about attention, perception, and the unexpected!
+When not in the classroom or lab, I enjoy thinking about the brain, playing chess, watching movies, and spending time with my English Bulldog (Gus). Along time ago, I used to be a magician, although I am retired now, it continues to influence how I think about attention, perception, and the unexpected!
