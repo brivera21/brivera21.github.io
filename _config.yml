@@ -27,7 +27,6 @@ header_pages:
   - lab.markdown
   - publications.markdown
   - cv.markdown
-  - contact.markdown
 
 # Exclude from processing
 exclude:
