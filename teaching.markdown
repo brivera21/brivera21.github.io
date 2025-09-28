@@ -24,9 +24,9 @@ Course materials, syllabi, and additional resources will be posted here as they 
 
 ## Teaching Philosophy
 
-I am driven by the practical implications of psychology and neuroscience, which motivates me to share my enthusiasm with students. I leverage my passion for these subjects as the foundation for communicating course content, whether in introductory or advanced research methods courses.
+My passion for teaching psychology and neuroscience comes from watching students discover how these ideas can connect to and illuminate their everyday experiences. I leverage this passion as the foundation for communicating course content, whether in introductory cpurses or advanced research methods seminars.
 
-I strive to integrate examples that resonate with students' lives to enhance the relevance of the content and by connecting psychological concepts to students' daily experiences. When possible, I use hands-on demonstrations—such as connecting students to mobile EEG devices to illustrate brain electrical activity—to spark curiosity and deepen engagement.
+I strive to integrate examples that resonate with students' lives to enhance the relevance of the content and by connecting psychological concepts to students' daily experiences. When possible, I use hands-on demonstrations—such as connecting students to mobile EEG devices to illustrate brain electrical activity—to spark curiosity and deepen engagement. Influenced by the liberal arts in my own education, I embrace an interdisciplinary approach that embeds psychology and neuroscience within broader contexts like evolution and chemistry but also connect them to history and philosophy.
 
 ## Teaching Approach
 
