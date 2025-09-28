@@ -24,6 +24,7 @@ header_pages:
   - index.md
   - about.markdown
   - research-lab.md
+  - lab.markdown
   - publications.markdown
   - cv.markdown
   - contact.markdown
