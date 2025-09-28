@@ -1,31 +1,43 @@
----
-layout: page
-title: Lab
-permalink: /lab/
----
+# Site settings
+title: Dr. Brian Rivera
+email: rivera21@stolaf.edu
+description: >- # this means to ignore newlines until "baseurl:"
+  Academic website for Dr. Brian Rivera, Visiting Assistant Professor 
+  in Psychology at St. Olaf College, specializing in numerical cognition research.
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "https://brivera21.github.io" # the base hostname & protocol for your site
+twitter_username: # your twitter username if you have one
+github_username: brivera21
 
-# Numerical Cognition Lab
+# Build settings
+markdown: kramdown
+theme: minima
+plugins:
+  - jekyll-feed
 
-Welcome to the Numerical Cognition Lab at St. Olaf College, where we investigate how the brain processes mathematical information.
+# Minima theme settings
+minima:
+  skin: dark # Use dark theme to match your preference
 
-## Research Focus
+# Header pages - this controls navigation menu
+header_pages:
+  - index.md
+  - about.markdown
+  - research-lab.md
+  - lab.markdown
+  - publications.markdown
+  - cv.markdown
+  - contact.markdown
 
-Our lab uses EEG and behavioral methods to study numerical cognition, with particular emphasis on fraction processing and mathematical thinking.
-
-## Methods
-
-- EEG (Electroencephalography)
-- Event-related potentials (ERP)
-- Behavioral experiments
-- Multivariate pattern analysis
-
-## Research Opportunities
-
-We welcome undergraduate students interested in gaining research experience in cognitive neuroscience and numerical cognition.
-
-## Contact
-
-**Dr. Brian Rivera**  
-Department of Psychology  
-St. Olaf College  
-Email: rivera21@stolaf.edu
+# Exclude from processing
+exclude:
+  - .sass-cache/
+  - .jekyll-cache/
+  - gemfiles/
+  - Gemfile
+  - Gemfile.lock
+  - node_modules/
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
