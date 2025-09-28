@@ -24,14 +24,12 @@ I am driven by the practical implications of psychology and neuroscience, which 
 
 I strive to integrate examples that resonate with students' lives to enhance the relevance of the content and by connecting psychological concepts to students' daily experiences. When possible, I use hands-on demonstrations—such as connecting students to mobile EEG devices to illustrate brain electrical activity—to spark curiosity and deepen engagement.
 
-As a first-generation student and migrant myself, I understand the uncertainties that can influence students' academic experiences. I aim to create meaningful connections between students' backgrounds and course material through diverse readings, varied perspectives, and individual projects that encourage students to examine topics through the lens of their own experiences and communities.
-
 ## Teaching Approach
 
 - **Individualized feedback** to support student growth and monitor comprehension
 - **Iterative presentation process** to build confidence and reduce anxiety
 - **Real-world applications** connecting neuroscience concepts to everyday life
-- **Inclusive learning environment** where every student feels valued and supported
+- **Inclusive learning environment** where every student can feel valued and supported
 - **Evidence-based practices** grounded in the psychology of learning
 
 ## Previous Teaching Experience
