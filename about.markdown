@@ -4,7 +4,7 @@ title: About
 permalink: /about/
 ---
 
-# About Dr. Brian Rivera
+# Dr. Brian Rivera
 
 I am a Visiting Assistant Professor in the Department of Psychology at St. Olaf College. I'm originally from northern Mexico (Chihuahua), I then moved to Los Angeles where I attended high school before completing my undergraduate degree at Franklin and Marshall College. There, I competed in Track and Field while majoring in Scientific and Philosophical Studies of the Mind.
 
