@@ -4,8 +4,6 @@ title: Teaching
 permalink: /teaching/
 ---
 
-# Teaching
-
 ## Current Courses at St. Olaf College
 
 **Fall 2025**  
