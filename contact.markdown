@@ -1,10 +1,8 @@
 ---
 layout: page
-title: Contact
+title: Contact Info
 permalink: /contact/
 ---
-
-# Contact Information
 
 ## Office Information
 **Dr. Brian Rivera**  
@@ -12,6 +10,7 @@ Visiting Assistant Professor
 Department of Psychology  
 St. Olaf College  
 Northfield, MN
+RNS 272
 
 **Email:** rivera21@stolaf.edu
 
