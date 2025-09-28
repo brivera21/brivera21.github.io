@@ -25,6 +25,7 @@ header_pages:
   - about.markdown
   - research-lab.md
   - lab.markdown
+  - teaching.markdown
   - publications.markdown
   - cv.markdown
 
