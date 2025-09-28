@@ -1,17 +1,42 @@
+# Site settings
 title: Dr. Brian Rivera
 email: rivera21@stolaf.edu
-description: Professor & Researcher
-baseurl: ""
-url: "https://brivera21.github.io"
+description: >- # this means to ignore newlines until "baseurl:"
+  Academic website for Dr. Brian Rivera, Visiting Assistant Professor 
+  in Psychology at St. Olaf College, specializing in numerical cognition research.
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "https://brivera21.github.io" # the base hostname & protocol for your site
+twitter_username: # your twitter username if you have one
+github_username: brivera21
 
-# Navigation
-header_pages:
-  - about.md
-  - research-lab.md
-  - publications.md
-  - cv.md
-  - contact.md
-
+# Build settings
 markdown: kramdown
 theme: minima
-show_excerpts: false
+plugins:
+  - jekyll-feed
+
+# Minima theme settings
+minima:
+  skin: dark # Use dark theme to match your preference
+
+# Header pages - this controls navigation menu
+header_pages:
+  - index.md
+  - about.markdown
+  - research-lab.md
+  - publications.markdown
+  - cv.markdown
+  - contact.markdown
+
+# Exclude from processing
+exclude:
+  - .sass-cache/
+  - .jekyll-cache/
+  - gemfiles/
+  - Gemfile
+  - Gemfile.lock
+  - node_modules/
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
