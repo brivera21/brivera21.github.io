@@ -15,6 +15,12 @@ theme: minima
 plugins:
   - jekyll-feed
 
+# Collections
+collections:
+  projects:
+    output: true
+    permalink: /projects/:name/
+
 # Minima theme settings
 minima:
   skin: dark # Use dark theme to match your preference
@@ -23,8 +29,9 @@ minima:
 header_pages:
   - index.md
   - about.markdown
-  - research-lab.md
+  - research.md
   - lab.markdown
+  - projects.markdown
   - teaching.markdown
   - publications.markdown
   - cv.markdown
