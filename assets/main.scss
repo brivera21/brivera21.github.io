@@ -1,0 +1,56 @@
+---
+# Custom dark skin for minima.
+# GitHub Pages ships minima 2.5.x, which has no built-in skin switching,
+# so `minima.skin: dark` in _config.yml is ignored. Instead we override
+# minima's color variables here, before importing the theme.
+---
+@charset "utf-8";
+
+// ---- Dark palette (overrides minima's !default variables) ----
+$background-color: #121212;
+$text-color:       #e6e6e6;
+$brand-color:      #7cb2f0;
+$grey-color:       #9a9a9a;
+$grey-color-light: #2b2b2b;
+$grey-color-dark:  #c8c8c8;
+
+@import "minima";
+
+// ---- Targeted fixes for elements minima hard-codes to light colors ----
+pre,
+code {
+  background-color: #1e1e1e;
+  border-color: $grey-color-light;
+  color: #e6e6e6;
+}
+
+.site-header {
+  border-bottom-color: $grey-color-light;
+}
+
+.site-title,
+.site-title:visited {
+  color: $grey-color-dark;
+}
+
+blockquote {
+  color: $grey-color-dark;
+  border-left-color: $grey-color-light;
+}
+
+table {
+  color: $text-color;
+
+  th {
+    background-color: #1e1e1e;
+  }
+
+  th,
+  td {
+    border-color: $grey-color-light;
+  }
+
+  tr:nth-child(even) {
+    background-color: #1a1a1a;
+  }
+}
