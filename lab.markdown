@@ -7,18 +7,14 @@ permalink: /lab/
 <img src="{{ '/images/rootlab-logo.png' | relative_url }}" alt="Root Lab logo" class="logo-feature">
 
 
-# Numerical Cognition Lab
-
-*For an introduction to our research, see the [Research page](/research/).*
-
 ## Lab Team
 
 ### Dr. Brian Rivera
-*Principal Investigator · Visiting Assistant Professor, Department of Psychology, St. Olaf College*
+*Principal Investigator*
 
 <img src="{{ '/images/about.jpg' | relative_url }}" alt="Dr. Brian Rivera" class="site-photo portrait-right">
 
-I am a Visiting Assistant Professor in the Department of Psychology at St. Olaf College. I'm originally from northern Mexico (Chihuahua), I then moved to Los Angeles where I attended high school before completing my undergraduate degree at Franklin and Marshall College. There, I competed in Track and Field while majoring in Scientific and Philosophical Studies of the Mind.
+I'm originally from northern Mexico (Chihuahua), I then moved to Los Angeles where I attended high school before completing my undergraduate degree at Franklin and Marshall College. There, I competed in Track and Field while majoring in Scientific and Philosophical Studies of the Mind.
 
 I earned my PhD in Educational Psychology from the University of Alabama, with a concentration in Educational Neuroscience, where I used EEG and fMRI to investigate the development of numerical cognition. I subsequently worked on the Baby's First Years study at the University of Nebraska Lincoln, researching how poverty affects brain development in early childhood.
 
