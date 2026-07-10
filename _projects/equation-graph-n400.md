@@ -1,6 +1,6 @@
 ---
 layout: page
-title: "Equation-Graph Semantic Violation Experiment"
+title: "GRASP Experiment"
 order: 2
 summary: "Testing whether mathematical equation-graph mismatches trigger the same N400 neural signature as language-based semantic violations."
 methods: "EEG/ERP (N400), Behavioral congruency judgment"
