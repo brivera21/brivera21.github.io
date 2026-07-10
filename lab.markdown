@@ -4,6 +4,9 @@ title: Lab
 permalink: /lab/
 ---
 
+<img src="{{ '/images/rootlab-logo.png' | relative_url }}" alt="Root Lab logo" class="logo-feature">
+
+
 # Numerical Cognition Lab
 
 *For an introduction to our research, see the [Research page](/research/).*
