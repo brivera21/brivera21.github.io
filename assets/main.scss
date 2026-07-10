@@ -1,15 +1,14 @@
 ---
-# Custom dark skin for minima.
-# GitHub Pages ships minima 2.5.x, which has no built-in skin switching,
-# so `minima.skin: dark` in _config.yml is ignored. Instead we override
+# Custom dark skin for minima with a St. Olaf "Ole Gold" accent.
+# GitHub Pages ships minima 2.5.x (no skin switching), so we override
 # minima's color variables here, before importing the theme.
 ---
 @charset "utf-8";
 
-// ---- Dark palette (overrides minima's !default variables) ----
+// ---- Dark palette + St. Olaf gold accent ----
 $background-color: #121212;
 $text-color:       #e6e6e6;
-$brand-color:      #7cb2f0;
+$brand-color:      #e4a01b;   // St. Olaf "Ole Gold" (PMS 131c)
 $grey-color:       #9a9a9a;
 $grey-color-light: #2b2b2b;
 $grey-color-dark:  #c8c8c8;
@@ -24,7 +23,9 @@ code {
   color: #e6e6e6;
 }
 
+// A thin gold rule along the top of the header ties the palette together.
 .site-header {
+  border-top: 4px solid $brand-color;
   border-bottom-color: $grey-color-light;
 }
 
@@ -32,10 +33,35 @@ code {
 .site-title:visited {
   color: $grey-color-dark;
 }
+.site-title:hover {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.site-nav .page-link {
+  color: $grey-color-dark;
+}
+.site-nav .page-link:hover {
+  color: $brand-color;
+}
+
+// Content links in gold
+.page-content a,
+.post-content a {
+  color: $brand-color;
+}
+.page-content a:visited,
+.post-content a:visited {
+  color: $brand-color;
+}
+.page-content a:hover,
+.post-content a:hover {
+  color: lighten($brand-color, 12%);
+}
 
 blockquote {
   color: $grey-color-dark;
-  border-left-color: $grey-color-light;
+  border-left-color: $brand-color;
 }
 
 table {
@@ -44,13 +70,76 @@ table {
   th {
     background-color: #1e1e1e;
   }
-
   th,
   td {
     border-color: $grey-color-light;
   }
-
   tr:nth-child(even) {
     background-color: #1a1a1a;
+  }
+}
+
+// ---- Subtle gold underline on page titles ----
+.post-title,
+.page-heading {
+  border-bottom: 3px solid $brand-color;
+  padding-bottom: 0.2em;
+  display: inline-block;
+}
+
+// Gold-tinted horizontal rules
+hr {
+  border: 0;
+  border-top: 1px solid rgba($brand-color, 0.35);
+  margin: 2em 0;
+}
+
+// ---- Photos & figures ----
+.site-photo {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid $grey-color-light;
+}
+
+// Portrait that text wraps around on wider screens
+.portrait-right {
+  float: right;
+  width: 300px;
+  max-width: 42%;
+  margin: 0.3em 0 1.2em 1.6em;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+}
+
+figure.photo {
+  margin: 1.6em 0;
+
+  figcaption {
+    color: $grey-color;
+    font-size: $small-font-size;
+    font-style: italic;
+    margin-top: 0.5em;
+  }
+}
+
+// Full-size logo feature (e.g., top of the Lab page)
+.logo-feature {
+  display: block;
+  max-width: 340px;
+  width: 60%;
+  margin: 1.5em auto 2em auto;
+}
+
+// Stack portraits and shrink the logo on small screens
+@media screen and (max-width: $on-palm) {
+  .portrait-right {
+    float: none;
+    width: 70%;
+    max-width: 260px;
+    margin: 1em auto 1.5em auto;
+  }
+  .logo-feature {
+    width: 80%;
   }
 }
