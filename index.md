@@ -25,4 +25,4 @@ My work investigates the neural mechanisms underlying mathematical thinking, wit
 
 ## Lab
 
-I run the Rivera Lab at St.Olaf College. We use EEG to investiigate the cognitive and neuropsychiological aspects of mathmatical thinking. Check the Lab page for more information.  
+I run the Rivera Lab at St. Olaf College. We use EEG to investigate the cognitive and neuropsychological aspects of mathematical thinking. Check the Lab page for more information.  
