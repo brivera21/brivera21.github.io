@@ -13,11 +13,6 @@ permalink: /lab/
 
 ## Lab Team
 
-### Principal Investigator
-**Dr. Brian Rivera**  
-Visiting Assistant Professor  
-Department of Psychology, St. Olaf College
-
 ### Current Members
 *Team member information will be posted as students join the lab.*
 
