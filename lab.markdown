@@ -23,10 +23,6 @@ Department of Psychology, St. Olaf College
 
 ## Lab Resources
 
-### Current Projects
-- EEG fraction processing study
-- Equation-graph semantic violation experiment
-
 ### Lab Meetings
 *Meeting schedule and materials will be posted for lab members.*
 
