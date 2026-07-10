@@ -8,6 +8,12 @@ permalink: /research/
 
 My research investigates the neural mechanisms underlying mathematical thinking, with particular emphasis on numerical cognition and fraction processing. I use advanced electrophysiological methods (EEG/ERP) combined with behavioral experiments to understand how the brain processes mathematical information.
 
+<figure class="photo">
+  <img src="{{ '/images/research.jpg' | relative_url }}" alt="Dr. Rivera at a research poster session" class="site-photo">
+  <figcaption>Presenting research at a conference poster session.</figcaption>
+</figure>
+
+
 ## Research Questions
 
 How does the brain represent and process numerical information? What neural mechanisms underlie mathematical learning difficulties? How can neuroscientific findings inform mathematics education?
