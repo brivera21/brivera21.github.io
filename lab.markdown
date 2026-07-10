@@ -23,7 +23,13 @@ This diverse background—spanning philosophical inquiry, neuroscientific resear
 When not in the classroom or lab, I enjoy thinking about the brain, playing chess, watching movies, and spending time with my English Bulldog (Gus). A long time ago, I used to be a magician, although I am retired now, it continues to influence how I think about attention, perception, and the unexpected!
 
 ### Current Members
-*Team member information will be posted as students join the lab.*
+
+**Ava Sticka-Jacobs**  
+*Undergraduate Researcher*
+
+<img src="{{ '/images/asj.jpg' | relative_url }}" alt="Ava Sticka-Jacobs" class="site-photo portrait-right">
+
+Ava Sticka-Jacobs is an undergraduate student at St. Olaf College double majoring in Psychology and Biology with concentrations in Neuroscience and Race and Ethnic Studies. Ava is preparing herself for a career in neuroscience research, with special interests in cognitive neuroscience and the neuroscience of addiction. In her free time, she enjoys reading, writing, practicing guitar, exercising, and collaging. She currently volunteers as an advocate for victims of sexual assault and domestic violence.
 
 ## Lab Resources
 
