@@ -9,8 +9,11 @@ permalink: /research/
 My research investigates the neural mechanisms underlying mathematical thinking, with particular emphasis on numerical cognition and fraction processing. I use advanced electrophysiological methods (EEG/ERP) combined with behavioral experiments to understand how the brain processes mathematical information.
 
 <figure class="photo">
-  <img src="{{ '/images/research.jpg' | relative_url }}" alt="Dr. Rivera at a research poster session" class="site-photo">
-  <figcaption>Presenting research at a conference poster session.</figcaption>
+  <div class="eeg-carousel">
+    <img src="{{ '/images/eeg-1.jpg' | relative_url }}" alt="EEG data collection session in the lab">
+    <img src="{{ '/images/eeg-2.jpg' | relative_url }}" alt="Applying an EEG electrode cap">
+  </div>
+  <figcaption>Recording EEG during mathematical cognition experiments.</figcaption>
 </figure>
 
 
@@ -24,9 +27,9 @@ How does the brain represent and process numerical information? What neural mech
 
 Understanding how people access fraction magnitude is crucial for mathematics education, as fractions represent a fundamental gateway to higher-level mathematical concepts. This project applies cross-generalization decoding techniques to test whether neural representations of fraction magnitude are abstract or tied to specific surface forms. We examine whether brain patterns learned from one fraction notation (e.g., 2/4) can successfully predict equivalent fractions in different forms (e.g., 3/6, 4/8).
 
-### GRASP Experiment
+### GRASP Experiment (Graph Reasoning and Symbolic Processing)
 
-This research investigates whether mathematical equation-graph mismatches trigger the same N400 neural signature (~400ms post-stimulus) as traditional language-based semantic violations. Participants view linear equations followed by coordinate graphs and judge whether they match. This extends N400 studies from linguistic to mathematical domains, testing whether semantic processing mechanisms are domain-general or domain-specific.
+GRASP asks whether the brain processes algebraic relationships using the same semantic mechanisms it uses for language. On each trial, participants view a line graph of an equation (y = mx + b) followed by a written equation and judge whether the two match; on mismatch trials, either the slope or the intercept is altered so the equation no longer fits the graph. We test whether these equation-graph mismatches elicit an N400 (~400 ms post-stimulus) — an ERP signature classically tied to semantic incongruity in language — and whether the type (slope vs. intercept) and magnitude of the violation modulate the response. EEG is recorded with a 16-channel system, and machine-learning classification is applied to the ERP data to predict violation detection from neural patterns.
 
 ## Research Methods
 
