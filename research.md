@@ -24,7 +24,7 @@ How does the brain represent and process numerical information? What neural mech
 
 Understanding how people access fraction magnitude is crucial for mathematics education, as fractions represent a fundamental gateway to higher-level mathematical concepts. This project applies cross-generalization decoding techniques to test whether neural representations of fraction magnitude are abstract or tied to specific surface forms. We examine whether brain patterns learned from one fraction notation (e.g., 2/4) can successfully predict equivalent fractions in different forms (e.g., 3/6, 4/8).
 
-### Equation-Graph Semantic Violation Experiment
+### GRASP Experiment
 
 This research investigates whether mathematical equation-graph mismatches trigger the same N400 neural signature (~400ms post-stimulus) as traditional language-based semantic violations. Participants view linear equations followed by coordinate graphs and judge whether they match. This extends N400 studies from linguistic to mathematical domains, testing whether semantic processing mechanisms are domain-general or domain-specific.
 
