@@ -28,7 +28,6 @@ minima:
 # Header pages - this controls navigation menu
 header_pages:
   - index.md
-  - about.markdown
   - research.md
   - lab.markdown
   - teaching.markdown
