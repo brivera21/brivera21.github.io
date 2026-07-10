@@ -3,6 +3,9 @@ layout: home
 title: Home
 ---
 
+<img src="{{ '/images/headshot.jpg' | relative_url }}" alt="Dr. Brian Rivera" class="site-photo portrait-right">
+
+
 # Dr. Brian Rivera
 
 **Visiting Assistant Professor**  
