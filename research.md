@@ -27,9 +27,13 @@ How does the brain represent and process numerical information? What neural mech
 
 Understanding how people access fraction magnitude is crucial for mathematics education, as fractions represent a fundamental gateway to higher-level mathematical concepts. This project applies cross-generalization decoding techniques to test whether neural representations of fraction magnitude are abstract or tied to specific surface forms. We examine whether brain patterns learned from one fraction notation (e.g., 2/4) can successfully predict equivalent fractions in different forms (e.g., 3/6, 4/8).
 
+### [Fraction Scaling (Processing Costs of Fraction Comparisons Across Scales)](/projects/fraction-scaling/)
+
+This behavioral study asks whether comparing fractions of the same magnitude but different scale—such as 1/2 versus 2/8—carries a processing cost, and whether that cost follows a numerical distance effect. Adults complete a fraction verification task with fractions shown in base form or scaled by ×2 or ×3.
+
 <figure class="photo">
-  <img src="{{ '/images/fraction-trial-structure.png' | relative_url }}" alt="Fraction task stimulus presentation order" class="site-photo">
-  <figcaption>Stimulus presentation order: a prime fraction (1000 ms), a fixation cross (500 ms), then the target fraction shown until response.</figcaption>
+  <img src="{{ '/images/fraction-trial-structure.png' | relative_url }}" alt="Fraction scaling stimulus presentation order" class="site-photo">
+  <figcaption>Stimulus presentation order. A prime fraction (1000 ms) is followed by a fixation cross (500 ms) and then a target fraction (shown until response). Targets appear in base, ×2, or ×3 form; match trials (green) share the prime magnitude, mismatch trials (red) do not.</figcaption>
 </figure>
 
 ### [GRASP Experiment (Graph Reasoning and Symbolic Processing)](/projects/equation-graph-n400/)
