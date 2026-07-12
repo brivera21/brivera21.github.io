@@ -17,6 +17,11 @@ My research investigates the neural mechanisms underlying mathematical thinking,
 </figure>
 
 
+## Publications
+
+- Salehzadeh, R., Rivera, B., Man, K., Jalili, N., & Soylu, F. (2023). EEG decoding of finger numeral configurations with machine learning. *Journal of Numerical Cognition, 9*(1), 206–221. [https://doi.org/10.5964/jnc.10441](https://doi.org/10.5964/jnc.10441)
+- Rivera, B., & Soylu, F. (2021). Incongruity in fraction verification elicits N270 and P300 ERP effects. *Neuropsychologia, 161*, 108015. [https://doi.org/10.1016/j.neuropsychologia.2021.108015](https://doi.org/10.1016/j.neuropsychologia.2021.108015)
+
 ## Research Questions
 
 How does the brain represent and process numerical information? What neural mechanisms underlie mathematical learning difficulties? How can neuroscientific findings inform mathematics education?
