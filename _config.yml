@@ -1,9 +1,7 @@
 # Site settings
 title: Dr. Brian Rivera
 email: rivera21@stolaf.edu
-description: >- # this means to ignore newlines until "baseurl:"
-  Academic website for Dr. Brian Rivera, Visiting Assistant Professor 
-  in Psychology at St. Olaf College, specializing in numerical cognition research.
+description:
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://brivera21.github.io" # the base hostname & protocol for your site
 twitter_username: # your twitter username if you have one
