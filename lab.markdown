@@ -50,11 +50,6 @@ Mary Hendrickson '26 was an undergraduate researcher in the Root Lab and a Sprin
 
 We welcome undergraduate students interested in gaining research experience in cognitive neuroscience and numerical cognition.
 
-**Contact Information:**
-Dr. Brian Rivera
-Email: rivera21@stolaf.edu
-Office: RNS 272
-
 ---
 
 *This page is regularly updated with current lab activities and team member information.*
