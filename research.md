@@ -64,9 +64,5 @@ Understanding how people access fraction magnitude is crucial for mathematics ed
       <img src="{{ '/images/fave-stimulus-presentation.png' | relative_url }}" alt="FAVE stimulus presentation order across three formats">
       <figcaption>Stimulus presentation order. In each format—Arabic numerals, number words, and dot arrays—the first operand, the operator, the second operand, and the proposed answer each appear for 500 ms.</figcaption>
     </figure>
-    <figure>
-      <img src="{{ '/images/fave-conditions.png' | relative_url }}" alt="FAVE arithmetic verification conditions: correct, near, and far violations">
-      <figcaption>Verification conditions: the proposed answer is correct, a near violation (close to the correct value), or a far violation (distant), shown across all three formats.</figcaption>
-    </figure>
   </div>
 </div>
