@@ -39,7 +39,7 @@ Ava Sticka-Jacobs is an undergraduate student at St. Olaf College double majorin
 
 <img src="{{ '/images/maryhendrickson.jpg' | relative_url }}" alt="Mary Hendrickson" class="site-photo portrait-right">
 
-Mary Hendrickson was an undergraduate researcher in the Root Lab, where she contributed to the lab's work on numerical cognition. She co-presented research on format-dependent arithmetic processing, examining N400 responses to semantic violations across Arabic numerals, number words, and dot arrays.
+Mary Hendrickson '26 was an undergraduate researcher in the Root Lab and a Spring 2026 CURI Research Assistant. She worked on the FAVE project, presenting her work at the Minnesota Undergraduate Psychology Conference (MUPC) in April 2026.
 
 ## Lab Resources
 
