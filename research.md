@@ -41,6 +41,10 @@ GRASP asks whether the brain processes algebraic relationships using the same se
   <figcaption>Stimulus presentation order: the graph appears first, followed by the equation; shaded regions show the displacement (error) on mismatch trials.</figcaption>
 </figure>
 
+### [FAVE Experiment (Format-Dependent Arithmetic Verification with EEG)](/projects/fave/)
+
+This EEG study tests whether numerical magnitude is represented by a single abstract code or by separate, format-specific systems. Participants verify addition and subtraction problems presented as Arabic numerals, number words, and dot arrays while we measure whether the N400 response to incorrect answers scales with violation distance across formats. This work was presented at the Minnesota Undergraduate Psychology Conference (MUPC 2026).
+
 ## Research Methods
 
 - **EEG/ERP**: Recording brain electrical activity during mathematical tasks
