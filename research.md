@@ -27,9 +27,19 @@ How does the brain represent and process numerical information? What neural mech
 
 Understanding how people access fraction magnitude is crucial for mathematics education, as fractions represent a fundamental gateway to higher-level mathematical concepts. This project applies cross-generalization decoding techniques to test whether neural representations of fraction magnitude are abstract or tied to specific surface forms. We examine whether brain patterns learned from one fraction notation (e.g., 2/4) can successfully predict equivalent fractions in different forms (e.g., 3/6, 4/8).
 
+<figure class="photo">
+  <img src="{{ '/images/fraction-trial-structure.png' | relative_url }}" alt="Fraction task stimulus presentation order" class="site-photo">
+  <figcaption>Stimulus presentation order: a prime fraction (1000 ms), a fixation cross (500 ms), then the target fraction shown until response.</figcaption>
+</figure>
+
 ### [GRASP Experiment (Graph Reasoning and Symbolic Processing)](/projects/equation-graph-n400/)
 
 GRASP asks whether the brain processes algebraic relationships using the same semantic mechanisms it uses for language. On each trial, participants view a line graph of an equation (y = mx + b) followed by a written equation and judge whether the two match; on mismatch trials, either the slope or the intercept is altered so the equation no longer fits the graph. We test whether these equation-graph mismatches elicit an N400 (~400 ms post-stimulus) — an ERP signature classically tied to semantic incongruity in language — and whether the type (slope vs. intercept) and magnitude of the violation modulate the response. EEG is recorded with a 16-channel system, and machine-learning classification is applied to the ERP data to predict violation detection from neural patterns.
+
+<figure class="photo">
+  <img src="{{ '/images/grasp-trial-sequence.png' | relative_url }}" alt="GRASP task stimulus presentation order" class="site-photo">
+  <figcaption>Stimulus presentation order: the graph appears first, followed by the equation; shaded regions show the displacement (error) on mismatch trials.</figcaption>
+</figure>
 
 ## Research Methods
 
