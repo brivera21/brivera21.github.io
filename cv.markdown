@@ -23,14 +23,6 @@ RNS 272
 * **ResearchGate:** Brian Rivera Profile
 * **LinkedIn:** Brian Rivera
 
-## Research Inquiries
-I welcome inquiries from:
-* Prospective students interested in numerical cognition research
-* Collaborators working on educational neuroscience projects
-* Colleagues interested in EEG/ERP methodologies
-
-*I typically try to respond to emails within 24-48 hours during business days.*
-
 ---
 
 ## Curriculum Vitae
