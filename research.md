@@ -45,6 +45,16 @@ GRASP asks whether the brain processes algebraic relationships using the same se
 
 This EEG study tests whether numerical magnitude is represented by a single abstract code or by separate, format-specific systems. Participants verify addition and subtraction problems presented as Arabic numerals, number words, and dot arrays while we measure whether the N400 response to incorrect answers scales with violation distance across formats. This work was presented at the Minnesota Undergraduate Psychology Conference (MUPC 2026).
 
+<figure class="photo">
+  <img src="{{ '/images/fave-stimulus-presentation.png' | relative_url }}" alt="FAVE stimulus presentation order across three formats" class="site-photo">
+  <figcaption>Stimulus presentation order. In each format—Arabic numerals, number words, and dot arrays—the first operand, the operator, the second operand, and the proposed answer each appear for 500 ms.</figcaption>
+</figure>
+
+<figure class="photo">
+  <img src="{{ '/images/fave-conditions.png' | relative_url }}" alt="FAVE arithmetic verification conditions: correct, near, and far violations" class="site-photo">
+  <figcaption>Verification conditions. For each problem the proposed answer is correct, a near violation (close to the correct value), or a far violation (distant), shown across all three formats.</figcaption>
+</figure>
+
 ## Research Methods
 
 - **EEG/ERP**: Recording brain electrical activity during mathematical tasks
