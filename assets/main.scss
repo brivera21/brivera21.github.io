@@ -180,3 +180,40 @@ figure.photo {
 @media screen and (max-width: $on-palm) {
   .eeg-carousel { height: 320px; }
 }
+
+// ---- Two-column project rows (description + smaller stimulus figure) ----
+.project-row {
+  display: flex;
+  gap: 1.6em;
+  align-items: flex-start;
+  margin: 1.2em 0 2.4em;
+  flex-wrap: wrap;
+}
+.project-row .project-copy {
+  flex: 1 1 340px;
+  min-width: 260px;
+}
+.project-row .project-copy h3 { margin-top: 0; }
+.project-row .project-figure {
+  flex: 0 0 260px;
+  max-width: 260px;
+}
+.project-row .project-figure figure { margin: 0 0 1.2em 0; }
+.project-row .project-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid $grey-color-light;
+  background: #ffffff;
+}
+.project-row .project-figure figcaption {
+  color: $grey-color;
+  font-size: $small-font-size;
+  font-style: italic;
+  margin-top: 0.5em;
+}
+@media screen and (max-width: $on-palm) {
+  .project-row { flex-direction: column; }
+  .project-row .project-figure { flex-basis: auto; max-width: 100%; }
+}
