@@ -23,12 +23,20 @@ When not in the classroom or lab, I enjoy thinking about the brain, playing ches
 
 ### Current Members
 
+<div class="member" markdown="1">
+
 **Ava Sticka-Jacobs**
 *Undergraduate Researcher*
 
 <img src="{{ '/images/asj.jpg' | relative_url }}" alt="Ava Sticka-Jacobs" class="site-photo portrait-right">
 
 Ava Sticka-Jacobs is an undergraduate student at St. Olaf College double majoring in Psychology and Biology with concentrations in Neuroscience and Race and Ethnic Studies. Ava is preparing herself for a career in neuroscience research, with special interests in cognitive neuroscience and the neuroscience of addiction. In her free time, she enjoys reading, writing, practicing guitar, exercising, and collaging. She currently volunteers as an advocate for victims of sexual assault and domestic violence.
+
+
+
+</div>
+
+<div class="member" markdown="1">
 
 **Kaitlyn Casselman**
 *Undergraduate Research Assistant*
@@ -37,6 +45,12 @@ Ava Sticka-Jacobs is an undergraduate student at St. Olaf College double majorin
 
 Kaitlyn Casselman is a current Psychology major at St. Olaf College. She enjoys studying the overlap of neuroscience and psychology and is interested in going to graduate school to become a neuropsychologist. She hopes to become the first person in her family to hold a PhD.
 
+
+
+</div>
+
+<div class="member" markdown="1">
+
 **Rubi Herrera Zelaya**
 *Undergraduate Research Assistant*
 
@@ -44,10 +58,16 @@ Kaitlyn Casselman is a current Psychology major at St. Olaf College. She enjoys 
 
 Rubi Herrera Zelaya is an undergraduate student at St. Olaf College majoring in Psychology with a concentration in Neuroscience. Her research interests are in cognitive psychology, especially the effect trauma has on the brain. Her hobbies include reading, watching movies, writing, and spending time with friends and family. She is a McNair Scholar and works as a Writing Tutor at the Writing Desk.
 
+
+
+</div>
+
 ### Hall of Fame
 
 
 *Previous members of the Root Lab. Their contributions helped build the lab and its research.*
+
+<div class="member" markdown="1">
 
 **Mary Hendrickson**
 *Former Undergraduate Researcher*
@@ -55,6 +75,10 @@ Rubi Herrera Zelaya is an undergraduate student at St. Olaf College majoring in 
 <img src="{{ '/images/maryhendrickson.jpg' | relative_url }}" alt="Mary Hendrickson" class="site-photo portrait-right">
 
 Mary Hendrickson '26 was an undergraduate researcher in the Root Lab and a Spring 2026 CURI Research Assistant. She worked on the FAVE project, presenting her work at the Minnesota Undergraduate Psychology Conference (MUPC) in April 2026.
+
+
+
+</div>
 
 ## Lab Resources
 
