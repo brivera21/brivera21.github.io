@@ -217,3 +217,9 @@ figure.photo {
   .project-row { flex-direction: column; }
   .project-row .project-figure { flex-basis: auto; max-width: 100%; }
 }
+
+// ---- Team member blocks: contain the floated portrait and space entries ----
+.member {
+  overflow: hidden;
+  margin-bottom: 2.4em;
+}
