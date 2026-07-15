@@ -30,7 +30,22 @@ When not in the classroom or lab, I enjoy thinking about the brain, playing ches
 
 Ava Sticka-Jacobs is an undergraduate student at St. Olaf College double majoring in Psychology and Biology with concentrations in Neuroscience and Race and Ethnic Studies. Ava is preparing herself for a career in neuroscience research, with special interests in cognitive neuroscience and the neuroscience of addiction. In her free time, she enjoys reading, writing, practicing guitar, exercising, and collaging. She currently volunteers as an advocate for victims of sexual assault and domestic violence.
 
+**Kaitlyn Casselman**
+*Undergraduate Research Assistant*
+
+<img src="{{ '/images/kaitlyncasselman.jpg' | relative_url }}" alt="Kaitlyn Casselman" class="site-photo portrait-right">
+
+Kaitlyn Casselman is a current Psychology major at St. Olaf College. She enjoys studying the overlap of neuroscience and psychology and is interested in going to graduate school to become a neuropsychologist. She hopes to become the first person in her family to hold a PhD.
+
+**Rubi Herrera Zelaya**
+*Undergraduate Research Assistant*
+
+<img src="{{ '/images/rubiherrera.jpg' | relative_url }}" alt="Rubi Herrera Zelaya" class="site-photo portrait-right">
+
+Rubi Herrera Zelaya is an undergraduate student at St. Olaf College majoring in Psychology with a concentration in Neuroscience. Her research interests are in cognitive psychology, especially the effect trauma has on the brain. Her hobbies include reading, watching movies, writing, and spending time with friends and family. She is a McNair Scholar and works as a Writing Tutor at the Writing Desk.
+
 ### Hall of Fame
+
 
 *Previous members of the Root Lab. Their contributions helped build the lab and its research.*
 
