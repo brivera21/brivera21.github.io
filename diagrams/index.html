@@ -120,14 +120,17 @@ const DIAGRAMS = [
     thumb:'tree.svg',
     tags:['evolution','neuroanatomy','teaching'],
     label:'SCROLLABLE',
-    blurb:'From LUCA to Homo sapiens, with every relative that branched off along the way.',
+    blurb:'From LUCA to Homo sapiens, with every relative that branched off along the way — each carrying its neuron count, shared DNA and a life-history bar.',
     extras:[
       {label:'Print PDF (A3) ↗', href:'nervous-system-tree.pdf'},
       {label:'tree.svg ↗', href:'tree.svg'}
     ],
-    connects:'Complements the Animals, Primate and Hominins evolution lectures.',
+    connects:'Complements the Animals, Primate and Hominins evolution lectures — dates, innovations and life-history values are pulled from those decks.',
     caveats:[
       'Neuron counts here are <em>total brain</em> neurons (human ≈86B, chimp ≈28B). The lecture slides cite <em>cortical</em> neurons for the apes (chimp 6–7B). Both correct — different measures.',
+      'The DNA percentages are <em>not one consistent measure</em>. Close relatives are DNA sequence identity (chimp ≈98.8%); distant animals are the share of genes with a human counterpart (mouse ≈85%, chicken ≈65%, fly ≈60%). Do not read the column as a single scale.',
+      'DNA % is deliberately blank where no defensible figure exists — extinct hominins with no recoverable DNA (erectus, habilis, Australopithecus) and the ancestral grade nodes.',
+      'Ancestral grade nodes (First brain, Vertebrate brain, Amniotes…) borrow a modern analog for neuron counts and life history — they are grades, not species.',
       'The human lifespan bar uses modern life expectancy (~73 yr); the Hominins deck uses ancient ~30–40 yr.',
       'Left off to avoid clutter: Paranthropus, sponges, cartilaginous fish.'
     ],
@@ -149,6 +152,50 @@ const DIAGRAMS = [
       'Head-direction cells are driven here by movement heading; the real variable is where the head points.',
       'Boundary vector cells fire at a <em>distance</em> from a boundary, not on contact.',
       'The cue card is decorative — landmark anchoring of the head-direction ring is not modelled.'
+    ],
+    mine:''
+  },
+  {
+    id:'ontogeny-energy',
+    title:'Energy use across ontogeny',
+    file:'ontogeny-energy.html',
+    thumb:'energy-curve.svg',
+    tags:['physiology','metabolism','development','teaching'],
+    label:'BROKEN AXIS',
+    blurb:'Metabolic rate from conception to death, with gestation, puberty and pregnancy each given their own zoom.',
+    extras:[
+      {label:'energy-curve.svg ↗', href:'energy-curve.svg'}
+    ],
+    connects:'For lectures on ontogeny, energetics and life-history trade-offs.',
+    caveats:[
+      'Constructed reference curves (body mass × mass-specific BMR), not a measured cohort. Shapes are canonical; individual points are not data.',
+      'The drop to zero is a graphical device. Metabolism does not decline along that path to zero — the vertical marks where the population mean age at death falls.',
+      '76.5 / 81.4 yr are <em>period</em> life expectancy at birth (CDC 2024) — a synthetic-cohort statistic, not a forecast for anyone alive now.',
+      'The pregnancy bump is <em>absolute</em>. Pontzer et al. (2021) found fat-free-mass-adjusted expenditure does not rise in pregnancy at all; replot per kilogram and the bump nearly vanishes.',
+      'Basal rate only — total daily expenditure is ~1.4–2× these values, and the pregnancy increment is larger on that measure.',
+      'Pre-pubertal sex separation is within noise; the two-colour treatment should not imply a real childhood difference.'
+    ],
+    mine:''
+  },
+  {
+    id:'cortical-rhythms',
+    title:'Cortical rhythms and areas',
+    file:'cortical-rhythms.html',
+    thumbLive:true,
+    tags:['neuroanatomy','oscillations','teaching','animation'],
+    label:'INTERACTIVE',
+    blurb:'Three brain views built from the fs_LR/Conte69 surface, switchable between activity, traveling waves (δ/θ/α/γ), lobes and Brodmann areas.',
+    extras:[],
+    connects:'For lectures on cortical organisation and brain rhythms — pairs with any EEG/oscillations session.',
+    caveats:[
+      'Only the <em>outlines</em> are real geometry (fs_LR/Conte69 32k surface, projected and contoured). Everything painted inside them is modelled.',
+      'The lobe and Brodmann maps are <em>schematic</em> — each dot takes the nearest landmark-placed seed (a Voronoi partition), not a cytoarchitectural atlas.',
+      'Activity colours are synthetic (a sum of drifting plane waves). No value corresponds to a measured BOLD or connectivity figure.',
+      'The Rate slider is a teaching control the brain does not have. It scales all four bands together, so their true frequency <em>ratios</em> are preserved.',
+      "Alpha's front→back direction is the <em>resting</em> case; during active viewing it reverses to back→front.",
+      'Delta is the only band shown on the coronal view — θ/α/γ travel front–back, which on a coronal section runs into the page.',
+      'Conte69 is cortex only: no cerebellum or brainstem, and the coronal notch between the temporal lobes is where the brainstem would sit.',
+      'Wave amplitude is uniform and isotropic here. Real traveling waves vary by region and travel at speeds that depend on fibre direction.'
     ],
     mine:''
   }

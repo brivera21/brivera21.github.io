@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Energy use across ontogeny</title>
+<style>
+:root{
+  --color-text-primary:#1f1e1c;
+  --color-text-secondary:#5f5e5a;
+  --color-text-tertiary:#8a8980;
+  --color-border-tertiary:rgba(0,0,0,0.15);
+  --color-border-secondary:rgba(0,0,0,0.3);
+  --color-background-secondary:#f4f3ef;
+  --border-radius-md:8px;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --color-text-primary:#eceae4;
+    --color-text-secondary:#b4b2a9;
+    --color-text-tertiary:#8a8980;
+    --color-border-tertiary:rgba(255,255,255,0.16);
+    --color-border-secondary:rgba(255,255,255,0.3);
+    --color-background-secondary:#232320;
+  }
+}
+*{ box-sizing:border-box; }
+body{
+  margin:0; padding:2rem 1.25rem;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  color:var(--color-text-primary);
+  background:#fbfaf7;
+  line-height:1.6;
+}
+@media (prefers-color-scheme: dark){ body{ background:#151513; } }
+.page{ max-width:760px; margin:0 auto; }
+h1{ font-size:22px; font-weight:500; margin:0 0 4px; }
+h2{ font-size:15px; font-weight:500; margin:1.8rem 0 .5rem; }
+p.sub{ font-size:14px; color:var(--color-text-secondary); margin:0 0 1.5rem; }
+figure{ margin:0; }
+figure img{ width:100%; height:auto; display:block; }
+table{ border-collapse:collapse; width:100%; font-size:13.5px; margin-top:.4rem; }
+th,td{ text-align:left; padding:6px 10px 6px 0; vertical-align:top;
+  border-bottom:0.5px solid var(--color-border-tertiary); }
+th{ font-weight:500; color:var(--color-text-secondary); white-space:nowrap; }
+ul{ margin:.4rem 0; padding-left:18px; font-size:13.5px; }
+li{ margin-bottom:6px; }
+footer{ margin-top:2rem; font-size:12px; color:var(--color-text-tertiary);
+  border-top:0.5px solid var(--color-border-tertiary); padding-top:1rem; }
+footer a{ color:inherit; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<h1>Energy use across ontogeny</h1>
+<p class="sub">Whole-body basal metabolic rate from conception to the average age of death. The age axis is broken so that three short, high-interest windows — gestation, puberty, and a hypothetical pregnancy — get room to breathe, while the long uneventful stretches are compressed.</p>
+
+<figure>
+  <img src="energy-curve.svg" alt="Basal metabolic rate in watts against age for males and females, on a broken axis with gestation, puberty and pregnancy expanded.">
+</figure>
+
+<h2>How to read it</h2>
+<p style="font-size:13.5px;margin:0">Six panels, left to right, separated by <strong>//</strong> break marks on the axis. Three are magnified (shaded); three are compressed bridges. Because each panel has its own scale, horizontal distance means nothing across a break — only the vertical axis is continuous.</p>
+
+<h2>What the curves do</h2>
+<table>
+  <tr><th>Conception → birth</th><td>Metabolic rate climbs from zero to about 8&nbsp;W. Nine months, given a whole panel — at true scale it is a sliver.</td></tr>
+  <tr><th>Infancy → childhood</th><td>Rate rises steadily with body mass. Male and female are near-identical here; the small gap shown is body composition, not a real functional difference.</td></tr>
+  <tr><th>Puberty</th><td>The divergence. Male rate keeps climbing toward its peak; female rate levels off around 15 and plateaus. Dots mark onset (♀ ~11, ♂ ~12.5).</td></tr>
+  <tr><th>Adulthood</th><td>Male peaks near 95&nbsp;W (~1,960&nbsp;kcal/day) around 30; female plateaus near 70&nbsp;W (~1,450&nbsp;kcal/day) across 30–50.</td></tr>
+  <tr><th>Pregnancy</th><td>Dashed line: basal rate rises roughly 20% by term, then returns. Absolute, not size-adjusted — see caveats.</td></tr>
+  <tr><th>Later life</th><td>Decline from ~60 as both mass and cellular rate fall. Each curve terminates at zero at the mean age of death.</td></tr>
+</table>
+
+<h2>Caveats worth stating in class</h2>
+<ul>
+  <li><strong>These are constructed reference curves, not a measured cohort.</strong> Watts = body mass × mass-specific BMR, both from published reference values. The shapes are canonical; the individual points are not data.</li>
+  <li><strong>The drop to zero is a graphical device.</strong> Metabolism does not decline along that trajectory to zero. The vertical is simply where the population mean age at death falls.</li>
+  <li><strong>76.5 and 81.4 are period life expectancy at birth</strong> (US, CDC 2024) — a synthetic-cohort statistic, not a forecast for anyone currently alive.</li>
+  <li><strong>The pregnancy bump is absolute, not size-adjusted.</strong> Pontzer et&nbsp;al. (2021) found that expenditure <em>adjusted for fat-free mass</em> does not rise in pregnancy at all — it stays on the normal adult trend. The rise drawn here comes from the added maternal and fetal tissue. Plot this same figure per kilogram and the bump nearly vanishes.</li>
+  <li><strong>Basal rate only.</strong> Total daily energy expenditure is roughly 1.4–2× these values once activity, thermoregulation and growth are included, and the pregnancy increment is larger on that measure.</li>
+  <li><strong>Pre-pubertal sex separation is within noise.</strong> Do not let the two-colour treatment imply a meaningful childhood difference.</li>
+</ul>
+
+<footer>
+  Sources: Pontzer et&nbsp;al., <em>Daily energy expenditure through the human life course</em>, Science 2021 (10.1126/science.abe5017); CDC NCHS, <em>Mortality in the United States, 2024</em>. Conversion used throughout: 1&nbsp;kcal/day = 0.04843&nbsp;W.
+</footer>
+
+</div>
+</body>
+</html>

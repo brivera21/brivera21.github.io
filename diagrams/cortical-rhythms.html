@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brain — dot fields</title>
+<style>
+  :root {
+    --bg: #0e1116;
+    --panel: #161b22;
+    --text: #c9d1d9;
+    --text-muted: #7d8590;
+    --text-accent: #6ee7ff;
+    --outline: rgba(120, 140, 160, 0.25);
+    --border: #2a3138;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f6f8fa;
+      --panel: #ffffff;
+      --text: #1f2328;
+      --text-muted: #57606a;
+      --text-accent: #0969da;
+      --outline: rgba(80, 100, 120, 0.28);
+      --border: #d0d7de;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  .wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px 16px 40px;
+  }
+  h1 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  p.sub {
+    margin: 0 0 20px;
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+  .controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  button {
+    background: var(--panel);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: border-color .15s, color .15s;
+  }
+  button:hover { border-color: var(--text-accent); color: var(--text-accent); }
+  button:active { transform: translateY(1px); }
+  .modes { display: flex; gap: 6px; margin: 0 0 12px; flex-wrap: wrap; }
+  .wave-toggles { display: flex; gap: 6px; margin: -4px 0 12px; flex-wrap: wrap; align-items: center; }
+  .wave-toggles .lbl { font-size: 12px; color: var(--text-muted); margin-right: 2px; }
+  .wave-toggle { display: flex; align-items: center; gap: 6px; opacity: .38; }
+  .wave-toggle.on { opacity: 1; }
+  .wave-toggle .sw { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+  .rate-wrap { display: flex; align-items: center; gap: 6px; margin-left: 10px; font-size: 12px; color: var(--text-muted); }
+  #waveRate { width: 110px; accent-color: var(--text-accent); }
+  .mode-btn.active {
+    border-color: var(--text-accent);
+    color: var(--text-accent);
+    background: color-mix(in srgb, var(--text-accent) 14%, var(--panel));
+  }
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center;
+    margin: 0 0 18px; font-size: 12px; color: var(--text-muted);
+  }
+  .legend .item { display: flex; align-items: center; gap: 5px; }
+  .legend .sw { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+  .legend .grad {
+    width: 130px; height: 12px; border-radius: 3px;
+    background: linear-gradient(90deg,#3c4696,#2d64c8,#1ea0cd,#2db96e,#9bcd3c,#f5de37,#f28c28,#de2d2d);
+  }
+  .legend .note { font-style: italic; opacity: .8; }
+  .views {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .view {
+    flex: 1 1 300px;
+    min-width: 260px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 14px 10px;
+  }
+  .view h2 {
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0 0 10px;
+    color: var(--text-muted);
+    letter-spacing: .02em;
+  }
+  canvas { display: block; width: 100%; height: auto; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Brain — pointillist activity fields</h1>
+  <p class="sub">Three standard planes &mdash; sagittal, coronal, axial &mdash; with silhouettes derived from the real <strong>fs_LR / Conte69</strong> symmetric cortical surface (32k mesh; lateral &amp; axial from projections, coronal from a cross-section). Switch the colouring below: <em>Activity</em> shows a drifting jet-colormap field with sweeping neural pulses; <em>Traveling waves</em> shows theta, alpha, and gamma cortical rhythms moving along the front-to-back axis; <em>Lobes</em> and <em>Brodmann areas</em> show schematic, landmark-based parcellations (approximate &mdash; not a cytoarchitectural atlas).</p>
+  <div class="controls">
+    <button id="pulseBtn">Fire a pulse</button>
+    <button id="pauseBtn">Pause</button>
+  </div>
+  <div class="modes">
+    <button class="mode-btn active" data-mode="activity">Activity</button>
+    <button class="mode-btn" data-mode="waves">Traveling waves</button>
+    <button class="mode-btn" data-mode="lobes">Lobes</button>
+    <button class="mode-btn" data-mode="brodmann">Brodmann areas</button>
+  </div>
+  <div class="wave-toggles" id="waveToggles" style="display:none">
+    <span class="lbl">Show:</span>
+    <button class="wave-toggle on" data-wave="delta"><span class="sw" style="background:#57c85a"></span>&delta; Delta</button>
+    <button class="wave-toggle on" data-wave="theta"><span class="sw" style="background:#ff8a3d"></span>&theta; Theta</button>
+    <button class="wave-toggle on" data-wave="alpha"><span class="sw" style="background:#43c6ff"></span>&alpha; Alpha</button>
+    <button class="wave-toggle on" data-wave="gamma"><span class="sw" style="background:#b980ff"></span>&gamma; Gamma</button>
+    <span class="rate-wrap"><span class="lbl">Rate</span><input type="range" id="waveRate" min="0.1" max="2" step="0.05" value="1"><output id="waveRateVal">1.00&times;</output></span>
+  </div>
+  <div class="legend" id="legend"></div>
+  <div class="views">
+    <div class="view">
+      <h2>Side view (lateral)</h2>
+      <canvas id="lateral"></canvas>
+    </div>
+    <div class="view">
+      <h2>Front view (coronal)</h2>
+      <canvas id="coronal"></canvas>
+    </div>
+    <div class="view">
+      <h2>Top view (superior)</h2>
+      <canvas id="superior"></canvas>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+// ---------------------------------------------------------------------------
+// Geometry helpers
+// ---------------------------------------------------------------------------
+
+// Ray-casting point-in-polygon (hand written, no canvas API).
+function pointInPolygon(x, y, poly) {
+  let inside = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const xi = poly[i][0], yi = poly[i][1];
+    const xj = poly[j][0], yj = poly[j][1];
+    const intersect = ((yi > y) !== (yj > y)) &&
+      (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+
+// Jet-like colormap (v in 0..1) -> [r,g,b], mimicking fMRI activity maps:
+// low = slate blue/indigo, through cyan, green, yellow, to red at high.
+const JET_STOPS = [
+  [0.00, [60, 70, 150]],
+  [0.15, [45, 95, 195]],
+  [0.32, [30, 160, 205]],
+  [0.48, [45, 185, 110]],
+  [0.62, [155, 205, 60]],
+  [0.75, [245, 222, 55]],
+  [0.88, [242, 140, 40]],
+  [1.00, [222, 45, 45]],
+];
+function jet(v) {
+  if (v < 0) v = 0; else if (v > 1) v = 1;
+  for (let i = 0; i < JET_STOPS.length - 1; i++) {
+    const a = JET_STOPS[i][0], ca = JET_STOPS[i][1];
+    const b = JET_STOPS[i + 1][0], cb = JET_STOPS[i + 1][1];
+    if (v <= b) {
+      const f = b > a ? (v - a) / (b - a) : 0;
+      return [
+        (ca[0] + (cb[0] - ca[0]) * f) | 0,
+        (ca[1] + (cb[1] - ca[1]) * f) | 0,
+        (ca[2] + (cb[2] - ca[2]) * f) | 0,
+      ];
+    }
+  }
+  return JET_STOPS[JET_STOPS.length - 1][1];
+}
+
+// ---------------------------------------------------------------------------
+// Traveling-wave model (educational). Three cortical rhythms as phase fronts
+// moving along the anterior-posterior (AP) axis, activation perpendicular to
+// travel. Directions and relative wavelengths are the scientifically real part:
+//   Theta 4-8 Hz : posterior -> anterior (back -> front), broad bands.
+//   Alpha 8-12 Hz: anterior -> posterior (front -> back), tighter bands (rest).
+//   Gamma 30+ Hz : LOCAL ripples radiating a short way from the occipital pole.
+// AP fraction: 0.0 = occipital pole (back), 1.0 = frontal pole (front).
+const WAVE = {
+  delta: { color: [87, 200, 90],   hex: "#57c85a", lam: 0.55, dir: -1 }, // front->back, slowest/broadest
+  theta: { color: [255, 138, 61],  hex: "#ff8a3d", lam: 0.28, dir: +1 }, // back->front
+  alpha: { color: [67, 198, 255],  hex: "#43c6ff", lam: 0.18, dir: -1 }, // front->back
+  gamma: { color: [185, 128, 255], hex: "#b980ff", Tg: 0.030 },          // local
+};
+const WAVE_VTRAV = 1.8; // AP fractions per second (~0.56 s full traverse)
+
+function smoothstep01(edge0, edge1, x) { // 1 at x<=edge0, 0 at x>=edge1
+  if (x <= edge0) return 1;
+  if (x >= edge1) return 0;
+  const t = (x - edge0) / (edge1 - edge0);
+  return 1 - t * t * (3 - 2 * t);
+}
+
+function drawArrow(ctx, x1, y1, x2, y2, color) {
+  ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+  const a = Math.atan2(y2 - y1, x2 - x1), h = 7;
+  ctx.beginPath();
+  ctx.moveTo(x2, y2);
+  ctx.lineTo(x2 - h * Math.cos(a - 0.4), y2 - h * Math.sin(a - 0.4));
+  ctx.lineTo(x2 - h * Math.cos(a + 0.4), y2 - h * Math.sin(a + 0.4));
+  ctx.closePath(); ctx.fill();
+}
+
+// ---------------------------------------------------------------------------
+// Schematic lobe + Brodmann-area maps. IMPORTANT: these are APPROXIMATE,
+// positioned by anatomical landmarks — NOT a cytoarchitectural atlas. Each dot
+// is assigned to the nearest labelled seed point (a Voronoi partition).
+// ---------------------------------------------------------------------------
+
+const LOBE_COLORS = {
+  frontal:  "#4f8bd6",
+  parietal: "#e3b23c",
+  temporal: "#5bb85b",
+  occipital:"#d65a5a",
+  insula:   "#9b6fc4",
+  limbic:   "#3fb6a8",
+};
+const LOBE_ORDER = ["frontal","parietal","temporal","occipital","insula","limbic"];
+
+// Brodmann-area fill colors, tinted by lobe family for readability.
+const BA_COLORS = {
+  "10":"#7fb0ff","11":"#3d5fb0","47":"#5878d8","45":"#6f9bec","44":"#8fb6f5",
+  "46":"#4a74c8","9":"#3f9fd0","8":"#5fc0e0","6":"#3050b0","4":"#20348f",
+  "3-1-2":"#f0c020","5":"#e0a838","7":"#f5d466","40":"#d98a1e","39":"#f2b552",
+  "17":"#e04a5a","18":"#f47f8b","19":"#c8557a",
+  "38":"#82d082","41-42":"#39a85a","22":"#5fc070","21":"#a2e28f","20":"#4d9f5c","37":"#6fbf83",
+  "24":"#39b6a8","31":"#5fd0c0","Ins":"#9b6fc4",
+};
+
+// Seeds per view: [x, y, brodmannLabel, lobe] in the normalized 0..100 box.
+const SEEDS = {
+  lateral: [
+    [10,42,"10","frontal"],[13,56,"11","frontal"],[20,53,"47","frontal"],[27,48,"45","frontal"],
+    [33,43,"44","frontal"],[24,32,"46","frontal"],[33,26,"9","frontal"],[42,22,"8","frontal"],
+    [48,18,"6","frontal"],[53,17,"4","frontal"],
+    [59,19,"3-1-2","parietal"],[66,23,"5","parietal"],[73,31,"7","parietal"],[66,41,"40","parietal"],[76,45,"39","parietal"],
+    [85,44,"19","occipital"],[90,50,"18","occipital"],[95,56,"17","occipital"],
+    [16,64,"38","temporal"],[44,60,"41-42","temporal"],[58,58,"22","temporal"],[48,71,"21","temporal"],[44,80,"20","temporal"],[67,66,"37","temporal"],
+  ],
+  superior: [
+    [46,9,"10","frontal"],[54,9,"10","frontal"],
+    [40,15,"8","frontal"],[60,15,"8","frontal"],[33,24,"46","frontal"],[67,24,"46","frontal"],
+    [45,22,"6","frontal"],[55,22,"6","frontal"],[38,32,"6","frontal"],[62,32,"6","frontal"],
+    [36,41,"4","frontal"],[64,41,"4","frontal"],[46,40,"4","frontal"],[54,40,"4","frontal"],
+    [36,49,"3-1-2","parietal"],[64,49,"3-1-2","parietal"],[46,49,"3-1-2","parietal"],[54,49,"3-1-2","parietal"],
+    [33,60,"40","parietal"],[67,60,"40","parietal"],[45,60,"7","parietal"],[55,60,"7","parietal"],
+    [40,71,"7","parietal"],[60,71,"7","parietal"],
+    [42,78,"19","occipital"],[58,78,"19","occipital"],[46,85,"18","occipital"],[54,85,"18","occipital"],[49,91,"17","occipital"],[51,91,"17","occipital"],
+  ],
+  coronal: [
+    [46,16,"24","limbic"],[54,16,"24","limbic"],[47,27,"31","limbic"],[53,27,"31","limbic"],
+    [34,15,"4","frontal"],[66,15,"4","frontal"],[40,20,"4","frontal"],[60,20,"4","frontal"],
+    [26,25,"3-1-2","parietal"],[74,25,"3-1-2","parietal"],
+    [18,42,"40","parietal"],[82,42,"40","parietal"],[30,40,"40","parietal"],[70,40,"40","parietal"],
+    [40,50,"Ins","insula"],[60,50,"Ins","insula"],[45,60,"Ins","insula"],[55,60,"Ins","insula"],
+    [15,60,"40","parietal"],[85,60,"40","parietal"],
+    [16,68,"22","temporal"],[84,68,"22","temporal"],[24,78,"21","temporal"],[76,78,"21","temporal"],[28,87,"20","temporal"],[72,87,"20","temporal"],
+  ],
+};
+
+// Nearest-seed (Voronoi) lookup -> returns [x,y,ba,lobe].
+function assignRegion(view, nx, ny) {
+  const seeds = SEEDS[view] || SEEDS.lateral;
+  let best = seeds[0], bd = Infinity;
+  for (let i = 0; i < seeds.length; i++) {
+    const dx = seeds[i][0] - nx, dy = seeds[i][1] - ny;
+    const d = dx * dx + dy * dy;
+    if (d < bd) { bd = d; best = seeds[i]; }
+  }
+  return best;
+}
+
+// ---------------------------------------------------------------------------
+// Brain outlines — REAL silhouettes derived from the fs_LR / Conte69 template
+// (Van Essen et al.), the standard left-right symmetric cortical surface.
+// The 32k-vertex midthickness mesh was projected to 2D, the outer contour
+// extracted, and simplified. Coordinates are in a normalized 0..100 box.
+// ---------------------------------------------------------------------------
+
+// Lateral: left hemisphere projected onto the sagittal (Y-Z) plane.
+// Anterior (frontal lobe) at left, occipital pole at right, temporal lobe below.
+function lateralOutline() {
+  return [[60.5,17.2],[56.5,19],[53.7,17.6],[51.9,17.6],[44.6,20.4],[38.1,20.7],[24.4,27.2],[20,30],[13.8,35.5],[10.1,40.4],[7.3,45.8],[4,56.8],[4.9,63.5],[9.7,70.2],[20,72.8],[24.6,72.8],[25.3,72.1],[25.8,72.5],[29.5,71.6],[29.4,76.9],[31.1,79.1],[33,80],[35.8,80],[39.1,82.4],[42.1,82.8],[43.9,82.1],[54.4,73.5],[59.5,71.6],[61.2,71.8],[67.9,68.8],[68.4,69.3],[70,68.3],[81.7,66.2],[86.6,67.2],[89.1,65.8],[91,66.7],[93,65.9],[96,56.1],[93.7,52.6],[91.8,46.7],[87.8,41.1],[86.7,37.6],[80,32.6],[77.8,28.7],[74.7,25.8],[71,24.2],[67.5,20.7]];
+}
+
+// Superior: both hemispheres projected onto the axial (X-Y) plane.
+// Anterior at top; the deep notches front and back are the interhemispheric
+// (longitudinal) fissure where it meets the silhouette edge.
+function superiorOutline() {
+  return [[44.1,4],[45.5,4.4],[47.9,7.7],[47.8,11.1],[48.8,16.9],[48.3,21.6],[49.3,24.2],[51,21.6],[50.3,18.9],[51.7,11.1],[51.5,7.2],[53.4,4.5],[56.7,4],[60.4,5.4],[63,8.3],[64.2,8],[68.7,9.2],[78,22.3],[79.1,27.7],[78.5,33.1],[82.5,37],[82.8,41.7],[85.5,45],[84.6,47.5],[85.5,55.4],[83.7,63.5],[81.2,68.7],[76.4,73.6],[75.3,81],[72.4,85.6],[68.9,87.7],[64.4,92.9],[58.8,95.1],[57.2,94.9],[53.6,92.2],[51.7,88.9],[50.6,82.2],[51.7,76.1],[50.8,73.9],[51.7,67.3],[50,62.2],[48.7,64],[48.8,65.8],[47.8,68],[49.6,90],[46.2,95.1],[45,96],[43,96],[36.7,94.2],[32.2,89.5],[26.2,85.1],[24.2,81.7],[25.1,79.2],[24.7,76.8],[21.8,75.3],[18.3,71.4],[15,59],[14.8,52.9],[15.7,48.9],[14.5,45.7],[17.5,42.8],[17.7,38.3],[21.5,33.8],[20.9,27.5],[22.7,21.4],[30,10.3],[34.2,8.3],[37,8.3],[41,4.7]];
+}
+
+// Coronal: a cross-section of both hemispheres at an anterior-posterior level
+// (Y ~= -10 mm) projected onto the frontal (X-Z) plane. Rounded hemispheres,
+// interhemispheric fissure at top, temporal lobes at the lower sides.
+function coronalOutline() {
+  return [[42.4,8.7],[45.3,9.2],[47.5,12.7],[47.8,22.4],[44.4,29.7],[47.1,30.3],[49.3,33.1],[49.6,37.5],[48.3,39.3],[49.2,40.2],[50.9,39.1],[49.9,36.7],[50.4,32.8],[54.8,28.4],[52,21.3],[51.7,12.7],[54.4,9.2],[56,8.9],[60.9,11],[68.2,10.5],[76.3,14.7],[78.8,17.2],[81,22.2],[82.1,21.2],[84.7,20.9],[88.2,25.5],[89.2,30.2],[94.2,38],[96,45],[95.5,50],[92.7,53],[90,54.2],[93,54],[95.2,56],[95.5,58.1],[93.7,62],[88.4,66.9],[92.2,65.3],[95.2,68],[95.5,70.6],[89.2,79.2],[89,81.8],[86.9,85.2],[81.3,90.3],[80.5,89.8],[76.8,91.1],[74.8,90],[73.5,90.8],[71.6,89.5],[71.1,90],[68.9,87.8],[68.8,85.1],[65.6,85.1],[62.6,83.4],[60.6,79.5],[61.1,77.6],[65.1,73.3],[65.9,74.1],[66.9,73.3],[69.2,73.7],[64.6,69.2],[62.5,69.9],[58.3,74.4],[56.3,74.9],[52.6,73.9],[49.7,70.5],[46.6,74.4],[42.7,74.9],[36.7,69.9],[35.1,69.7],[30.3,73.7],[36.4,74.6],[38.9,78.2],[38.1,78.9],[38.9,80],[34.6,85.1],[33.6,84],[32.5,85.1],[30.2,84],[29.8,89.4],[25.8,91.3],[25,90.5],[23.2,91.1],[21.3,90],[19.5,90.3],[15.3,87.4],[11.3,82.6],[11,79.7],[7.1,74.5],[5.6,69.3],[9.1,66.6],[11.8,67.2],[5.6,59.4],[5.8,57.3],[7,56.1],[10.8,55],[7,53],[4,48.4],[4.8,40.9],[7.9,34.1],[12.6,29.1],[13.6,26.3],[19.4,22.4],[21.2,17.4],[24.7,13.9],[32,10.8],[33.3,11.5],[38,11.5]];
+}
+
+// ---------------------------------------------------------------------------
+// BrainField: one canvas full of dots inside an outline.
+// ---------------------------------------------------------------------------
+
+class BrainField {
+  constructor(canvas, outline, cssW, cssH, opts) {
+    this.canvas = canvas;
+    this.ctx = canvas.getContext("2d");
+    this.outline = outline;
+    this.cssW = cssW;
+    this.cssH = cssH;
+    this.opts = opts || {};
+    this.view = this.opts.view || "lateral";
+    this.pulses = [];
+    this.build();
+  }
+
+  build() {
+    const dpr = window.devicePixelRatio || 1;
+    const W = this.cssW, H = this.cssH;
+    this.canvas.width = Math.round(W * dpr);
+    this.canvas.height = Math.round(H * dpr);
+    this.canvas.style.height = H + "px";
+    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+    this.ctx.scale(dpr, dpr); // drawing happens in CSS-pixel space
+
+    // Map normalized 0..100 outline into a padded box in CSS pixels.
+    const pad = 18;
+    const sx = (W - 2 * pad) / 100;
+    const sy = (H - 2 * pad) / 100;
+    const s = Math.min(sx, sy);
+    const offX = (W - 100 * s) / 2;
+    const offY = (H - 100 * s) / 2;
+    const map = (pt) => [offX + pt[0] * s, offY + pt[1] * s];
+
+    // Build outline polygon in CSS-pixel space (same space as the dots and
+    // the inside/outside test — never scaled by dpr).
+    this.poly = this.outline.map(map);
+
+    // Fill with a jittered grid + point-in-polygon test.
+    const spacing = 5.4;
+    const jit = spacing * 0.42;
+    // Optional longitudinal fissure: a thin dot-free band down the midline,
+    // limited to a vertical range (full-length for the top view, upper-only
+    // for the coronal view where the fissure doesn't reach the base).
+    const fis = this.opts.fissure; // {yTop, yBot, half} in normalized units, or null
+    const centerX = offX + 50 * s;
+    const dots = [];
+    for (let gy = offY; gy < offY + 100 * s; gy += spacing) {
+      for (let gx = offX; gx < offX + 100 * s; gx += spacing) {
+        const x = gx + (Math.random() * 2 - 1) * jit;
+        const y = gy + (Math.random() * 2 - 1) * jit;
+        if (fis) {
+          const ny = (y - offY) / s; // normalized 0..100
+          const fh = (fis.half || 1.6) * s;
+          if (ny > fis.yTop && ny < fis.yBot && Math.abs(x - centerX) < fh) continue;
+        }
+        if (pointInPolygon(x, y, this.poly)) {
+          const nx = (x - offX) / s, ny = (y - offY) / s; // normalized 0..100
+          const reg = assignRegion(this.view, nx, ny);
+          dots.push({
+            x, y, nx, ny,
+            r: 1.1 + Math.random() * 1.0,
+            phase: Math.random() * Math.PI * 2,    // twinkle phase
+            speed: 0.6 + Math.random() * 1.4,      // twinkle speed
+            grain: (Math.random() * 2 - 1) * 0.03, // per-dot color grain
+            flash: 0,                              // pulse activation
+            lobe: reg[3], ba: reg[2],
+            lobeCol: LOBE_COLORS[reg[3]] || "#888",
+            baCol: BA_COLORS[reg[2]] || "#888",
+          });
+        }
+      }
+    }
+    this.dots = dots;
+    this.markEdges();
+    this.computeWaveGeom();
+
+    // Spatial activity field: a few slowly drifting plane waves summed
+    // together produce organic high/low patches (like a functional map).
+    const maxDim = Math.max(this.cssW, this.cssH);
+    const waves = [];
+    let ampSum = 0;
+    for (let i = 0; i < 7; i++) {
+      const wavelength = (0.16 + Math.random() * 0.5) * maxDim;
+      const k = (2 * Math.PI) / wavelength;
+      const ang = Math.random() * Math.PI * 2;
+      const amp = 0.5 + Math.random() * 0.9;
+      ampSum += amp;
+      waves.push({
+        kx: Math.cos(ang) * k, ky: Math.sin(ang) * k,
+        phase: Math.random() * Math.PI * 2,
+        speed: (Math.random() * 2 - 1) * 0.22, // temporal drift
+        amp,
+      });
+    }
+    this.waves = waves;
+    this.ampSum = ampSum;
+  }
+
+  // Precompute per-dot AP fraction and the occipital gamma focus for wave mode.
+  // Wave travel is only in-plane for lateral (AP = horizontal) and superior
+  // (AP = vertical). Coronal's AP axis runs into the page, so it is exempt.
+  computeWaveGeom() {
+    const V = this.view;
+    // Which axes are in-plane for this view:
+    //   AP (anterior-posterior): lateral (x) and superior (y)
+    //   LR (left-right):         superior (x) and coronal (x)
+    this.hasAP = (V === "lateral" || V === "superior");
+    this.hasLR = (V === "superior" || V === "coronal");
+    this.waveShown = this.hasAP || this.hasLR;
+    if (!this.waveShown || this.dots.length === 0) return;
+
+    if (this.hasAP) {
+      const useX = (V === "lateral");
+      let lo = Infinity, hi = -Infinity;
+      for (const d of this.dots) { const v = useX ? d.nx : d.ny; if (v < lo) lo = v; if (v > hi) hi = v; }
+      // apFrac: 0 = occipital pole (back), 1 = frontal pole (front).
+      for (const d of this.dots) { const v = useX ? d.nx : d.ny; d.apFrac = (hi - v) / (hi - lo || 1); }
+      // Gamma focus = centroid of the most-posterior dots (occipital), in CSS px.
+      let fx = 0, fy = 0, n = 0;
+      for (const d of this.dots) if (d.apFrac < 0.08) { fx += d.x; fy += d.y; n++; }
+      if (n === 0) { let m = this.dots[0]; for (const d of this.dots) if (d.apFrac < m.apFrac) m = d; fx = m.x; fy = m.y; n = 1; }
+      this.gammaFocus = [fx / n, fy / n];
+      for (const d of this.dots) d.gDist = Math.hypot(d.x - this.gammaFocus[0], d.y - this.gammaFocus[1]);
+    }
+    if (this.hasLR) {
+      // lrFrac: 0 = left, 1 = right (image x = nx for superior & coronal).
+      let lo = Infinity, hi = -Infinity;
+      for (const d of this.dots) { if (d.nx < lo) lo = d.nx; if (d.nx > hi) hi = d.nx; }
+      for (const d of this.dots) d.lrFrac = (d.nx - lo) / (hi - lo || 1);
+    }
+    let cx = 0, cy = 0;
+    for (const d of this.dots) { cx += d.x; cy += d.y; }
+    this.centroid = [cx / this.dots.length, cy / this.dots.length];
+    this.apDir = (V === "lateral") ? [-1, 0] : (V === "superior" ? [0, -1] : null); // toward frontal pole
+    this.brainSpan = Math.max(this.cssW, this.cssH);
+  }
+
+  // Flag dots that sit on a lobe or Brodmann-area boundary, so those seams can
+  // be drawn as thin outlines between the coloured regions.
+  markEdges() {
+    const cell = 10, grid = new Map();
+    const key = (cx, cy) => cx + "," + cy;
+    for (const d of this.dots) {
+      const k = key(Math.floor(d.x / cell), Math.floor(d.y / cell));
+      if (!grid.has(k)) grid.set(k, []);
+      grid.get(k).push(d);
+    }
+    const r2 = 7 * 7;
+    for (const d of this.dots) {
+      const cx = Math.floor(d.x / cell), cy = Math.floor(d.y / cell);
+      d.lobeEdge = false; d.baEdge = false;
+      for (let ax = -1; ax <= 1 && !(d.lobeEdge && d.baEdge); ax++) {
+        for (let ay = -1; ay <= 1; ay++) {
+          const arr = grid.get(key(cx + ax, cy + ay));
+          if (!arr) continue;
+          for (const o of arr) {
+            if (o === d) continue;
+            const dx = o.x - d.x, dy = o.y - d.y;
+            if (dx * dx + dy * dy > r2) continue;
+            if (o.lobe !== d.lobe) d.lobeEdge = true;
+            if (o.ba !== d.ba) d.baEdge = true;
+          }
+        }
+      }
+    }
+  }
+
+  // Emit an expanding ring from a random interior dot (or given point).
+  firePulse(px, py) {
+    let x = px, y = py;
+    if (x == null) {
+      const d = this.dots[(Math.random() * this.dots.length) | 0];
+      x = d ? d.x : this.cssW / 2;
+      y = d ? d.y : this.cssH / 2;
+    }
+    this.pulses.push({
+      x, y,
+      radius: 0,
+      speed: 70 + Math.random() * 30, // px per second
+      max: Math.max(this.cssW, this.cssH) * 1.1,
+    });
+  }
+
+  update(dt, t) {
+    // advance pulses
+    for (const p of this.pulses) p.radius += p.speed * dt;
+    this.pulses = this.pulses.filter((p) => p.radius < p.max);
+
+    // decay flashes
+    for (const d of this.dots) {
+      if (d.flash > 0) d.flash = Math.max(0, d.flash - dt * 2.2);
+    }
+
+    // Brighten dots near each pulse's leading edge. The wavefront loses
+    // amplitude and spreads (widens) as it travels outward — attenuation +
+    // dispersion — so it fades and smears rather than staying a uniform ring.
+    const baseHalf = 6; // wavefront half-width at emission
+    for (const p of this.pulses) {
+      const bandHalf = baseHalf + p.radius * 0.16;   // dispersion: front smears out
+      const decay = p.max * 0.42;                    // tissue damping length scale
+      // amplitude = exponential damping x energy spread as the band widens
+      const amp = Math.exp(-p.radius / decay) * (baseHalf / bandHalf);
+      if (amp < 0.02) continue;
+      for (const d of this.dots) {
+        const dist = Math.hypot(d.x - p.x, d.y - p.y);
+        const diff = Math.abs(dist - p.radius);
+        if (diff < bandHalf) {
+          const strength = (1 - diff / bandHalf) * amp;
+          if (strength > d.flash) d.flash = strength;
+        }
+      }
+    }
+  }
+
+  draw(t) {
+    const ctx = this.ctx;
+    ctx.clearRect(0, 0, this.cssW, this.cssH);
+
+    // faint silhouette outline underneath the dots
+    ctx.beginPath();
+    ctx.moveTo(this.poly[0][0], this.poly[0][1]);
+    for (let i = 1; i < this.poly.length; i++) {
+      ctx.lineTo(this.poly[i][0], this.poly[i][1]);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = getComputedStyle(document.documentElement)
+      .getPropertyValue("--outline").trim() || "rgba(120,140,160,0.25)";
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+
+    if (colorMode === "waves") { this.drawWaves(t); return; }
+
+    // dots — colored by the active mode (activity heatmap, lobes, or Brodmann)
+    const mode = colorMode;
+    const waves = this.waves;
+    const nW = waves.length;
+    const edgeCol = getComputedStyle(document.documentElement)
+      .getPropertyValue("--bg").trim() || "#0e1116";
+    for (const d of this.dots) {
+      const twinkle = 0.5 + 0.5 * Math.sin(t * d.speed + d.phase);
+      let fill, alpha, r;
+
+      if (mode === "activity") {
+        let s = 0;
+        for (let i = 0; i < nW; i++) {
+          const w = waves[i];
+          s += w.amp * Math.sin(w.kx * d.x + w.ky * d.y + w.phase + w.speed * t);
+        }
+        let v = 0.5 + 0.5 * (s / this.ampSum);
+        v = 0.5 + (v - 0.5) * 1.9 + d.grain;
+        v += d.flash * 0.7;
+        const c = jet(v);
+        fill = "rgb(" + c[0] + "," + c[1] + "," + c[2] + ")";
+        alpha = 0.72 + 0.24 * twinkle + d.flash * 0.25;
+        r = d.r * (1 + d.flash * 0.7);
+      } else {
+        const isEdge = mode === "lobes" ? d.lobeEdge : d.baEdge;
+        fill = mode === "lobes" ? d.lobeCol : d.baCol;
+        alpha = 0.80 + 0.16 * twinkle + d.flash * 0.20;
+        r = d.r * (1 + d.flash * 0.5);
+        if (isEdge) { fill = edgeCol; alpha = 0.92; r = d.r * 0.92; }
+      }
+
+      if (alpha > 1) alpha = 1;
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = fill;
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  // Traveling-wave rendering — see WAVE model above. Delta additionally carries
+  // an interhemispheric (left<->right) component, so it is the one wave visible
+  // on the coronal view (and travels diagonally on the top-down view).
+  drawWaves(t) {
+    const ctx = this.ctx;
+    const span = this.brainSpan;
+    const R = 0.22 * span, lamG = 0.02 * span; // gamma patch radius + wavelength (px)
+    const de = WAVE.delta, th = WAVE.theta, al = WAVE.alpha, ga = WAVE.gamma;
+    const wt = t * waveRate; // pedagogical global rate — scales all rhythms together
+    const V = this.view;
+    for (const d of this.dots) {
+      // Delta progress coordinate: which in-plane axes contribute depends on view.
+      let iD = 0;
+      if (waveOn.delta) {
+        let p;
+        if (V === "lateral") p = 1 - d.apFrac;                         // AP: front->back
+        else if (V === "coronal") p = d.lrFrac;                        // LR: left->right (interhemispheric)
+        else p = 0.5 * (1 - d.apFrac) + 0.5 * d.lrFrac;                // superior: diagonal (AP + LR)
+        const cD = Math.cos(2 * Math.PI * (p - WAVE_VTRAV * wt) / de.lam);
+        iD = Math.max(0, cD); iD = iD * iD * iD;
+      }
+      // Theta / alpha / gamma travel along AP, so only where AP is in-plane.
+      let iT = 0, iA = 0, iG = 0;
+      if (this.hasAP) {
+        if (waveOn.theta) { const cT = Math.cos(2 * Math.PI * (d.apFrac - th.dir * WAVE_VTRAV * wt) / th.lam); iT = Math.max(0, cT); iT = iT * iT * iT; }
+        if (waveOn.alpha) { const cA = Math.cos(2 * Math.PI * (d.apFrac - al.dir * WAVE_VTRAV * wt) / al.lam); iA = Math.max(0, cA); iA = iA * iA * iA; }
+        if (waveOn.gamma && d.gDist < R) {
+          const env = smoothstep01(R * 0.5, R, d.gDist);
+          const cG = Math.cos(2 * Math.PI * (d.gDist / lamG) - 2 * Math.PI * (wt / ga.Tg));
+          iG = env * Math.max(0, cG); iG = iG * iG;
+        }
+      }
+      let rr = 14 + iD * de.color[0] + iT * th.color[0] + iA * al.color[0] + iG * ga.color[0];
+      let gg = 17 + iD * de.color[1] + iT * th.color[1] + iA * al.color[1] + iG * ga.color[1];
+      let bb = 23 + iD * de.color[2] + iT * th.color[2] + iA * al.color[2] + iG * ga.color[2];
+      if (rr > 255) rr = 255; if (gg > 255) gg = 255; if (bb > 255) bb = 255;
+      const act = Math.min(1, iD + iT + iA + iG);
+      ctx.globalAlpha = 0.18 + 0.82 * act;
+      ctx.fillStyle = "rgb(" + (rr | 0) + "," + (gg | 0) + "," + (bb | 0) + ")";
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, d.r * (1 + 0.5 * iG), 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    this.drawWaveLabels();
+  }
+
+  drawWaveLabels() {
+    const ctx = this.ctx;
+    const [cx, cy] = this.centroid;
+    const span = this.brainSpan, L = 0.26 * span;
+    const muted = getComputedStyle(document.documentElement).getPropertyValue("--text-muted").trim() || "#889";
+    ctx.save();
+    ctx.font = "600 12px ui-sans-serif, system-ui, sans-serif";
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+
+    if (this.view === "coronal") {
+      // Only delta is in-plane here: interhemispheric left->right sweep.
+      if (waveOn.delta) {
+        drawArrow(ctx, cx - 0.32 * span, cy, cx + 0.32 * span, cy, WAVE.delta.hex);
+        ctx.fillStyle = WAVE.delta.hex;
+        ctx.fillText("δ delta — interhemispheric (L↔R)", cx, cy - 0.30 * span);
+      } else {
+        ctx.fillStyle = muted;
+        ctx.fillText("Turn on Delta to see the interhemispheric wave", cx, cy);
+      }
+      ctx.fillStyle = muted; ctx.font = "11px ui-sans-serif, system-ui, sans-serif";
+      ctx.fillText("θ / α / γ travel front–back (into the page) — not shown here", cx, this.cssH - 12);
+      ctx.restore();
+      return;
+    }
+
+    // lateral & superior: arrows for the AP-visible waves, in separate lanes.
+    const [ax, ay] = this.apDir;      // front-ward unit vector
+    const px = -ay, py = ax;          // perpendicular
+    const lanes = [
+      { key: "delta", off:  0.30 },
+      { key: "theta", off:  0.10 },
+      { key: "alpha", off: -0.15 },
+    ];
+    const names = { delta: "δ delta", theta: "θ theta", alpha: "α alpha" };
+    for (const ln of lanes) {
+      if (!waveOn[ln.key]) continue;
+      const hex = WAVE[ln.key].hex;
+      let dx, dy; // unit travel direction in image space
+      if (ln.key === "delta" && this.view === "superior") {
+        // diagonal: toward back-right (−apDir + right)
+        dx = -ax + 1; dy = -ay + 0; const mag = Math.hypot(dx, dy) || 1; dx /= mag; dy /= mag;
+      } else {
+        const dir = WAVE[ln.key].dir; dx = ax * dir; dy = ay * dir;
+      }
+      const ox = cx + px * ln.off * span, oy = cy + py * ln.off * span;
+      drawArrow(ctx, ox - dx * L, oy - dy * L, ox + dx * L, oy + dy * L, hex);
+      ctx.fillStyle = hex;
+      const nm = (ln.key === "delta" && this.view === "superior") ? "δ delta (＋L↔R)" : names[ln.key];
+      ctx.fillText(nm, ox - dx * L, oy - dy * L - 6);
+    }
+    if (waveOn.gamma) {
+      ctx.strokeStyle = WAVE.gamma.hex; ctx.lineWidth = 1.5; ctx.setLineDash([3, 3]);
+      ctx.beginPath(); ctx.arc(this.gammaFocus[0], this.gammaFocus[1], 0.22 * span, 0, Math.PI * 2); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = WAVE.gamma.hex;
+      ctx.fillText("γ gamma (local)", this.gammaFocus[0], this.gammaFocus[1] - 0.22 * span - 9);
+    }
+    ctx.restore();
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Setup + loop
+// ---------------------------------------------------------------------------
+
+const fields = [];
+let colorMode = "activity"; // "activity" | "waves" | "lobes" | "brodmann"
+const waveOn = { delta: true, theta: true, alpha: true, gamma: true }; // per-frequency toggles
+let waveRate = 1; // pedagogical global speed multiplier for wave mode (NOT physiological)
+
+function makeField(id, outline, opts) {
+  const canvas = document.getElementById(id);
+  const cssW = canvas.parentElement.clientWidth - 28; // minus panel padding
+  const cssH = Math.round(cssW * 0.82);
+  opts = opts || {};
+  opts.view = id;
+  return new BrainField(canvas, outline, Math.max(240, cssW), cssH, opts);
+}
+
+function setup() {
+  fields.length = 0;
+  fields.push(makeField("lateral", lateralOutline()));
+  fields.push(makeField("coronal", coronalOutline(), { fissure: { yTop: 6, yBot: 48, half: 1.4 } }));
+  fields.push(makeField("superior", superiorOutline(), { fissure: { yTop: 12, yBot: 86, half: 1.6 } }));
+}
+
+// Legend reflects the active colour mode.
+function renderLegend() {
+  const el = document.getElementById("legend");
+  if (!el) return;
+  let html = "";
+  if (colorMode === "activity") {
+    html = '<span class="item"><span class="grad"></span></span>' +
+           '<span class="item">low &rarr; high activity</span>';
+  } else if (colorMode === "waves") {
+    const sw = (c) => '<span class="sw" style="background:' + c + '"></span>';
+    html =
+      '<span class="item">' + sw(WAVE.delta.hex) + '&delta; Delta 0.5–4 Hz — front&rarr;back <em>and</em> interhemispheric L↔R (slow-wave, via corpus callosum)</span>' +
+      '<span class="item">' + sw(WAVE.theta.hex) + '&theta; Theta 4–8 Hz — back&rarr;front</span>' +
+      '<span class="item">' + sw(WAVE.alpha.hex) + '&alpha; Alpha 8–12 Hz — front&rarr;back (resting)</span>' +
+      '<span class="item">' + sw(WAVE.gamma.hex) + '&gamma; Gamma 30+ Hz — local ripples at occipital pole</span>' +
+      '<span class="item note" style="width:100%">Higher frequency &rarr; tighter, faster fronts. Gamma stays local. Delta also crosses hemispheres: the <strong>coronal</strong> view shows its left↔right sweep, the top view shows it travelling diagonally. θ/α/γ travel front–back only, so the coronal view shows Delta alone. The <strong>Rate</strong> slider scales all rhythms together — a pedagogical speed control, not a real brain parameter.</span>';
+  } else if (colorMode === "lobes") {
+    const names = { frontal:"Frontal", parietal:"Parietal", temporal:"Temporal",
+                    occipital:"Occipital", insula:"Insula", limbic:"Limbic / cingulate" };
+    for (const k of LOBE_ORDER) {
+      html += '<span class="item"><span class="sw" style="background:' + LOBE_COLORS[k] +
+              '"></span>' + names[k] + '</span>';
+    }
+  } else {
+    const groups = [
+      ["Frontal", ["4","6","8","9","46","44","45","47","10","11"]],
+      ["Parietal", ["3-1-2","5","7","40","39"]],
+      ["Temporal", ["38","41-42","22","21","20","37"]],
+      ["Occipital", ["17","18","19"]],
+      ["Limbic/Insula", ["24","31","Ins"]],
+    ];
+    for (const [name, list] of groups) {
+      html += '<span class="item note" style="width:100%;color:var(--text-muted)">' + name + '</span>';
+      for (const ba of list) {
+        const lab = ba === "Ins" ? "Insula" : "BA" + ba;
+        html += '<span class="item"><span class="sw" style="background:' + (BA_COLORS[ba] || "#888") +
+                '"></span>' + lab + '</span>';
+      }
+    }
+  }
+  if (colorMode !== "activity") {
+    html += '<span class="item note" style="width:100%">Schematic &mdash; approximate landmark-based positions, not a cytoarchitectural atlas.</span>';
+  }
+  el.innerHTML = html;
+}
+
+let paused = false;
+let last = performance.now();
+let autoTimer = 0;
+let clock = 0; // animation time; advances only while playing so Pause freezes it
+
+function frame(now) {
+  const dtRaw = (now - last) / 1000;
+  last = now;
+  const dt = Math.min(dtRaw, 0.05);
+
+  if (!paused) {
+    clock += dt;
+    // Traveling-wave mode is self-contained; skip the random activity pulses.
+    if (colorMode !== "waves") {
+      autoTimer -= dt;
+      if (autoTimer <= 0) {
+        const f = fields[(Math.random() * fields.length) | 0];
+        if (f) f.firePulse();
+        autoTimer = 1.6 + Math.random() * 2.2;
+      }
+    }
+    for (const f of fields) f.update(dt, clock);
+  }
+  for (const f of fields) f.draw(clock);
+
+  requestAnimationFrame(frame);
+}
+
+// controls
+document.getElementById("pulseBtn").addEventListener("click", () => {
+  for (const f of fields) f.firePulse();
+});
+const pauseBtn = document.getElementById("pauseBtn");
+pauseBtn.addEventListener("click", () => {
+  paused = !paused;
+  pauseBtn.textContent = paused ? "Play" : "Pause";
+  if (!paused) last = performance.now();
+});
+
+// colour-mode buttons
+document.querySelectorAll(".mode-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    colorMode = btn.dataset.mode;
+    document.querySelectorAll(".mode-btn").forEach((b) =>
+      b.classList.toggle("active", b === btn));
+    document.getElementById("waveToggles").style.display =
+      colorMode === "waves" ? "flex" : "none";
+    renderLegend();
+  });
+});
+
+// per-frequency show/hide toggles (waves mode)
+document.querySelectorAll(".wave-toggle").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const w = btn.dataset.wave;
+    waveOn[w] = !waveOn[w];
+    btn.classList.toggle("on", waveOn[w]);
+  });
+});
+
+// pedagogical rate dial: scales all rhythms together (keeps their real ratios)
+const rateEl = document.getElementById("waveRate");
+if (rateEl) {
+  rateEl.addEventListener("input", () => {
+    waveRate = parseFloat(rateEl.value);
+    document.getElementById("waveRateVal").textContent = waveRate.toFixed(2) + "×";
+  });
+}
+renderLegend();
+
+// rebuild on resize (debounced)
+let resizeTimer = null;
+window.addEventListener("resize", () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(setup, 200);
+});
+
+setup();
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
