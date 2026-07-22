@@ -44,11 +44,6 @@
 <div class="wrap">
 <h2 class="sr-only">Animated pyramidal neuron with two recording electrodes: a dendritic pipette on the apical trunk whose trace marks each arriving graded potential as a positive or negative deflection, and a somatic pipette feeding a voltage meter and full-scale trace showing summation to threshold and an action potential.</h2>
 
-<div class="legend">
-  <span><i class="sw" style="background:#639922"></i>green: depolarising, toward firing (EPSP and action potential)</span>
-  <span><i class="sw" style="background:#E24B4A"></i>red: hyperpolarising, away from firing (IPSP)</span>
-  <span><i class="sw" style="background:#888780;opacity:.45"></i>presynaptic partners</span>
-</div>
 
 <p style="font-size:13px;line-height:1.55;color:var(--text-secondary);margin:0 0 14px;background:var(--surface-1);border-radius:var(--radius);padding:10px 14px;">
   <b style="color:var(--text-primary);font-weight:500;">What is each moving ball?</b> Each ball is a <b style="color:var(--text-primary);font-weight:500;">wave of voltage change</b> spreading along the membrane, not a packet of ions travelling down the cell. Ions only cross the membrane locally, and the local current they make carries the voltage change forward. <b style="color:var(--text-primary);font-weight:500;">Green</b> means depolarising, pushing the cell toward firing (go): the excitatory graded potentials and the action potential. <b style="color:var(--text-primary);font-weight:500;">Red</b> means hyperpolarising, pushing away from firing (no-go): the inhibitory graded potentials.
@@ -134,6 +129,12 @@
 </div>
 
 <div class="caption" id="caption"></div>
+
+<div class="legend">
+  <span><i class="sw" style="background:#639922"></i>green: depolarising, toward firing (EPSP and action potential)</span>
+  <span><i class="sw" style="background:#E24B4A"></i>red: hyperpolarising, away from firing (IPSP)</span>
+  <span><i class="sw" style="background:#888780;opacity:.45"></i>presynaptic partners</span>
+</div>
 
 <svg id="nsvg" viewBox="0 0 820 880" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pyramidal neuron dual recording animation">
 <g id="scene" transform="translate(0,110)">
