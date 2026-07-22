@@ -217,6 +217,26 @@ const DIAGRAMS = [
       'Wave amplitude is uniform and isotropic here. Real traveling waves vary by region and travel at speeds that depend on fibre direction.'
     ],
     mine:''
+  },
+  {
+    id:'action-potential',
+    title:'Action potential: graded inputs to a spike',
+    file:'action-potential.html',
+    thumbLive:true,
+    tags:['neurophysiology','membrane','synapses','teaching','animation'],
+    label:'INTERACTIVE',
+    blurb:'Graded potentials sweep down the dendrites of a pyramidal cell, summate at the soma, and once threshold is crossed an all-or-none spike jumps node to node down the axon to the terminals, recorded by two electrodes.',
+    extras:[],
+    connects:'For lectures on membrane potential, synaptic integration and the action potential. Pairs with a separate zoomed diagram of the ion channels, which are deliberately omitted here.',
+    caveats:[
+      'Ions are deliberately left out. The balls are waves of membrane-voltage change, not moving ions; the Na⁺/K⁺ channel mechanism belongs in a separate zoomed diagram.',
+      'Two colours only: green = depolarising (excitatory graded potentials and the action potential), red = hyperpolarising (inhibitory). The spike is green because it too is a depolarisation.',
+      'Time is not to scale. The spike (~1 to 2 ms) is stretched so it is visible; real EPSPs and IPSPs last tens of milliseconds. A to-scale inset shows the true ratio.',
+      'Amplitudes are a schematic reference, not recorded data. The soma trace is scaled so the summed inputs just reach threshold; the subthreshold trial shows one that falls short.',
+      'Spatial scale is only roughly proportional (~100 µm bar). A real layer-5 pyramidal cell has an apical dendrite over 1 mm and a much longer axon.',
+      'The backpropagating spike on the dendritic electrode is real but is usually treated as beyond an intro course.'
+    ],
+    mine:''
   }
 ];
 
