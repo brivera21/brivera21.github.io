@@ -53,7 +53,7 @@
     padding:9px 14px;border-radius:8px}
   .obar a:hover{border-color:var(--gold)}
   .ostage{flex:1;display:flex;gap:20px;padding:18px;overflow:hidden}
-  .oframe{flex:1 1 66%;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
+  .oframe{flex:1 1 100%;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
   .oframe iframe{width:100%;height:100%;border:0;display:block}
   .onotes{flex:1 1 34%;max-width:400px;overflow:auto;padding-right:4px}
   .onotes h2{margin:0 0 6px;font-size:20px}
@@ -102,7 +102,6 @@
   </div>
   <div class="ostage">
     <div class="oframe"><iframe id="oframe" title="diagram"></iframe></div>
-    <div class="onotes" id="onotes"></div>
   </div>
   <div class="hint">← / → to move · Esc to close · open the full page for print versions and controls</div>
 </div>
@@ -250,14 +249,6 @@ function paint(){
   document.getElementById('extras').innerHTML =
     `<a href="${d.file}" target="_blank">Open full page ↗</a> ` +
     d.extras.map(e=>`<a href="${e.href}" target="_blank">${e.label}</a>`).join(' ');
-  document.getElementById('onotes').innerHTML=`
-    <h2>${d.title}</h2>
-    <div class="tags">${d.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
-    <div class="note"><b>Connects to</b><p>${d.connects}</p></div>
-    ${d.mine?`<div class="note mine"><b>My thinking</b><p>${d.mine}</p></div>`:''}
-    <details class="cav"><summary>Caveats beyond the diagram</summary>
-      <ul>${d.caveats.map(x=>`<li>${x}</li>`).join('')}</ul>
-    </details>`;
 }
 const move=n=>{ if(!view.length)return; idx=(idx+n+view.length)%view.length; paint(); };
 document.getElementById('next').onclick=()=>move(1);
