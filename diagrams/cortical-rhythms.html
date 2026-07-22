@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Brain — dot fields</title>
+<title>Cortical rhythms and areas</title>
 <style>
   :root {
     --bg: #0e1116;
@@ -115,8 +115,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>Brain — pointillist activity fields</h1>
-  <p class="sub">Three standard planes &mdash; sagittal, coronal, axial &mdash; with silhouettes derived from the real <strong>fs_LR / Conte69</strong> symmetric cortical surface (32k mesh; lateral &amp; axial from projections, coronal from a cross-section). Switch the colouring below: <em>Activity</em> shows a drifting jet-colormap field with sweeping neural pulses; <em>Traveling waves</em> shows theta, alpha, and gamma cortical rhythms moving along the front-to-back axis; <em>Lobes</em> and <em>Brodmann areas</em> show schematic, landmark-based parcellations (approximate &mdash; not a cytoarchitectural atlas).</p>
+  <h1>Cortical rhythms and areas</h1>
+  <p class="sub">Three standard planes (sagittal, coronal, axial). The silhouettes come from the real <strong>fs_LR / Conte69</strong> symmetric cortical surface (32k mesh; lateral and axial from projections, coronal from a cross-section). Switch the colouring below. <em>Activity</em> shows a drifting jet-colormap field with sweeping neural pulses. <em>Traveling waves</em> shows theta, alpha, and gamma cortical rhythms moving along the front-to-back axis. <em>Lobes</em> and <em>Brodmann areas</em> show schematic, landmark-based parcellations that are approximate and not a cytoarchitectural atlas.</p>
   <div class="controls">
     <button id="pulseBtn">Fire a pulse</button>
     <button id="pauseBtn">Pause</button>
@@ -237,7 +237,7 @@ function drawArrow(ctx, x1, y1, x2, y2, color) {
 
 // ---------------------------------------------------------------------------
 // Schematic lobe + Brodmann-area maps. IMPORTANT: these are APPROXIMATE,
-// positioned by anatomical landmarks — NOT a cytoarchitectural atlas. Each dot
+// positioned by anatomical landmarks - NOT a cytoarchitectural atlas. Each dot
 // is assigned to the nearest labelled seed point (a Voronoi partition).
 // ---------------------------------------------------------------------------
 
@@ -305,7 +305,7 @@ function assignRegion(view, nx, ny) {
 }
 
 // ---------------------------------------------------------------------------
-// Brain outlines — REAL silhouettes derived from the fs_LR / Conte69 template
+// Brain outlines - REAL silhouettes derived from the fs_LR / Conte69 template
 // (Van Essen et al.), the standard left-right symmetric cortical surface.
 // The 32k-vertex midthickness mesh was projected to 2D, the outer contour
 // extracted, and simplified. Coordinates are in a normalized 0..100 box.
@@ -367,7 +367,7 @@ class BrainField {
     const map = (pt) => [offX + pt[0] * s, offY + pt[1] * s];
 
     // Build outline polygon in CSS-pixel space (same space as the dots and
-    // the inside/outside test — never scaled by dpr).
+    // the inside/outside test - never scaled by dpr).
     this.poly = this.outline.map(map);
 
     // Fill with a jittered grid + point-in-polygon test.
@@ -527,8 +527,8 @@ class BrainField {
     }
 
     // Brighten dots near each pulse's leading edge. The wavefront loses
-    // amplitude and spreads (widens) as it travels outward — attenuation +
-    // dispersion — so it fades and smears rather than staying a uniform ring.
+    // amplitude and spreads (widens) as it travels outward - attenuation +
+    // dispersion - so it fades and smears rather than staying a uniform ring.
     const baseHalf = 6; // wavefront half-width at emission
     for (const p of this.pulses) {
       const bandHalf = baseHalf + p.radius * 0.16;   // dispersion: front smears out
@@ -565,7 +565,7 @@ class BrainField {
 
     if (colorMode === "waves") { this.drawWaves(t); return; }
 
-    // dots — colored by the active mode (activity heatmap, lobes, or Brodmann)
+    // dots - colored by the active mode (activity heatmap, lobes, or Brodmann)
     const mode = colorMode;
     const waves = this.waves;
     const nW = waves.length;
@@ -606,7 +606,7 @@ class BrainField {
     ctx.globalAlpha = 1;
   }
 
-  // Traveling-wave rendering — see WAVE model above. Delta additionally carries
+  // Traveling-wave rendering - see WAVE model above. Delta additionally carries
   // an interhemispheric (left<->right) component, so it is the one wave visible
   // on the coronal view (and travels diagonally on the top-down view).
   drawWaves(t) {
@@ -614,7 +614,7 @@ class BrainField {
     const span = this.brainSpan;
     const R = 0.22 * span, lamG = 0.02 * span; // gamma patch radius + wavelength (px)
     const de = WAVE.delta, th = WAVE.theta, al = WAVE.alpha, ga = WAVE.gamma;
-    const wt = t * waveRate; // pedagogical global rate — scales all rhythms together
+    const wt = t * waveRate; // pedagogical global rate - scales all rhythms together
     const V = this.view;
     for (const d of this.dots) {
       // Delta progress coordinate: which in-plane axes contribute depends on view.
@@ -667,13 +667,13 @@ class BrainField {
       if (waveOn.delta) {
         drawArrow(ctx, cx - 0.32 * span, cy, cx + 0.32 * span, cy, WAVE.delta.hex);
         ctx.fillStyle = WAVE.delta.hex;
-        ctx.fillText("δ delta — interhemispheric (L↔R)", cx, cy - 0.30 * span);
+        ctx.fillText("δ delta, interhemispheric (L↔R)", cx, cy - 0.30 * span);
       } else {
         ctx.fillStyle = muted;
         ctx.fillText("Turn on Delta to see the interhemispheric wave", cx, cy);
       }
       ctx.fillStyle = muted; ctx.font = "11px ui-sans-serif, system-ui, sans-serif";
-      ctx.fillText("θ / α / γ travel front–back (into the page) — not shown here", cx, this.cssH - 12);
+      ctx.fillText("θ / α / γ travel front to back (into the page), not shown here", cx, this.cssH - 12);
       ctx.restore();
       return;
     }
@@ -750,11 +750,11 @@ function renderLegend() {
   } else if (colorMode === "waves") {
     const sw = (c) => '<span class="sw" style="background:' + c + '"></span>';
     html =
-      '<span class="item">' + sw(WAVE.delta.hex) + '&delta; Delta 0.5–4 Hz — front&rarr;back <em>and</em> interhemispheric L↔R (slow-wave, via corpus callosum)</span>' +
-      '<span class="item">' + sw(WAVE.theta.hex) + '&theta; Theta 4–8 Hz — back&rarr;front</span>' +
-      '<span class="item">' + sw(WAVE.alpha.hex) + '&alpha; Alpha 8–12 Hz — front&rarr;back (resting)</span>' +
-      '<span class="item">' + sw(WAVE.gamma.hex) + '&gamma; Gamma 30+ Hz — local ripples at occipital pole</span>' +
-      '<span class="item note" style="width:100%">Higher frequency &rarr; tighter, faster fronts. Gamma stays local. Delta also crosses hemispheres: the <strong>coronal</strong> view shows its left↔right sweep, the top view shows it travelling diagonally. θ/α/γ travel front–back only, so the coronal view shows Delta alone. The <strong>Rate</strong> slider scales all rhythms together — a pedagogical speed control, not a real brain parameter.</span>';
+      '<span class="item">' + sw(WAVE.delta.hex) + '&delta; Delta 0.5 to 4 Hz. Front&rarr;back <em>and</em> interhemispheric L↔R (slow-wave, via corpus callosum)</span>' +
+      '<span class="item">' + sw(WAVE.theta.hex) + '&theta; Theta 4 to 8 Hz. Back&rarr;front</span>' +
+      '<span class="item">' + sw(WAVE.alpha.hex) + '&alpha; Alpha 8 to 12 Hz. Front&rarr;back (resting)</span>' +
+      '<span class="item">' + sw(WAVE.gamma.hex) + '&gamma; Gamma 30+ Hz. Local ripples at occipital pole</span>' +
+      '<span class="item note" style="width:100%">Higher frequency gives tighter, faster fronts. Gamma stays local. Delta also crosses hemispheres: the <strong>coronal</strong> view shows its left↔right sweep, the top view shows it travelling diagonally. Theta, alpha and gamma travel front to back only, so the coronal view shows Delta alone. The <strong>Rate</strong> slider scales all rhythms together. It is a pedagogical speed control, not a real brain parameter.</span>';
   } else if (colorMode === "lobes") {
     const names = { frontal:"Frontal", parietal:"Parietal", temporal:"Temporal",
                     occipital:"Occipital", insula:"Insula", limbic:"Limbic / cingulate" };
@@ -780,7 +780,7 @@ function renderLegend() {
     }
   }
   if (colorMode !== "activity") {
-    html += '<span class="item note" style="width:100%">Schematic &mdash; approximate landmark-based positions, not a cytoarchitectural atlas.</span>';
+    html += '<span class="item note" style="width:100%">Schematic: approximate landmark-based positions, not a cytoarchitectural atlas.</span>';
   }
   el.innerHTML = html;
 }

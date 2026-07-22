@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Spatial cells — which neuron fires where</title>
+<title>Spatial cells: which neuron fires where</title>
 <style>
 :root{
   --color-text-primary:#1f1e1c;
@@ -54,14 +54,20 @@ footer{ margin-top:2rem; font-size:12px; color:var(--color-text-tertiary); borde
 <body>
 <div class="page">
 
-<h1>Spatial cells — which neuron fires where</h1>
-<p class="sub">A rat explores a room, finds a key, and later recalls where it left it. The panel shows which cell type is firing at each moment. Three laps: the bare room, then the trajectory, then the boundaries and receptive fields.</p>
+<h1>Spatial cells: which neuron fires where</h1>
+<p class="sub">A rat explores a room, finds a key, and later recalls where it left it. The panel shows which cell type is firing at each moment. Three laps: the bare room, then the path, then the cell firing fields.</p>
 
 <div style="display:flex; flex-wrap:wrap; gap:18px; align-items:flex-start;">
 
   <div style="flex:0 0 auto;">
-    <div id="lapinfo" style="display:inline-block; font-size:11px; font-weight:500; color:var(--color-text-secondary); background:var(--color-background-secondary); padding:3px 9px; border-radius:var(--border-radius-md); margin-bottom:6px;">1 / 3 — the room, the landmark, the object</div>
-    <div id="stage" style="font-size:13px; font-weight:500; color:var(--color-text-primary); margin-bottom:8px; min-height:34px; line-height:1.4;">Exploring</div>
+    <div id="laptabs" style="display:flex; gap:6px; margin-bottom:8px;">
+      <button data-lap="auto" style="font-size:11px; padding:4px 9px;">Auto</button>
+      <button data-lap="0" style="font-size:11px; padding:4px 9px;">1 Room</button>
+      <button data-lap="1" style="font-size:11px; padding:4px 9px;">2 Path</button>
+      <button data-lap="2" style="font-size:11px; padding:4px 9px;">3 Fields</button>
+    </div>
+    <div id="lapinfo" style="display:inline-block; font-size:11px; font-weight:500; color:var(--color-text-secondary); background:var(--color-background-secondary); padding:3px 9px; border-radius:var(--border-radius-md); margin-bottom:6px;">1 of 3. The room, the landmark, the object</div>
+    <div id="stage" style="font-size:13px; font-weight:500; color:var(--color-text-primary); margin-bottom:8px; min-height:34px; line-height:1.4;">Exploring the room</div>
     <canvas id="arena" width="680" height="680" style="width:340px; height:340px; border-radius:var(--border-radius-md); border:0.5px solid var(--color-border-secondary);"></canvas>
     <div style="display:flex; gap:8px; align-items:center; margin-top:10px;">
       <button id="play">Pause</button>
@@ -77,7 +83,7 @@ footer{ margin-top:2rem; font-size:12px; color:var(--color-text-tertiary); borde
 </div>
 
 <footer>
-Illustrative model based on Neil Burgess, “Neural mechanisms of spatial cognition.” Firing fields are schematic, not recorded data.
+Schematic model based on Neil Burgess, "Neural mechanisms of spatial cognition." Firing fields are illustrative, not recorded data.
 </footer>
 
 </div>
@@ -184,21 +190,26 @@ Illustrative model based on Neil Burgess, “Neural mechanisms of spatial cognit
   }
 
   var stageText={
-    explore:'Exploring — far from the key, sensory inputs drive the map',
-    encode:'Encoding the key — place + object-vector cells co-active',
-    continue:'Continuing on its way',
-    retrieve:'Recall: "Where is the key?" — the attractor reactivates the scene'
+    explore:'Exploring the room, far from the key',
+    encode:'At the key. Place and object cells fire together',
+    continue:'Carrying on around the room',
+    retrieve:'Recall. The cells fire for the key&rsquo;s remembered spot'
   };
   var lapText=[
-    '1 / 3 — the room, the landmark, the object',
-    '2 / 3 — the trajectory revealed',
-    '3 / 3 — boundaries and receptive fields revealed'
+    '1 of 3. The room, the landmark, the object',
+    '2 of 3. The path',
+    '3 of 3. The cell firing fields'
   ];
 
   function drawCue(){
     var x0=X(0.40), x1=X(0.60);
     ctx.fillStyle=cueC; ctx.globalAlpha=0.9;
     ctx.fillRect(x0, pad-3.5, x1-x0, 7);
+    ctx.globalAlpha=1;
+  }
+  function drawWall(){
+    ctx.strokeStyle=wallC; ctx.lineWidth=5; ctx.globalAlpha=0.9; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(X(WX0),Y(WALLY)); ctx.lineTo(X(WX1),Y(WALLY)); ctx.stroke();
     ctx.globalAlpha=1;
   }
 
@@ -270,7 +281,7 @@ Illustrative model based on Neil Burgess, “Neural mechanisms of spatial cognit
   }
 
   function draw(u,lap){
-    var showPath=lap>=1, showBound=lap>=2, showFields=lap>=2;
+    var showPath=lap>=1, showFields=lap>=2;
     var st=state(u), f=firing(st);
     ctx.clearRect(0,0,S,S);
 
@@ -286,17 +297,16 @@ Illustrative model based on Neil Burgess, “Neural mechanisms of spatial cognit
       ctx.closePath(); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha=1;
     }
 
-    if(showBound){
+    if(showFields){
       barH(1-DPREF, 0, 1, f.bSe);
       barH(DPREF, 0, 1, f.bNe);
       barV(1-DPREF, 0, 1, f.bE);
       barV(DPREF, 0, 1, f.bW);
       barH(WALLY-DPREF, WX0, WX1, f.bSw);
       barH(WALLY+DPREF, WX0, WX1, f.bNw);
-      ctx.strokeStyle=wallC; ctx.lineWidth=5; ctx.globalAlpha=0.9;
-      ctx.beginPath(); ctx.moveTo(X(WX0),Y(WALLY)); ctx.lineTo(X(WX1),Y(WALLY)); ctx.stroke();
-      ctx.globalAlpha=1;
     }
+
+    drawWall();
 
     if(showFields){
       for(var i=0;i<lattice.length;i++){
@@ -399,7 +409,7 @@ Illustrative model based on Neil Burgess, “Neural mechanisms of spatial cognit
   ];
   var bvcDefs=[ {id:'bS',label:'to South'},{id:'bN',label:'to North'},{id:'bE',label:'to East'},{id:'bW',label:'to West'} ];
   var hdDefs=[ {id:'hdn', label:'North', rot:0},{id:'hde', label:'East', rot:90},{id:'hds', label:'South', rot:180},{id:'hdw', label:'West', rot:270} ];
-  var transDef={id:'trans', name:'Gain-field / translation', sub:'converts ego to allo', c:col.trans, shape:'bushy'};
+  var transDef={id:'trans', name:'Gain-field / translation', sub:'converts between frames', c:col.trans, shape:'bushy'};
   var allDefs=topDefs.concat([transDef]);
 
   var wrap=document.getElementById('cells');
@@ -431,8 +441,8 @@ Illustrative model based on Neil Burgess, “Neural mechanisms of spatial cognit
   wrap.appendChild(rowEl(topDefs[0]));
   wrap.appendChild(rowEl(topDefs[1]));
   wrap.appendChild(rowEl(topDefs[2]));
-  wrap.appendChild(groupBox('Boundary vector cells <span style="color:var(--color-text-tertiary);">— one per wall</span>', bvcDefs, 'bipolar', col.bvc, false));
-  wrap.appendChild(groupBox('Head-direction cells <span style="color:var(--color-text-tertiary);">— one per heading</span>', hdDefs, 'fan', col.hd, true));
+  wrap.appendChild(groupBox('Boundary vector cells <span style="color:var(--color-text-tertiary);">(one per wall)</span>', bvcDefs, 'bipolar', col.bvc, false));
+  wrap.appendChild(groupBox('Head-direction cells <span style="color:var(--color-text-tertiary);">(one per heading)</span>', hdDefs, 'fan', col.hd, true));
   wrap.appendChild(rowEl(transDef));
 
   function hex2rgba(h,a){var n=parseInt(h.slice(1),16);return 'rgba('+(n>>16&255)+','+(n>>8&255)+','+(n&255)+','+a+')';}
@@ -461,21 +471,52 @@ Illustrative model based on Neil Burgess, “Neural mechanisms of spatial cognit
     status.style.color = on? color : 'var(--color-text-tertiary)';
   }
 
-  var tot=0, playing=true, last=null, period=24000;
+  var tot=0, playing=true, last=null, period=24000, pinned=null;
   var playBtn=document.getElementById('play');
   var scrub=document.getElementById('scrub');
+  var tabs=[].slice.call(document.querySelectorAll('#laptabs button'));
+
+  function updateTabs(){
+    tabs.forEach(function(b){
+      var v=b.getAttribute('data-lap');
+      var active=(v==='auto' && pinned===null) || (pinned!==null && String(pinned)===v);
+      b.style.background = active ? 'var(--color-background-secondary)' : 'transparent';
+      b.style.borderColor = active ? 'var(--color-border-secondary)' : 'var(--color-border-tertiary)';
+      b.style.fontWeight = active ? '500' : '400';
+      b.style.opacity = active ? '1' : '0.65';
+    });
+  }
+  tabs.forEach(function(b){
+    b.onclick=function(){
+      var v=b.getAttribute('data-lap');
+      if(v==='auto'){ pinned=null; }
+      else { pinned=parseInt(v,10); tot=pinned; }
+      updateTabs();
+    };
+  });
+  updateTabs();
 
   function loopFrame(ts){
     if(last==null) last=ts;
     var dt=ts-last; last=ts;
-    if(playing){ tot += dt/period; if(tot>=3) tot-=3; scrub.value=Math.round(tot*1000); }
-    var lap=Math.min(2,Math.floor(tot));
+    if(playing){
+      tot += dt/period;
+      if(pinned!==null){ if(tot>=pinned+1) tot=pinned; }
+      else if(tot>=3) tot-=3;
+      scrub.value=Math.round(tot*1000);
+    }
+    var lap = pinned!==null ? pinned : Math.min(2,Math.floor(tot));
     draw(tot-Math.floor(tot), lap);
     requestAnimationFrame(loopFrame);
   }
   playBtn.onclick=function(){ playing=!playing; playBtn.textContent = playing? 'Pause':'Play'; };
-  document.getElementById('restart').onclick=function(){ tot=0; scrub.value=0; };
-  scrub.oninput=function(){ playing=false; playBtn.textContent='Play'; tot=scrub.value/1000; };
+  document.getElementById('restart').onclick=function(){ tot=(pinned!==null?pinned:0); scrub.value=Math.round(tot*1000); };
+  scrub.oninput=function(){
+    playing=false; playBtn.textContent='Play';
+    var v=scrub.value/1000;
+    if(pinned!==null){ v = pinned + (v - Math.floor(v)); }
+    tot=v;
+  };
 
   requestAnimationFrame(loopFrame);
 })();
