@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pyramidal neuron: dual dendritic and somatic recording</title>
+<style>
+  :root{
+    --text-primary:#1f1f1e; --text-secondary:#5f5e5a; --text-muted:#888780;
+    --surface-1:#f1efe8; --surface-2:#ffffff; --border:rgba(0,0,0,.14); --radius:8px;
+    --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    --page:#faf9f5;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --text-primary:#ecebe6; --text-secondary:#b4b2a9; --text-muted:#888780;
+      --surface-1:#262624; --surface-2:#2f2f2c; --border:rgba(255,255,255,.16); --page:#1a1a19; }
+  }
+  body{margin:0;padding:24px;background:var(--page);color:var(--text-primary);font-family:var(--font-sans);}
+  .wrap{max-width:960px;margin:0 auto;}
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);}
+  button{font-family:inherit;font-size:14px;color:var(--text-primary);background:transparent;
+    border:1.5px solid #14B8A6;border-radius:var(--radius);padding:7px 13px;cursor:pointer;
+    transition:background .15s,border-color .15s,box-shadow .15s;}
+  button:hover{background:rgba(20,184,166,.12);border-color:#0E9C8C;box-shadow:0 0 0 3px rgba(20,184,166,.20);}
+  button:active{transform:scale(.98);}
+  button.on{background:rgba(20,184,166,.20);border-color:#0E9C8C;box-shadow:0 0 0 2px rgba(20,184,166,.22);}
+  input[type=range]{accent-color:#D85A30;height:18px;}
+  .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+  .phasebar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:14px;}
+  .phasebar button{font-size:13px;padding:8px 6px;text-align:center;line-height:1.3;}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--text-secondary);margin-bottom:14px;}
+  .legend span{display:inline-flex;align-items:center;gap:7px;}
+  .sw{width:13px;height:13px;border-radius:50%;display:inline-block;}
+  .caption{font-size:14px;line-height:1.6;color:var(--text-secondary);min-height:62px;
+    background:var(--surface-1);border-radius:var(--radius);padding:12px 14px;margin-bottom:14px;}
+  .caption b{color:var(--text-primary);font-weight:500;}
+  svg{width:100%;height:auto;display:block;}
+  .lbl{font-size:12px;fill:var(--text-secondary);font-family:var(--font-sans);}
+  .lbl-s{font-size:11px;fill:var(--text-muted);font-family:var(--font-sans);}
+  .lbl-b{font-size:12.5px;fill:var(--text-primary);font-family:var(--font-sans);}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h2 class="sr-only">Animated pyramidal neuron with two recording electrodes: a dendritic pipette on the apical trunk whose trace marks each arriving graded potential as a positive or negative deflection, and a somatic pipette feeding a voltage meter and full-scale trace showing summation to threshold and an action potential.</h2>
+
+<div class="legend">
+  <span><i class="sw" style="background:#639922"></i>green: depolarising, toward firing (EPSP and action potential)</span>
+  <span><i class="sw" style="background:#E24B4A"></i>red: hyperpolarising, away from firing (IPSP)</span>
+  <span><i class="sw" style="background:#888780;opacity:.45"></i>presynaptic partners</span>
+</div>
+
+<p style="font-size:13px;line-height:1.55;color:var(--text-secondary);margin:0 0 14px;background:var(--surface-1);border-radius:var(--radius);padding:10px 14px;">
+  <b style="color:var(--text-primary);font-weight:500;">What is each moving ball?</b> Each ball is a <b style="color:var(--text-primary);font-weight:500;">wave of voltage change</b> spreading along the membrane, not a packet of ions travelling down the cell. Ions only cross the membrane locally, and the local current they make carries the voltage change forward. <b style="color:var(--text-primary);font-weight:500;">Green</b> means depolarising, pushing the cell toward firing (go): the excitatory graded potentials and the action potential. <b style="color:var(--text-primary);font-weight:500;">Red</b> means hyperpolarising, pushing away from firing (no-go): the inhibitory graded potentials.
+</p>
+
+<p style="font-size:13px;line-height:1.5;color:var(--text-secondary);margin:0 0 14px;border-left:3px solid #BA7517;background:var(--surface-1);border-radius:0;padding:9px 13px;">
+  <b style="color:var(--text-primary);font-weight:500;">Ions are purposefully left out here for simplicity.</b> The Na⁺ and K⁺ movements that create these voltage waves are covered in a separate zoomed-in diagram.
+</p>
+
+<div id="tscale" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--text-secondary);margin:0 0 14px;background:var(--surface-1);border-radius:var(--radius);padding:10px 14px;">
+  <b style="color:var(--text-primary);font-weight:500;flex:0 0 auto;">Time is not to scale.</b>
+  <span style="flex:0 0 auto;">In real time an EPSP is far slower than a spike:</span>
+  <svg viewBox="0 0 320 46" style="width:320px;height:46px;flex:0 0 auto;overflow:visible;">
+    <line x1="6" y1="40" x2="314" y2="40" stroke="#888780" stroke-width="1"/>
+    <path d="M6,40 Q40,10 74,40 Q108,58 142,40" fill="none" stroke="#639922" stroke-width="2.2"/>
+    <text x="74" y="14" text-anchor="middle" style="font-size:11px;" fill="#3B6D11">EPSP · about 30 ms</text>
+    <path d="M250,40 L256,40 L258,6 L260,40 L266,40" fill="none" stroke="#E24B4A" stroke-width="2.2"/>
+    <text x="258" y="30" text-anchor="middle" style="font-size:11px;" fill="#A32D2D">spike · 2 ms</text>
+    <text x="160" y="40" text-anchor="middle" style="font-size:10px;" fill="#888780">▲</text>
+  </svg>
+  <span style="flex:1 1 120px;min-width:120px;">The animation stretches the spike so you can see it; at true scale it would be a thin flash.</span>
+</div>
+
+<div style="margin:0 0 14px;">
+  <p style="font-size:15px;font-weight:500;color:var(--text-primary);margin:0 0 4px;">Two ways inputs summate</p>
+  <p style="font-size:13px;color:var(--text-secondary);margin:0 0 10px;">The soma adds inputs across both space and time. These are two separately named mechanisms.</p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;">
+    <div style="background:var(--surface-1);border-radius:12px;padding:12px 14px;">
+      <p style="font-size:14px;font-weight:500;color:var(--text-primary);margin:0 0 6px;">Spatial summation</p>
+      <svg viewBox="0 0 280 152" style="width:100%;height:auto;">
+        <path d="M198,40 L74,22" stroke="#B39472" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+        <path d="M198,50 L74,72" stroke="#B39472" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+        <ellipse cx="210" cy="45" rx="14" ry="12" fill="rgba(179,148,114,.30)" stroke="#B39472" stroke-width="2"/>
+        <path d="M224,45 L262,45" stroke="#B39472" stroke-width="1.6" fill="none"/>
+        <circle cx="70" cy="22" r="6" fill="#639922"/>
+        <circle cx="70" cy="72" r="6" fill="#639922"/>
+        <text x="60" y="18" text-anchor="end" style="font-size:11px;" fill="#3B6D11">A</text>
+        <text x="60" y="76" text-anchor="end" style="font-size:11px;" fill="#3B6D11">B</text>
+        <text x="140" y="98" text-anchor="middle" style="font-size:11px;" fill="#5f5e5a">both fire at the same time</text>
+        <line x1="24" y1="140" x2="262" y2="140" stroke="#888780" stroke-width="1"/>
+        <path d="M70,140 Q108,126 146,140" fill="none" stroke="#639922" stroke-width="1.6" opacity=".45"/>
+        <path d="M92,140 Q130,126 168,140" fill="none" stroke="#639922" stroke-width="1.6" opacity=".45"/>
+        <path d="M70,140 Q120,108 172,140" fill="none" stroke="#639922" stroke-width="2.4"/>
+        <text x="121" y="128" text-anchor="middle" style="font-size:11px;" fill="#3B6D11">A + B</text>
+      </svg>
+      <p style="font-size:12.5px;line-height:1.5;color:var(--text-secondary);margin:8px 0 0;">Different synapses on <b style="color:var(--text-primary);font-weight:500;">different dendrites</b> fire at the <b style="color:var(--text-primary);font-weight:500;">same time</b>. Their EPSPs meet at the soma and add.</p>
+    </div>
+    <div style="background:var(--surface-1);border-radius:12px;padding:12px 14px;">
+      <p style="font-size:14px;font-weight:500;color:var(--text-primary);margin:0 0 6px;">Temporal summation</p>
+      <svg viewBox="0 0 280 152" style="width:100%;height:auto;">
+        <path d="M198,45 L74,45" stroke="#B39472" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+        <ellipse cx="210" cy="45" rx="14" ry="12" fill="rgba(179,148,114,.30)" stroke="#B39472" stroke-width="2"/>
+        <path d="M224,45 L262,45" stroke="#B39472" stroke-width="1.6" fill="none"/>
+        <circle cx="70" cy="45" r="6" fill="#639922"/>
+        <text x="58" y="41" text-anchor="end" style="font-size:11px;" fill="#3B6D11">×2</text>
+        <text x="140" y="86" text-anchor="middle" style="font-size:11px;" fill="#5f5e5a">one synapse fires twice, fast</text>
+        <line x1="24" y1="140" x2="262" y2="140" stroke="#888780" stroke-width="1"/>
+        <path d="M64,140 Q92,124 120,134 Q150,106 190,140" fill="none" stroke="#639922" stroke-width="2.4"/>
+        <text x="92" y="120" text-anchor="middle" style="font-size:11px;" fill="#3B6D11">1st</text>
+        <text x="152" y="100" text-anchor="middle" style="font-size:11px;" fill="#3B6D11">2nd</text>
+      </svg>
+      <p style="font-size:12.5px;line-height:1.5;color:var(--text-secondary);margin:8px 0 0;">One synapse fires <b style="color:var(--text-primary);font-weight:500;">rapidly in succession</b>. Each EPSP arrives before the last has decayed, so they pile up higher.</p>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <button id="play"><span id="playtxt">Pause</span></button>
+  <button id="replay">Replay</button>
+  <button id="trialbtn" title="Compare a trial that reaches threshold with one that falls short">Trial: reaches threshold</button>
+  <label style="font-size:13px;color:var(--text-secondary);">Speed</label>
+  <input type="range" id="speed" min="0.15" max="2" step="0.05" value="0.5" style="width:120px;" />
+  <span id="speedout" style="font-size:13px;min-width:36px;">0.50×</span>
+  <label style="font-size:13px;color:var(--text-secondary);margin-left:6px;">Timeline</label>
+  <input type="range" id="scrub" min="0" max="1000" step="1" value="0" style="flex:1;min-width:140px;" title="Drag to any moment and pause there" />
+</div>
+
+<div class="phasebar">
+  <button data-p="0">1 · Graded potentials</button>
+  <button data-p="1">2 · Summation</button>
+  <button data-p="2">3 · Action potential</button>
+  <button data-p="3">4 · Terminal release</button>
+</div>
+
+<div class="caption" id="caption"></div>
+
+<svg id="nsvg" viewBox="0 0 820 880" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pyramidal neuron dual recording animation">
+<g id="scene" transform="translate(0,110)">
+  <defs>
+    <clipPath id="dclip"><rect id="dcliprect" x="0" y="-95" width="150" height="95"/></clipPath>
+    <clipPath id="sclip"><rect id="scliprect" x="0" y="602" width="115" height="114"/></clipPath>
+  </defs>
+
+  <ellipse cx="360" cy="300" rx="174" ry="286" fill="var(--surface-1)" opacity="0.6"/>
+
+  <g id="dtrace">
+    <rect x="150" y="-92" width="540" height="80" rx="6" fill="rgba(122,111,214,.06)" stroke="#7A6FD6" stroke-width="1.2"/>
+    <line x1="150" y1="-25" x2="690" y2="-25" stroke="#888780" stroke-width="1" stroke-dasharray="3 4" opacity=".7"/>
+    <text class="lbl-s" x="144" y="-21" text-anchor="end">−70</text>
+    <text class="lbl-s" x="144" y="-44" text-anchor="end">−50</text>
+    <text class="lbl-s" x="144" y="-78" text-anchor="end">−20 mV</text>
+    <text class="lbl-b" x="150" y="-100" fill="#7A6FD6">Recording 1 · Electrode 1 (apical dendrite)</text>
+    <polyline id="dline" clip-path="url(#dclip)" fill="none" stroke="#7A6FD6" stroke-width="2.2" stroke-linejoin="round" points=""/>
+    <circle id="ddot" cx="150" cy="-25" r="4" fill="#7A6FD6"/>
+    <g id="dmarks"></g>
+    <text class="lbl-s" x="150" y="-2">local EPSPs and IPSPs are larger and faster here than at the soma. Each input is still a separate event.</text>
+  </g>
+
+  <g id="amp2" fill="none" stroke="#7A6FD6" stroke-linecap="round">
+    <rect x="706" y="-62" width="94" height="44" rx="6" fill="rgba(122,111,214,.12)" stroke="#7A6FD6" stroke-width="2"/>
+    <path d="M706,-40 L698,-40 L698,-25 L690,-25" stroke-width="1.6"/>
+    <path d="M601,301 Q648,300 652,244 L652,146 Q652,126 676,126 L790,126 L790,-18" stroke-width="2"/>
+    <path d="M607,309 Q656,306 658,246 L658,150" stroke-width="1.1" opacity=".5"/>
+    <path d="M600,294 L361,247 L361,254 L600,308 Z" fill="rgba(122,111,214,.20)" stroke="#7A6FD6" stroke-width="1.4"/>
+    <path d="M598,300 L363,250" stroke="#7A6FD6" stroke-width="1.6" opacity=".8"/>
+  </g>
+  <text class="lbl-b" x="753" y="-38" text-anchor="middle" fill="#7A6FD6">Amplifier 1</text>
+  <text class="lbl-b" x="614" y="330" text-anchor="middle" fill="#7A6FD6">Electrode 1 · dendrite</text>
+
+  <g id="presyn" fill="none" stroke="#888780" stroke-linecap="round">
+    <g class="pneuron" opacity=".36">
+      <path d="M205,42 L192,68 L218,68 Z" fill="rgba(136,135,128,.3)" stroke-width="1.6"/>
+      <path d="M205,42 L205,20 M205,24 L195,10 M205,24 L216,10 M192,68 L178,84 M218,68 L232,82" stroke-width="1.2"/>
+      <path d="M205,68 Q244,86 282,76 Q302,68 312,63" stroke-width="1.3"/>
+      <circle class="pbou" data-i="0" cx="313" cy="62" r="4.6" fill="#888780"/>
+    </g>
+    <g class="pneuron" opacity=".36">
+      <path d="M545,28 L532,54 L558,54 Z" fill="rgba(136,135,128,.3)" stroke-width="1.6"/>
+      <path d="M545,28 L545,8 M532,54 L518,70 M558,54 L572,68" stroke-width="1.2"/>
+      <path d="M545,54 Q500,84 442,66 Q422,58 410,57" stroke-width="1.3"/>
+      <circle class="pbou" data-i="1" cx="409" cy="57" r="4.6" fill="#888780"/>
+    </g>
+    <g class="pneuron" opacity=".36">
+      <ellipse cx="150" cy="140" rx="13" ry="11" fill="rgba(226,75,74,.20)" stroke="#E24B4A" stroke-width="1.6"/>
+      <path d="M137,140 L120,130 M137,140 L120,152 M163,140 L180,130 M150,129 L146,112" stroke="#E24B4A" stroke-width="1.2"/>
+      <path d="M150,151 Q182,182 248,192 Q266,194 278,191" stroke="#E24B4A" stroke-width="1.3"/>
+      <circle class="pbou" data-i="2" cx="279" cy="190" r="4.6" fill="#E24B4A"/>
+    </g>
+    <g class="pneuron" opacity=".36">
+      <path d="M575,148 L562,174 L588,174 Z" fill="rgba(136,135,128,.3)" stroke-width="1.6"/>
+      <path d="M575,148 L575,128 M562,174 L548,188 M588,174 L602,188" stroke-width="1.2"/>
+      <path d="M575,174 Q532,200 482,206 Q462,208 447,205" stroke-width="1.3"/>
+      <circle class="pbou" data-i="3" cx="446" cy="204" r="4.6" fill="#888780"/>
+    </g>
+    <g class="pneuron" opacity=".36">
+      <path d="M152,486 L139,512 L165,512 Z" fill="rgba(136,135,128,.3)" stroke-width="1.6"/>
+      <path d="M152,486 L152,466 M139,512 L126,526 M165,512 L178,526" stroke-width="1.2"/>
+      <path d="M152,486 Q180,452 220,432 Q240,424 256,430" stroke-width="1.3"/>
+      <circle class="pbou" data-i="4" cx="257" cy="431" r="4.6" fill="#888780"/>
+    </g>
+    <g class="pneuron" opacity=".36">
+      <ellipse cx="556" cy="512" rx="13" ry="11" fill="rgba(226,75,74,.20)" stroke="#E24B4A" stroke-width="1.6"/>
+      <path d="M543,512 L526,522 M569,512 L586,502 M556,523 L552,540" stroke="#E24B4A" stroke-width="1.2"/>
+      <path d="M556,501 Q510,470 442,458 Q426,455 413,457" stroke="#E24B4A" stroke-width="1.3"/>
+      <circle class="pbou" data-i="5" cx="412" cy="457" r="4.6" fill="#E24B4A"/>
+    </g>
+    <g class="pneuron" opacity=".36">
+      <path d="M614,384 Q548,400 494,424 Q478,430 464,430" stroke-width="1.3" opacity=".8"/>
+      <circle class="pbou" data-i="6" cx="463" cy="430" r="4.6" fill="#888780"/>
+    </g>
+    <g class="pneuron" opacity=".36">
+      <path d="M212,540 Q256,520 296,472 Q304,462 313,458" stroke-width="1.3" opacity=".8"/>
+      <circle class="pbou" data-i="7" cx="312" cy="458" r="4.6" fill="#888780"/>
+    </g>
+  </g>
+
+  <g id="rig" fill="none" stroke="#C89B3C" stroke-linecap="round">
+    <path d="M148,238 L333,335 L336,342 L148,252 Z" fill="rgba(200,155,60,.18)" stroke="#C89B3C" stroke-width="1.4"/>
+    <path d="M150,240 L330,336" stroke="#C89B3C" stroke-width="1.6" opacity=".8"/>
+    <path d="M148,245 Q108,245 100,286 L100,598" stroke-width="2.2"/>
+    <path d="M154,245 Q114,251 106,288 L106,598" stroke-width="1.2" opacity=".55"/>
+    <rect x="40" y="600" width="152" height="46" rx="6" fill="rgba(200,155,60,.12)" stroke="#C89B3C" stroke-width="2"/>
+    <path d="M116,646 L116,660" stroke-width="1.8"/>
+    <path d="M30,556 L30,600 M30,600 L40,600 M18,556 L42,556 M22,562 L38,562 M26,568 L34,568" stroke="#888780" stroke-width="1.5"/>
+  </g>
+  <text class="lbl-b" x="116" y="627" text-anchor="middle" fill="#C89B3C">Amplifier 2</text>
+  <text class="lbl-s" x="30" y="548" text-anchor="middle">Bath ground</text>
+  <text class="lbl-b" x="150" y="228" text-anchor="middle" fill="#C89B3C">Electrode 2 · soma</text>
+
+  <g id="structure" fill="none" stroke="#B39472" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M305,48 Q326,92 360,130" stroke-width="2.4"/>
+    <path d="M305,48 L295,33 M305,48 L318,37" stroke-width="1.4"/>
+    <path d="M420,66 Q392,98 360,130" stroke-width="2.4"/>
+    <path d="M420,66 L432,52 M420,66 L412,51" stroke-width="1.4"/>
+    <path d="M346,80 Q353,104 360,132" stroke-width="1.9"/>
+    <path d="M380,86 Q374,106 362,134" stroke-width="1.9"/>
+    <path d="M262,182 Q322,198 360,212" stroke-width="3.4"/>
+    <path d="M262,182 L248,175 M262,182 L255,168" stroke-width="1.4"/>
+    <path d="M458,214 Q406,216 360,226" stroke-width="3.4"/>
+    <path d="M458,214 L472,209 M458,214 L465,225" stroke-width="1.4"/>
+    <path d="M300,254 Q334,256 360,258" stroke-width="2.6"/>
+    <path d="M360,130 L360,300" stroke-width="6.5"/>
+    <path d="M326,360 Q288,402 244,448" stroke-width="4.6"/>
+    <path d="M244,448 L231,454 M244,448 L239,436" stroke-width="1.4"/>
+    <path d="M333,362 Q320,414 305,476" stroke-width="4.2"/>
+    <path d="M278,418 Q250,428 230,415" stroke-width="2.4"/>
+    <path d="M318,432 Q296,456 281,480" stroke-width="2.4"/>
+    <path d="M394,360 Q432,402 480,444" stroke-width="4.6"/>
+    <path d="M480,444 L492,450 M480,444 L487,432" stroke-width="1.4"/>
+    <path d="M387,362 Q402,414 417,472" stroke-width="4.2"/>
+    <path d="M444,410 Q472,422 492,413" stroke-width="2.4"/>
+    <path d="M406,432 Q430,456 447,480" stroke-width="2.4"/>
+    <path d="M360,300 L323,362 L397,362 Z" fill="rgba(179,148,114,.20)" stroke-width="2.6"/>
+    <circle cx="360" cy="332" r="11" fill="rgba(179,148,114,.34)" stroke-width="1.6"/>
+    <path d="M360,362 L360,470" stroke-width="3.2"/>
+    <path d="M360,470 Q350,504 314,542" stroke-width="2.8"/>
+    <path d="M360,470 L360,544" stroke-width="2.8"/>
+    <path d="M360,470 Q370,504 408,542" stroke-width="2.8"/>
+  </g>
+  <circle id="dsite" cx="361" cy="250" r="4" fill="#0F6E56"/>
+  <text class="lbl-b" x="376" y="245" fill="#7A6FD6">1</text>
+  <text class="lbl-b" x="343" y="330" fill="#C89B3C">2</text>
+
+  <g id="myelin" stroke="#185FA5" stroke-width="1.2">
+    <rect x="351" y="390" width="18" height="21" rx="7" fill="#B5D4F4"/>
+    <rect x="351" y="417" width="18" height="21" rx="7" fill="#B5D4F4"/>
+    <rect x="351" y="444" width="18" height="21" rx="7" fill="#B5D4F4"/>
+  </g>
+  <g id="nodes">
+    <circle class="node" data-y="414" cx="360" cy="414" r="3.2" fill="#888780"/>
+    <circle class="node" data-y="441" cx="360" cy="441" r="3.2" fill="#888780"/>
+    <circle class="node" data-y="468" cx="360" cy="468" r="3.2" fill="#888780"/>
+  </g>
+  <g id="boutons">
+    <circle class="bou" cx="311" cy="545" r="8" fill="rgba(136,135,128,.25)" stroke="#888780" stroke-width="1.8"/>
+    <circle class="bou" cx="360" cy="548" r="8" fill="rgba(136,135,128,.25)" stroke="#888780" stroke-width="1.8"/>
+    <circle class="bou" cx="411" cy="545" r="8" fill="rgba(136,135,128,.25)" stroke="#888780" stroke-width="1.8"/>
+  </g>
+  <path d="M262,572 L460,572" stroke="#888780" stroke-width="5" stroke-linecap="round" fill="none" opacity=".45"/>
+  <text class="lbl-s" x="466" y="576">Postsynaptic dendrite</text>
+
+  <g id="guides" fill="none" stroke="none">
+    <path class="dend" data-start="0.000" data-amp="1.00" data-sign="1"  d="M305,48 Q326,92 360,130 L360,300"/>
+    <path class="dend" data-start="0.040" data-amp="0.92" data-sign="1"  d="M420,66 Q392,98 360,130 L360,300"/>
+    <path class="dend" data-start="0.090" data-amp="0.95" data-sign="-1" d="M262,182 Q322,198 360,212 L360,300"/>
+    <path class="dend" data-start="0.130" data-amp="0.98" data-sign="1"  d="M458,214 Q406,216 360,226 L360,300"/>
+    <path class="dend" data-start="0.170" data-amp="0.90" data-sign="1"  d="M244,448 Q288,402 326,360"/>
+    <path class="dend" data-start="0.200" data-amp="0.88" data-sign="-1" d="M417,472 Q402,414 387,362"/>
+    <path class="dend" data-start="0.245" data-amp="0.95" data-sign="1"  d="M480,444 Q432,402 394,360"/>
+    <path class="dend" data-start="0.290" data-amp="1.00" data-sign="1"  d="M305,476 Q320,414 333,362"/>
+    <path class="ax" d="M360,368 L360,470 Q350,504 314,542"/>
+    <path class="ax" d="M360,368 L360,470 L360,544"/>
+    <path class="ax" d="M360,368 L360,470 Q370,504 408,542"/>
+  </g>
+
+  <g id="pulses"></g>
+  <g id="release"></g>
+
+  <g id="meter">
+    <rect x="700" y="170" width="34" height="300" rx="5" fill="rgba(200,155,60,.10)" stroke="#C89B3C" stroke-width="1.4"/>
+    <rect id="mbar" x="702" y="434" width="30" height="0" fill="#639922"/>
+    <line x1="694" y1="434" x2="740" y2="434" stroke="#888780" stroke-width="1.4" stroke-dasharray="3 3"/>
+    <line id="mthresh" x1="694" y1="398" x2="740" y2="398" stroke="#D85A30" stroke-width="1.8" stroke-dasharray="4 3"/>
+    <text class="lbl-s" x="690" y="194" text-anchor="end">+30</text>
+    <text class="lbl-s" x="690" y="314" text-anchor="end">0</text>
+    <text class="lbl-s" x="690" y="402" text-anchor="end" fill="#D85A30">−55 threshold</text>
+    <text class="lbl-s" x="690" y="438" text-anchor="end">−70 rest</text>
+    <text class="lbl-s" x="690" y="470" text-anchor="end">−85</text>
+    <text class="lbl-b" x="717" y="152" text-anchor="middle" fill="#C89B3C">Electrode 2 · Vm</text>
+    <text id="mval" x="717" y="510" text-anchor="middle" style="font-size:17px;" fill="#5f5e5a">−70.0 mV</text>
+    <text id="mflag" x="717" y="532" text-anchor="middle" style="font-size:12px;" fill="#D85A30" opacity="0">threshold reached</text>
+  </g>
+
+  <path d="M486,604 L586,604 M486,598 L486,610 M586,598 L586,610" stroke="#888780" stroke-width="1.4" fill="none"/>
+  <text class="lbl-s" x="536" y="594" text-anchor="middle">100 µm</text>
+
+  <text class="lbl-b" x="424" y="66">Apical tuft</text>
+  <text class="lbl-b" x="196" y="176">Dendrite-targeting</text>
+  <text class="lbl-b" x="196" y="191">interneuron</text>
+  <text class="lbl-b" x="434" y="336">Soma</text>
+  <text class="lbl-b" x="418" y="378">Axon hillock</text>
+  <text class="lbl" x="418" y="393">spike initiation</text>
+  <text class="lbl-b" x="556" y="480" text-anchor="middle">Basket interneuron</text>
+  <text class="lbl-b" x="212" y="440">Basal dendrites</text>
+  <text class="lbl-b" x="240" y="500">Myelin + nodes</text>
+  <text class="lbl" x="240" y="515">saltatory conduction</text>
+  <path d="M300,506 L348,462" stroke="#888780" stroke-width="1" fill="none" opacity=".6"/>
+
+  <g id="trace">
+    <rect x="200" y="606" width="534" height="110" rx="6" fill="rgba(200,155,60,.06)" stroke="#C89B3C" stroke-width="1.2"/>
+    <line x1="210" y1="701" x2="724" y2="701" stroke="#888780" stroke-width="1" stroke-dasharray="3 4" opacity=".7"/>
+    <line x1="210" y1="688" x2="724" y2="688" stroke="#D85A30" stroke-width="1.4" stroke-dasharray="4 4" opacity=".95"/>
+    <line x1="210" y1="641" x2="724" y2="641" stroke="#888780" stroke-width="1" opacity=".3"/>
+    <text class="lbl-b" x="210" y="600" fill="#C89B3C">Recording 2 · Electrode 2 (soma)</text>
+    <text class="lbl-s" x="726" y="618">+30 mV peak</text>
+    <text class="lbl-s" x="726" y="645">0 mV</text>
+    <text class="lbl-s" x="726" y="692" fill="#D85A30">−55 mV threshold</text>
+    <text class="lbl-s" x="726" y="705">−70 mV rest</text>
+    <polyline id="vmline" clip-path="url(#sclip)" fill="none" stroke="#C89B3C" stroke-width="2.2" stroke-linejoin="round" points=""/>
+    <g id="smarks"></g>
+    <circle id="vmdot" cx="210" cy="701" r="4" fill="#C89B3C"/>
+    <text class="lbl-s" x="210" y="742">whole-cell recording from the soma (time is stretched; see the note above the diagram)</text>
+  </g>
+
+  <g id="notice">
+    <g><circle cx="632" cy="-78" r="9.5" fill="#BA7517"/><text x="632" y="-74" text-anchor="middle" style="font-size:12px;font-weight:500;" fill="#ffffff">1</text></g>
+    <g><circle cx="300" cy="344" r="9.5" fill="#BA7517"/><text x="300" y="348" text-anchor="middle" style="font-size:12px;font-weight:500;" fill="#ffffff">2</text></g>
+    <g><circle cx="398" cy="372" r="9.5" fill="#BA7517"/><text x="398" y="376" text-anchor="middle" style="font-size:12px;font-weight:500;" fill="#ffffff">3</text></g>
+    <g><circle cx="752" cy="206" r="9.5" fill="#BA7517"/><text x="752" y="210" text-anchor="middle" style="font-size:12px;font-weight:500;" fill="#ffffff">4</text></g>
+    <g><circle cx="392" cy="441" r="9.5" fill="#BA7517"/><text x="392" y="445" text-anchor="middle" style="font-size:12px;font-weight:500;" fill="#ffffff">5</text></g>
+    <g><circle cx="360" cy="566" r="9.5" fill="#BA7517"/><text x="360" y="570" text-anchor="middle" style="font-size:12px;font-weight:500;" fill="#ffffff">6</text></g>
+  </g>
+</g>
+</svg>
+
+<div style="margin:16px 0 0;">
+  <p style="font-size:15px;font-weight:500;color:var(--text-primary);margin:0 0 10px;">What to notice about action potentials</p>
+  <ol style="margin:0;padding:0;list-style:none;font-size:13px;line-height:1.55;color:var(--text-secondary);">
+    <li style="display:flex;gap:10px;margin-bottom:8px;"><span style="flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:#BA7517;color:#fff;font-size:12px;font-weight:500;display:inline-flex;align-items:center;justify-content:center;">1</span><span><b style="color:var(--text-primary);font-weight:500;">Graded inputs vary.</b> On electrode 1 the incoming signals differ in size and can be excitatory (up) or inhibitory (down). Their amplitude depends on the input.</span></li>
+    <li style="display:flex;gap:10px;margin-bottom:8px;"><span style="flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:#BA7517;color:#fff;font-size:12px;font-weight:500;display:inline-flex;align-items:center;justify-content:center;">2</span><span><b style="color:var(--text-primary);font-weight:500;">They shrink and add.</b> By the soma (electrode 2) each signal is smaller, and the soma sums them all together over space and time (spatial and temporal summation, shown below).</span></li>
+    <li style="display:flex;gap:10px;margin-bottom:8px;"><span style="flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:#BA7517;color:#fff;font-size:12px;font-weight:500;display:inline-flex;align-items:center;justify-content:center;">3</span><span><b style="color:var(--text-primary);font-weight:500;">Threshold is a gate.</b> The spike fires only if the summed potential lifts the axon hillock to about −55 mV. Below that, nothing happens.</span></li>
+    <li style="display:flex;gap:10px;margin-bottom:8px;"><span style="flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:#BA7517;color:#fff;font-size:12px;font-weight:500;display:inline-flex;align-items:center;justify-content:center;">4</span><span><b style="color:var(--text-primary);font-weight:500;">All-or-none.</b> Once triggered the spike is always the same size (about +30 mV), no matter how large the input was. A bigger stimulus does not make a bigger spike.</span></li>
+    <li style="display:flex;gap:10px;margin-bottom:8px;"><span style="flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:#BA7517;color:#fff;font-size:12px;font-weight:500;display:inline-flex;align-items:center;justify-content:center;">5</span><span><b style="color:var(--text-primary);font-weight:500;">No decrement.</b> Unlike the graded potentials, the action potential regenerates at each node and travels the whole axon without shrinking.</span></li>
+    <li style="display:flex;gap:10px;margin-bottom:0;"><span style="flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:#BA7517;color:#fff;font-size:12px;font-weight:500;display:inline-flex;align-items:center;justify-content:center;">6</span><span><b style="color:var(--text-primary);font-weight:500;">Output.</b> Reaching the terminals, the spike releases neurotransmitter, which becomes the graded input to the next cell.</span></li>
+  </ol>
+</div>
+</div>
+
+<script>
+(function(){
+  var NS="http://www.w3.org/2000/svg";
+  var pulses=document.getElementById("pulses");
+  var release=document.getElementById("release");
+  var caption=document.getElementById("caption");
+  var vmline=document.getElementById("vmline");
+  var vmdot=document.getElementById("vmdot");
+  var dline=document.getElementById("dline");
+  var ddot=document.getElementById("ddot");
+  var dmarks=document.getElementById("dmarks");
+  var dsite=document.getElementById("dsite");
+  var mbar=document.getElementById("mbar");
+  var mval=document.getElementById("mval");
+  var mflag=document.getElementById("mflag");
+  var mthresh=document.getElementById("mthresh");
+  var nodes=[].slice.call(document.querySelectorAll(".node"));
+  var boutons=[].slice.call(document.querySelectorAll(".bou"));
+  var pbous=[].slice.call(document.querySelectorAll(".pbou"));
+  var pneurons=[].slice.call(document.querySelectorAll(".pneuron"));
+
+  var DUR=0.185;
+  var dends=[].slice.call(document.querySelectorAll(".dend")).map(function(p){
+    return {p:p,len:p.getTotalLength(),start:parseFloat(p.dataset.start),
+            amp:parseFloat(p.dataset.amp),sign:parseFloat(p.dataset.sign),dur:DUR};
+  });
+  var axons=[].slice.call(document.querySelectorAll(".ax")).map(function(p){
+    return {p:p,len:p.getTotalLength()};
+  });
+
+  var E="#639922", I="#E24B4A", AP="#639922", DG="#0F6E56";
+  var P1=[0,0.47], P2=[0.47,0.52], P3=[0.52,0.86], P4=[0.86,1.00];
+
+  var CAPS=[
+    "<b>1 · Graded potentials.</b> Each faded presynaptic neuron <b>flashes</b> as it fires. Its ball is a wave of voltage change spreading to the soma. As it crosses <b>electrode 1</b>, the trace deflects from that onset: excitatory inputs push <b>up (green, go)</b>, the inhibitory input pulls <b>down below rest (red, no-go)</b>.",
+    "<b>2 · Summation.</b> The soma adds every input as it arrives. Inputs are <b>not all equal</b>, and the two <b>red (inhibitory) balls push Vm down</b>, opposing the spike. Firing happens only because the <b>green (excitatory) inputs arriving close together</b> sum past <b>threshold (−55 mV)</b>. It is the running total that counts, never one input alone.",
+    "<b>3 · Action potential.</b> Threshold is crossed and an <b>all-or-none</b> spike fires: a large <b>depolarisation to about +30 mV</b>. It is <b>green (go)</b>, the same colour as the excitatory inputs, because it is also a depolarisation, just regenerative. It travels down the axon at constant amplitude and also runs <b>backwards</b> into the dendrites (electrode 1).",
+    "<b>4 · Terminal release.</b> The spike depolarises the boutons and opens voltage-gated Ca²⁺ channels. Ca²⁺ influx triggers vesicle fusion and transmitter release onto the next cell. Both electrodes return to rest through a brief afterhyperpolarisation."
+  ];
+  var CAPS_SUB=[
+    "<b>Subthreshold trial · inputs arrive.</b> The same inputs arrive, but this trial is <b>weaker</b>. Watch electrode 2: the graded potentials still summate as they reach the soma.",
+    "<b>Subthreshold trial · no spike.</b> The summed potential peaks <b>below −55 mV</b>, so threshold is <b>not</b> reached. No action potential fires and Vm just decays back to rest. This is the point: threshold is a <b>voltage the sum must reach</b>, not a place. Switch back to the suprathreshold trial to compare."
+  ];
+  var trial="supra", KSUB=0.6;
+
+  var arr=dends.map(function(d){ return {t:d.start+DUR, w:d.sign*d.amp*(d.sign>0?5.2:4.6)}; });
+  var KTR=0.007, KTD=0.13;
+  var KPK=(function(){ var tp=(KTR*KTD/(KTD-KTR))*Math.log(KTD/KTR);
+    return Math.exp(-tp/KTD)-Math.exp(-tp/KTR); })();
+  function kern(dt){ return (Math.exp(-dt/KTD)-Math.exp(-dt/KTR))/KPK; }
+  function raw(p){
+    var s=0;
+    for(var i=0;i<arr.length;i++){ var dt=p-arr[i].t;
+      if(dt>0){ s+=arr[i].w*kern(dt); } }
+    return s;
+  }
+  var mx=0;
+  for(var i=0;i<=500;i++){ var q=i/500*0.50; var v0=raw(q); if(v0>mx) mx=v0; }
+  var K=15.05/mx;
+  function vm(p){
+    if(trial==="sub") return -70+K*KSUB*raw(p);
+    if(p<0.50) return -70+K*raw(p);
+    if(p<0.545) return -55+85*((p-0.50)/0.045);
+    if(p<0.605) return 30-108*((p-0.545)/0.060);
+    return -70-8*Math.exp(-(p-0.605)/0.055);
+  }
+
+  var TAUD=0.019;
+  var DEX=361, DEY=250, DMAG=[30,27,13,28];
+  var dinp=[0,1,2,3].map(function(i){
+    var d=dends[i], best=1e12, bf=0;
+    for(var s=0;s<=600;s++){
+      var f=s/600, pt=d.p.getPointAtLength(f*d.len);
+      var dd=(pt.x-DEX)*(pt.x-DEX)+(pt.y-DEY)*(pt.y-DEY);
+      if(dd<best){ best=dd; bf=f; }
+    }
+    return { t:d.start+DUR*bf, sign:d.sign, w:d.sign*DMAG[i] };
+  });
+  function vd(p){
+    var s=0, sc=(trial==="sub"?0.62:1);
+    for(var i=0;i<dinp.length;i++){
+      var dt=p-dinp[i].t;
+      if(dt>0){ var x=dt/TAUD; s+=sc*dinp[i].w*x*Math.exp(1-x); }
+    }
+    if(trial==="supra"){ var b=p-0.515;
+      if(b>0){ var xb=b/0.012; s+=52*xb*Math.exp(1-xb); } }
+    return -70+s;
+  }
+
+  var X0=210,X1=724;
+  function tx(p){ return X0+(X1-X0)*p; }
+  var SYB=710, SVMIN=-80, SVMAX=40, SSC=0.8667;
+  function ty(v){ return SYB-(Math.max(SVMIN,Math.min(SVMAX,v))-SVMIN)*SSC; }
+  function ym(v){ return 470-(Math.max(-85,Math.min(40,v))+85)*2.4; }
+  var DX0=150,DX1=690;
+  function txd(p){ return DX0+(DX1-DX0)*p; }
+  function tyd(v){ return -25-(Math.max(-82,Math.min(-14,v))+70)*1.15; }
+
+  function buildTraces(){
+    var pts=[],dpts=[];
+    for(var j=0;j<=600;j++){
+      var pp=j/600;
+      pts.push(tx(pp).toFixed(1)+","+ty(vm(pp)).toFixed(1));
+      dpts.push(txd(pp).toFixed(1)+","+tyd(vd(pp)).toFixed(1));
+    }
+    vmline.setAttribute("points",pts.join(" "));
+    dline.setAttribute("points",dpts.join(" "));
+  }
+  buildTraces();
+  var dcliprect=document.getElementById("dcliprect");
+  var scliprect=document.getElementById("scliprect");
+
+  function mk(tag,attrs,txt){ var e=document.createElementNS(NS,tag);
+    for(var k in attrs) e.setAttribute(k,attrs[k]);
+    if(txt!==undefined) e.textContent=txt; return e; }
+
+  var smarks=document.getElementById("smarks");
+  function buildMarks(){
+    while(dmarks.firstChild) dmarks.removeChild(dmarks.firstChild);
+    while(smarks.firstChild) smarks.removeChild(smarks.firstChild);
+    dinp.forEach(function(d){
+      var X=txd(d.t), Y=tyd(vd(d.t));
+      dmarks.appendChild(mk("circle",{cx:X.toFixed(1),cy:Y.toFixed(1),r:3,fill:d.sign>0?E:I}));
+      dmarks.appendChild(mk("text",{x:X.toFixed(1),y:(d.sign>0?Y-8:Y+15).toFixed(1),
+        "text-anchor":"middle","font-size":"13",fill:d.sign>0?E:I},d.sign>0?"+":"−"));
+    });
+    if(trial==="supra"){
+      var bt=0.527;
+      dmarks.appendChild(mk("text",{x:(txd(bt)+9).toFixed(1),y:(tyd(vd(bt))+4).toFixed(1),
+        "text-anchor":"start","font-size":"11",fill:"#888780"},"backpropagating AP"));
+    }
+    dends.forEach(function(d){
+      var tp=d.start+DUR, X=tx(tp), Y=ty(vm(tp));
+      smarks.appendChild(mk("circle",{cx:X.toFixed(1),cy:Y.toFixed(1),r:2.6,fill:d.sign>0?E:I}));
+      smarks.appendChild(mk("text",{x:X.toFixed(1),y:(d.sign>0?Y-7:Y+13).toFixed(1),
+        "text-anchor":"middle","font-size":"12",fill:d.sign>0?E:I},d.sign>0?"+":"−"));
+    });
+  }
+  buildMarks();
+
+  var somaGlow=mk("path",{d:"M360,300 L323,362 L397,362 Z",fill:"#EF9F27",opacity:0});
+  var hillGlow=mk("circle",{cx:360,cy:372,r:9,fill:"#D85A30",opacity:0});
+  pulses.parentNode.insertBefore(somaGlow,pulses);
+  pulses.parentNode.insertBefore(hillGlow,pulses);
+
+  function render(p){
+    while(pulses.firstChild) pulses.removeChild(pulses.firstChild);
+    while(release.firstChild) release.removeChild(release.firstChild);
+
+    dends.forEach(function(d,i){
+      var f=(p-d.start)/d.dur;
+      if(f>0&&f<1){
+        var pt=d.p.getPointAtLength(f*d.len);
+        var decf=Math.pow(1-f,1.5);
+        dot(pt.x,pt.y,9*d.amp*(0.18+0.82*decf),d.sign>0?E:I,(0.35+0.6*decf),d.sign>0?"+":"−");
+      }
+      var pb=pbous[i];
+      if(pb){
+        var near=p>=d.start-0.012&&p<=d.start+0.045;
+        pb.setAttribute("r",near?7.5:4.6);
+        pb.setAttribute("fill",near?(d.sign>0?E:I):(d.sign>0?"#888780":"#C0736B"));
+      }
+      var pn=pneurons[i];
+      if(pn){
+        var fl=1-Math.abs(p-(d.start+0.006))/0.05;
+        if(fl<0) fl=0;
+        pn.setAttribute("opacity",(0.36+0.62*fl).toFixed(2));
+      }
+    });
+
+    var v=vm(p), vdn=vd(p);
+    var dv=v-vm(Math.max(0,p-0.004));
+    var falling=dv<-0.02;
+    var col=(v>=-55)?AP:(falling?I:E);
+    var dep=v+70;
+
+    var live=Math.abs(vdn+70);
+    dsite.setAttribute("r",(4+Math.min(live/8,4)).toFixed(1));
+    dsite.setAttribute("fill",vdn>=-70?(vdn>-40?AP:E):I);
+
+    if(p<0.62){
+      somaGlow.setAttribute("fill",falling?"#E24B4A":"#EF9F27");
+      somaGlow.setAttribute("opacity",(Math.min(Math.abs(dep)/15,1)*0.5).toFixed(3));
+    } else {
+      somaGlow.setAttribute("opacity",Math.max(0,0.5*(1-(p-0.62)/0.12)).toFixed(3));
+    }
+    var spiking=(trial==="supra");
+    hillGlow.setAttribute("opacity",(spiking&&p>=0.485&&p<0.57?0.8:0).toFixed(2));
+    hillGlow.setAttribute("r",(p>=0.485&&p<0.57?9+18*Math.max(0,(p-0.485)/0.085):9).toFixed(1));
+
+    var yv=ym(v), yr=ym(-70);
+    if(v>=-70){ mbar.setAttribute("y",yv.toFixed(1)); mbar.setAttribute("height",(yr-yv).toFixed(1)); }
+    else { mbar.setAttribute("y",yr.toFixed(1)); mbar.setAttribute("height",(yv-yr).toFixed(1)); }
+    mbar.setAttribute("fill",col);
+    mval.textContent=(v<0?"−":"+")+Math.abs(v).toFixed(1)+" mV";
+    mval.setAttribute("fill",col);
+    var crossed=v>=-55;
+    mflag.setAttribute("opacity",crossed?1:0);
+    mthresh.setAttribute("stroke-width",crossed?3:1.8);
+
+    var apY=null;
+    if(spiking&&p>=P3[0]&&p<=P3[1]+0.02){
+      var g=Math.min((p-P3[0])/(P3[1]-P3[0]),1);
+      axons.forEach(function(a){
+        var pt=a.p.getPointAtLength(Math.pow(g,0.92)*a.len);
+        var x=pt.x, y=pt.y;
+        if(y>=414&&y<472){ y=(y>=468)?468:((y>=441)?441:414); x=360; }
+        dot(x,y,9.5,AP,1,"+");
+        if(apY===null||y>apY) apY=y;
+      });
+    }
+    nodes.forEach(function(n){
+      var ny=parseFloat(n.dataset.y);
+      var hot=apY!==null&&Math.abs(apY-ny)<11;
+      n.setAttribute("fill",hot?AP:"#888780");
+      n.setAttribute("r",hot?6:3.2);
+    });
+
+    var act=(spiking&&p>=P4[0])?Math.min((p-P4[0])/0.09,1):0;
+    boutons.forEach(function(b){
+      b.setAttribute("fill",act>0?"rgba(99,153,34,"+(0.25+0.55*act).toFixed(2)+")":"rgba(136,135,128,.25)");
+      b.setAttribute("stroke",act>0?"#3B6D11":"#888780");
+      b.setAttribute("r",(8+3*act).toFixed(1));
+      if(act>0){
+        var bx=+b.getAttribute("cx"), by=+b.getAttribute("cy");
+        for(var k=0;k<4;k++){
+          var q2=((p-P4[0])*7+k*0.25)%1;
+          release.appendChild(mk("circle",{cx:(bx+(k-1.5)*5).toFixed(1),
+            cy:(by+9+q2*14).toFixed(1),r:2.2,fill:"#639922",opacity:(0.85*(1-q2)).toFixed(2)}));
+        }
+      }
+    });
+
+    scliprect.setAttribute("width",tx(p).toFixed(1));
+    vmdot.setAttribute("cx",tx(p).toFixed(1));
+    vmdot.setAttribute("cy",ty(v).toFixed(1));
+    dcliprect.setAttribute("width",txd(p).toFixed(1));
+    ddot.setAttribute("cx",txd(p).toFixed(1));
+    ddot.setAttribute("cy",tyd(vdn).toFixed(1));
+
+    var idx, capArr;
+    if(trial==="sub"){ idx=p<P1[1]?0:1; capArr=CAPS_SUB; }
+    else { idx=p<P1[1]?0:(p<P2[1]?1:(p<P3[1]?2:3)); capArr=CAPS; }
+    var ckey=trial+idx;
+    if(caption.dataset.i!==ckey){ caption.dataset.i=ckey; caption.innerHTML=capArr[idx]; }
+    var btns=document.querySelectorAll(".phasebar button");
+    for(var b2=0;b2<btns.length;b2++) btns[b2].className=(b2===idx?"on":"");
+    document.getElementById("scrub").value=Math.round(p*1000);
+  }
+
+  function dot(x,y,r,fill,op,glyph){
+    pulses.appendChild(mk("circle",{cx:x,cy:y,r:(r*2.1).toFixed(2),fill:fill,opacity:(op*0.18).toFixed(3)}));
+    pulses.appendChild(mk("circle",{cx:x,cy:y,r:(r*1.4).toFixed(2),fill:fill,opacity:(op*0.32).toFixed(3)}));
+    pulses.appendChild(mk("circle",{cx:x,cy:y,r:r.toFixed(2),fill:fill,opacity:op.toFixed(3)}));
+    if(glyph&&r>4.6){
+      pulses.appendChild(mk("text",{x:x.toFixed(1),y:(y+r*0.42).toFixed(1),"text-anchor":"middle",
+        "font-size":(r*1.35).toFixed(1),fill:"#ffffff",opacity:op.toFixed(2)},glyph));
+    }
+  }
+
+  var t=0, playing=true, last=null, speed=0.5;
+  function loop(ts){
+    if(last===null) last=ts;
+    var dt=(ts-last)/1000; last=ts;
+    if(playing){ t+=dt*speed*0.28; if(t>1.14) t=0; }
+    render(Math.min(t,1));
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  document.getElementById("play").onclick=function(){
+    playing=!playing; document.getElementById("playtxt").textContent=playing?"Pause":"Play"; };
+  document.getElementById("replay").onclick=function(){
+    t=0; playing=true; document.getElementById("playtxt").textContent="Pause"; };
+  document.getElementById("trialbtn").onclick=function(){
+    trial=(trial==="supra")?"sub":"supra";
+    this.textContent=(trial==="supra")?"Trial: reaches threshold":"Trial: below threshold (no spike)";
+    this.className=(trial==="sub")?"on":"";
+    buildTraces(); buildMarks();
+    t=0; playing=true; document.getElementById("playtxt").textContent="Pause"; };
+  document.getElementById("speed").oninput=function(){
+    speed=parseFloat(this.value);
+    document.getElementById("speedout").textContent=speed.toFixed(2)+"×"; };
+  document.getElementById("scrub").oninput=function(){
+    t=parseInt(this.value,10)/1000; playing=false;
+    document.getElementById("playtxt").textContent="Play"; render(t); };
+  var starts=[0.02,0.485,0.55,0.90];
+  document.querySelectorAll(".phasebar button").forEach(function(b){
+    b.onclick=function(){ t=starts[+b.dataset.p]; playing=false;
+      document.getElementById("playtxt").textContent="Play"; render(t); }; });
+})();
+</script>
+</body>
+</html>
