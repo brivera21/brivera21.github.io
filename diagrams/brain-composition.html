@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Brain Composition Breakdown</title>
+<style>
+:root{
+  --color-text-primary:#1f1e1c;
+  --color-text-secondary:#5f5e5a;
+  --color-text-tertiary:#8a8980;
+  --color-border-tertiary:rgba(0,0,0,0.14);
+  --color-border-secondary:rgba(0,0,0,0.30);
+  --color-background-primary:#ffffff;
+  --color-background-secondary:#f4f3ef;
+  --border-radius-sm:6px;
+  --border-radius-md:8px;
+  --border-radius-lg:12px;
+  /* accent hues, matched to the Diagram Lab palette */
+  --c-neuron:#378ADD;   /* blue   */
+  --c-glia:#BA7517;     /* amber  */
+  --c-ecs:#8C86B0;      /* muted violet-grey */
+  --c-blood:#C24A3E;    /* red    */
+  --c-csf:#3AA6A0;      /* teal   */
+  --c-granule:#378ADD;  /* blue   */
+  --c-pyr:#D85A30;      /* orange-red */
+  --c-inter:#639922;    /* olive  */
+  --c-purk:#BA7517;     /* amber  */
+  --c-sub:#7F77DD;      /* violet */
+  --c-out:#D4537E;      /* pink   */
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --color-text-primary:#eceae4;
+    --color-text-secondary:#b4b2a9;
+    --color-text-tertiary:#8a8980;
+    --color-border-tertiary:rgba(255,255,255,0.16);
+    --color-border-secondary:rgba(255,255,255,0.30);
+    --color-background-primary:#1b1b19;
+    --color-background-secondary:#232320;
+  }
+}
+*{ box-sizing:border-box; }
+body{
+  margin:0; padding:2.25rem 1.25rem 3rem;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  color:var(--color-text-primary);
+  background:#fbfaf7;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+@media (prefers-color-scheme: dark){ body{ background:#151513; } }
+.page{ max-width:780px; margin:0 auto; }
+h1{ font-size:23px; font-weight:600; margin:0 0 5px; letter-spacing:-0.01em; }
+p.sub{ font-size:14px; color:var(--color-text-secondary); margin:0 0 1.9rem; }
+h2{ font-size:15px; font-weight:600; margin:2.4rem 0 2px; letter-spacing:-0.005em; }
+h2 .n{ color:var(--color-text-tertiary); font-weight:500; }
+p.lead{ font-size:13px; color:var(--color-text-secondary); margin:0 0 1rem; }
+
+/* fixed-box statement */
+.statement{
+  display:flex; gap:13px; align-items:flex-start;
+  border:0.5px solid var(--color-border-secondary);
+  border-left:3px solid var(--c-neuron);
+  background:var(--color-background-secondary);
+  border-radius:var(--border-radius-md);
+  padding:15px 17px; margin:0 0 0.4rem;
+}
+.statement svg{ flex:0 0 auto; margin-top:1px; }
+.statement .t{ font-size:14.5px; }
+.statement .t b{ font-weight:600; }
+.statement .t small{ display:block; margin-top:5px; font-size:12.5px; color:var(--color-text-secondary); line-height:1.5; }
+
+/* stacked volume bar */
+.barwrap{ margin:14px 0 8px; }
+.stack{
+  display:flex; width:100%; height:52px; border-radius:var(--border-radius-md);
+  overflow:hidden; border:0.5px solid var(--color-border-tertiary);
+}
+.seg{ position:relative; display:flex; align-items:center; justify-content:center;
+  color:#fff; font-size:12px; font-weight:600; cursor:default; min-width:0;
+  box-shadow:inset -1px 0 0 rgba(255,255,255,0.28); transition:filter .12s; }
+.seg:last-child{ box-shadow:none; }
+.seg:hover{ filter:brightness(1.06) saturate(1.08); }
+.seg span{ padding:0 4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  text-shadow:0 1px 1.5px rgba(0,0,0,0.32); }
+.axis{ position:relative; height:16px; margin-top:2px; }
+.brace{ position:absolute; top:0; height:7px; border:0.5px solid var(--color-border-secondary);
+  border-bottom:none; border-radius:5px 5px 0 0; }
+.axis .lab{ position:absolute; top:7px; font-size:11px; color:var(--color-text-tertiary);
+  transform:translateX(-50%); white-space:nowrap; }
+
+/* legend rows for the volume bars */
+.vlegend{ display:flex; flex-direction:column; gap:10px; margin:14px 0 2px; }
+.vlegend .it{ display:flex; align-items:flex-start; gap:10px; font-size:12.5px; }
+.vlegend .sw{ width:11px; height:11px; border-radius:3px; flex:0 0 auto; margin-top:3px; }
+.vlegend .tx{ flex:1; min-width:0; }
+.vlegend .nm{ font-weight:600; color:var(--color-text-primary); }
+.vlegend .pc{ color:var(--color-text-secondary); font-variant-numeric:tabular-nums; margin-left:7px; }
+.vlegend .ds{ display:block; color:var(--color-text-tertiary); font-size:11.5px; margin-top:1px; line-height:1.5; }
+
+/* census: donut + rows */
+.census{ display:flex; flex-wrap:wrap; gap:24px; align-items:flex-start; margin-top:14px; }
+.donutbox{ flex:0 0 auto; width:260px; margin:0 auto; position:relative; }
+.donutbox svg{ display:block; width:260px; height:260px; overflow:visible; }
+.center-tot{ position:absolute; inset:0; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; pointer-events:none; }
+.center-tot .big{ font-size:30px; font-weight:600; letter-spacing:-0.02em; line-height:1; }
+.center-tot .lbl{ font-size:11px; color:var(--color-text-tertiary); margin-top:4px; text-align:center; }
+.arc{ transition:opacity .12s; cursor:default; }
+.census.dim .arc{ opacity:0.32; }
+.arc.hot{ opacity:1 !important; }
+
+.rows{ flex:1 1 300px; min-width:280px; display:flex; flex-direction:column; gap:8px; }
+.row{ display:flex; align-items:center; gap:11px; padding:9px 11px;
+  border:0.5px solid var(--color-border-tertiary); border-radius:var(--border-radius-md);
+  transition:background .12s, border-color .12s; cursor:default; }
+.row:hover{ background:var(--color-background-secondary); }
+.row .glyph{ flex:0 0 auto; }
+.row .meta{ flex:1; min-width:0; }
+.row .nm{ font-size:13.5px; font-weight:600; color:var(--color-text-primary); }
+.row .where{ font-size:11.5px; color:var(--color-text-tertiary); margin-top:1px; }
+.row .num{ text-align:right; flex:0 0 auto; }
+.row .cnt{ font-size:14px; font-weight:600; font-variant-numeric:tabular-nums; }
+.row .pct{ font-size:11px; color:var(--color-text-tertiary); font-variant-numeric:tabular-nums; }
+
+/* disclaimer */
+.disclaimer{
+  margin-top:1.7rem; border:0.5px solid var(--color-border-secondary);
+  border-left:3px solid var(--c-out); background:var(--color-background-secondary);
+  border-radius:var(--border-radius-md); padding:14px 16px;
+}
+.disclaimer .h{ font-size:13px; font-weight:600; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+.disclaimer table{ border-collapse:collapse; width:100%; font-size:12.5px; }
+.disclaimer td{ padding:3px 0; vertical-align:top; }
+.disclaimer td.n{ text-align:right; font-weight:600; font-variant-numeric:tabular-nums;
+  white-space:nowrap; padding-left:14px; color:var(--c-out); }
+.disclaimer td.w{ color:var(--color-text-tertiary); padding-left:12px; }
+.disclaimer .sum{ margin-top:9px; padding-top:9px; border-top:0.5px solid var(--color-border-tertiary);
+  font-size:12.5px; color:var(--color-text-secondary); }
+.disclaimer .sum b{ color:var(--color-text-primary); }
+
+/* caveats + footer */
+details.cav{ margin-top:1.8rem; border-top:0.5px solid var(--color-border-tertiary); padding-top:12px; }
+details.cav summary{ cursor:pointer; font-size:11px; letter-spacing:0.06em; text-transform:uppercase;
+  color:var(--color-text-tertiary); }
+details.cav summary:hover{ color:var(--color-text-secondary); }
+details.cav ul{ margin:11px 0 0; padding-left:18px; font-size:12.5px; color:var(--color-text-secondary); }
+details.cav li{ margin-bottom:7px; }
+details.cav li b{ color:var(--color-text-primary); font-weight:600; }
+footer{ margin-top:1.6rem; font-size:11.5px; color:var(--color-text-tertiary);
+  border-top:0.5px solid var(--color-border-tertiary); padding-top:12px; line-height:1.55; }
+
+/* tooltip */
+#tip{ position:fixed; z-index:20; pointer-events:none; opacity:0; transition:opacity .1s;
+  background:var(--color-background-primary); color:var(--color-text-primary);
+  border:0.5px solid var(--color-border-secondary); border-radius:var(--border-radius-sm);
+  padding:6px 9px; font-size:12px; box-shadow:0 4px 14px rgba(0,0,0,0.18); max-width:230px; }
+#tip .tt{ font-weight:600; margin-bottom:2px; }
+#tip .td{ color:var(--color-text-secondary); font-size:11.5px; }
+@media (max-width:560px){
+  .donutbox{ width:230px; } .donutbox svg{ width:230px; height:230px; }
+  .row .where{ display:block; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <h1>Brain Composition Breakdown</h1>
+  <p class="sub">The volume inside the skull is fixed. Here is a breakdown of what constitutes that volume.</p>
+
+  <!-- ================= SECTION 1 ================= -->
+  <h2>1 &nbsp;&middot;&nbsp; A fixed container</h2>
+
+  <div class="statement">
+    <svg width="26" height="30" viewBox="0 0 26 30" fill="none" aria-hidden="true">
+      <path d="M13 2 C6.4 2 2.5 6.6 2.5 12 C2.5 15 3.6 16.6 3.6 18.4 C3.6 20 2.8 20.6 2.8 22.2 C2.8 24 4.2 24.8 5.8 24.8 L6.4 24.8 L6.4 27.4 C6.4 28.1 7 28.6 7.7 28.6 L10 28.6 L10 25.4 M10 28.6 L15 28.6 M17 24.8 L18.6 24.8 C20.2 24.8 21.6 24 21.6 22.2 C21.6 20.6 20.8 20 20.8 18.4 C20.8 16.6 23.5 15 23.5 12 C23.5 6.6 19.6 2 13 2 Z"
+        stroke="var(--c-neuron)" stroke-width="1.4" stroke-linjoin="round" stroke-linecap="round"/>
+    </svg>
+    <div class="t">
+      <b>The volume inside the adult skull is fixed</b> at about 1.4 to 1.7 litres of rigid, non-expandable space.
+      <small>This is the <b>Monro-Kellie doctrine</b>: brain tissue, blood and cerebrospinal fluid (CSF) together fill a constant volume, so if one grows, another must shrink or pressure rises. At the coarsest level that split is roughly <b>brain tissue&nbsp;80%</b>, <b>blood&nbsp;10%</b>, <b>CSF&nbsp;10%</b>.</small>
+    </div>
+  </div>
+
+  <h2 style="margin-top:1.6rem;">Composition <span class="n">by volume</span></h2>
+  <p class="lead">Breaking the 80% brain tissue into its parts. &ldquo;Neurons&rdquo; here means the cell bodies plus all their wiring (axons, dendrites and synapses, the neuropil), which is what actually takes up the space.</p>
+
+  <div class="barwrap">
+    <div class="stack" id="volstack"></div>
+    <div class="axis" id="volaxis"></div>
+  </div>
+  <div class="vlegend" id="vollegend"></div>
+
+  <!-- ================= SECTION 2 ================= -->
+  <h2 style="margin-top:2.6rem;">2 &nbsp;&middot;&nbsp; The ~86 billion neurons, by type <span class="n">&amp; where they live</span></h2>
+  <p class="lead">There are about <b>86 billion</b> neurons in the brain. This is a more accurate estimate of the 100 billion often cited. These neurons break down into the following types of neurons.</p>
+
+  <div class="census" id="census">
+    <div class="donutbox">
+      <svg id="donut" viewBox="-130 -130 260 260"></svg>
+      <div class="center-tot">
+        <div class="big">86<span style="font-size:16px;font-weight:600;">B</span></div>
+        <div class="lbl">neurons in<br>the brain</div>
+      </div>
+    </div>
+    <div class="rows" id="rows"></div>
+  </div>
+
+  <!-- ================= DISCLAIMER ================= -->
+  <div class="disclaimer">
+    <div class="h">
+      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.4 L14.6 13 H1.4 Z" fill="none" stroke="var(--c-out)" stroke-width="1.3" stroke-linejoin="round"/><path d="M8 5.6 V9.2 M8 11.1 v0.2" stroke="var(--c-out)" stroke-width="1.4" stroke-linecap="round"/></svg>
+      There are more neurons outside the brain
+    </div>
+    <div style="font-size:12.5px;color:var(--color-text-secondary);margin-bottom:9px;">
+      The 86 billion above counts only neurons <b>inside the brain</b>. Beyond it, the rest of the nervous system adds roughly another 1.5 to 2 billion:
+    </div>
+    <table>
+      <tr><td><b>Spinal cord</b></td><td class="n">~1&nbsp;billion</td><td class="w">motor, sensory relay &amp; interneurons down the cord</td></tr>
+      <tr><td><b>Enteric (gut) nervous system</b></td><td class="n">~400 to 600&nbsp;million</td><td class="w">the &ldquo;second brain&rdquo; lining the gut wall</td></tr>
+      <tr><td><b>Peripheral &amp; autonomic ganglia</b></td><td class="n">hundreds of millions</td><td class="w">dorsal-root, sympathetic &amp; sensory ganglia</td></tr>
+    </table>
+    <div class="sum">So the whole nervous system holds on the order of <b>~88 billion</b> neurons. The brain is about 98% of them, but not all.</div>
+  </div>
+
+  <details class="cav">
+    <summary>Sources</summary>
+    <p style="font-size:12px;color:var(--color-text-tertiary);margin:12px 0 0;padding-left:2px;">
+      Cell counts: Herculano-Houzel (2009, 2012), <em>isotropic fractionator</em> whole-brain counts. Intracranial volume: the Monro-Kellie doctrine. Enteric count: Michel et&nbsp;al. (2022) human estimate.
+    </p>
+  </details>
+
+
+</div>
+
+<div id="tip"><div class="tt"></div><div class="td"></div></div>
+
+<script>
+(function(){
+  "use strict";
+  var tip = document.getElementById('tip');
+  function showTip(html, sub){
+    tip.querySelector('.tt').innerHTML = html;
+    tip.querySelector('.td').innerHTML = sub || '';
+    tip.style.opacity = 1;
+  }
+  function moveTip(e){
+    var x = e.clientX + 14, y = e.clientY + 14;
+    if(x + 240 > window.innerWidth) x = e.clientX - 240;
+    if(y + 70 > window.innerHeight) y = e.clientY - 70;
+    tip.style.left = x + 'px'; tip.style.top = y + 'px';
+  }
+  function hideTip(){ tip.style.opacity = 0; }
+
+  /* ---------- neuron glyphs (thin line-art, currentColor) ---------- */
+  function glyph(type, color, size){
+    size = size || 34;
+    var h = '<svg class="glyph" width="'+size+'" height="'+size+'" viewBox="-16 -16 32 32" style="color:'+color+';overflow:visible;">';
+    var open = '<g fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round">';
+    var b = '';
+    if(type==='granule'){
+      // tiny soma, a few short claw dendrites, single T-shaped axon (parallel fibre)
+      b = '<path d="M0 -1.5 L-4 -6 M-4 -6 l-2.2 -0.6 M-4 -6 l-0.2 -2.4"/>'
+        + '<path d="M2 -1.5 L6 -5.5 M6 -5.5 l2.2 -0.5 M6 -5.5 l0.4 -2.3"/>'
+        + '<path d="M-1.6 1.6 L-5.5 4.5 M-5.5 4.5 l-2.2 0.3"/>'
+        + '<path d="M1.4 2 L2 7 M2 7 L-11 7 M2 7 L13 7"/></g>'  // T-shaped axon
+        + '<circle cx="0" cy="0" r="2.7" fill="'+color+'"/>';
+    } else if(type==='pyramidal'){
+      // triangular soma, long apical dendrite with tuft, basal dendrites, descending axon
+      b = '<path d="M0 -3 L0 -12 M0 -12 l-3 -2.6 M0 -12 l3 -2.6 M0 -9 l-3.4 -1.8 M0 -9 l3.4 -1.8"/>'
+        + '<path d="M-3 3 L-7 7 M3 3 L7 7 M-1.6 3.4 L-1.6 8"/>'
+        + '<path d="M1.6 3.4 L1.6 13"/></g>'  // axon
+        + '<path d="M-3.4 3 L3.4 3 L0 -2.4 Z" fill="'+color+'" stroke="'+color+'" stroke-width="0.7" stroke-linejoin="round"/>';
+    } else if(type==='interneuron'){
+      // compact multipolar basket cell: bushy short dendrites all around
+      var arms='';
+      for(var k=0;k<8;k++){ var a=(k/8)*6.2832; var ex=Math.cos(a)*8.5, ey=Math.sin(a)*8.5;
+        arms += '<path d="M0 0 L'+ex.toFixed(1)+' '+ey.toFixed(1)
+             + ' M'+ex.toFixed(1)+' '+ey.toFixed(1)+' l'+(Math.cos(a+0.5)*2.4).toFixed(1)+' '+(Math.sin(a+0.5)*2.4).toFixed(1)
+             + ' M'+ex.toFixed(1)+' '+ey.toFixed(1)+' l'+(Math.cos(a-0.5)*2.4).toFixed(1)+' '+(Math.sin(a-0.5)*2.4).toFixed(1)+'"/>';
+      }
+      b = arms + '</g><circle cx="0" cy="0" r="2.9" fill="'+color+'"/>';
+    } else if(type==='purkinje'){
+      // flask soma with a wide flat fan of dendrites
+      b = '<path d="M0 3 L0 -3 '
+        + 'M0 -3 L-9 -6 M0 -3 L-5.5 -9 M0 -3 L-2 -12 M0 -3 L2 -12 M0 -3 L5.5 -9 M0 -3 L9 -6 '
+        + 'M-4.6 -4.6 l-1 -3.4 M-1.2 -3.5 l-0.6 -4.2 M1.2 -3.5 l0.6 -4.2 M4.6 -4.6 l1 -3.4 '
+        + 'M-7 -5.2 l-0.8 -2.6 M7 -5.2 l0.8 -2.6"/>'
+        + '<path d="M0 5 L0 12"/></g>'  // axon down
+        + '<ellipse cx="0" cy="4" rx="2.9" ry="2.4" fill="'+color+'"/>';
+    } else { // subcortical / stellate motor-type: star soma, radiating dendrites + long axon
+      var s='';
+      for(var m=0;m<6;m++){ var a2=(m/6)*6.2832 - 1.0; var ex2=Math.cos(a2)*9, ey2=Math.sin(a2)*9;
+        s += '<path d="M0 0 L'+ex2.toFixed(1)+' '+ey2.toFixed(1)
+          + ' M'+ex2.toFixed(1)+' '+ey2.toFixed(1)+' l'+(Math.cos(a2+0.45)*2.6).toFixed(1)+' '+(Math.sin(a2+0.45)*2.6).toFixed(1)
+          + ' M'+ex2.toFixed(1)+' '+ey2.toFixed(1)+' l'+(Math.cos(a2-0.45)*2.6).toFixed(1)+' '+(Math.sin(a2-0.45)*2.6).toFixed(1)+'"/>';
+      }
+      b = s + '<path d="M0 0 L13 4"/></g>' + '<ellipse cx="0" cy="0" rx="3.1" ry="2.7" fill="'+color+'"/>';
+    }
+    return h + open + b + '</svg>';
+  }
+
+  /* ---------- Section 1: intracranial volume bar ---------- */
+  var vol = [
+    {nm:'Neurons & their processes', key:'neuropil', pct:44, col:'var(--c-neuron)',
+      desc:'Cell bodies plus their axons, dendrites and synapses. The wiring, not just the cell bodies, fills most of the space.',
+      tt:'Cell bodies + axons, dendrites & synapses (neuropil). The wiring, not just the somata, is what fills the space.'},
+    {nm:'Glial cells', key:'glia', pct:20, col:'var(--c-glia)',
+      desc:'Astrocytes, oligodendrocytes and microglia. Roughly equal in number to neurons.',
+      tt:'Astrocytes, oligodendrocytes, microglia. Roughly equal in number to neurons.'},
+    {nm:'Extracellular fluid', key:'ecs', pct:16, col:'var(--c-ecs)',
+      desc:'The fluid in the gaps between brain cells. It is about 16% of the whole intracranial volume, which is roughly 20% of the brain tissue on its own. The fluid is a salt solution close to blood plasma with most proteins removed: high in sodium, chloride and bicarbonate, low in potassium, and carrying dissolved glucose, waste metabolites and signalling molecules.',
+      tt:'Fluid in the gaps between cells. ~16% of intracranial volume (~20% of tissue alone). A plasma-like salt solution: high sodium, chloride & bicarbonate, low potassium, plus glucose, metabolites & signalling molecules.'},
+    {nm:'Blood', key:'blood', pct:10, col:'var(--c-blood)',
+      desc:'Arterial, capillary and venous blood in the cerebral vessels, about 150 mL.',
+      tt:'Arterial, capillary & venous blood in the cerebral vasculature (~150 mL).'},
+    {nm:'CSF', key:'csf', pct:10, col:'var(--c-csf)',
+      desc:'Cerebrospinal fluid in the ventricles and around the brain, about 150 mL.',
+      tt:'Cerebrospinal fluid in the ventricles & around the brain (~150 mL).'}
+  ];
+  var vstack = document.getElementById('volstack');
+  vol.forEach(function(v){
+    var d = document.createElement('div');
+    d.className = 'seg'; d.style.flex = v.pct + ' 0 0'; d.style.background = v.col;
+    d.innerHTML = '<span>' + (v.pct>=14 ? v.nm.split(' ')[0] : '') + (v.pct>=14?' '+v.pct+'%':'') + '</span>';
+    d.addEventListener('mousemove', function(e){ showTip(v.nm+' &middot; '+v.pct+'%', v.tt); moveTip(e); });
+    d.addEventListener('mouseleave', hideTip);
+    vstack.appendChild(d);
+  });
+  // brace: brain tissue (80%) vs blood (10%) vs CSF (10%)
+  var axis = document.getElementById('volaxis');
+  function brace(left, width, label){
+    var b = document.createElement('div'); b.className='brace';
+    b.style.left = left+'%'; b.style.width = width+'%'; axis.appendChild(b);
+    var l = document.createElement('div'); l.className='lab';
+    l.style.left = (left+width/2)+'%'; l.innerHTML = label; axis.appendChild(l);
+  }
+  brace(0, 80, 'Brain tissue &middot; 80%');
+  brace(80, 10, 'Blood');
+  brace(90, 10, 'CSF');
+  var vleg = document.getElementById('vollegend');
+  vol.forEach(function(v){
+    var it = document.createElement('div'); it.className='it';
+    it.innerHTML = '<span class="sw" style="background:'+v.col+'"></span>'
+      + '<span class="tx"><span class="nm">'+v.nm+'</span><span class="pc">'+v.pct+'%</span>'
+      + '<span class="ds">'+v.desc+'</span></span>';
+    vleg.appendChild(it);
+  });
+
+  /* ---------- Section 2: neuron census donut + rows ---------- */
+  var types = [
+    {nm:'Cerebellar granule cells', where:'Cerebellum', shape:'granule', col:'var(--c-granule)',
+      count:68, cntLbl:'~68B', pctLbl:'79%',
+      tt:'The smallest and by far the most numerous neuron in the brain. A tiny soma with 4 to 5 claw-tipped dendrites and a T-shaped axon forming the parallel fibres.'},
+    {nm:'Cortical pyramidal neurons', where:'Cerebral cortex', shape:'pyramidal', col:'var(--c-pyr)',
+      count:12, cntLbl:'~12B', pctLbl:'14%',
+      tt:'The main excitatory output cells of the cortex. Triangular soma, a long apical dendrite reaching up, and a far-projecting axon.'},
+    {nm:'Cortical interneurons', where:'Cerebral cortex', shape:'interneuron', col:'var(--c-inter)',
+      count:4, cntLbl:'~4B', pctLbl:'5%',
+      tt:'Local inhibitory (GABAergic) cells such as basket and chandelier cells. Compact, bushy, locally branching. About a quarter of cortical neurons.'},
+    {nm:'Other cerebellar (Purkinje etc.)', where:'Cerebellum', shape:'purkinje', col:'var(--c-purk)',
+      count:1, cntLbl:'~1B', pctLbl:'~1%',
+      tt:'Purkinje, Golgi, stellate and basket cells. Purkinje cells are large, with a broad flat fan of dendrites, but there are few of them (tens of millions).'},
+    {nm:'Brainstem & subcortical', where:'Brainstem, basal ganglia, thalamus', shape:'subcortical', col:'var(--c-sub)',
+      count:0.7, cntLbl:'~0.7B', pctLbl:'~1%',
+      tt:'Motor and modulatory neurons of the brainstem, basal ganglia, thalamus & hypothalamus. Varied, often large multipolar cells with long axons.'}
+  ];
+  var total = types.reduce(function(s,t){ return s+t.count; }, 0);
+
+  // build donut
+  var NS = 'http://www.w3.org/2000/svg';
+  var donut = document.getElementById('donut');
+  var R = 108, r = 66;  // outer / inner radius
+  var ang = -Math.PI/2;  // start at top
+  var census = document.getElementById('census');
+  function arcPath(a0, a1){
+    var big = (a1 - a0) > Math.PI ? 1 : 0;
+    var x0o = Math.cos(a0)*R, y0o = Math.sin(a0)*R;
+    var x1o = Math.cos(a1)*R, y1o = Math.sin(a1)*R;
+    var x0i = Math.cos(a1)*r, y0i = Math.sin(a1)*r;
+    var x1i = Math.cos(a0)*r, y1i = Math.sin(a0)*r;
+    return 'M'+x0o.toFixed(2)+' '+y0o.toFixed(2)
+      + ' A'+R+' '+R+' 0 '+big+' 1 '+x1o.toFixed(2)+' '+y1o.toFixed(2)
+      + ' L'+x0i.toFixed(2)+' '+y0i.toFixed(2)
+      + ' A'+r+' '+r+' 0 '+big+' 0 '+x1i.toFixed(2)+' '+y1i.toFixed(2)+' Z';
+  }
+  types.forEach(function(t, i){
+    var frac = t.count/total;
+    var a0 = ang, a1 = ang + frac*Math.PI*2;
+    // tiny gap between slices
+    var gap = 0.012;
+    var p = document.createElementNS(NS,'path');
+    p.setAttribute('d', arcPath(a0+gap, a1-gap));
+    p.setAttribute('fill', t.col);
+    p.setAttribute('class','arc');
+    p.setAttribute('data-i', i);
+    donut.appendChild(p);
+    t._a0 = a0; t._a1 = a1;
+    ang = a1;
+
+    function hi(on){
+      census.classList.toggle('dim', on);
+      document.querySelectorAll('.arc').forEach(function(el){ el.classList.remove('hot'); });
+      document.querySelectorAll('.row').forEach(function(el){ el.style.borderColor=''; el.style.background=''; });
+      if(on){
+        p.classList.add('hot');
+        var row = document.getElementById('row-'+i);
+        if(row){ row.style.background='var(--color-background-secondary)'; row.style.borderColor='var(--color-border-secondary)'; }
+      }
+    }
+    p.addEventListener('mousemove', function(e){ showTip(t.nm+' &middot; '+t.pctLbl, t.tt); moveTip(e); hi(true); });
+    p.addEventListener('mouseleave', function(){ hideTip(); hi(false); });
+    t._hi = hi;
+  });
+
+  // build rows
+  var rows = document.getElementById('rows');
+  types.forEach(function(t, i){
+    var row = document.createElement('div');
+    row.className='row'; row.id='row-'+i;
+    row.innerHTML = '<span class="glyph">'+glyph(t.shape, t.col, 36)+'</span>'
+      + '<span class="meta"><div class="nm">'+t.nm+'</div><div class="where">'+t.where+'</div></span>'
+      + '<span class="num"><div class="cnt" style="color:'+t.col+'">'+t.cntLbl+'</div><div class="pct">'+t.pctLbl+'</div></span>';
+    row.addEventListener('mousemove', function(e){ showTip(t.nm+' &middot; '+t.pctLbl, t.tt); moveTip(e); t._hi(true); });
+    row.addEventListener('mouseleave', function(){ hideTip(); t._hi(false); });
+    rows.appendChild(row);
+  });
+})();
+</script>
+</body>
+</html>

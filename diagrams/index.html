@@ -113,6 +113,26 @@
    ============================================================ */
 const DIAGRAMS = [
   {
+    id:'brain-composition',
+    title:'Brain Composition Breakdown',
+    file:'brain-composition.html',
+    thumbLive:true,
+    tags:['neuroanatomy','teaching','reference'],
+    label:'INTERACTIVE',
+    blurb:'What fills the fixed skull by volume, then the ~86 billion neurons broken down by type and where each is found.',
+    extras:[],
+    connects:'For lectures on brain composition, the Monro-Kellie doctrine and neuron counts.',
+    caveats:[
+      'The intracranial split (brain 80% / blood 10% / CSF 10%) is the standard Monro-Kellie figure; the neuron / glia / extracellular sub-split of the tissue is an approximate teaching estimate that varies by region and method.',
+      'Extracellular space is ~16% of the whole intracranial volume, which is ~20% of the brain tissue alone; the two figures use different denominators.',
+      'Neuron and glia numbers are roughly 1:1 (~86B neurons, ~85B non-neuronal cells); the old &ldquo;10 glia per neuron&rdquo; claim is wrong.',
+      'Most brain neurons are cerebellar granule cells: the cerebellum holds ~69B (~80% of the total) in only ~10% of brain mass.',
+      'The by-type percentages are estimates built from regional counts; the pyramidal-vs-interneuron and granule-vs-other splits are approximate.',
+      'Neuron drawings are schematic: characteristic form only, not scale or exact morphology.'
+    ],
+    mine:''
+  },
+  {
     id:'nervous-tree',
     title:"The Nervous System's Family Tree",
     file:'nervous-system-tree.html',
@@ -195,26 +215,6 @@ const DIAGRAMS = [
       'Delta is the only band shown on the coronal view. Theta, alpha and gamma travel front to back, which on a coronal section runs into the page.',
       'Conte69 is cortex only: no cerebellum or brainstem, and the coronal notch between the temporal lobes is where the brainstem would sit.',
       'Wave amplitude is uniform and isotropic here. Real traveling waves vary by region and travel at speeds that depend on fibre direction.'
-    ],
-    mine:''
-  },
-  {
-    id:'action-potential',
-    title:'Action potential: graded inputs to a spike',
-    file:'action-potential.html',
-    thumbLive:true,
-    tags:['neurophysiology','membrane','synapses','teaching','animation'],
-    label:'INTERACTIVE',
-    blurb:'Graded potentials sweep down the dendrites of a pyramidal cell, summate at the soma, and once threshold is crossed an all-or-none spike jumps node to node down the axon to the terminals, recorded by two electrodes.',
-    extras:[],
-    connects:'For lectures on membrane potential, synaptic integration and the action potential. Pairs with a separate zoomed diagram of the ion channels, which are deliberately omitted here.',
-    caveats:[
-      'Ions are deliberately left out. The balls are waves of membrane-voltage change, not moving ions; the Na⁺/K⁺ channel mechanism belongs in a separate zoomed diagram.',
-      'Two colours only: green = depolarising (excitatory graded potentials and the action potential), red = hyperpolarising (inhibitory). The spike is green because it too is a depolarisation.',
-      'Time is not to scale. The spike (~1 to 2 ms) is stretched so it is visible; real EPSPs and IPSPs last tens of milliseconds. A to-scale inset shows the true ratio.',
-      'Amplitudes are a schematic reference, not recorded data. The soma trace is scaled so the summed inputs just reach threshold; the subthreshold trial shows one that falls short.',
-      'Spatial scale is only roughly proportional (~100 µm bar). A real layer-5 pyramidal cell has an apical dendrite over 1 mm and a much longer axon.',
-      'The backpropagating spike on the dendritic electrode is real but is usually treated as beyond an intro course.'
     ],
     mine:''
   }
