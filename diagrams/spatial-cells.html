@@ -16,7 +16,7 @@
   --border-radius-md:8px;
   --border-radius-lg:12px;
 }
-@media (prefers-color-scheme: dark){
+@media all{
   :root{
     --color-text-primary:#eceae4;
     --color-text-secondary:#b4b2a9;
@@ -36,7 +36,7 @@ body{
   background:#fbfaf7;
   line-height:1.6;
 }
-@media (prefers-color-scheme: dark){ body{ background:#151513; } }
+@media all{ body{ background:#151513; } }
 .page{ max-width:760px; margin:0 auto; }
 h1{ font-size:22px; font-weight:500; margin:0 0 4px; }
 p.sub{ font-size:14px; color:var(--color-text-secondary); margin:0 0 1.5rem; }
@@ -94,7 +94,7 @@ Schematic model based on Neil Burgess, "Neural mechanisms of spatial cognition."
   var ctx = cv.getContext('2d');
   ctx.scale(2,2);
   var S=340, pad=26, inner=S-2*pad;
-  var isDark = matchMedia('(prefers-color-scheme: dark)').matches;
+  var isDark = true;
   var faint = isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.10)';
   var trail = isDark ? 'rgba(255,255,255,0.16)' : 'rgba(0,0,0,0.16)';
   var wallC = isDark ? '#8a8980' : '#7a7a72';
