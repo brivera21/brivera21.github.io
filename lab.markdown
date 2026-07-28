@@ -26,7 +26,7 @@ When not in the classroom or lab, I enjoy thinking about the brain, playing ches
 <div class="member" markdown="1">
 
 **Ava Sticka-Jacobs**
-*Undergraduate Researcher*
+*Undergraduate Researcher · Spring & Summer 2026 CURI Scholar*
 
 <img src="{{ '/images/asj.jpg' | relative_url }}" alt="Ava Sticka-Jacobs" class="site-photo portrait-right">
 
@@ -39,7 +39,7 @@ Ava Sticka-Jacobs is an undergraduate student at St. Olaf College double majorin
 <div class="member" markdown="1">
 
 **Kaitlyn Casselman**
-*Undergraduate Research Assistant*
+*Undergraduate Research Assistant · Summer 2026 CURI Scholar*
 
 <img src="{{ '/images/kaitlyncasselman.jpg' | relative_url }}" alt="Kaitlyn Casselman" class="site-photo portrait-right" style="width: 220px;">
 
@@ -52,7 +52,7 @@ Kaitlyn Casselman is a current Psychology major at St. Olaf College. She enjoys 
 <div class="member" markdown="1">
 
 **Rubi Herrera Zelaya**
-*Undergraduate Research Assistant*
+*Undergraduate Research Assistant · Summer 2026 CURI Scholar*
 
 <img src="{{ '/images/rubiherrera.jpg' | relative_url }}" alt="Rubi Herrera Zelaya" class="site-photo portrait-right" style="width: 220px;">
 
@@ -74,7 +74,7 @@ Rubi Herrera Zelaya is an undergraduate student at St. Olaf College majoring in 
 
 <img src="{{ '/images/maryhendrickson.jpg' | relative_url }}" alt="Mary Hendrickson" class="site-photo portrait-right">
 
-Mary Hendrickson '26 was an undergraduate researcher in the Root Lab and a Spring 2026 CURI Research Assistant. She worked on the FAVE project, presenting her work at the Minnesota Undergraduate Psychology Conference (MUPC) in April 2026.
+Mary Hendrickson '26 was an undergraduate researcher in the Root Lab and a Spring 2026 CURI Scholar. She worked on the FAVE project, presenting her work at the Minnesota Undergraduate Psychology Conference (MUPC) in April 2026.
 
 
 
