@@ -177,28 +177,6 @@ const DIAGRAMS = [
     mine:''
   },
   {
-    id:'cortical-rhythms',
-    title:'Cortical Rhythms',
-    file:'cortical-rhythms.html',
-    thumbLive:true,
-    tags:['neuroanatomy','oscillations','teaching','animation'],
-    label:'INTERACTIVE',
-    blurb:'Three brain views built from the fs_LR/Conte69 surface, switchable between activity, traveling waves (δ/θ/α/γ), lobes and Brodmann areas.',
-    extras:[],
-    connects:'For lectures on cortical organisation and brain rhythms. Pairs with any EEG/oscillations session.',
-    caveats:[
-      'Only the <em>outlines</em> are real geometry (fs_LR/Conte69 32k surface, projected and contoured). Everything painted inside them is modelled.',
-      'The lobe and Brodmann maps are <em>schematic</em>. Each dot takes the nearest landmark-placed seed (a Voronoi partition), not a cytoarchitectural atlas.',
-      'Activity colours are synthetic (a sum of drifting plane waves). No value corresponds to a measured BOLD or connectivity figure.',
-      'The Rate slider is a teaching control the brain does not have. It scales all four bands together, so their true frequency <em>ratios</em> are preserved.',
-      "Alpha's front-to-back direction is the <em>resting</em> case; during active viewing it reverses to back-to-front.",
-      'Delta is the only band shown on the coronal view. Theta, alpha and gamma travel front to back, which on a coronal section runs into the page.',
-      'Conte69 is cortex only: no cerebellum or brainstem, and the coronal notch between the temporal lobes is where the brainstem would sit.',
-      'Wave amplitude is uniform and isotropic here. Real traveling waves vary by region and travel at speeds that depend on fibre direction.'
-    ],
-    mine:''
-  },
-  {
     id:'scale-of-a-neuron',
     title:'Scale of a Neuron',
     file:'scale-of-a-neuron.html',
@@ -237,6 +215,28 @@ const DIAGRAMS = [
       'Amplitudes are a schematic reference, not recorded data. The soma trace is scaled so the summed inputs just reach threshold; the subthreshold trial shows one that falls short.',
       'Spatial scale is only roughly proportional (~100 µm bar). A real layer-5 pyramidal cell has an apical dendrite over 1 mm and a much longer axon.',
       'The backpropagating spike on the dendritic electrode is real but is usually treated as beyond an intro course.'
+    ],
+    mine:''
+  },
+  {
+    id:'cortical-rhythms',
+    title:'Cortical Rhythms',
+    file:'cortical-rhythms.html',
+    thumbLive:true,
+    tags:['neuroanatomy','oscillations','teaching','animation'],
+    label:'INTERACTIVE',
+    blurb:'Three brain views built from the fs_LR/Conte69 surface, switchable between activity, traveling waves (δ/θ/α/γ), lobes and Brodmann areas.',
+    extras:[],
+    connects:'For lectures on cortical organisation and brain rhythms. Pairs with any EEG/oscillations session.',
+    caveats:[
+      'Only the <em>outlines</em> are real geometry (fs_LR/Conte69 32k surface, projected and contoured). Everything painted inside them is modelled.',
+      'The lobe and Brodmann maps are <em>schematic</em>. Each dot takes the nearest landmark-placed seed (a Voronoi partition), not a cytoarchitectural atlas.',
+      'Activity colours are synthetic (a sum of drifting plane waves). No value corresponds to a measured BOLD or connectivity figure.',
+      'The Rate slider is a teaching control the brain does not have. It scales all four bands together, so their true frequency <em>ratios</em> are preserved.',
+      "Alpha's front-to-back direction is the <em>resting</em> case; during active viewing it reverses to back-to-front.",
+      'Delta is the only band shown on the coronal view. Theta, alpha and gamma travel front to back, which on a coronal section runs into the page.',
+      'Conte69 is cortex only: no cerebellum or brainstem, and the coronal notch between the temporal lobes is where the brainstem would sit.',
+      'Wave amplitude is uniform and isotropic here. Real traveling waves vary by region and travel at speeds that depend on fibre direction.'
     ],
     mine:''
   },
