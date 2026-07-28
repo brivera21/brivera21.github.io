@@ -113,7 +113,7 @@
 const DIAGRAMS = [
   {
     id:'brain-composition',
-    title:'I. Brain Composition Breakdown',
+    title:'Brain Composition Breakdown',
     file:'brain-composition.html',
     thumbLive:true,
     tags:['neuroanatomy','teaching','reference'],
@@ -133,7 +133,7 @@ const DIAGRAMS = [
   },
   {
     id:'nervous-tree',
-    title:"II. The Nervous System's Family Tree",
+    title:"The Nervous System's Family Tree",
     file:'nervous-system-tree.html',
     thumb:'tree.svg',
     tags:['evolution','neuroanatomy','teaching'],
@@ -155,27 +155,8 @@ const DIAGRAMS = [
     mine:''
   },
   {
-    id:'spatial-cells',
-    title:'III. Spatial Navigation',
-    file:'spatial-cells.html',
-    thumbLive:true,
-    tags:['spatial','hippocampus','teaching','animation'],
-    label:'INTERACTIVE',
-    blurb:'A rat explores, encodes an object location, then recalls it, with the cell types firing in step.',
-    extras:[],
-    connects:'Accompanies Neil Burgess, <em>Neural mechanisms of spatial cognition</em> (Jim Ranck symposium).',
-    caveats:[
-      'One example cell per type, except the boundary and head-direction sets. Real populations tile all locations, distances and directions.',
-      'The green dots are all fields of a <em>single</em> grid cell, not separate cells.',
-      'Head-direction cells are driven here by movement heading; the real variable is where the head points.',
-      'Boundary vector cells fire at a <em>distance</em> from a boundary, not on contact.',
-      'The cue card is decorative; landmark anchoring of the head-direction ring is not modelled.'
-    ],
-    mine:''
-  },
-  {
     id:'ontogeny-energy',
-    title:'IV. Energy use across ontogeny',
+    title:'Energy use across ontogeny',
     file:'ontogeny-energy.html',
     thumb:'energy-curve.svg',
     tags:['physiology','metabolism','development','teaching'],
@@ -197,7 +178,7 @@ const DIAGRAMS = [
   },
   {
     id:'cortical-rhythms',
-    title:'V. Cortical Rhythms',
+    title:'Cortical Rhythms',
     file:'cortical-rhythms.html',
     thumbLive:true,
     tags:['neuroanatomy','oscillations','teaching','animation'],
@@ -219,7 +200,7 @@ const DIAGRAMS = [
   },
   {
     id:'action-potential',
-    title:'VI. The Action Potential',
+    title:'The Action Potential',
     file:'action-potential.html',
     thumbLive:true,
     tags:['neurophysiology','membrane','synapses','teaching','animation'],
@@ -236,8 +217,29 @@ const DIAGRAMS = [
       'The backpropagating spike on the dendritic electrode is real but is usually treated as beyond an intro course.'
     ],
     mine:''
+  },
+  {
+    id:'spatial-cells',
+    title:'Spatial Navigation',
+    file:'spatial-cells.html',
+    thumbLive:true,
+    tags:['spatial','hippocampus','teaching','animation'],
+    label:'INTERACTIVE',
+    blurb:'A rat explores, encodes an object location, then recalls it, with the cell types firing in step.',
+    extras:[],
+    connects:'Accompanies Neil Burgess, <em>Neural mechanisms of spatial cognition</em> (Jim Ranck symposium).',
+    caveats:[
+      'One example cell per type, except the boundary and head-direction sets. Real populations tile all locations, distances and directions.',
+      'The green dots are all fields of a <em>single</em> grid cell, not separate cells.',
+      'Head-direction cells are driven here by movement heading; the real variable is where the head points.',
+      'Boundary vector cells fire at a <em>distance</em> from a boundary, not on contact.',
+      'The cue card is decorative; landmark anchoring of the head-direction ring is not modelled.'
+    ],
+    mine:''
   }
 ];
+function toRoman(n){const m=[["X",10],["IX",9],["V",5],["IV",4],["I",1]];let r="";for(const [g,v] of m){while(n>=v){r+=g;n-=v;}}return r;}
+DIAGRAMS.forEach((d,i)=>{d.num=toRoman(i+1);});
 
 /* ---------- state ---------- */
 let activeTags=new Set(), query='', view=[], idx=0;
@@ -270,7 +272,7 @@ function render(){
     c.innerHTML=`${d.label?`<span class="badge">${d.label}</span>`:''}
       <div class="thumb">${thumb}</div>
       <div class="card-body">
-        <h3>${d.title}</h3>
+        <h3>${d.num}. ${d.title}</h3>
         <div class="tags">${d.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
         <p>${d.blurb}</p>
       </div>`;
