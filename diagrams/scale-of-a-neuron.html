@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scale of a Neuron</title>
+<style>
+  html,body{margin:0;background:#000000;color:#e6eaf2;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  .wrap{max-width:1180px;margin:0 auto;padding:22px 20px 40px;}
+  h1{font-size:20px;font-weight:650;margin:0 0 3px;color:#f2f5fa;}
+  .sub{font-size:13px;color:#9aa3b5;margin:0 0 14px;line-height:1.55;max-width:940px;}
+  .controls{display:flex;flex-wrap:wrap;gap:14px;align-items:center;
+    background:#12171f;border:1px solid #262c38;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:14px;color:#cfd6e2;}
+  .controls label{font-weight:600;}
+  select{font:inherit;padding:4px 8px;border:1px solid #333b48;border-radius:7px;background:#1a1f28;color:#e6eaf2;}
+  .controls b{color:#ff6f62;}
+  .hint{color:#7f8798;font-size:12.5px;margin-left:auto;}
+  .figbox{background:#000000;border:1px solid #20262f;border-radius:12px;padding:6px 4px;}
+  svg{display:block;width:100%;height:auto;}
+  #info{margin-top:10px;background:#12171f;border:1px solid #262c38;border-radius:10px;
+    padding:11px 14px;font-size:13.5px;line-height:1.5;color:#cfd6e2;min-height:20px;}
+  #info b{color:#f2f5fa;}
+  .hot{cursor:pointer;}
+  .hot.active{ filter: drop-shadow(0 0 2px #ffd45e) drop-shadow(0 0 7px #ffcf3f); }
+  svg.focus .hot:not(.active){ opacity:.24; }
+  .hot, svg.focus .hot:not(.active){ transition:opacity .12s ease; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Scale of a Neuron</h1>
+  <p class="sub">A corticospinal (Betz-type) layer-5 pyramidal neuron. Its cell body and dendrites span only about 2 mm, a speck at the axon's true scale. The axon runs the full height of the frame, about 1 meter, from motor cortex down the corticospinal tract to the lumbosacral spinal cord.</p>
+
+  <div class="controls">
+    <label for="obj">Blow the soma up to</label>
+    <select id="obj">
+      <option data-cm="1">a marble (1 cm)</option>
+      <option data-cm="6.7" selected>a tennis ball (6.7 cm)</option>
+      <option data-cm="24">a basketball (24 cm)</option>
+      <option data-cm="450">a car (4.5 m)</option>
+      <option data-cm="2500">a blue whale (25 m)</option>
+    </select>
+    <span>and the axon would stretch <b id="dist">~1.1 km</b>.</span>
+    <span class="hint">Hover or tap any labeled part →</span>
+  </div>
+
+  <div class="figbox">
+    <svg id="fig" viewBox="-455 -84 1010 1080" role="img" aria-label="Interactive true-scale diagram of a corticospinal pyramidal neuron"></svg>
+  </div>
+  <div id="info">Hover or tap a labeled part of the neuron to learn about it.</div>
+</div>
+
+<script>
+const NS="http://www.w3.org/2000/svg";
+const svg=document.getElementById("fig");
+function el(t,a){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);return e;}
+function mk(p,t,a){const e=el(t,a);p.appendChild(e);return e;}
+function txt(x,y,s,o={}){return mtext(svg,x,y,s,o);}
+function mtext(p,x,y,s,o={}){const e=el("text",Object.assign({x,y,"font-size":16,fill:"#e6eaf2"},o));e.textContent=s;p.appendChild(e);return e;}
+function hit(p,x,y,w,h){mk(p,"rect",{x,y,width:w,height:h,fill:"transparent"});}
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+let rng=mulberry32(4242);
+const rand=(lo,hi)=>lo+(hi-lo)*rng();
+const D2R=Math.PI/180;
+const COL={apical:"#6ea8ff",basal:"#33cbb4",axon:"#ff5b4d",soma:"#6ea8ff",somaEdge:"#0f1830",ink:"#e6eaf2",mut:"#98a2b4"};
+
+// interactive group: new <g class="hot" data-key>; several groups can share a key
+function hg(key){const g=el("g",{class:"hot",tabindex:"0"});g.dataset.key=key;svg.appendChild(g);return g;}
+function arrowIn(p,x1,y1,x2,y2,col,w){
+  mk(p,"line",{x1,y1,x2,y2,stroke:col,"stroke-width":w||1.2});
+  const a=Math.atan2(y2-y1,x2-x1),h=7;
+  mk(p,"path",{d:`M ${x2} ${y2} L ${(x2-h*Math.cos(a-0.4)).toFixed(1)} ${(y2-h*Math.sin(a-0.4)).toFixed(1)} L ${(x2-h*Math.cos(a+0.4)).toFixed(1)} ${(y2-h*Math.sin(a+0.4)).toFixed(1)} Z`,fill:col});
+}
+
+/* ---------- MAIN TRUE-SCALE COLUMN (9 units = 1 cm) ---------- */
+const AX_X=0, AX_TOP=0, AX_BOT=885, RX=-110;
+svg.appendChild(el("line",{x1:RX,y1:AX_TOP,x2:RX,y2:900,stroke:COL.ink,"stroke-width":2}));
+for(let cm=0;cm<=100;cm+=10){const y=cm*9;
+  svg.appendChild(el("line",{x1:RX-7,y1:y,x2:RX,y2:y,stroke:COL.ink,"stroke-width":2}));
+  txt(RX-11,y+5,cm+"",{ "text-anchor":"end","font-size":15,fill:COL.ink,"font-weight":600});}
+txt(RX-11,-40,"Distance",{ "text-anchor":"end","font-size":15,fill:COL.mut,"font-weight":600});
+txt(RX-11,-22,"along axon (cm)",{ "text-anchor":"end","font-size":15,fill:COL.mut,"font-weight":600});
+
+// axon (interactive)
+const gAxonMain=hg("axon");
+mk(gAxonMain,"line",{x1:AX_X,y1:AX_TOP,x2:AX_X,y2:AX_BOT,stroke:COL.axon,"stroke-width":1.6,"stroke-linecap":"round"});
+(function(){const y0=AX_BOT;
+  [-26,-10,8,24].forEach((dx,i)=>{const ex=AX_X+dx,ey=y0+18+(i%2?6:0);
+    mk(gAxonMain,"path",{d:`M ${AX_X} ${y0} Q ${AX_X+dx*0.5} ${y0+9} ${ex} ${ey}`,fill:"none",stroke:COL.axon,"stroke-width":1.2,"stroke-linecap":"round"});
+    mk(gAxonMain,"circle",{cx:ex,cy:ey,r:1.8,fill:COL.axon});});
+  [-30,0,30].forEach(dx=>svg.appendChild(el("circle",{cx:AX_X+dx,cy:y0+30,r:4,fill:"#3a4250"})));})();
+hit(gAxonMain,-6,120,12,760);
+
+// soma speck (interactive)
+const gSomaMain=hg("soma");
+mk(gSomaMain,"circle",{cx:AX_X,cy:AX_TOP,r:1.6,fill:COL.soma});
+hit(gSomaMain,-6,-6,12,12);
+
+// waypoints (interactive)
+function way(cm,lines,color,key){const y=cm*9,g=hg(key);
+  mk(g,"line",{x1:AX_X,y1:y,x2:14,y2:y,stroke:"#5b6675","stroke-width":1});
+  mk(g,"circle",{cx:AX_X,cy:y,r:2,fill:color||"#8892a2"});
+  lines.forEach((ln,i)=>mtext(g,18,y+5+i*17,ln,{ "font-size":15,fill:COL.ink,"font-weight":i?400:600}));
+  hit(g,10,y-14,250,lines.length*17+8);}
+way(0 ,["Primary motor cortex","Betz-cell soma (layer 5)"],COL.soma,"w_cortex");
+way(6 ,["Internal capsule"],null,"w_ic");
+way(13,["Pyramidal decussation","(lower medulla)"],null,"w_dec");
+way(40,["Lateral corticospinal tract","(spinal cord white matter)"],null,"w_cst");
+way(98,["Lower motor neurons","(lumbosacral cord)"],COL.axon,"w_lmn");
+
+// stat block
+(function(){const x=272,y=-70;
+  svg.appendChild(el("rect",{x:x-8,y:y-16,width:266,height:70,rx:8,fill:"#12171f",stroke:"#2b3340","stroke-width":1}));
+  txt(x,y,"Cell body ≈ 0.06 mm",{ "font-size":16,fill:COL.soma,"font-weight":700});
+  txt(x,y+21,"Axon ≈ 1,000 mm  (~1 m)",{ "font-size":16,fill:COL.axon,"font-weight":700});
+  txt(x,y+42,"Dendrites span ≈ 2 mm across",{ "font-size":14,fill:COL.mut,"font-weight":600});})();
+
+// ratio card
+(function(){const R={x:34,y:470,w:220,h:210},cx=R.x+R.w/2;
+  svg.appendChild(el("rect",{x:R.x,y:R.y,width:R.w,height:R.h,rx:10,fill:"#12171f",stroke:"#2b3340","stroke-width":1}));
+  txt(cx,R.y+24,"Soma-to-axon ratio",{ "font-size":14,fill:COL.mut,"font-weight":700,"text-anchor":"middle"});
+  txt(cx,R.y+66,"1 : 16,000",{ "font-size":28,fill:COL.axon,"font-weight":800,"text-anchor":"middle"});
+  txt(cx,R.y+87,"soma width : axon length",{ "font-size":12,fill:COL.mut,"text-anchor":"middle"});
+  txt(R.x+16,R.y+118,"soma ≈ 0.06 mm",{ "font-size":13,fill:COL.soma,"font-weight":600});
+  txt(R.x+16,R.y+137,"axon ≈ 1,000 mm",{ "font-size":13,fill:COL.axon,"font-weight":600});
+  svg.appendChild(el("line",{x1:R.x+16,y1:R.y+150,x2:R.x+R.w-16,y2:R.y+150,stroke:"#2b3340","stroke-width":1}));
+  txt(R.x+16,R.y+174,"The axon is roughly 16,000",{ "font-size":12.5,fill:COL.ink});
+  txt(R.x+16,R.y+191,"times longer than it is wide.",{ "font-size":12.5,fill:COL.ink});})();
+
+/* ---------- BODY PANEL ---------- */
+(function(){const B={x:-445,y:70,w:290,h:650};
+  svg.appendChild(el("rect",{x:B.x,y:B.y,width:B.w,height:B.h,rx:12,fill:"#0e131b",stroke:"#3a4250","stroke-width":1.4}));
+  const bcx=B.x+B.w/2;
+  txt(bcx,B.y+24,"Where the axon reaches",{ "font-size":15,fill:COL.mut,"font-weight":700,"text-anchor":"middle"});
+  txt(bcx,B.y+42,"(schematic, not to ruler scale)",{ "font-size":12,fill:COL.mut,"text-anchor":"middle"});
+  const cx=B.x+150,grey="#39414e",headCy=B.y+92;
+  svg.appendChild(el("ellipse",{cx,cy:headCy,rx:19,ry:22,fill:grey}));
+  svg.appendChild(el("rect",{x:cx-30,y:headCy+24,width:60,height:150,rx:20,fill:grey}));
+  svg.appendChild(el("rect",{x:cx-45,y:headCy+32,width:17,height:130,rx:8,fill:grey}));
+  svg.appendChild(el("rect",{x:cx+28,y:headCy+32,width:17,height:130,rx:8,fill:grey}));
+  svg.appendChild(el("rect",{x:cx-27,y:headCy+170,width:23,height:286,rx:10,fill:grey}));
+  svg.appendChild(el("rect",{x:cx+4 ,y:headCy+170,width:23,height:286,rx:10,fill:grey}));
+  const cordTop=headCy-2,cordBot=headCy+176;
+  // this neuron's axon (interactive, shares 'axon')
+  const gb=hg("axon");
+  mk(gb,"line",{x1:cx,y1:cordTop,x2:cx,y2:cordBot,stroke:COL.axon,"stroke-width":2.6,"stroke-linecap":"round"});
+  mk(gb,"circle",{cx,cy:cordTop,r:3.4,fill:COL.soma});
+  mk(gb,"circle",{cx,cy:cordBot,r:3.2,fill:COL.axon});
+  hit(gb,cx-8,cordTop,16,cordBot-cordTop);
+  svg.appendChild(el("path",{d:`M ${cx} ${cordBot} Q ${cx-16} ${cordBot+120} ${cx-14} ${headCy+430}`,fill:"none",stroke:COL.basal,"stroke-width":2.4,"stroke-linecap":"round"}));
+  svg.appendChild(el("circle",{cx:cx-14,cy:headCy+430,r:3.2,fill:COL.basal}));
+  const bx=cx-62;
+  svg.appendChild(el("line",{x1:bx,y1:cordTop,x2:bx,y2:cordBot,stroke:COL.ink,"stroke-width":2}));
+  svg.appendChild(el("line",{x1:bx-6,y1:cordTop,x2:bx+6,y2:cordTop,stroke:COL.ink,"stroke-width":2}));
+  svg.appendChild(el("line",{x1:bx-6,y1:cordBot,x2:bx+6,y2:cordBot,stroke:COL.ink,"stroke-width":2}));
+  txt(bx-9,(cordTop+cordBot)/2+5,"≈ 1 m",{ "font-size":16,fill:COL.axon,"font-weight":700,"text-anchor":"end"});
+  const ky=B.y+B.h-46,kx=B.x+22;
+  svg.appendChild(el("circle",{cx:kx,cy:ky,r:4,fill:COL.axon}));
+  txt(kx+12,ky+5,"This neuron: cortex → cord (≈ 1 m)",{ "font-size":12.5,fill:COL.ink,"font-weight":600});
+  svg.appendChild(el("circle",{cx:kx,cy:ky+22,r:4,fill:COL.basal}));
+  txt(kx+12,ky+27,"Next neuron: cord → leg muscle",{ "font-size":12.5,fill:COL.ink,"font-weight":600});})();
+
+/* ---------- ZOOM INSET ---------- */
+const BOX={x:270,y:70,w:275,h:640};
+svg.appendChild(el("rect",{x:BOX.x,y:BOX.y,width:BOX.w,height:BOX.h,rx:12,fill:"#0e131b",stroke:"#3a4250","stroke-width":1.6}));
+svg.appendChild(el("line",{x1:AX_X+1.6,y1:0,x2:BOX.x,y2:BOX.y+8,stroke:"#3a4250","stroke-width":1,"stroke-dasharray":"4 4"}));
+svg.appendChild(el("line",{x1:AX_X+1.6,y1:2,x2:BOX.x,y2:BOX.y+90,stroke:"#3a4250","stroke-width":1,"stroke-dasharray":"4 4"}));
+txt(BOX.x+10,BOX.y+22,"Zoom: cell body & dendrites",{ "font-size":14,fill:COL.mut,"font-weight":700});
+txt(BOX.x+10,BOX.y+40,"(magnified ≈ 350x)",{ "font-size":13,fill:COL.mut});
+
+const icx=BOX.x+BOX.w/2+6;
+const T={tuftTop:BOX.y+70, tuftBase:BOX.y+150, apex:BOX.y+470, base:BOX.y+498};
+let paths=[];
+function seg(x,y,ang,len,w,c){const ex=x+len*Math.sin(ang*D2R),ey=y-len*Math.cos(ang*D2R);
+  const mx=(x+ex)/2+rand(-0.14,0.14)*len*Math.cos(ang*D2R),my=(y+ey)/2+rand(-0.14,0.14)*len*Math.sin(ang*D2R);
+  paths.push({d:`M ${x.toFixed(1)} ${y.toFixed(1)} Q ${mx.toFixed(1)} ${my.toFixed(1)} ${ex.toFixed(1)} ${ey.toFixed(1)}`,w,c});return [ex,ey];}
+function grow(x,y,ang,len,order,maxO,c){const w=[2.4,1.7,1.2,0.9,0.75][Math.min(order,4)];
+  const [ex,ey]=seg(x,y,ang,len,w,c);if(order>=maxO||len<11)return;
+  const n=(rng()<0.72)?2:1,spread=rand(15,27);
+  for(let i=0;i<n;i++){const da=(n===1)?rand(-8,8):(i?spread:-spread)*rand(0.7,1.1);grow(ex,ey,ang+da,len*rand(0.62,0.78),order+1,maxO,c);}}
+(function(){const segs=6,y0=T.apex,y1=T.tuftBase;
+  for(let i=0;i<segs;i++){const yy=y0-(y0-y1)*(i/segs),yn=y0-(y0-y1)*((i+1)/segs),w=3.2-(3.2-1.8)*(i/segs);
+    paths.push({d:`M ${icx} ${yy.toFixed(1)} L ${icx} ${yn.toFixed(1)}`,w,c:COL.apical});}})();
+[[T.apex-40,1],[T.apex-95,-1],[T.apex-150,1],[T.apex-205,-1],[T.apex-255,1]].forEach(([yy,s])=>grow(icx,yy,s*rand(62,82),rand(26,34),1,3,COL.apical));
+[-26,-12,0,12,26].forEach(a=>grow(icx,T.tuftBase,a+rand(-4,4),rand(30,40),1,4,COL.apical));
+[120,142,164,180,196,218,240].forEach(a=>grow(icx,T.base,a+rand(-5,5),rand(17,22),0,3,COL.basal));
+
+const gApical=hg("apical"), gBasal=hg("basal");
+paths.forEach(p=>mk(p.c===COL.basal?gBasal:gApical,"path",{d:p.d,fill:"none",stroke:p.c,"stroke-width":p.w,"stroke-linecap":"round","stroke-linejoin":"round"}));
+
+const gSoma=hg("soma");
+mk(gSoma,"path",{d:`M ${icx} ${T.apex-4} C ${icx+9} ${T.apex+4}, ${icx+12} ${T.base-2}, ${icx+13} ${T.base+3}
+  C ${icx+7} ${T.base+9}, ${icx-7} ${T.base+9}, ${icx-13} ${T.base+3}
+  C ${icx-12} ${T.base-2}, ${icx-9} ${T.apex+4}, ${icx} ${T.apex-4} Z`,fill:COL.soma,stroke:COL.somaEdge,"stroke-width":1.2});
+mk(gSoma,"circle",{cx:icx,cy:(T.apex+T.base)/2+3,r:4,fill:"#22335c",opacity:0.5});
+
+const gAxonZ=hg("axon");
+const axEndY=T.base+96;
+mk(gAxonZ,"line",{x1:icx-2,y1:T.base+6,x2:icx-2,y2:axEndY,stroke:COL.axon,"stroke-width":1.4,"stroke-linecap":"round"});
+mk(gAxonZ,"circle",{cx:icx-2,cy:T.base+9,r:2.4,fill:COL.axon});
+mk(gAxonZ,"path",{d:`M ${icx-6} ${axEndY-7} L ${icx-2} ${axEndY} L ${icx+2} ${axEndY-7}`,fill:"none",stroke:COL.axon,"stroke-width":1.4});
+
+// inset labels routed into their interactive groups
+function ilabelIn(g,tx,ty,px,py,s,col,anchor){
+  const dx=tx-px,dy=ty-py,L=Math.hypot(dx,dy)||1,k=Math.min(16,L);
+  mk(g,"line",{x1:px,y1:py,x2:px+dx/L*k,y2:py+dy/L*k,stroke:"#5b6675","stroke-width":1});
+  mk(g,"circle",{cx:px,cy:py,r:1.8,fill:col||"#8892a2"});
+  mtext(g,tx+(anchor==="end"?-4:4),ty+5,s,{ "font-size":15,fill:COL.ink,"font-weight":600,"text-anchor":anchor||"start"});
+  const w=s.length*8.2; hit(g, anchor==="end"?tx-w-6:tx-2, ty-6, w+10, 20);
+}
+mtext(gApical,280,156,"Apical tuft",{ "font-size":15,fill:COL.ink,"font-weight":600});
+arrowIn(gApical,376,152,icx-10,T.tuftTop+48,"#8b93a6",1.2);
+hit(gApical,272,142,96,20);
+ilabelIn(gApical,BOX.x+BOX.w-14,T.apex-150,icx+16,T.apex-150,"Apical trunk",COL.apical,"end");
+ilabelIn(gSoma,BOX.x+16,T.apex+6,icx-12,T.apex+8,"Soma",COL.soma,"start");
+ilabelIn(gBasal,BOX.x+BOX.w-14,T.base+96,icx+30,T.base+52,"Basal dendrites",COL.basal,"end");
+mtext(gAxonZ,BOX.x+16,axEndY-2,"Axon",{ "font-size":15,fill:COL.axon,"font-weight":600});
+arrowIn(gAxonZ,BOX.x+62,axEndY-7,icx-6,axEndY-2,"#8b93a6",1.2);
+hit(gAxonZ,BOX.x+14,axEndY-18,60,22);
+txt(BOX.x+16,axEndY+16,"(the 1 m line at left)",{ "font-size":12,fill:COL.mut,"font-style":"italic"});
+
+// 200 µm scale bar
+const sbx=BOX.x+24,sy=BOX.y+96;
+svg.appendChild(el("line",{x1:sbx,y1:sy,x2:sbx,y2:sy+58,stroke:COL.ink,"stroke-width":3}));
+svg.appendChild(el("line",{x1:sbx-6,y1:sy,x2:sbx+6,y2:sy,stroke:COL.ink,"stroke-width":3}));
+svg.appendChild(el("line",{x1:sbx-6,y1:sy+58,x2:sbx+6,y2:sy+58,stroke:COL.ink,"stroke-width":3}));
+txt(sbx+11,sy+35,"200 µm",{ "font-size":14,fill:COL.ink,"font-weight":700});
+
+// legend
+const lx=-155,ly=955;
+[["Apical dendrites",COL.apical],["Basal dendrites",COL.basal],["Axon",COL.axon]].forEach((r,i)=>{
+  const xx=lx+i*185;
+  svg.appendChild(el("line",{x1:xx,y1:ly,x2:xx+26,y2:ly,stroke:r[1],"stroke-width":5,"stroke-linecap":"round"}));
+  txt(xx+34,ly+5,r[0],{ "font-size":15,fill:COL.ink,"font-weight":600});});
+
+/* ---------- INTERACTIVITY ---------- */
+const INFO={
+  soma:["Soma (cell body)","About 0.06 mm wide, up to 0.1 mm in giant Betz cells. Holds the nucleus and sums incoming signals before the axon fires."],
+  apical:["Apical dendrites","The thick apical trunk (~4→2 µm) climbs 1 to 1.5 mm toward the surface and ends in a fine tuft in layer 1 that gathers feedback inputs."],
+  basal:["Basal dendrites","Radiate from the base of the soma to collect local inputs. The basal field spans about 0.4 mm."],
+  axon:["Axon","The output cable. Only about 1 to 10 µm thick but up to ~1 m long, myelinated as it runs down the corticospinal tract. Highlighted across all three panels."],
+  w_cortex:["Primary motor cortex","Layer 5, where the Betz-cell soma sits and the axon begins its descent (0 cm)."],
+  w_ic:["Internal capsule","A compact white-matter channel the axon threads through just below the cortex (~6 cm)."],
+  w_dec:["Pyramidal decussation","In the lower medulla most corticospinal axons cross to the opposite side of the body (~13 cm)."],
+  w_cst:["Lateral corticospinal tract","The long stretch through spinal-cord white matter, carrying the axon most of the way down (~40 cm)."],
+  w_lmn:["Lower motor neurons","In the lumbosacral cord the axon synapses onto motor neurons that run out to muscle (~98 cm)."]
+};
+const info=document.getElementById("info");
+const DEFAULT="Hover or tap a labeled part of the neuron to learn about it.";
+let pinned=null;
+const groupsFor=k=>svg.querySelectorAll('.hot[data-key="'+k+'"]');
+function show(k){
+  svg.classList.add("focus");
+  svg.querySelectorAll(".hot").forEach(g=>g.classList.toggle("active",g.dataset.key===k));
+  const d=INFO[k]; if(d) info.innerHTML="<b>"+d[0]+".</b> "+d[1];
+}
+function clear(){
+  svg.classList.remove("focus");
+  svg.querySelectorAll(".hot.active").forEach(g=>g.classList.remove("active"));
+  info.innerHTML = pinned?info.innerHTML:DEFAULT;
+}
+svg.querySelectorAll(".hot").forEach(g=>{
+  const k=g.dataset.key;
+  g.addEventListener("pointerenter",()=>{ if(!pinned) show(k); });
+  g.addEventListener("pointerleave",()=>{ if(!pinned) clear(); });
+  g.addEventListener("focus",()=>{ if(!pinned) show(k); });
+  g.addEventListener("blur",()=>{ if(!pinned) clear(); });
+  g.addEventListener("click",e=>{ e.stopPropagation(); if(pinned===k){pinned=null;clear();} else {pinned=k;show(k);} });
+  g.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){e.preventDefault(); if(pinned===k){pinned=null;clear();} else {pinned=k;show(k);}} });
+});
+svg.addEventListener("click",e=>{ if(e.target===svg){ pinned=null; clear(); } });
+
+/* size-comparison control */
+const sel=document.getElementById("obj"), dist=document.getElementById("dist");
+function fmt(m){ if(m<1000) return "~"+(Math.round(m/10)*10)+" m";
+  const km=m/1000; return "~"+(km<10?km.toFixed(1):Math.round(km))+" km"; }
+function update(){ const cm=parseFloat(sel.selectedOptions[0].dataset.cm);
+  dist.textContent=fmt(cm/100*16667); }
+sel.addEventListener("change",update); update();
+</script>
+</body>
+</html>
