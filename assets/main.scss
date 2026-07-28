@@ -31,18 +31,18 @@ code {
 
 .site-title,
 .site-title:visited {
-  color: $grey-color-dark;
+  color: $brand-color;
 }
 .site-title:hover {
-  color: #ffffff;
+  color: lighten($brand-color, 15%);
   text-decoration: none;
 }
 
 .site-nav .page-link {
-  color: $grey-color-dark;
+  color: $brand-color;
 }
 .site-nav .page-link:hover {
-  color: $brand-color;
+  color: lighten($brand-color, 15%);
 }
 
 // Content links in gold
