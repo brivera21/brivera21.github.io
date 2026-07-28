@@ -20,7 +20,7 @@ Psych 390 Electrophysiology of Complex Cognition
 
 Course materials, syllabi, and additional resources will be posted here as they become available.
 
-**[Diagram Lab](/diagrams/)** — a browsable collection of teaching diagrams on the evolution of the nervous system and the neural basis of spatial cognition.
+**[Diagram Lab](/diagrams/)** — interactive neuroscience diagrams — the action potential, cortical rhythms, spatial navigation, brain composition, energy use across development, and the evolution of the nervous system.
 
 ## Teaching Philosophy
 
