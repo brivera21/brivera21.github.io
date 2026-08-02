@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Diagram Lab</title>
+<title>Digital Concepts</title>
 <style>
   :root{
     --bg:#121212; --panel:#1a1a1a; --panel2:#202020;
@@ -77,7 +77,7 @@
 <body>
 <div class="wrap">
   <header>
-    <h1>Diagram Lab</h1>
+    <h1>Digital Concepts</h1>
   </header>
 
   <div class="controls">
@@ -111,6 +111,26 @@
    give it a `thumb` (image path) or set thumbLive:true.
    ============================================================ */
 const DIAGRAMS = [
+  {
+    id:'life-multicellular-brains',
+    title:'Life, Multicellular Organisms, and Brains',
+    file:'life-multicellular-and-brains.html',
+    thumbLive:true,
+    tags:['evolution','teaching','neuroanatomy','thresholds'],
+    label:'INTERACTIVE',
+    blurb:'A brain drawn as a set of nested subsets: non-living matter, life, multicellular life, animals with a nervous system, and the brain, with the four thresholds crossed to get there marked as red rings.',
+    extras:[],
+    connects:'For lectures framing the brain as an evolved organ rather than a magical one: abiogenesis, the major transition to multicellularity, the origin of nervous systems, and encephalization. Pairs with the Nervous System family tree.',
+    caveats:[
+      'The rings are spaced evenly for legibility, not to scale. The true fractions differ by orders of magnitude: life is ~1% of the surface carbon and animals ~0.4% of biomass.',
+      '&ldquo;Non-living matter&rdquo; is the ~41,000 Gt C of actively cycling surface carbon (atmosphere, ocean, soil), the pool life exchanges with, not all of Earth&rsquo;s mass.',
+      'The percentages use different yardsticks: carbon biomass for the four outer layers, neuron count in one human for the brain. They are each honest alone but should not be multiplied into a single chain.',
+      'Multicellularity and nervous systems each evolved more than once; the diagram treats each as a single threshold for clarity.',
+      '&ldquo;Animals with a nervous system&rdquo; is a subset of multicellular life by biomass (~0.4%). By species count animals are most of described life, a very different measure the card also notes.',
+      'Nerve-nets-before-brains is the broad pattern; the fine evolutionary history of nervous systems, including possible independent origins in ctenophores, is still debated.'
+    ],
+    mine:''
+  },
   {
     id:'brain-composition',
     title:'Brain Composition Breakdown',
@@ -178,7 +198,7 @@ const DIAGRAMS = [
   },
   {
     id:'scale-of-a-neuron',
-    title:'The Neuron',
+    title:'Scale of a Neuron',
     file:'scale-of-a-neuron.html',
     thumb:'scale-of-a-neuron.svg',
     tags:['neuroanatomy','morphology','scale','teaching'],
@@ -215,6 +235,28 @@ const DIAGRAMS = [
       'Amplitudes are a schematic reference, not recorded data. The soma trace is scaled so the summed inputs just reach threshold; the subthreshold trial shows one that falls short.',
       'Spatial scale is only roughly proportional (~100 µm bar). A real layer-5 pyramidal cell has an apical dendrite over 1 mm and a much longer axon.',
       'The backpropagating spike on the dendritic electrode is real but is usually treated as beyond an intro course.'
+    ],
+    mine:''
+  },
+  {
+    id:'ion-channels',
+    title:'Ion Channels',
+    file:'ion-channels.html',
+    thumbLive:true,
+    tags:['neurophysiology','membrane','channels','teaching','animation'],
+    label:'INTERACTIVE',
+    blurb:'The ways ions cross the membrane, each drawn to scale in a 4 nm bilayer: an ungated K⁺ leak pore, three gated channels (voltage, ligand, mechanical), and the Na⁺/K⁺ pump. Animated ion traffic, live voltmeters, and a shared-scale size strip.',
+    extras:[],
+    connects:'The zoomed companion to the Action Potential diagram, which deliberately leaves the channels out. For lectures on membrane transport, the resting potential, and how the channels of the action potential open.',
+    caveats:[
+      'The out:in crossing ratios in the leak panel (about 10:1, 3:1, and 1:1) are a teaching schematic of the flux balance, chosen to track the meter reading. They show the direction of the argument, not measured single-channel rates.',
+      'The leak panel settles at the K⁺ equilibrium potential (about -90 mV). The whole-cell resting voltage sits a little more positive (about -70 mV) because of a smaller Na⁺ leak, which is not shown here.',
+      'Channels and the pump are drawn to scale against the 4 nm bilayer, but the ions are drawn larger than life so they stay visible. A real ion is a small fraction of a pore.',
+      'In the voltage panel the depolarization is shown as a front that drifts in and crosses a voltmeter to trip the gate. Real propagation is regenerative and much faster; the meter and the sweeping wave are a teaching device, not a recording.',
+      'The gate drawings (the hinged flaps on the Na⁺ and Ca²⁺ channels, the ball and chain on the K⁺ channel) are representative styles, not exact structures.',
+      'The Na⁺/K⁺ pump follows the Post-Albers scheme, 3 Na⁺ out and 2 K⁺ in per ATP. Its states are simplified to alternating access, and the binding and occlusion steps are schematic.',
+      'Piezo1 is drawn as the mechanically gated example. Its relative Piezo2 is the main sensor for touch and proprioception.',
+      'Ion numbers and speeds are illustrative. They are not concentrations, currents, or rates.'
     ],
     mine:''
   },

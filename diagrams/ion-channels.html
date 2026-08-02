@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ion Channels</title>
+<style>
+  :root{
+    --bg:#0b1120; --panel:#111a2e; --panel2:#0e1626; --stroke:#243149;
+    --ink:#e8eef8; --muted:#94a3b8; --faint:#5b6b86;
+    --na:#3b82f6; --k:#f59e0b; --ca:#22c55e; --lipid:#c8a869; --ligand:#c084fc;
+    --volt:#38bdf8; --lig:#c084fc; --mech:#fb7185; --leak:#2dd4bf; --pump:#818cf8;
+    --closed:#8296b3; --open:#4ade80;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  .wrap{max-width:1080px;margin:0 auto;padding:22px 20px 40px;}
+  header h1{font-size:23px;margin:0 0 5px;font-weight:650;letter-spacing:.2px;}
+  header p{margin:0 0 4px;color:var(--muted);font-size:13.5px;max-width:880px;line-height:1.55;}
+  .controls{margin:16px 0 6px;display:flex;flex-wrap:wrap;gap:10px 12px;align-items:center;
+    background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--stroke);
+    border-radius:12px;padding:12px 14px;}
+  button{font:inherit;color:var(--ink);background:#1b2740;border:1px solid var(--stroke);
+    border-radius:9px;padding:8px 14px;cursor:pointer;font-size:13.5px;transition:.15s;}
+  button:hover{background:#243350;border-color:#375073;}
+  button.primary{background:#1f6feb;border-color:#1f6feb;color:#fff;font-weight:600;}
+  button.primary:hover{background:#3b82f6;}
+  .ctl-note{font-size:12.5px;color:var(--faint);}
+  .slider{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);margin-left:auto;}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:5px;border-radius:5px;
+    background:#22314e;outline:none;cursor:pointer;width:110px;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;
+    background:var(--ink);border:2px solid var(--volt);cursor:pointer;}
+
+  .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--stroke);
+    border-left-width:4px;border-radius:14px;padding:0;margin-top:14px;overflow:hidden;}
+  .card.volt{border-left-color:var(--volt);}
+  .card.lig{border-left-color:var(--lig);}
+  .card.mech{border-left-color:var(--mech);}
+  .card.leak{border-left-color:var(--leak);}
+  .card.leak .tri{color:var(--leak);}
+  .card.pump{border-left-color:var(--pump);}
+  .card.pump .tri{color:var(--pump);}
+  .card .top{display:flex;align-items:center;gap:12px;padding:12px 16px 8px;flex-wrap:wrap;}
+  .card .cnum{display:inline-flex;align-items:center;justify-content:center;width:23px;height:23px;border-radius:50%;
+    background:#141d30;border:1.5px solid var(--stroke);color:var(--muted);font-size:12.5px;font-weight:800;flex:none;}
+  .card.leak .cnum{border-color:var(--leak);color:var(--leak);}
+  .card.volt .cnum{border-color:var(--volt);color:var(--volt);}
+  .card.lig  .cnum{border-color:var(--lig);color:var(--lig);}
+  .card.mech .cnum{border-color:var(--mech);color:var(--mech);}
+  .card.pump .cnum{border-color:var(--pump);color:var(--pump);}
+  .card .tri{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1px;}
+  .card.volt .tri{color:var(--volt);}
+  .card.lig .tri{color:var(--lig);}
+  .card.mech .tri{color:var(--mech);}
+  .card h3{margin:0;font-size:15px;font-weight:600;color:var(--ink);}
+  .trig{margin-left:auto;font-size:12.5px;font-weight:600;padding:7px 13px;}
+  .trig.volt{background:rgba(56,189,248,.14);border-color:rgba(56,189,248,.5);color:#bae6fd;}
+  .trig.volt.on{background:var(--volt);border-color:var(--volt);color:#04122b;font-weight:700;}
+  .trig.lig{background:rgba(192,132,252,.14);border-color:rgba(192,132,252,.5);color:#e9d5ff;}
+  .trig.lig.on{background:var(--lig);border-color:var(--lig);color:#1a0b2e;font-weight:700;}
+  .trig.mech{background:rgba(251,113,133,.14);border-color:rgba(251,113,133,.5);color:#fecdd3;}
+  .trig.mech.on{background:var(--mech);border-color:var(--mech);color:#2a0810;font-weight:700;}
+  .trig.pump{background:rgba(129,140,248,.14);border-color:rgba(129,140,248,.5);color:#c7d2fe;}
+  .trig.pump.on{background:var(--pump);border-color:var(--pump);color:#0b1030;font-weight:700;}
+  .state{margin-left:10px;font-size:12px;font-weight:800;letter-spacing:.6px;padding:4px 12px;border-radius:999px;
+    transition:.2s;}
+  .state.c{background:#232f47;color:var(--closed);}
+  .state.o{background:#123524;color:var(--open);box-shadow:0 0 14px -3px var(--open);}
+  canvas{display:block;width:100%;background:#0a1220;}
+  .card .cap{padding:9px 16px 14px;font-size:13px;line-height:1.55;color:#cdd7e6;}
+  .card .cap b{color:var(--ink);}
+  .signal{display:inline-block;font-weight:700;padding:1px 7px;border-radius:5px;font-size:12.5px;}
+  .signal.volt{background:rgba(56,189,248,.16);color:#7dd3fc;}
+  .signal.lig{background:rgba(192,132,252,.16);color:#d8b4fe;}
+  .signal.mech{background:rgba(251,113,133,.16);color:#fda4af;}
+
+  .scalecard{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--stroke);
+    border-radius:14px;margin-top:18px;padding:12px 16px 14px;}
+  .scalecard h3{margin:0 0 2px;font-size:14px;font-weight:650;}
+  .scalecard p{margin:0 0 6px;font-size:12.5px;color:var(--muted);line-height:1.5;}
+
+  .legend{margin-top:14px;display:flex;flex-wrap:wrap;gap:9px 18px;font-size:12.5px;color:var(--muted);
+    background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--stroke);
+    border-radius:12px;padding:11px 16px;align-items:center;}
+  .legend .item{display:flex;align-items:center;gap:7px;}
+  .iondot{width:15px;height:15px;border-radius:50%;flex:none;box-shadow:0 0 7px currentColor;}
+  .swatch{width:15px;height:15px;border-radius:4px;flex:none;}
+  .sources{margin-top:18px;font-size:11.5px;color:var(--faint);line-height:1.7;
+    border-top:1px solid var(--stroke);padding-top:12px;}
+  .sources b{color:var(--muted);display:block;margin-bottom:4px;font-size:12px;}
+  .sources a{color:#6ea8fe;text-decoration:none;}
+  .sources a:hover{text-decoration:underline;}
+  .sources ol{margin:0;padding-left:18px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Ion Channels</h1>
+    <p>Gated ion channels all do the same job. They let specific ions cross the membrane. What differs is the signal that opens them, and there are three kinds. Each panel has its own button. <b style="color:var(--volt)">Add voltage</b> opens the voltage-gated channels, <b style="color:var(--lig)">Bind ligand</b> opens the ligand-gated one, and <b style="color:var(--mech)">Apply force</b> opens the mechanically-gated one. Each opens with its own ions crossing. Ions are colored by species: <b style="color:#93c5fd">Na⁺</b>, <b style="color:#fcd34d">K⁺</b>, <b style="color:#86efac">Ca²⁺</b>.</p>
+  </header>
+
+  <div class="controls">
+    <button id="auto">▶ Auto-cycle all</button>
+    <span class="ctl-note" id="statuslbl">Press a channel's button to open it. Nothing opens on its own.</span>
+    <div class="slider"><span>Speed</span><input id="speed" type="range" min="0.4" max="1.8" step="0.05" value="1"><span id="speedv" style="color:var(--ink);font-weight:600;">1.0×</span></div>
+  </div>
+
+  <div class="card leak">
+    <div class="top"><span class="cnum">1</span><span class="tri">🔓 Ungated (leak)</span><h3>always open, no trigger needed</h3><span class="state o">OPEN</span></div>
+    <canvas id="cvLeak"></canvas>
+    <div class="cap">This channel is a <b>pore, not a valve</b>: it is selective for K⁺ but has <b>no directional preference</b>. Any K⁺ that wanders into the pore from either side goes through. So K⁺ crosses <b>both ways the whole time</b>, and what changes is the balance. Near 0&nbsp;mV the concentration gradient is unopposed, so outward crossings far outnumber inward ones (roughly <b>10&nbsp;:&nbsp;1</b>). As the inside grows negative, its charge pulls more K⁺ back in, so the return traffic climbs to about <b>3&nbsp;:&nbsp;1</b> near &minus;45&nbsp;mV, and reaches <b>1&nbsp;:&nbsp;1</b> at the <b>K⁺ equilibrium potential (&approx;&minus;90&nbsp;mV)</b>. There the meter sits still, but the traffic has not stopped. K⁺ is still pouring across both ways, now in balance, so there is no <i>net</i> change. (The cell's actual resting voltage is a little more positive, near &minus;70&nbsp;mV, because of a smaller Na⁺ leak; the Na⁺/K⁺ pump keeps the gradients topped up.) Compare it with the gated channels below, which stay shut until their own signal arrives.</div>
+  </div>
+
+  <div class="card volt">
+    <div class="top"><span class="cnum">2</span><span class="tri">⚡ Voltage-gated</span><h3>opened by a change in membrane voltage</h3><button class="trig volt" id="btnVolt">⚡ Add voltage</button><span class="state c" id="st-volt">CLOSED</span></div>
+    <canvas id="cvVolt"></canvas>
+    <div class="cap">The signal is <span class="signal volt">membrane voltage</span>. Each channel carries charged <b>S4 "voltage-sensor" helices</b>. When the membrane depolarizes, they slide outward and pull the gate open, letting Na⁺, K⁺, and Ca²⁺ through. Press <b>Add voltage</b> and a depolarization wave sweeps across the membrane, opening each channel as it passes and closing it again behind. The Na⁺ and Ca²⁺ channels close with a hinged gate whose two flaps meet to seal the pore; the K⁺ channel shows the other common style, a <b>ball-and-chain "tail"</b> that swings up and plugs the pore. These are the channels that make the action potential.</div>
+  </div>
+
+  <div class="card lig">
+    <div class="top"><span class="cnum">3</span><span class="tri">💊 Ligand-gated</span><h3>opened by a chemical binding to it</h3><button class="trig lig" id="btnLig">💊 Bind ligand</button><span class="state c" id="st-lig">CLOSED</span></div>
+    <canvas id="cvLig"></canvas>
+    <div class="cap">The signal is a <span class="signal lig">chemical messenger</span>. Two <b>acetylcholine</b> molecules drift in and dock in pockets between the subunits of this five-part channel. Their binding twists the subunits and tilts the pore-lining helices apart. It passes cations: Na⁺, K⁺, and some Ca²⁺.</div>
+  </div>
+
+  <div class="card mech">
+    <div class="top"><span class="cnum">4</span><span class="tri">⇕ Mechanically-gated</span><h3>opened by physical force on the membrane</h3><button class="trig mech" id="btnMech">⇕ Apply force</button><span class="state c" id="st-mech">CLOSED</span></div>
+    <canvas id="cvMech"></canvas>
+    <div class="cap">The signal is <span class="signal mech">force on the membrane</span>. Curved blades bow the membrane into a dome. When something presses or pulls on the membrane (touch, pressure, or blood flow), its <b>tension</b> rises. That tension pulls the dome flat, and flattening opens the central pore. Piezo1 works this way, letting in Ca²⁺ and Na⁺. Its close relative Piezo2 is the main sensor for touch and proprioception.</div>
+  </div>
+
+  <div class="card pump">
+    <div class="top"><span class="cnum">5</span><span class="tri">🔋 Na⁺/K⁺ pump</span><h3>active transport that moves ions against their gradients</h3><button class="trig pump" id="btnPump">🔋 Run pump</button><span class="state c" id="st-pump">IDLE</span></div>
+    <canvas id="cvPump"></canvas>
+    <div class="cap">This is <b>not a gated channel</b>. It is a <b>pump</b>. Instead of letting ions slide down their gradients, it spends energy to push them <b>up</b> theirs, and that is what builds the gradients the channels above rely on. Each turn of the cycle it carries <b>3&nbsp;Na⁺ out</b> and <b>2&nbsp;K⁺ in</b>, powered by one <b>ATP</b>. It works by <span class="signal" style="background:rgba(129,140,248,.16);color:#c7d2fe">alternating access</span>: 3&nbsp;Na⁺ bind from the inside, ATP phosphorylates the pump and it flips to face outward and releases them, then 2&nbsp;K⁺ bind from outside, a phosphate leaves, and it flips back to release the K⁺ inside. Because it exports 3 positive charges for every 2 it imports, it is <b>electrogenic</b>: each cycle moves a net <b>+1 charge out</b>, which itself makes the inside slightly more negative. Press <b>Run pump</b> to watch one cycle repeat.</div>
+  </div>
+
+  <div class="scalecard">
+    <h3>Channel Size and Scale</h3>
+    <p>All the channels above, plus one of each ion and an ACh molecule, drawn to one scale in the same membrane.</p>
+    <canvas id="cvScale"></canvas>
+  </div>
+
+  <div class="legend">
+    <span class="item"><span class="iondot" style="background:var(--na);color:var(--na)"></span>Na⁺</span>
+    <span class="item"><span class="iondot" style="background:var(--k);color:var(--k)"></span>K⁺</span>
+    <span class="item"><span class="iondot" style="background:var(--ca);color:var(--ca)"></span>Ca²⁺</span>
+    <span class="item"><span class="iondot" style="background:var(--ligand);width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:7.5px;font-weight:800;line-height:1;box-shadow:0 0 7px var(--ligand);">ACh</span>ACh, ligand (acetylcholine)</span>
+    <span class="item"><span class="swatch" style="background:var(--lipid)"></span>Phospholipid bilayer</span>
+    <span class="item"><span class="swatch" style="background:#8ea3c4;display:inline-flex;align-items:center;justify-content:center;color:#0e1626;font-weight:800;font-size:12px;line-height:1;">+</span>S4 voltage-sensor charge</span>
+  </div>
+
+  <div class="sources">
+    <b>Sources</b>
+    <ol>
+      <li>Alberts et&nbsp;al., <a href="https://www.ncbi.nlm.nih.gov/books/NBK26910/" target="_blank" rel="noopener">Molecular Biology of the Cell: Ion Channels and the Electrical Properties of Membranes</a>; Milo &amp; Phillips, <a href="https://book.bionumbers.org/what-is-the-thickness-of-the-cell-membrane/" target="_blank" rel="noopener">cell-membrane thickness</a>.</li>
+      <li>K⁺ leak, the K⁺ equilibrium potential and the resting membrane potential: <a href="https://www.ncbi.nlm.nih.gov/books/NBK538338/" target="_blank" rel="noopener">Physiology, Resting Potential, <i>StatPearls</i></a>.</li>
+      <li>Ahern et&nbsp;al., <a href="https://rupress.org/jgp/article/147/1/1/43478/The-hitchhiker-s-guide-to-the-voltage-gated-sodium" target="_blank" rel="noopener">voltage-gated Na⁺ channel, S4 sensor, gating &amp; inactivation, <i>J. Gen. Physiol.</i> 2016</a>.</li>
+      <li>Noviello et&nbsp;al., <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8135066/" target="_blank" rel="noopener">nicotinic acetylcholine receptor, ligand-driven gating, <i>Cell</i> 2021</a>.</li>
+      <li>Saotome et&nbsp;al., <a href="https://www.nature.com/articles/nature25453" target="_blank" rel="noopener">Piezo1 structure, <i>Nature</i> 2018</a>; Zhao et&nbsp;al., <a href="https://febs.onlinelibrary.wiley.com/doi/10.1111/febs.14711" target="_blank" rel="noopener">Piezo1 mechanogating, <i>FEBS J.</i> 2019</a>; Ranade et&nbsp;al., <a href="https://www.nature.com/articles/nature13980" target="_blank" rel="noopener">Piezo2 is the major transducer for touch, <i>Nature</i> 2014</a>.</li>
+      <li>Clausen, Hilbers &amp; Poulsen, <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5915534/" target="_blank" rel="noopener">the structure &amp; function of the Na⁺,K⁺-ATPase (Post-Albers cycle, 3 Na⁺ : 2 K⁺, electrogenic), <i>Front. Physiol.</i> 2017</a>; Pirahanchi et&nbsp;al., <a href="https://www.ncbi.nlm.nih.gov/books/NBK537088/" target="_blank" rel="noopener">Physiology, Sodium-Potassium Pump, <i>StatPearls</i></a>.</li>
+    </ol>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ============================================================================
+   A clean taxonomy of channel GATING. Three stacked panels (voltage / ligand /
+   mechanical), each drawn to scale with its own lipids, sharing one stimulus so
+   you can compare how the same "stimulate" event opens each by a different means.
+   A bottom strip shows all five channels at one shared scale (relative sizes).
+   ============================================================================ */
+const C = { na:"#3b82f6", k:"#f59e0b", ca:"#22c55e", lipid:"#c8a869", ligand:"#c084fc",
+  volt:"#38bdf8", lig:"#c084fc", mech:"#fb7185" };
+
+/* ---- each panel has its OWN stimulus (its own button). `stim`/`depolClock`
+   below are the CURRENT panel's values, assigned per-panel at render time. ---- */
+let stim=0, depolClock=0, auto=false, speed=1, nowMs=0, last=null;
+
+/* ---- current drawing transform (set per panel before drawing) ---- */
+let S=12, oX=0, oY=0, MEMTOP=9, curCanvas=null;
+const MEM=4;
+const X = nm => oX + nm*S;
+const Y = nm => oY + nm*S;
+const L = nm => nm*S;
+const MEMBOT = () => MEMTOP+MEM;
+
+/* ---- primitives ---- */
+function rr(x,y,w,h,r){ ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+function hexA(hex,a){ const c=hex.replace("#","");
+  return `rgba(${parseInt(c.substr(0,2),16)},${parseInt(c.substr(2,2),16)},${parseInt(c.substr(4,2),16)},${a})`; }
+function shade(hex,amt){ const c=hex.replace("#","");const cl=v=>Math.max(0,Math.min(255,v));
+  return `rgb(${cl(parseInt(c.substr(0,2),16)+amt)},${cl(parseInt(c.substr(2,2),16)+amt)},${cl(parseInt(c.substr(4,2),16)+amt)})`; }
+function rnd(a,b){ return a+Math.random()*(b-a); }
+let ctx=null;
+
+/* ============================================================================
+   PANELS
+   ============================================================================ */
+const panels = {};
+function setupPanel(id, canvasId, worldH, memtop, targetH, minView){
+  const canvas = document.getElementById(canvasId);
+  panels[id] = { id, canvas, ctx:canvas.getContext("2d"), worldH, memtop, targetH, minView,
+                 channels:[], piezoX:null, piezoHalf:0, viewMax:60, ions:[],
+                 stim:0, stimT:0, depolClock:0 };
+}
+/* per panel: vertical world height (nm), membrane-top (nm), fixed pixel height, min nm visible across */
+setupPanel("leak","cvLeak", 22, 8.5, 240, 26);
+setupPanel("volt","cvVolt", 22, 8.5, 290, 58);   // wide enough that the 3 channels stay well spaced
+setupPanel("lig","cvLig",  22, 10,  300, 26);
+setupPanel("mech","cvMech", 22, 8.5, 285, 40);
+setupPanel("pump","cvPump", 22, 8.5, 300, 24);   // one transporter, room for its cytoplasmic head
+setupPanel("scale","cvScale", 22, 8.5, 190, 142); // widened so the pump also fits in the shared-scale strip
+panels.leak.stim=1; panels.leak.stimT=1;   // the leak channel is always open
+
+/* Channels are laid out to fill the panel width each resize (membrane spans the whole canvas). */
+function layoutPanel(P){
+  const vm=P.viewMax; P.piezoX=null;
+  if(P.id==="leak"){
+    P.channels=[{x:vm/2, tm:6, ion:"k", kind:"leak"}];
+  } else if(P.id==="volt"){
+    P.voltMeterX=3.5;
+    // three channels with even membrane gaps that always fit (minView keeps the panel wide enough)
+    const defs=[{tm:7,ion:"na",kind:"single"},{tm:6,ion:"k",kind:"kv"},{tm:7,ion:"ca",kind:"single"}];
+    const startX=8, endMargin=3, wsum=defs[0].tm+defs[1].tm+defs[2].tm;
+    const gap=(vm-startX-endMargin-wsum)/(defs.length+1);   // equal gaps, exactly fills the width
+    let x=startX+gap;
+    P.channels=[];
+    for(const d of defs){ P.channels.push({...d, x:x+d.tm/2}); x+=d.tm+gap; }
+  } else if(P.id==="lig"){
+    P.channels=[{x:vm/2, tm:7, ion:"lig", kind:"achr"}];
+  } else if(P.id==="mech"){
+    const cx=vm/2; P.channels=[{x:cx, tm:28, ion:"ca", kind:"piezo"}]; P.piezoX=cx; P.piezoHalf=14;
+  } else if(P.id==="pump"){
+    P.channels=[{x:vm/2, tm:11, ion:"pump", kind:"pump"}];
+  } else { // scale strip: all channels at one scale, centered, extra clearance before Piezo's blades
+    const defs=[{tm:6,ion:"k",kind:"leak"},{tm:9,ion:"na",kind:"single"},{tm:8,ion:"k",kind:"kv"},
+      {tm:9,ion:"ca",kind:"single"},{tm:7,ion:"lig",kind:"achr"},{tm:28,ion:"ca",kind:"piezo"},
+      {tm:10,ion:"pump",kind:"pump"}];
+    const gaps=[7,7,8,9,15,12];
+    let total=0; for(let i=0;i<defs.length;i++){ total+=defs[i].tm; if(i<gaps.length) total+=gaps[i]; }
+    let x=Math.max(6,(vm-total)/2); P.channels=[];
+    for(let i=0;i<defs.length;i++){ const d=defs[i], cx=x+d.tm/2;
+      P.channels.push({...d,x:cx}); if(d.kind==="piezo"){P.piezoX=cx;P.piezoHalf=14;}
+      x+=d.tm+(gaps[i]||0); }
+  }
+}
+
+/* ============================================================================
+   SIZING
+   ============================================================================ */
+function resizeAll(){
+  for(const id in panels){
+    const P = panels[id];
+    const raw = P.canvas.parentElement.getBoundingClientRect().width - (id==="scale"?32:0);
+    // clamp width so the scale is always finite and positive (a 0-width parent at load must
+    // never produce S=0 / viewMax=NaN, which would crash the canvas on the first gradient)
+    const cssW = Math.max(60, raw || 60);
+    const dpr = Math.min(2, window.devicePixelRatio||1);
+    const padY = 10;
+    const heightS = (P.targetH - 2*padY)/P.worldH;      // scale that fills the height
+    const widthS  = P.minView ? cssW/P.minView : heightS; // scale that keeps minView nm visible
+    const s = Math.max(0.5, Math.min(heightS, widthS));  // zoom out (never in); never 0
+    const cssH = P.targetH;
+    P.cssW=cssW; P.cssH=cssH; P.dpr=dpr; P.S=s;
+    P.canvas.style.height = cssH+"px";
+    P.canvas.width = Math.max(1,Math.round(cssW*dpr)); P.canvas.height = Math.max(1,Math.round(cssH*dpr));
+    P.oX = 0; P.oY = (cssH - P.worldH*s)/2;             // centre vertically when zoomed out
+    P.viewMax = cssW/s;                                 // visible width in nm (membrane fills it)
+    layoutPanel(P);
+    seedIons(P);
+  }
+}
+
+/* ============================================================================
+   IONS  (few, calm; cross only near an open pore mouth)
+   ============================================================================ */
+function addLeakers(P,n){
+  // K⁺ that WILL leak out this cycle: seeded through the cytoplasm depth so they rise up and exit
+  const memtop=P.memtop, W=P.viewMax, cx=(P.channels[0]?P.channels[0].x:W/2), span=Math.min(22,W*0.5);
+  for(let i=0;i<n;i++){ const x=Math.max(3,Math.min(W-3, cx+rnd(-span,span)));
+    P.ions.push({type:"k",comp:"in",home:"in",leaks:true,x,y:rnd(memtop+MEM+2,P.worldH-1.4),vx:rnd(-.4,.4),vy:rnd(-.4,.4),crossing:false,cool:0}); }
+}
+function seedLeak(P){
+  // The cell keeps most of its K⁺ inside: a resident pool. Crossings are recruited dynamically from it
+  // as the potential falls, so we start from a fresh 0 mV with almost everything inside.
+  P.ions=[];
+  const memtop=P.memtop, W=P.viewMax, k=Math.max(1,W/44), R=Math.round(26*k);
+  for(let i=0;i<R;i++) P.ions.push({type:"k",comp:"in",home:"in",leaks:false,returns:false,x:rnd(3,W-3),y:rnd(memtop+MEM+1.2,P.worldH-1.4),vx:rnd(-.4,.4),vy:rnd(-.4,.4),crossing:false,cool:0});
+  for(let i=0;i<4;i++) P.ions.push({type:"k",comp:"out",home:"out",leaks:false,returns:false,x:rnd(3,W-3),y:rnd(1.2,memtop-1),vx:rnd(-.4,.4),vy:rnd(-.4,.4),crossing:false,cool:0});
+  P.vm=0; P.leakSettleT=0; P._koc=0; P._kic=0;
+}
+// recruit the INSIDE resident NEAREST the pore to leak OUT (nearest -> short trip -> it actually crosses)
+function recruitLeakOut(P){
+  const ch=P.channels[0];
+  const c=P.ions.filter(p=>p.comp==="in" && !p.leaks && !p.returns && !p.crossing);
+  if(c.length<=4) return;                                   // always leave a resident pool behind
+  c.sort((a,b)=>Math.abs(a.x-ch.x)-Math.abs(b.x-ch.x));
+  c[0].leaks=true;
+}
+// recruit the OUTSIDE K⁺ nearest the pore to drift back IN (the return flux that grows near equilibrium)
+function recruitLeakIn(P){
+  const ch=P.channels[0];
+  const c=P.ions.filter(p=>p.comp==="out" && !p.returns && !p.crossing);
+  if(!c.length) return;
+  c.sort((a,b)=>Math.abs(a.x-ch.x)-Math.abs(b.x-ch.x));
+  c[0].returns=true;
+}
+function seedIons(P){
+  P.ions=[]; P.spawnPool=[];
+  if(P.id==="scale") return;                          // scale strip draws its own single to-scale ion
+  if(P.id==="pump") return;                           // pump panel manages its own transported ions
+  if(P.id==="leak"){ seedLeak(P); return; }     // leak panel runs its own looping simulation
+  const memtop = P.memtop, W=P.viewMax;
+  const add=(type,comp,n)=>{
+    P.spawnPool.push({type,comp,w:n});           // remember the mix so new ions match the gradient
+    for(let i=0;i<n;i++){
+      const x=rnd(1,W-1);
+      // start ions hugging their membrane wall (the resting double layer), not scattered through the
+      // bulk, so nothing has to visibly fall onto the membrane when the scene seeds or a loop resets
+      const y = comp==="out" ? rnd(memtop-2.6, memtop-1.0) : rnd(memtop+MEM+1.0, memtop+MEM+2.6);
+      P.ions.push({type,comp,home:comp,x,y,vx:rnd(-.25,.25),vy:rnd(-.2,.2),crossing:false,cool:0});
+    }
+  };
+  // scale ion counts to how wide the panel is, so density stays even
+  const k = Math.max(1, W/44);
+  if(P.id==="leak"){ add("k","in",Math.round(30*k)); add("k","out",Math.round(8*k)); add("na","out",Math.round(6*k)); }
+  else if(P.id==="volt"){ add("na","out",Math.round(30*k)); add("ca","out",Math.round(16*k)); add("k","in",Math.round(34*k)); }
+  else if(P.id==="lig"){ add("na","out",Math.round(24*k)); add("ca","out",Math.round(14*k)); add("k","in",Math.round(24*k)); }
+  else if(P.id==="mech"){ add("ca","out",Math.round(32*k)); add("na","out",Math.round(26*k)); }
+}
+/* pick a fresh (type, side) matching this panel's gradient mix, for an ion entering from a side */
+function pickSpawn(P){
+  let tot=0; for(const s of P.spawnPool) tot+=s.w;
+  let r=Math.random()*tot;
+  for(const s of P.spawnPool){ r-=s.w; if(r<=0) return s; }
+  return P.spawnPool[0];
+}
+/* send an ion off-screen back in from a side, drifting slowly inward, as a fresh gradient-correct ion */
+function respawnFromSide(p,P){
+  const s=pickSpawn(P), fromLeft=Math.random()<0.5, memtop=P.memtop;
+  p.type=s.type; p.comp=s.comp; p.home=s.comp; p.crossing=false; p.trail=null; p.cool=0; p.recyc=0;
+  p.x = fromLeft ? -1.2 : P.viewMax+1.2;
+  p.y = s.comp==="out" ? rnd(1.2, memtop-1.0) : rnd(memtop+MEM+1.0, P.worldH-1.4);
+  p.vx = (fromLeft?1:-1)*rnd(0.15,0.4);          // gentle drift inward
+  p.vy = rnd(-.15,.15);
+}
+function channelsOf(P){ return P.channels; }
+/* the solid footprint of a channel (world nm): ions can't drift through it, only the pore passes them */
+function channelBox(ch,P){
+  const mt=P.memtop, mb=mt+MEM;
+  if(ch.kind==="achr")  return {halfW:ch.tm/2+0.6, yT:mt-6.7, yB:mb+2.6, poreHalf:1.4};
+  if(ch.kind==="piezo") return {halfW:3.8,          yT:mt-0.8, yB:mb+5.4, poreHalf:2.2};
+  if(ch.kind==="leak")  return {halfW:ch.tm/2+0.3,  yT:mt-1.2, yB:mb+2.2, poreHalf:ch.tm/2-0.2};
+  return {halfW:ch.tm/2+0.6, yT:mt-1.6, yB:mb+2.8, poreHalf:1.5};   // single / kv
+}
+/* how open is each channel right now (0..1). Leak is always 1. In the voltage panel a slow
+   depolarization wave opens each channel only as it sweeps past. Everywhere else the whole
+   channel opens with the panel's own stimulus. Sets ch._open, used for drawing AND flux. */
+function waveOpenAt(P,x){
+  // The propagating wave exists ONLY after the Na channel has fired. It starts AT the Na channel and
+  // sweeps to the RIGHT, opening the downstream channels — Na's opening is what triggers it.
+  if(P.voltStage!=="fire") return 0;
+  const wx=(P.waveStartX||0)+(P.wavePhase||0), band=9;
+  return Math.max(0, 1 - Math.abs(x-wx)/band);
+}
+/* Voltage panel plays a real action-potential sequence, looping:
+   BUILD  - a depolarization sweeps in from the left; the meter reading rises only as that front passes
+            THROUGH the voltmeter, and the gate stays shut until the front has crossed it.
+   FIRE   - crossing the meter pops the Na gate open; that opening launches a wave that propagates to
+            the RIGHT, opening the downstream channels in turn.
+   SCATTER- the membrane repolarizes, ions spread, then the scene re-seeds and the cycle replays. */
+function stepVoltLoop(P,dt){
+  const na=P.channels.find(c=>c.ion==="na");
+  if(P.stim<=0.2){ P.voltStage="build"; P.naDepol=0; P.wavePhase=0; P.scatterT=0; return; }
+  P.naDepol=P.naDepol||0;
+  const span=P.viewMax+16;
+  if(P.voltStage==="scatter"){
+    P.scatterT-=dt; P.naDepol=Math.max(0,P.naDepol-dt*1.6);          // repolarize back toward rest
+    if(P.scatterT<=0){ reseedVolt(P); P.voltStage="build"; P.naDepol=0; P.wavePhase=0; }
+    return;
+  }
+  if(P.voltStage==="fire"){
+    P.naDepol=Math.min(1,P.naDepol+dt*3.0);                          // fast regenerative upstroke to the peak
+    P.wavePhase=(P.wavePhase||0)+dt*(P.viewMax/5);                   // wave spreads right from the Na channel
+    if((P.waveStartX||0)+P.wavePhase>=span){ P.voltStage="scatter"; P.scatterT=2.2; }
+    return;
+  }
+  // BUILD: the depolarization travels IN from the left and the meter reading rises only as that front
+  // sweeps THROUGH the voltmeter. The channel does not fire until the front has crossed the meter.
+  P.voltStage="build";
+  if(na){
+    // meter geometry (world nm), mirroring drawNaVoltFrame: frame right edge sits just left of the channel
+    const mRight = na.x - na.tm/2 - 11/P.S;
+    const mLeft  = mRight - 84/P.S;
+    let front=-1e9; for(const q of P.ions){ if(q.influx && q.x>front) front=q.x; }
+    const t = (front - mLeft)/Math.max(0.5,(mRight - mLeft));   // 0 at meter's near edge, 1 once it clears the far edge
+    const target = Math.max(0, Math.min(0.2, t*0.15));          // reaches threshold (0.14) exactly as it crosses the meter
+    P.naDepol += (target - P.naDepol)*Math.min(1,dt*9);
+    if(P.naDepol>=0.14){ P.voltStage="fire"; P.waveStartX=na.x; }   // front has crossed the meter -> Na fires
+  }
+}
+/* fresh start positions for the voltage loop: cations waiting outside, K⁺ waiting inside, ready to cross */
+function reseedVolt(P){
+  const W=P.viewMax, memtop=P.memtop, k=Math.max(1,W/44);
+  P.ions=[]; P.spawnPool=[];
+  const add=(type,comp,n)=>{ P.spawnPool.push({type,comp,w:n});
+    for(let i=0;i<n;i++){ const x=rnd(1,W-1);
+      // seed ions ALREADY hugging their membrane wall, so a loop reset has no distracting drop from above
+      const y=comp==="out"?rnd(memtop-2.6,memtop-1.0):rnd(memtop+MEM+1.0,memtop+MEM+2.6);
+      P.ions.push({type,comp,home:comp,x,y,vx:rnd(-.25,.25),vy:rnd(-.2,.2),crossing:false,cool:0}); } };
+  add("na","out",Math.round(30*k)); add("ca","out",Math.round(16*k)); add("k","in",Math.round(34*k));
+}
+/* Ligand and mechanical panels also LOOP: while the channel is held open, ions pour across for a few
+   seconds, then a short scatter pause lets them spread, then the gradient re-seeds and the flow replays,
+   so you keep seeing the ion movement rather than a still, equilibrated picture. */
+function stepFlowLoop(P,dt){
+  if(P.stim<=0.4){ P.flowMode="idle"; P.flowT=0; return; }   // not triggered: no loop
+  const openv=(P.channels[0]&&P.channels[0]._open)||0;
+  if(P.flowMode==="scatter"){
+    P.flowT-=dt;
+    if(P.flowT<=0){ seedIons(P); P.flowMode="flow"; P.flowT=4.8; }   // reset the gradient, replay the flow
+    return;
+  }
+  if(openv<0.5){ P.flowMode="fill"; return; }                 // still waiting for the channel to open
+  P.flowMode="flow";
+  P.flowT=(P.flowT>0?P.flowT:4.8)-dt;
+  if(P.flowT<=0){ P.flowMode="scatter"; P.flowT=1.6; }        // pause and let the crossed ions spread
+}
+function computeOpenness(P,dt){
+  for(const ch of P.channels){
+    if(ch.kind==="leak") ch._open=1;
+    else if(P.id==="volt"){
+      // the Na channel opens only when it FIRES (threshold crossed); the others open as the wave reaches them
+      if(ch.ion==="na") ch._open=(P.voltStage==="fire")?(P.naDepol||0):0;
+      else ch._open=waveOpenAt(P,ch.x);
+    }
+    else if(P.id==="lig"){
+      // the receptor opens only once ACh has actually bound (eased for a smooth gate)
+      const bound=(P.ligMol||[]).filter(m=>m.state==="bound").length;
+      ch._open=(ch._open||0)+(bound/2-(ch._open||0))*Math.min(1,dt*6);
+    }
+    else ch._open=P.stim;
+  }
+}
+/* does this channel currently let THIS ion (its species + side) through its pore? */
+function channelConductsIon(ch,p,openv){
+  const conduct = ch._open||0;
+  if(conduct<=0.4) return false;
+  if(ch.kind==="achr")  return p.comp==="out" ? (p.type==="na"||p.type==="ca") : (p.type==="k");
+  if(ch.kind==="piezo") return p.comp==="out" && (p.type==="ca"||p.type==="na");
+  if(ch.ion==="k")  return p.type==="k"  && p.comp==="in";
+  if(ch.ion==="na") return p.type==="na" && p.comp==="out";
+  if(ch.ion==="ca") return p.type==="ca" && p.comp==="out";
+  return false;
+}
+/* moves: which species cross, from which side, for an OPEN channel in this panel */
+function movesOf(P){
+  const out=[];
+  for(const ch of P.channels){
+    if(ch.kind==="achr"){ out.push({x:ch.x,type:"na",from:"out"},{x:ch.x,type:"ca",from:"out"},{x:ch.x,type:"k",from:"in"}); }
+    else if(ch.kind==="piezo"){ out.push({x:ch.x,type:"ca",from:"out"},{x:ch.x,type:"na",from:"out"}); }
+    else if(ch.ion==="k"){ out.push({x:ch.x,type:"k",from:"in"}); }
+    else if(ch.ion==="na"){ out.push({x:ch.x,type:"na",from:"out"}); }
+    else if(ch.ion==="ca"){ out.push({x:ch.x,type:"ca",from:"out"}); }
+  }
+  return out;
+}
+function updateIons(P, dt){
+  const memtop=P.memtop, memb=memtop+MEM;
+  const scattering = (P.flowMode==="scatter");   // loop pause: let the crossed ions spread, emit nothing new
+  const naCh=P.channels.find(c=>c.ion==="na");   // used to aim the left-side influx just at the Na channel
+  // personal space: non-crossing ions that pile up softly push each other apart, so a cluster at the
+  // base of a pore spreads out (ions behind repel the ones in front) instead of freezing in a clump
+  { const arr=P.ions;
+    for(let i=0;i<arr.length;i++){ const a=arr[i]; if(a.crossing) continue;
+      for(let j=i+1;j<arr.length;j++){ const b=arr[j]; if(b.crossing) continue;
+        const dx=a.x-b.x, dy=a.y-b.y, d2=dx*dx+dy*dy;
+        if(d2<1.96 && d2>1e-4){ const d=Math.sqrt(d2), f=(1.4-d)/d*dt*7;
+          a.vx+=dx*f; a.vy+=dy*f; b.vx-=dx*f; b.vy-=dy*f; } } } }
+  // build the list of conducting mouths from each channel's current openness (ch._open)
+  const moves=[];
+  for(const ch of P.channels){
+    const conduct = ch._open||0;
+    if(conduct<=0.4) continue;
+    if(ch.kind==="achr"){ moves.push({x:ch.x,type:"na",from:"out"},{x:ch.x,type:"ca",from:"out"},{x:ch.x,type:"k",from:"in"}); }
+    else if(ch.kind==="piezo"){ moves.push({x:ch.x,type:"ca",from:"out"},{x:ch.x,type:"na",from:"out"}); }
+    else if(ch.ion==="k"){ moves.push({x:ch.x,type:"k",from:"in"}); }
+    else if(ch.ion==="na"){ moves.push({x:ch.x,type:"na",from:"out"}); }
+    else if(ch.ion==="ca"){ moves.push({x:ch.x,type:"ca",from:"out"}); }
+  }
+  // HIGH-THROUGHPUT: while a channel is open, actively stream a dense column of ions through it by
+  // recruiting nearby source ions (this is the "traffic through the open channel" you want).
+  for(const ch of P.channels){
+    if(scattering) break;                            // no new crossings during the loop's scatter pause
+    const ov=ch._open||0; if(ov<=0.45) continue;
+    let specs;
+    if(ch.kind==="achr") specs=[["na","out"],["ca","out"],["k","in"]];
+    else if(ch.kind==="piezo") specs=[["ca","out"],["na","out"]];
+    else if(ch.ion==="k") specs=[["k","in"]];
+    else if(ch.ion==="na") specs=[["na","out"]];
+    else if(ch.ion==="ca") specs=[["ca","out"]];
+    else continue;
+    ch._emit=(ch._emit||0)+dt*ov*14;                 // up to ~14 crossings/sec at full open
+    let guard=0;
+    while(ch._emit>=1 && guard++<8){
+      ch._emit-=1;
+      const sp=specs[(Math.random()*specs.length)|0];
+      let best=null, bd=10;                            // recruit the nearest matching ion within ~10 nm
+      for(const q of P.ions){ if(q.crossing||q.type!==sp[0]||q.comp!==sp[1]||q.cool>0) continue;
+        const d=Math.abs(q.x-ch.x); if(d<bd){bd=d;best=q;} }
+      if(best) startCross(best,{x:ch.x,type:sp[0],from:sp[1]},memtop); else break;
+    }
+  }
+  // INFLUX FROM THE LEFT (BUILD phase only): a small stream of cations enters from the left edge — as if
+  // a channel just off-screen had opened — and drifts over to pile up just left of the Na channel. That
+  // local build-up of charge is what lifts the voltage to threshold. It does NOT travel across the diagram.
+  if(P.id==="volt" && P.stim>0.5 && P.voltStage==="build"){
+    P._inflow=(P._inflow||0)+dt*3.5;
+    let live=0; for(const q of P.ions) if(q.influx) live++;
+    while(P._inflow>=1 && live<11){ P._inflow-=1; live++;
+      P.ions.push({type:Math.random()<0.72?"na":"ca",comp:"out",home:"out",influx:true,
+        x:rnd(-2.6,-0.4),y:rnd(memtop-2.2,memtop-0.6),vx:rnd(.3,.7),vy:rnd(-.3,.3),crossing:false,cool:0}); }   // emerge at the membrane on the left, as if from a channel just off-screen
+  }
+  for(const p of P.ions){
+    if(p.crossing){ // advance transit — but ONLY while this ion's gate is still open
+      const gv=p.crossCh?(p.crossCh._open||0):1;
+      // If the gate shuts while the ion is still at/before it (first ~60% of the path), the ion does
+      // NOT get through: it backs out and is blocked. Once it is already past the gate it commits.
+      if(gv<=0.4 && p.cp<0.6) p.reverse=true;
+      else if(gv>0.6) p.reverse=false;          // gate swung back open in time: resume forward
+      p.cp += (p.reverse?-1:1)*p.cspeed*0.06*dt*60;
+      if(p.cp<=0){                              // backed all the way out: blocked, returned to its own side
+        p.crossing=false; p.trail=null; p.cool=0.5; p.x=p.mx;
+        if(p.dest==="in"){ p.y=memtop-1.3; p.vy=-Math.abs(rnd(.3,.6)); }
+        else             { p.y=memb+1.3;   p.vy= Math.abs(rnd(.3,.6)); }
+        p.vx=rnd(-.6,.6); continue;
+      }
+      if(p.cp>=1){ p.crossing=false; p.comp=p.dest; p.x=p.ex; p.y=p.ey; p.cool=0.22; p.trail=null;
+        // FOUNTAIN: the ion comes straight up the middle of the pore, then sprays out to the sides and
+        // falls back onto the membrane wall (the double-layer pull below brings it to the surface). Strong
+        // sideways velocity + a small drift clear of the pore make the spray; it never shoots into the bulk.
+        p.vx=rnd(-1.3,1.3); p.vy=(p.dest==="in"?1:-1)*rnd(.05,.2); continue; }
+      if(p.cp<0.5){ const e=p.cp/0.5; p.x=p.sx+(p.mx-p.sx)*e; p.y=p.sy+(p.my-p.sy)*e; }
+      else { const e=(p.cp-0.5)/0.5; p.x=p.mx+(p.ex-p.mx)*e; p.y=p.my+(p.ey-p.my)*e; }
+      if(p.trail){ p.trail.push([p.x,p.y]); if(p.trail.length>6)p.trail.shift(); }
+      continue;
+    }
+    // INFLUX ions stream in from the left along the outer face, at about the wave's pace, and cross where
+    // the Na channel has opened — so the incoming charge visibly drives the depolarization and the gate.
+    if(p.influx){
+      if(P.voltStage!=="build"){ p.influx=false; }         // once the channel fires, join the normal pool (can cross)
+      else {
+        // These flow in as if a channel just off-screen on the LEFT had opened: they emerge at the membrane
+        // and spread rightward from that source by BROWNIAN motion (a random walk), staying near the membrane
+        // face — no dropping from the top. Their leading edge crossing the meter is what trips the gate.
+        p.vx += rnd(-.7,.7)+0.32; p.vx*=0.8;                             // random walk, biased right (away from the source)
+        p.vy += rnd(-.7,.7)+0.05; p.vy*=0.8;                             // random walk, only faintly biased toward the membrane
+        const m=1.3; p.vx=Math.max(-m,Math.min(m,p.vx)); p.vy=Math.max(-m,Math.min(m,p.vy));
+        p.x += p.vx*dt*7.0; p.y += p.vy*dt*7.0;
+        if(p.x<-3){p.x=-3;p.vx=Math.abs(p.vx);}
+        if(p.y<0.9){p.y=0.9;p.vy=Math.abs(p.vy);}                        // stay in the outside compartment
+        if(p.y>memtop-0.5){p.y=memtop-0.5;p.vy=-Math.abs(p.vy)*0.4;}     // glance off the membrane face
+        continue;
+      }
+    }
+    // gentle brownian drift (a touch livelier)
+    p.vx+=rnd(-.22,.22); p.vy+=rnd(-.22,.22); p.vx*=0.92; p.vy*=0.92;
+    // ELECTRICAL DOUBLE LAYER: the membrane is a charged surface, so ions are drawn to whichever face
+    // they are nearest and cling along it instead of dispersing into the bulk. The net charge that
+    // holds the membrane potential really does sit in a thin sheet hugging each side of the membrane.
+    // Use the LOCAL membrane surface (which domes under Piezo), so ions follow the real wall, not a flat line.
+    const surfT=membraneTopAt(p.x), surfB=surfT+MEM;
+    { const face=(p.comp==="out")?surfT:surfB, dir=(p.comp==="out")?1:-1, gap=dir*(face-p.y);
+      if(gap>0.7) p.vy += dir*Math.min(0.42, 0.03+gap*0.03); }
+    // short-range funnel to an open mouth of the right species/side
+    if(p.cool<=0 && !scattering){
+      for(const mo of moves){
+        if(mo.from!==p.comp || mo.type!==p.type) continue;
+        const my = mo.from==="out"?memtop:memb;
+        const dx=mo.x-p.x, dy=my-p.y, d=Math.hypot(dx,dy);
+        if(d>0.001 && d<9){ const f=(1-d/9)*0.3; p.vx+=dx/d*f; p.vy+=dy/d*f;
+          if(Math.abs(mo.x-p.x)<2.7 && Math.abs(my-p.y)<2.0){ startCross(p,mo,memtop); }
+        }
+      }
+    }
+    const m=0.95; p.vx=Math.max(-m,Math.min(m,p.vx)); p.vy=Math.max(-m,Math.min(m,p.vy));
+    p.x+=p.vx*dt*7.5; p.y+=p.vy*dt*7.5;             // drift speed
+    const W=P.viewMax;
+    // ions may drift off EITHER side of the picture; when one leaves, a fresh gradient-correct
+    // ion drifts back in from a side, so nothing ever pops into existence mid-screen
+    if(p.x<-2 || p.x>W+2){ respawnFromSide(p,P); continue; }
+    // vertically they stay in their compartment (they only cross the membrane through a pore)
+    if(p.comp==="out"){ const t=1.0,b=surfT-0.9;
+      if(p.y<t){p.y=t;p.vy=Math.abs(p.vy);} if(p.y>b){p.y=b;p.vy=-Math.abs(p.vy);} }
+    else { const t=surfB+0.9,b=P.worldH-1.4;
+      if(p.y<t){p.y=t;p.vy=Math.abs(p.vy);} if(p.y>b){p.y=b;p.vy=-Math.abs(p.vy);} }
+    // go AROUND channel bodies (only the pore passes them); nothing crosses a closed channel
+    for(const ch of P.channels){
+      const box=channelBox(ch,P);
+      if(p.y>box.yT && p.y<box.yB && Math.abs(p.x-ch.x)<box.halfW){
+        // Push ions around the SOLID walls only. The pore lumen stays clear for an ion that JUST
+        // crossed (cool>0) so it exits straight down the center; once that grace ends, a lingering ion
+        // is nudged out of the lumen too, so the wall-hugging pull can't drag it back up into the pore.
+        if(!channelConductsIon(ch,p) && (Math.abs(p.x-ch.x)>box.poreHalf || p.cool<=0)){
+          if(p.x<ch.x){ p.x=ch.x-box.halfW-0.05; p.vx=-Math.abs(p.vx)*0.6-0.02; }
+          else        { p.x=ch.x+box.halfW+0.05; p.vx= Math.abs(p.vx)*0.6+0.02; }
+        }
+      }
+    }
+    if(p.cool>0) p.cool-=dt;
+  }
+}
+/* Dedicated leak-panel simulation: K⁺ ions wander by Brownian motion; a K⁺ leaks out ONLY when it
+   drifts right up to the pore (very short-range, no long pull). When the inside pool empties, the
+   scene pauses briefly and re-seeds from the set start point, so it replays. */
+function updateLeakPanel(P,dt){
+  const memtop=P.memtop, memb=memtop+MEM, W=P.viewMax, ch=P.channels[0]; if(!ch) return;
+  ch._open=1;
+  const box=channelBox(ch,P);
+  // MEMBRANE POTENTIAL. The channel is a PORE, not a valve: K⁺ crosses BOTH ways the whole time. What
+  // changes is the balance. The inside voltage approaches the K⁺ equilibrium potential (~ -90 mV): the
+  // net (outward - inward) charge that has left drives it there, fast while the gradient is unopposed and
+  // slowing as the growing negative voltage recruits more inward crossings, until the two fluxes are equal.
+  P.vm=(P.vm==null?0:P.vm);
+  P.vm += (-90-P.vm)*Math.min(1,dt*0.42);
+  const d=Math.max(0,Math.min(1,(P.vm+90)/90));          // 1 at 0 mV, 0.5 at -45 mV, 0 at -90 mV
+  // The OUT:IN crossing ratio is tied directly to the meter reading: ~10:1 at 0 mV, ~3:1 at -45, 1:1 at -90.
+  // Total traffic stays HIGH throughout (including at equilibrium) — the meter sits still because the two
+  // rates are EQUAL, not because the crossings stop.
+  const ratio=Math.pow(10,d);                            // 10 -> ~3.16 -> 1
+  const total=7.0;                                       // crossings per second, both directions combined
+  const outRate=total*ratio/(1+ratio), inRate=total/(1+ratio);
+  const sp=1;                                            // no slowdown near -90: the scene stays lively
+  const lk=P.ions.filter(p=>p.leaks).length, rt=P.ions.filter(p=>p.returns).length;
+  P._koc=(P._koc||0)+dt*outRate; P._kic=(P._kic||0)+dt*inRate;
+  while(P._koc>=1){ P._koc-=1; if(lk<9) recruitLeakOut(P); }   // cap only the queue so recruits clear the pore
+  while(P._kic>=1){ P._kic-=1; if(rt<9) recruitLeakIn(P); }
+  for(const p of P.ions){
+    if(p.crossing){
+      p.cp += p.cspeed*0.03*dt*60*(0.55+0.45*sp);          // even the transit slows as things settle
+      if(p.cp>=1){ p.crossing=false; p.comp=p.dest; p.x=p.ex; p.y=p.ey; p.cool=0.3; p.trail=null;
+        p.leaks=false; p.returns=false;
+        p.vx=rnd(-.8,.8); p.vy=(p.dest==="out"?-1:1)*rnd(.1,.35); continue; }
+      if(p.cp<0.5){ const e=p.cp/0.5; p.x=p.sx+(p.mx-p.sx)*e; p.y=p.sy+(p.my-p.sy)*e; }
+      else { const e=(p.cp-0.5)/0.5; p.x=p.mx+(p.ex-p.mx)*e; p.y=p.my+(p.ey-p.my)*e; }
+      if(p.trail){ p.trail.push([p.x,p.y]); if(p.trail.length>6)p.trail.shift(); }
+      continue;
+    }
+    // livelier Brownian motion so ions actually wander around
+    p.vx+=rnd(-.34,.34); p.vy+=rnd(-.34,.34); p.vx*=0.9; p.vy*=0.9;
+    if(p.comp==="in" && p.leaks){
+      p.vy -= dt*3.2;                                        // rise to the membrane
+      if(p.y < memb+4.5){ p.vx += (ch.x>p.x?1:-1)*dt*4.2; }  // migrate along the face to the pore
+      if(p.cool<=0){
+        const dx=ch.x-p.x, dy=memb-p.y;
+        if(Math.abs(dx)<2.3 && Math.abs(dy)<2.3){ startCross(p,{x:ch.x,type:"k",from:"in"},memtop); continue; }
+      }
+    } else if(p.comp==="out" && p.returns){
+      p.vy += dt*3.2;                                        // drift back DOWN toward the membrane from outside
+      if(p.y > memtop-4.5){ p.vx += (ch.x>p.x?1:-1)*dt*4.2; } // migrate along the outer face to the pore
+      if(p.cool<=0){
+        const dx=ch.x-p.x, dy=memtop-p.y;
+        if(Math.abs(dx)<2.3 && Math.abs(dy)<2.3){ startCross(p,{x:ch.x,type:"k",from:"out"},memtop); continue; }
+      }
+    } else {
+      // ELECTRICAL DOUBLE LAYER: residents inside, and the K⁺ that has leaked outside, both cling to
+      // their membrane face and hug the wall instead of filling the bulk — the charge separation the
+      // voltage meter reads.
+      const face=(p.comp==="out")?memtop:memb, dir=(p.comp==="out")?1:-1, gap=dir*(face-p.y);
+      if(gap>0.7) p.vy += dir*Math.min(0.42,0.03+gap*0.03);
+    }
+    const throughPore=(p.comp==="in"&&p.leaks)||(p.comp==="out"&&p.returns);
+    const m=1.0; p.vx=Math.max(-m,Math.min(m,p.vx)); p.vy=Math.max(-m,Math.min(m,p.vy));
+    const f=throughPore?1:sp;                              // recruits cross at full pace; the resting pool slows
+    p.x+=p.vx*dt*7*f; p.y+=p.vy*dt*7*f;
+    if(p.comp==="in"){ if(p.x<1.2){p.x=1.2;p.vx=Math.abs(p.vx);} if(p.x>W-1.2){p.x=W-1.2;p.vx=-Math.abs(p.vx);}
+      const t=memb+0.9,b=P.worldH-1.4; if(p.y<t){p.y=t;p.vy=Math.abs(p.vy);} if(p.y>b){p.y=b;p.vy=-Math.abs(p.vy);} }
+    else { if(p.x<1.2){p.x=1.2;p.vx=Math.abs(p.vx);} if(p.x>W-1.2){p.x=W-1.2;p.vx=-Math.abs(p.vx);}   // leaked K⁺ lines the outer wall
+      const t=1.0,b=memtop-0.9; if(p.y<t){p.y=t;p.vy=Math.abs(p.vy);} if(p.y>b){p.y=b;p.vy=-Math.abs(p.vy);} }
+    // everything bounces off the channel body except a K⁺ actually heading through the pore
+    if(p.y>box.yT && p.y<box.yB && Math.abs(p.x-ch.x)<box.halfW && !throughPore){
+      if(p.x<ch.x){p.x=ch.x-box.halfW-0.05;p.vx=-Math.abs(p.vx)*0.6;} else {p.x=ch.x+box.halfW+0.05;p.vx=Math.abs(p.vx)*0.6;}
+    }
+    if(p.cool>0) p.cool-=dt;
+  }
+  P.ions=P.ions.filter(p=>!p.dead);
+  P.vmProg=-P.vm/90;
+  // LOOP: after sitting balanced at -90 for a few seconds (still exchanging both ways at a high rate),
+  // re-seed from 0 mV so the whole establishment of the resting potential replays.
+  if(d<0.03) P.leakSettleT=(P.leakSettleT||0)+dt; else P.leakSettleT=0;
+  if((P.leakSettleT||0)>5.0) seedLeak(P);
+}
+function startCross(p,mo,memtop){
+  const dest = mo.from==="out"?"in":"out";
+  p.crossing=true; p.cp=0; p.cspeed=rnd(0.7,0.95); p.dest=dest;
+  const P=curP;
+  // Lock the whole through-membrane segment to the pore centerline so ions shoot
+  // STRAIGHT through the middle of the pore instead of veering out to one side.
+  p.sx=p.x; p.sy=p.y;
+  // Phase 1 (start -> mid) does ALL the sideways alignment, ending on the pore's
+  // centerline just outside the entry face. Phase 2 (mid -> exit) is then a pure
+  // vertical line straight down the middle of the pore. No lateral offset anywhere,
+  // so ions punch straight through the center instead of sliding out a side gutter.
+  p.mx=mo.x;                                                  // lined up dead center, above/below the mouth
+  p.my = dest==="in" ? memtop-1.6 : memtop+MEM+1.6;          // just outside the entry face
+  p.ex=mo.x;                                                  // exit on the same centerline
+  // Land clear of THIS channel's body (past its full footprint) so the ion emerges all the way into
+  // the compartment. Deep channels like Piezo's stem reach far below the membrane, so a fixed depth
+  // left ions stuck inside the stem: clear the actual box so they are pushed right through and out.
+  const xch=P.channels.find(c=>Math.abs(c.x-mo.x)<0.8);
+  const xbox=xch?channelBox(xch,P):{yT:memtop-1.6,yB:memtop+MEM+2.8};
+  p.ey = dest==="in" ? xbox.yB+rnd(0.9,1.9) : xbox.yT-rnd(0.9,1.9);
+  p.crossCh=xch||null;                   // remember the gate, so we can block this ion if it shuts mid-transit
+  p.reverse=false;
+  p.trail=[];
+}
+let curP=null;
+
+/* ============================================================================
+   DRAWING — membrane + channels (use current transform globals)
+   ============================================================================ */
+function membraneTopAt(x){ // flat, except a dome under Piezo (mech + scale panels)
+  if(curP && curP.piezoX!=null){
+    const d=x-curP.piezoX, half=curP.piezoHalf;
+    if(Math.abs(d)<half){ const t=d/half;
+      const flat = curP.id==="mech" ? (1-0.9*stim) : 1;   // mech dome flattens with force; scale strip static
+      return MEMTOP + 3.0*0.5*(1+Math.cos(Math.PI*t))*flat;
+    }
+  }
+  return MEMTOP;
+}
+function gapAt(x, chans){
+  for(const ch of chans){ let half=ch.tm/2; if(ch.kind==="piezo") half=3.6;
+    if(Math.abs(x-ch.x)<half+0.4) return true; }
+  return false;
+}
+function drawMembrane(chans){
+  const hr=Math.max(1.4,L(0.5)), step=0.66;
+  for(let x=0.6;x<curP.viewMax-0.4;x+=step){
+    if(gapAt(x,chans)) continue;
+    const yt=membraneTopAt(x), yb=yt+MEM, px=X(x);
+    ctx.strokeStyle=hexA(C.lipid,0.4); ctx.lineWidth=Math.max(1,L(0.1));
+    ctx.beginPath();
+    ctx.moveTo(px-L(0.12),Y(yt)+hr); ctx.lineTo(px-L(0.12),Y((yt+yb)/2));
+    ctx.moveTo(px+L(0.12),Y(yt)+hr); ctx.lineTo(px+L(0.12),Y((yt+yb)/2));
+    ctx.moveTo(px-L(0.12),Y(yb)-hr); ctx.lineTo(px-L(0.12),Y((yt+yb)/2));
+    ctx.moveTo(px+L(0.12),Y(yb)-hr); ctx.lineTo(px+L(0.12),Y((yt+yb)/2));
+    ctx.stroke();
+    head(px,Y(yt)+hr,hr); head(px,Y(yb)-hr,hr);
+  }
+}
+function head(px,py,hr){
+  const g=ctx.createRadialGradient(px-hr*0.3,py-hr*0.3,hr*0.2,px,py,hr);
+  g.addColorStop(0,shade(C.lipid,40)); g.addColorStop(1,C.lipid);
+  ctx.fillStyle=g; ctx.beginPath(); ctx.arc(px,py,hr,0,7); ctx.fill();
+}
+function drawCompartmentLabels(){
+  const fs=Math.max(9,L(0.82));
+  ctx.font="700 "+fs+"px -apple-system,Segoe UI,sans-serif"; ctx.textBaseline="middle";
+  ctx.save(); ctx.translate(9+fs*0.5,(Y(0.4)+Y(MEMTOP))/2); ctx.rotate(-Math.PI/2);
+  ctx.textAlign="center"; ctx.fillStyle="rgba(147,197,253,.7)"; ctx.fillText("OUT",0,0); ctx.restore();
+  ctx.save(); ctx.translate(9+fs*0.5,(Y(MEMTOP+MEM)+Y(curP.worldH-0.6))/2); ctx.rotate(-Math.PI/2);
+  ctx.textAlign="center"; ctx.fillStyle="rgba(134,239,172,.65)"; ctx.fillText("IN",0,0); ctx.restore();
+  ctx.textBaseline="alphabetic";
+}
+
+/* ---- ions ---- */
+function drawIons(P, front){
+  for(const p of P.ions){
+    if(!!p.crossing!==front) continue;
+    const c = p.type==="na"?C.na : p.type==="k"?C.k : C.ca;
+    const r = p.type==="na"?0.6 : p.type==="k"?0.7 : 0.65;
+    const px=X(p.x), py=Y(p.y), pr=L(r);
+    ctx.save();
+    if(p.crossing){
+      if(p.trail){ for(let i=0;i<p.trail.length;i++){ const a=(i+1)/p.trail.length;
+        ctx.globalAlpha=a*0.4; ctx.fillStyle=c; ctx.beginPath(); ctx.arc(X(p.trail[i][0]),Y(p.trail[i][1]),pr*0.5*a,0,7); ctx.fill(); } ctx.globalAlpha=1; }
+      ctx.shadowColor=c; ctx.shadowBlur=12;
+    } else ctx.globalAlpha=0.9;
+    const g=ctx.createRadialGradient(px-pr*0.3,py-pr*0.3,pr*0.2,px,py,pr);
+    g.addColorStop(0,shade(c,70)); g.addColorStop(1,c);
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(px,py,pr,0,7); ctx.fill(); ctx.shadowBlur=0;
+    ctx.lineWidth=p.crossing?1.2:1; ctx.strokeStyle=p.crossing?"rgba(255,255,255,.6)":"rgba(0,0,0,.25)"; ctx.stroke();
+    ctx.globalAlpha=1; ctx.restore();
+  }
+}
+
+/* ---- gate + S4 helpers ---- */
+function gate(cx,gy,halfPore,openv,col){
+  // ONE pair of hinged flaps for BOTH states: closed -> tips meet in the centre and seal the pore;
+  // open -> the same flaps swing straight down and the pore is clear. Same object, different angle.
+  const Lp=halfPore, phi=openv*(Math.PI/2);
+  const lx=cx-halfPore, rx=cx+halfPore;
+  const ltx=lx+Lp*Math.cos(phi), lty=gy+Lp*Math.sin(phi);
+  const rtx=rx-Lp*Math.cos(phi), rty=gy+Lp*Math.sin(phi);
+  ctx.strokeStyle=shade(col,28); ctx.lineWidth=Math.max(2.6,L(0.3)); ctx.lineCap="round";
+  ctx.beginPath();
+  ctx.moveTo(lx,gy); ctx.lineTo(ltx,lty);
+  ctx.moveTo(rx,gy); ctx.lineTo(rtx,rty);
+  ctx.stroke();
+  ctx.fillStyle=shade(col,28);
+  ctx.beginPath(); ctx.arc(lx,gy,Math.max(1.4,L(0.15)),0,7); ctx.fill();
+  ctx.beginPath(); ctx.arc(rx,gy,Math.max(1.4,L(0.15)),0,7); ctx.fill();
+}
+/* ball-and-chain "tail": a tethered ball plugs the pore when closed and swings down/away when open */
+function drawBallChain(cx, mouthY, openv, col){
+  const plugY=mouthY-L(0.3), hangY=mouthY+L(2.7);
+  const by=plugY+(hangY-plugY)*openv;
+  const anchorX=cx+L(1.8), anchorY=mouthY+L(0.2);
+  ctx.strokeStyle=shade(col,6); ctx.lineWidth=Math.max(1.6,L(0.2)); ctx.lineCap="round";
+  ctx.beginPath(); ctx.moveTo(anchorX,anchorY); ctx.quadraticCurveTo(cx+L(1.2),(anchorY+by)/2,cx,by); ctx.stroke();
+  const r=Math.max(3,L(1.0));
+  const g=ctx.createRadialGradient(cx-r*0.3,by-r*0.3,r*0.2,cx,by,r);
+  g.addColorStop(0,shade(col,45)); g.addColorStop(1,shade(col,-8));
+  ctx.fillStyle=g; ctx.beginPath(); ctx.arc(cx,by,r,0,7); ctx.fill();
+  ctx.strokeStyle=hexA("#0b1120",0.35); ctx.lineWidth=1; ctx.stroke();
+}
+function s4(px,cy,side,v){
+  const rise=L(1.15)*v, w=L(0.85), h=L(2.7), y=cy-rise-h/2;
+  ctx.fillStyle=hexA("#8ea3c4",0.92); rr(px-(side<0?w:0),y,w,h,3); ctx.fill();
+  ctx.fillStyle="#dbe4f0"; ctx.font="700 "+Math.max(6,L(0.7))+"px sans-serif";
+  ctx.textAlign="center"; ctx.textBaseline="middle";
+  const cx=px+(side<0?-w/2:w/2);
+  for(let i=0;i<3;i++) ctx.fillText("+",cx,y+h*(0.2+i*0.3));
+  ctx.textBaseline="alphabetic";
+}
+function poreGlow(ch,col,openv){
+  if(openv<=0.05) return;
+  const x=X(ch.x), yt=Y(membraneTopAt(ch.x)), yb=Y(MEMBOT()), w=L(Math.min(ch.tm*0.4, 4.2));
+  // bright open lumen straight down the pore
+  const g=ctx.createLinearGradient(x-w/2,0,x+w/2,0);
+  g.addColorStop(0,"rgba(0,0,0,0)"); g.addColorStop(.5,hexA(col,0.4+0.4*openv)); g.addColorStop(1,"rgba(0,0,0,0)");
+  ctx.fillStyle=g; rr(x-w/2, yt-L(0.6), w, (yb-yt)+L(1.2), 3); ctx.fill();
+  // pulsing halo so an open channel is obvious
+  const pulse=0.5+0.5*Math.sin(nowMs/240+ch.x);
+  ctx.save(); ctx.globalAlpha=(0.16+0.24*pulse)*openv; ctx.fillStyle=col;
+  rr(x-w/2-L(0.6), yt-L(0.7), w+L(1.2), (yb-yt)+L(1.4), 5); ctx.fill(); ctx.restore();
+}
+function chLabel(ch,text,col){
+  ctx.fillStyle=col; ctx.font="700 "+Math.max(9,L(0.95))+"px -apple-system,Segoe UI,sans-serif";
+  ctx.textAlign="center"; ctx.textBaseline="middle";
+  ctx.fillText(text, X(ch.x), Y(curP.worldH)-L(0.9));
+  ctx.textBaseline="alphabetic";
+}
+
+/* ---- voltage-gated single-protein channel (Naᵥ / Caᵥ) ---- */
+function drawVGsingle(ch,col,openv){
+  const x=X(ch.x), yt=Y(membraneTopAt(ch.x))-L(1.3), yb=Y(MEMBOT())+L(2.4);
+  const half=L(ch.tm/2), cy=(yt+yb)/2, pin=L(1.0), wallW=L(0.9);
+  ctx.fillStyle="#0e1626"; rr(x-half-L(0.3),yt,2*half+L(0.6),yb-yt,6); ctx.fill();
+  ctx.fillStyle=hexA(col,0.15); rr(x-half-L(0.3),yt,2*half+L(0.6),yb-yt,6); ctx.fill();   // color-matched backplate
+  wall(x-half,yt,yb,-1,pin,wallW,col); wall(x+half,yt,yb,+1,pin,wallW,col);
+  poreGlow(ch,col,openv);
+  s4(x-half-L(0.15),cy,-1,openv); s4(x+half+L(0.15),cy,+1,openv);
+  // selectivity dots
+  ctx.fillStyle=hexA(col,0.9);
+  for(const dy of [0.9,1.6]){ ctx.beginPath(); ctx.arc(x,Y(membraneTopAt(ch.x))+L(dy),Math.max(1.2,L(0.15)),0,7); ctx.fill(); }
+  // the intracellular activation gate is the single barrier: shut when closed, swung open when open
+  gate(x,Y(MEMBOT())-L(0.2),L(ch.tm*0.32),openv,col);
+  chLabel(ch, ch.ion==="na"?"Na⁺":"Ca²⁺", col);
+}
+function wall(px,yt,yb,side,pin,wallW,col){
+  const cy=(yt+yb)/2;
+  ctx.beginPath(); ctx.moveTo(px-side*wallW,yt); ctx.lineTo(px,yt);
+  ctx.quadraticCurveTo(px+side*pin*0.6,cy,px,yb); ctx.lineTo(px-side*wallW,yb); ctx.closePath();
+  const g=ctx.createLinearGradient(px-side*wallW,0,px,0);
+  g.addColorStop(0,shade(col,-8)); g.addColorStop(1,shade(col,-32));
+  ctx.fillStyle=g; ctx.fill(); ctx.strokeStyle=hexA(col,0.5); ctx.lineWidth=1; ctx.stroke();
+}
+/* ---- passive K leak channel (no gate, always open) ---- */
+function drawLeak(ch){
+  const col="#2dd4bf";
+  const x=X(ch.x), yt=Y(membraneTopAt(ch.x))-L(1.0), yb=Y(MEMBOT())+L(2.0);
+  const half=L(ch.tm/2), wallW=L(0.85);
+  ctx.fillStyle="#0e1626"; rr(x-half-L(0.3),yt,2*half+L(0.6),yb-yt,5); ctx.fill();
+  ctx.fillStyle=shade(col,-18);
+  rr(x-half,yt,wallW,yb-yt,2); ctx.fill();
+  rr(x+half-wallW,yt,wallW,yb-yt,2); ctx.fill();
+  poreGlow(ch,col,1);                       // always conducting
+  // steady downward K trickle marker
+  const yA=Y(membraneTopAt(ch.x))+4, yB=Y(MEMBOT())-4, tf=(nowMs/700)%1;
+  ctx.strokeStyle=C.k; ctx.lineWidth=Math.max(1.4,L(0.15)); ctx.lineCap="round"; ctx.globalAlpha=0.7;
+  for(let j=0;j<2;j++){ let f=(tf+j*0.5)%1; const yy=yB-f*(yB-yA);   // K flows OUT (upward)
+    ctx.beginPath(); ctx.moveTo(x-3,yy+2.4); ctx.lineTo(x,yy-2.4); ctx.lineTo(x+3,yy+2.4); ctx.stroke(); }
+  ctx.globalAlpha=1;
+  chLabel(ch,"K⁺ leak", col);
+}
+/* Voltmeter for the leak panel, built in the SAME framed, across-the-membrane style as the gated panel's
+   meter (drawNaVoltFrame). It reads the inside voltage (outside = 0 reference) as K⁺ leaks out: the reading
+   falls from 0 mV toward the K⁺ equilibrium potential (-90 mV), fast at first then slowing, and parks there.
+   A dashed reference marks the cell's actual resting voltage (~ -70 mV), which sits a little above E_K. */
+function drawLeakVoltFrame(P){
+  const ch=P.channels[0]; if(!ch) return;
+  const vm=Math.round(P.vm==null?0:P.vm);      // 0 mV -> -90 mV
+  const col="#2dd4bf";                         // leak teal (matches the panel accent)
+  const memT=Y(membraneTopAt(ch.x)), memB=Y(MEMBOT());
+  const top=Y(1.1), bot=Y(P.worldH-1.1);
+  const right=X(ch.x)-L(ch.tm/2)-11, bw=90, left=Math.max(6,right-bw), cx=(left+right)/2;
+  ctx.save();
+  ctx.fillStyle="rgba(8,26,24,.34)"; rr(left,top,right-left,bot-top,8); ctx.fill();      // see-through body
+  ctx.strokeStyle=col; ctx.lineWidth=2.5; rr(left,top,right-left,bot-top,8); ctx.stroke();
+  // electrode leads touching each membrane face (measuring ACROSS the membrane)
+  ctx.strokeStyle=col; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(right,memT); ctx.lineTo(right+11,memT); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(right,memB); ctx.lineTo(right+11,memB); ctx.stroke();
+  ctx.fillStyle=col; ctx.beginPath(); ctx.arc(right+11,memT,3,0,7); ctx.fill();
+  ctx.beginPath(); ctx.arc(right+11,memB,3,0,7); ctx.fill();
+  // title
+  ctx.fillStyle="rgba(204,251,241,.95)"; ctx.font="700 10px sans-serif"; ctx.textAlign="center"; ctx.textBaseline="top";
+  ctx.fillText("voltage across", cx, top+7); ctx.fillText("the membrane", cx, top+19);
+  // vertical scale: 0 mV at top, K⁺ equilibrium -90 mV at bottom
+  const sx=left+14, sTop=top+40, sBot=bot-26, sh=sBot-sTop;
+  ctx.strokeStyle="rgba(148,163,184,.5)"; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(sx,sTop); ctx.lineTo(sx,sBot); ctx.stroke();
+  ctx.fillStyle="rgba(148,163,184,.85)"; ctx.font="600 8px sans-serif"; ctx.textAlign="left"; ctx.textBaseline="middle";
+  ctx.fillText("0", sx+6, sTop); ctx.fillText("−90", sx+6, sBot);
+  // dashed reference at the cell's resting voltage (-70 mV)
+  const refy=sTop+(70/90)*sh;
+  ctx.strokeStyle="rgba(251,191,36,.7)"; ctx.setLineDash([3,3]); ctx.lineWidth=1.4;
+  ctx.beginPath(); ctx.moveTo(sx-6,refy); ctx.lineTo(sx+32,refy); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle="rgba(251,191,36,.9)"; ctx.font="600 8px sans-serif"; ctx.fillText("rest −70", sx+6, refy-7);
+  // marker column: fills from the TOP (0 mV) down to the current reading
+  const frac=Math.max(0,Math.min(1,(0-vm)/90)), my=sTop+frac*sh;
+  ctx.strokeStyle=hexA(col,.5); ctx.lineWidth=5; ctx.beginPath(); ctx.moveTo(sx,sTop); ctx.lineTo(sx,my); ctx.stroke();
+  ctx.fillStyle=col; ctx.beginPath(); ctx.arc(sx,my,4.5,0,7); ctx.fill();
+  ctx.strokeStyle="rgba(255,255,255,.65)"; ctx.lineWidth=1; ctx.stroke();
+  // big readout at membrane level
+  ctx.fillStyle="#99f6e4"; ctx.font="800 16px sans-serif"; ctx.textAlign="center"; ctx.textBaseline="middle";
+  ctx.fillText(vm+" mV", cx+8, (memT+memB)/2);
+  // status: the LIVE out:in crossing ratio (tied to the reading), so the number matches the traffic on screen
+  const dd=Math.max(0,Math.min(1,(vm+90)/90)), r=Math.round(Math.pow(10,dd));
+  const phase = r<=1 ? "balanced · out:in 1:1" : ("out:in ≈ "+r+":1");
+  ctx.fillStyle=r<=1?"#5eead4":"rgba(148,163,184,.9)"; ctx.font="700 9px sans-serif"; ctx.textAlign="center"; ctx.textBaseline="bottom";
+  ctx.fillText(phase, cx, bot-8);
+  ctx.restore();
+}
+/* ---- voltage-gated K (tetramer) ---- */
+function drawKv(ch,openv){
+  const col=C.k, x=X(ch.x), yt=Y(membraneTopAt(ch.x))-L(1.3), yb=Y(MEMBOT())+L(2.4);
+  const half=L(ch.tm/2), cy=(yt+yb)/2, bw=L(1.5);
+  ctx.fillStyle="#0e1626"; rr(x-half-L(0.3),yt,2*half+L(0.6),yb-yt,6); ctx.fill();
+  ctx.fillStyle=hexA(col,0.15); rr(x-half-L(0.3),yt,2*half+L(0.6),yb-yt,6); ctx.fill();   // color-matched backplate
+  for(const sx of [-1,-0.34,0.34,1]){ const bx=x+sx*(half-bw*0.4);
+    const g=ctx.createLinearGradient(bx-bw/2,0,bx+bw/2,0);
+    g.addColorStop(0,shade(col,-8)); g.addColorStop(0.5,shade(col,-30)); g.addColorStop(1,shade(col,-8));
+    ctx.fillStyle=g; rr(bx-bw/2,yt,bw,yb-yt,bw/2); ctx.fill();
+    ctx.strokeStyle=hexA(col,0.4); ctx.lineWidth=1; ctx.stroke(); }
+  poreGlow(ch,col,openv);
+  s4(x-half-L(0.15),cy,-1,openv); s4(x+half+L(0.15),cy,+1,openv);
+  ctx.fillStyle=hexA(col,0.95);
+  for(const dx of [-0.5,0,0.5]){ ctx.beginPath(); ctx.arc(x+L(dx),Y(membraneTopAt(ch.x))+L(1.1),Math.max(1.2,L(0.16)),0,7); ctx.fill(); }
+  drawBallChain(x, Y(MEMBOT()), openv, col);   // K⁺ channel closes with a ball-and-chain tail
+  chLabel(ch,"K⁺",col);
+}
+/* ---- ligand-gated (pentameric nAChR) ---- */
+function drawAChR(ch,openv){
+  const col="#9fb3d0", x=X(ch.x), memtop=membraneTopAt(ch.x);
+  const ecdTop=memtop-6.5, half=L(ch.tm/2), halfTop=L(ch.tm/2+1.4);
+  // color-matched backplate (ligand purple), spanning the whole receptor footprint
+  const bpT=Y(ecdTop)-L(0.5), bpB=Y(MEMBOT()+2.6);
+  ctx.fillStyle="#0e1626"; rr(x-halfTop-L(0.4),bpT,2*halfTop+L(0.8),bpB-bpT,7); ctx.fill();
+  ctx.fillStyle=hexA(C.lig,0.15); rr(x-halfTop-L(0.4),bpT,2*halfTop+L(0.8),bpB-bpT,7); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(x-halfTop,Y(ecdTop)); ctx.lineTo(x+halfTop,Y(ecdTop));
+  ctx.lineTo(x+half,Y(memtop)); ctx.lineTo(x-half,Y(memtop)); ctx.closePath();
+  const g=ctx.createLinearGradient(0,Y(ecdTop),0,Y(memtop));
+  g.addColorStop(0,"#33435f"); g.addColorStop(1,"#26344c"); ctx.fillStyle=g; ctx.fill();
+  ctx.strokeStyle=hexA(col,0.5); ctx.lineWidth=1.2; ctx.stroke();
+  ctx.fillStyle="rgba(10,18,32,.5)"; rr(x-L(1.0),Y(ecdTop)+L(0.6),L(2.0),L(5.2),L(0.9)); ctx.fill();
+  // binding pockets — lit only when an ACh is actually docked in them
+  const bpy=Y(ecdTop)+L(2.2);
+  for(const sdir of [-1,1]){ const docked=(curP.ligMol||[]).some(m=>m.s===sdir&&m.state==="bound");
+    ctx.fillStyle=docked?C.ligand:"rgba(192,132,252,.28)";
+    ctx.beginPath(); ctx.arc(x+sdir*halfTop*0.6,bpy,Math.max(2,L(0.5)),0,7); ctx.fill();
+    ctx.strokeStyle=hexA(C.ligand,0.6); ctx.lineWidth=1; ctx.stroke(); }
+  // M2 pore-lining helices: the top is the gate. Pinched shut when closed, wide open when open.
+  const yA=Y(memtop), yB=Y(MEMBOT()+2.2);
+  const topGap=L(0.2+1.0*openv), botGap=L(1.1+0.9*openv);
+  // bright open lumen between the helices
+  if(openv>0.08){
+    const lg=ctx.createLinearGradient(x-botGap,0,x+botGap,0);
+    lg.addColorStop(0,"rgba(0,0,0,0)"); lg.addColorStop(.5,hexA(C.na,0.28+0.35*openv)); lg.addColorStop(1,"rgba(0,0,0,0)");
+    ctx.fillStyle=lg; ctx.beginPath();
+    ctx.moveTo(x-topGap,yA); ctx.lineTo(x+topGap,yA); ctx.lineTo(x+botGap,yB); ctx.lineTo(x-botGap,yB); ctx.closePath(); ctx.fill();
+  }
+  ctx.strokeStyle=shade(col,-6); ctx.lineWidth=Math.max(2.4,L(0.7)); ctx.lineCap="round";
+  ctx.beginPath();
+  ctx.moveTo(x-topGap,yA); ctx.lineTo(x-botGap,yB);
+  ctx.moveTo(x+topGap,yA); ctx.lineTo(x+botGap,yB); ctx.stroke();
+  poreGlow(ch,C.na,openv);
+  drawLigands(curP);
+  chLabel(ch,"nicotinic ACh receptor",C.lig);
+}
+/* ACh lifecycle: away -> (press) fly in from above -> bound -> (release) drift off to the side -> away */
+function updateLigands(P,dt){
+  const ch=P.channels[0]; if(!ch) return;
+  const ecdTop=P.memtop-6.5, halfTopW=ch.tm/2+1.4;
+  if(!P.ligMol) P.ligMol=[-1,1].map(s=>({s,x:ch.x+s*3.2,y:1.0,state:"away"}));
+  const on=P.stim>0.5;
+  for(const m of P.ligMol){
+    const pkX=ch.x+m.s*halfTopW*0.6, pkY=ecdTop+2.2;
+    if(on){
+      if(m.state==="away"||m.state==="leaving"){ m.state="arriving"; m.x=ch.x+m.s*3.2; m.y=1.0; }
+      if(m.state==="arriving"){
+        const dx=pkX-m.x, dy=pkY-m.y, d=Math.hypot(dx,dy), sp=dt*11;
+        if(d<0.6){ m.x=pkX; m.y=pkY; m.state="bound"; }
+        else { m.x+=dx/d*Math.min(sp,d); m.y+=dy/d*Math.min(sp,d);
+          // jitter as it diffuses down (a molecule in water is buffeted, it never falls in a straight line)
+          m.x+=rnd(-0.45,0.45); m.y+=rnd(-0.32,0.32); }
+      } else if(m.state==="bound"){ m.x=pkX; m.y=pkY; }
+    } else {
+      if(m.state==="bound"||m.state==="arriving"){ m.state="leaving"; }
+      if(m.state==="leaving"){ m.x+=m.s*dt*7; m.y-=dt*2.2;
+        if(m.x<-3||m.x>P.viewMax+3||m.y<-2) m.state="away"; }
+    }
+  }
+}
+function drawLigands(P){
+  for(const m of (P.ligMol||[])){
+    if(m.state==="away") continue;
+    const px=X(m.x), py=Y(m.y), glow=m.state==="bound"?1:(m.state==="arriving"?0.7:0.35);
+    ctx.save();
+    ctx.globalAlpha=m.state==="leaving"?0.65:1;
+    ctx.shadowColor=C.ligand; ctx.shadowBlur=6+9*glow;
+    ctx.fillStyle=C.ligand; ctx.beginPath(); ctx.arc(px,py,Math.max(2.2,L(0.62)),0,7); ctx.fill(); ctx.shadowBlur=0;
+    if(m.state==="bound"){ ctx.strokeStyle=hexA(C.ligand,0.6); ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.arc(px,py,Math.max(4,L(1.0))*(1.1+0.35*Math.sin(nowMs/160)),0,7); ctx.stroke(); }
+    ctx.restore();
+    ctx.fillStyle="rgba(255,255,255,.92)"; ctx.font="700 "+Math.max(6,L(0.58))+"px sans-serif"; ctx.textAlign="center"; ctx.textBaseline="middle";
+    ctx.fillText("ACh",px,py); ctx.textBaseline="alphabetic";
+  }
+}
+/* ---- mechanically-gated (Piezo1) ---- */
+function drawPiezo(ch,openv){
+  const col=C.mech, x=X(ch.x), tipHalf=ch.tm/2;
+  for(const sdir of [-1,1]){
+    ctx.beginPath(); let first=true;
+    for(let d=0;d<=tipHalf;d+=0.8){ const xn=ch.x+sdir*d, yn=membraneTopAt(xn)+MEM/2;
+      const px=X(xn),py=Y(yn); if(first){ctx.moveTo(px,py);first=false;}else ctx.lineTo(px,py); }
+    ctx.strokeStyle=hexA(col,0.85); ctx.lineWidth=Math.max(3,L(1.0)); ctx.lineCap="round"; ctx.stroke();
+  }
+  const yt=Y(membraneTopAt(ch.x))-L(0.6), yb=Y(MEMBOT()+5.0), half=L(3.0);
+  ctx.fillStyle="#0e1626"; rr(x-half-L(0.3),yt,2*half+L(0.6),yb-yt,6); ctx.fill();
+  ctx.fillStyle=hexA(col,0.15); rr(x-half-L(0.3),yt,2*half+L(0.6),yb-yt,6); ctx.fill();   // color-matched backplate
+  // bright open lumen first, so it shows between the pore walls
+  poreGlow(ch,C.ca,openv);
+  const spread=L(1.7)*openv;   // the two pore walls swing apart as the channel opens
+  for(const sdir of [-1,1]){
+    ctx.beginPath();
+    ctx.moveTo(x+sdir*(L(0.5)+spread),yt); ctx.lineTo(x+sdir*(L(1.5)+spread),yt);
+    ctx.lineTo(x+sdir*(L(1.8)+spread*0.5),yb); ctx.lineTo(x+sdir*(L(0.8)+spread*0.5),yb); ctx.closePath();
+    const g=ctx.createLinearGradient(x+sdir*L(0.5),0,x+sdir*L(1.8),0);
+    g.addColorStop(0,shade(col,-6)); g.addColorStop(1,shade(col,-32));
+    ctx.fillStyle=g; ctx.fill(); ctx.strokeStyle=hexA(col,0.5); ctx.lineWidth=1; ctx.stroke();
+  }
+  ctx.fillStyle=hexA(col,0.32); rr(x-half,yb-L(1.1),2*half,L(1.3),L(0.6)); ctx.fill();
+  chLabel(ch,"Piezo1",col);
+}
+
+/* ============================================================================
+   TRIGGER visuals per panel
+   ============================================================================ */
+function drawVoltWave(P){
+  // the bright depolarization highlight only exists once Na has fired, and rides the wave that spreads
+  // rightward from the Na channel (the wave is a consequence of the Na channel opening)
+  if(P.voltStage!=="fire") return;
+  const wx=(P.waveStartX||0)+(P.wavePhase||0), bandW=12, yt=Y(P.memtop-2.6), h=L(MEM+5.2);
+  const gx0=X(wx-bandW/2), gx1=X(wx+bandW/2);
+  const g=ctx.createLinearGradient(gx0,0,gx1,0);
+  g.addColorStop(0,"rgba(56,189,248,0)"); g.addColorStop(.5,hexA("#7dd3fc",0.55*Math.min(1,P.stim*1.5))); g.addColorStop(1,"rgba(56,189,248,0)");
+  ctx.fillStyle=g; ctx.fillRect(gx0,yt,gx1-gx0,h);
+}
+function drawVoltMeter(){
+  // small vertical gauge at far left showing membrane voltage moving with stim
+  const gx=X(curP.voltMeterX||3.0), gTop=Y(2.2), gBot=Y(curP.worldH-2.2), gh=gBot-gTop;
+  ctx.strokeStyle="rgba(148,163,184,.4)"; ctx.lineWidth=Math.max(2,L(0.4)); ctx.lineCap="round";
+  ctx.beginPath(); ctx.moveTo(gx,gTop); ctx.lineTo(gx,gBot); ctx.stroke();
+  // marker: rest (-70, bottom) -> depol (+30, top)
+  const my = gBot - stim*gh;
+  const depol = stim>0.45;
+  const col = depol?"#f87171":"#60a5fa";
+  ctx.fillStyle=col; ctx.beginPath(); ctx.arc(gx,my,Math.max(4,L(0.6)),0,7); ctx.fill();
+  ctx.strokeStyle="rgba(255,255,255,.5)"; ctx.lineWidth=1; ctx.stroke();
+  ctx.fillStyle=col; ctx.font="700 "+Math.max(8,L(0.85))+"px sans-serif"; ctx.textAlign="left"; ctx.textBaseline="middle";
+  ctx.fillText(depol?"+30 mV":"−70 mV", gx+L(0.8), my);
+  ctx.fillStyle="rgba(148,163,184,.7)"; ctx.font="600 "+Math.max(8,L(0.8))+"px sans-serif";
+  ctx.save(); ctx.translate(gx-L(1.1),(gTop+gBot)/2); ctx.rotate(-Math.PI/2);
+  ctx.textAlign="center"; ctx.fillText("membrane voltage",0,0); ctx.restore();
+  ctx.textBaseline="alphabetic";
+}
+function drawStretch(ch){
+  if(stim<0.12) return;
+  const col=C.mech;
+  // The force STRETCHES the membrane: big arrows pull the bilayer taut sideways (they grow with the
+  // force). The dome flattens and the pore opens as a result — nothing presses the channel down.
+  const y=Y(membraneTopAt(ch.x)+MEM/2);
+  ctx.strokeStyle=hexA(col,0.95); ctx.lineWidth=Math.max(2.4,L(0.32)); ctx.lineCap="round";
+  for(const sdir of [-1,1]){
+    const xIn=X(ch.x+sdir*(ch.tm/2-1)), xOut=xIn+sdir*L(5.0)*stim;
+    ctx.beginPath(); ctx.moveTo(xIn,y); ctx.lineTo(xOut,y); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(xOut,y); ctx.lineTo(xOut-sdir*L(1.1),y-L(0.7)); ctx.lineTo(xOut-sdir*L(1.1),y+L(0.7)); ctx.closePath();
+    ctx.fillStyle=hexA(col,0.95); ctx.fill();
+  }
+  ctx.fillStyle=hexA(col,0.95); ctx.font="700 "+Math.max(8,L(0.9))+"px sans-serif"; ctx.textAlign="center"; ctx.textBaseline="alphabetic";
+  ctx.fillText("stretch  (membrane pulled taut)", X(ch.x), Y(MEMTOP-2.4));
+  ctx.textBaseline="alphabetic";
+}
+
+/* ============================================================================
+   PANEL RENDER
+   ============================================================================ */
+function openValFor(P){ return P.stim; }   // this panel opens only with ITS own stimulus
+function renderPanel(P, dt){
+  if(!isFinite(P.viewMax) || P.viewMax<=0 || !isFinite(P.S) || P.S<=0) return;   // skip until sized
+  ctx = P.ctx; curP=P;
+  stim = P.stim; depolClock = P.depolClock;   // make globals reflect the panel being drawn
+  ctx.setTransform(P.dpr,0,0,P.dpr,0,0);
+  S=P.S; oX=P.oX; oY=P.oY; MEMTOP=P.memtop; curCanvas=P.canvas;
+  ctx.clearRect(0,0,P.cssW,P.cssH);
+  // faint compartment tints
+  ctx.fillStyle="#0c1626"; ctx.fillRect(0,0,P.cssW,Y(MEMTOP));
+  ctx.fillStyle="#0d1a28"; ctx.fillRect(0,Y(MEMTOP+MEM),P.cssW,P.cssH-Y(MEMTOP+MEM));
+  const chans=P.channels;
+  // advance the slow depolarization wave in the voltage panel; then set each channel's openness
+  if(P.id==="volt") stepVoltLoop(P,dt);
+  if(P.id==="lig") updateLigands(P,dt);
+  if(P.id==="pump") updatePump(P,dt);
+  if(P.id!=="scale" && P.id!=="pump") computeOpenness(P,dt);
+  if(P.id==="lig"||P.id==="mech") stepFlowLoop(P,dt);   // loop the flow so ion traffic keeps replaying
+  if(P.id==="leak") updateLeakPanel(P,dt);
+  else if(P.id!=="scale" && P.id!=="pump") updateIons(P,dt);
+  drawCompartmentLabels();
+  drawMembrane(chans);
+  if(P.id==="leak"){ drawLeak(P.channels[0]); }
+  else if(P.id==="volt"){ /* voltage meter removed for now */
+    for(const ch of P.channels){
+      if(ch.kind==="kv") drawKv(ch,ch._open);
+      else drawVGsingle(ch,ch.ion==="na"?C.na:C.ca,ch._open); } }
+  else if(P.id==="lig"){ drawAChR(P.channels[0],P.channels[0]._open); }
+  else if(P.id==="mech"){ drawPiezo(P.channels[0],P.channels[0]._open); drawStretch(P.channels[0]); }
+  else if(P.id==="pump"){ drawPump(P); }
+  else if(P.id==="scale"){ drawScaleStrip(); }
+  // ALL ions draw on top of the channels, so they are always in front (never hidden behind a channel)
+  drawIons(P,false);
+  drawIons(P,true);
+  if(P.id==="volt") drawNaVoltFrame(P);   // red voltmeter across the membrane at the Na channel
+  if(P.id==="leak") drawLeakVoltFrame(P); // teal voltmeter across the membrane at the leak channel
+}
+/* A red measuring frame at the LEFT of the Na channel, spanning BOTH sides of the membrane. It reads
+   the voltage across the membrane in real time: at rest about -70 mV, and as the depolarization wave
+   arrives it climbs toward +30 mV. When it crosses the threshold, that rise is what pops the gate open,
+   so you can watch the voltage change cause the channel to open. */
+function drawNaVoltFrame(P){
+  const na=P.channels.find(c=>c.ion==="na"); if(!na) return;
+  const depol=P.naDepol||0;                    // local depolarization at the Na site (driven by the influx)
+  const vm=Math.round(-70+110*depol);          // resting -70 mV -> threshold -> peak +40 mV
+  const thresh=-55;                            // Na channels trip open around here
+  const open=vm>thresh;
+  const col=open?"#ef4444":"#f87171";
+  // geometry (pixels): left of the channel, spanning outside -> across membrane -> inside
+  const memT=Y(membraneTopAt(na.x)), memB=Y(MEMBOT());
+  const top=Y(1.1), bot=Y(P.worldH-1.1);
+  const right=X(na.x)-L(na.tm/2)-11, bw=84, left=Math.max(6,right-bw), cx=(left+right)/2;
+  ctx.save();
+  ctx.fillStyle="rgba(28,10,12,.34)"; rr(left,top,right-left,bot-top,8); ctx.fill();     // see-through body
+  ctx.strokeStyle=col; ctx.lineWidth=2.5; rr(left,top,right-left,bot-top,8); ctx.stroke();
+  // electrode leads touching each membrane face (measuring ACROSS the membrane)
+  ctx.strokeStyle=col; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(right,memT); ctx.lineTo(right+11,memT); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(right,memB); ctx.lineTo(right+11,memB); ctx.stroke();
+  ctx.fillStyle=col; ctx.beginPath(); ctx.arc(right+11,memT,3,0,7); ctx.fill();
+  ctx.beginPath(); ctx.arc(right+11,memB,3,0,7); ctx.fill();
+  // title
+  ctx.fillStyle="rgba(254,226,226,.95)"; ctx.font="700 10px sans-serif"; ctx.textAlign="center"; ctx.textBaseline="top";
+  ctx.fillText("voltage across", cx, top+7); ctx.fillText("the membrane", cx, top+19);
+  // vertical scale: -70 mV bottom, +40 mV top, threshold dashed
+  const sx=left+14, sTop=top+40, sBot=bot-26, sh=sBot-sTop;
+  ctx.strokeStyle="rgba(148,163,184,.5)"; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(sx,sTop); ctx.lineTo(sx,sBot); ctx.stroke();
+  ctx.fillStyle="rgba(148,163,184,.85)"; ctx.font="600 8px sans-serif"; ctx.textAlign="left"; ctx.textBaseline="middle";
+  ctx.fillText("+40", sx+6, sTop); ctx.fillText("−70", sx+6, sBot);
+  const ty=sBot-((thresh+70)/110)*sh;
+  ctx.strokeStyle="rgba(251,191,36,.85)"; ctx.setLineDash([3,3]); ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(sx-6,ty); ctx.lineTo(sx+34,ty); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle="rgba(251,191,36,.9)"; ctx.fillText("threshold", sx+6, ty-7);
+  const my=sBot-((vm+70)/110)*sh;
+  const grd=ctx.createLinearGradient(0,sBot,0,my);
+  grd.addColorStop(0,"rgba(239,68,68,0)"); grd.addColorStop(1,hexA(col,.5));
+  ctx.strokeStyle=hexA(col,.5); ctx.lineWidth=5; ctx.beginPath(); ctx.moveTo(sx,sBot); ctx.lineTo(sx,my); ctx.stroke();
+  ctx.fillStyle=col; ctx.beginPath(); ctx.arc(sx,my,4.5,0,7); ctx.fill();
+  ctx.strokeStyle="rgba(255,255,255,.65)"; ctx.lineWidth=1; ctx.stroke();
+  // big readout at membrane level
+  ctx.fillStyle=open?"#fca5a5":"#fecaca"; ctx.font="800 16px sans-serif"; ctx.textAlign="center"; ctx.textBaseline="middle";
+  ctx.fillText(vm+" mV", cx+8, (memT+memB)/2);
+  // status
+  ctx.fillStyle=open?"#86efac":"rgba(148,163,184,.9)"; ctx.font="700 9px sans-serif"; ctx.textAlign="center"; ctx.textBaseline="bottom";
+  ctx.fillText(open?"opens the gate":"resting", cx, bot-8);
+  ctx.restore();
+}
+/* ============================================================================
+   Na⁺/K⁺ PUMP (active transport) — the Post-Albers cycle.
+   Each press runs the cycle: bind 3 Na⁺ inside (E1) -> ATP phosphorylates & occludes ->
+   open to outside (E2) -> release 3 Na⁺ -> bind 2 K⁺ outside -> release Pᵢ & occlude ->
+   open to inside (E1) -> release 2 K⁺. Net: 3 Na⁺ out and 2 K⁺ in per ATP = +1 charge out (electrogenic).
+   ============================================================================ */
+const PUMP_COL="#818cf8";
+const PUMP_STAGES=[
+  {k:"bindNa",   t:1.15, label:"3 Na⁺ bind from inside (E1)"},
+  {k:"phos",     t:0.95, label:"ATP phosphorylates and occludes the pump"},
+  {k:"flipOut",  t:0.95, label:"pump opens to the outside (E1 → E2)"},
+  {k:"releaseNa",t:1.15, label:"3 Na⁺ released to the outside"},
+  {k:"bindK",    t:1.15, label:"2 K⁺ bind from outside"},
+  {k:"dephos",   t:0.95, label:"Pᵢ released, pump occludes"},
+  {k:"flipIn",   t:0.95, label:"pump opens to the inside (E2 → E1)"},
+  {k:"releaseK", t:1.15, label:"2 K⁺ released to the inside"},
+];
+function pumpGates(k,pr){ const e=pr*pr*(3-2*pr);   // returns [gateIn, gateOut] (0..1 each)
+  switch(k){
+    case "bindNa":   return [1,0];
+    case "phos":     return [1-e,0];
+    case "flipOut":  return [0,e];
+    case "releaseNa":return [0,1];
+    case "bindK":    return [0,1];
+    case "dephos":   return [0,1-e];
+    case "flipIn":   return [e,0];
+    case "releaseK": return [1,0];
+    default:         return [1,0];   // idle: open to inside, waiting
+  }
+}
+function updatePump(P,dt){
+  if(P.pumpStage==null){ P.pumpStage=0; P.pumpT=0; P.pumpCycles=0; }
+  if(P.stim<0.5){ P.pumpStage=0; P.pumpT=0; return; }   // idle until the button is pressed
+  P.pumpT=(P.pumpT||0)+dt;
+  const S=PUMP_STAGES[P.pumpStage];
+  if(P.pumpT>=S.t){ P.pumpT-=S.t; P.pumpStage=(P.pumpStage+1)%PUMP_STAGES.length;
+    if(P.pumpStage===0) P.pumpCycles=(P.pumpCycles||0)+1; }
+}
+/* Protein body: transmembrane barrel + cytoplasmic nucleotide-binding head, with a central binding
+   cavity whose access alternates — a passage opens to the outside (E2) or the inside (E1), never both. */
+function drawPumpBody(ch,gi,go,phosph){
+  const cx=X(ch.x), hw=L(ch.tm/2);
+  const memT=Y(membraneTopAt(ch.x)), memB=Y(MEMBOT()), cavY=(memT+memB)/2;
+  const headY=memB+L(2.7), headRx=hw*0.95, headRy=L(2.4);
+  // cytoplasmic head
+  let g=ctx.createLinearGradient(0,memB-L(1),0,headY+headRy);
+  g.addColorStop(0,shade(PUMP_COL,6)); g.addColorStop(1,shade(PUMP_COL,-40));
+  ctx.fillStyle=g; ctx.beginPath(); ctx.ellipse(cx,headY,headRx,headRy,0,0,7); ctx.fill();
+  ctx.strokeStyle=hexA(PUMP_COL,.5); ctx.lineWidth=1.2; ctx.stroke();
+  // transmembrane barrel
+  g=ctx.createLinearGradient(cx-hw,0,cx+hw,0);
+  g.addColorStop(0,shade(PUMP_COL,-8)); g.addColorStop(.5,shade(PUMP_COL,18)); g.addColorStop(1,shade(PUMP_COL,-8));
+  ctx.fillStyle=g; rr(cx-hw, memT-L(0.5), 2*hw, (memB-memT)+L(0.5)+L(2.7), Math.min(hw*0.5,11)); ctx.fill();
+  ctx.strokeStyle=hexA(PUMP_COL,.55); ctx.lineWidth=1.4; ctx.stroke();
+  // dark central binding cavity
+  ctx.fillStyle="#0a1220"; ctx.beginPath(); ctx.ellipse(cx,cavY,L(2.2),L(2.0),0,0,7); ctx.fill();
+  // alternating-access passages
+  ctx.fillStyle="#0a1220";
+  if(go>0.04){ const w=L(0.5+go*3.2); rr(cx-w/2, memT-L(0.5), w, cavY-(memT-L(0.5)), Math.min(w/2,7)); ctx.fill(); }
+  if(gi>0.04){ const w=L(0.5+gi*3.2); rr(cx-w/2, cavY, w, (memB+L(0.4))-cavY, Math.min(w/2,7)); ctx.fill(); }
+  // phosphorylation marker on the head
+  if(phosph){ const pr=Math.max(3.4,L(0.85));
+    ctx.fillStyle="#fde047"; ctx.beginPath(); ctx.arc(cx,headY,pr,0,7); ctx.fill();
+    ctx.strokeStyle="rgba(120,90,0,.6)"; ctx.lineWidth=1; ctx.stroke();
+    ctx.fillStyle="#3a2f05"; ctx.font="800 "+Math.max(8,L(1.05))+"px sans-serif"; ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText("P",cx,headY); }
+}
+function drawPumpIon(xnm,ynm,col,alpha,label){
+  if(alpha<=0.01) return;
+  const px=X(xnm), py=Y(ynm), pr=Math.max(3.4,L(0.92));
+  ctx.save(); ctx.globalAlpha=Math.min(1,alpha);
+  const g=ctx.createRadialGradient(px-pr*0.3,py-pr*0.3,pr*0.2,px,py,pr);
+  g.addColorStop(0,shade(col,85)); g.addColorStop(1,col);
+  ctx.fillStyle=g; ctx.beginPath(); ctx.arc(px,py,pr,0,7); ctx.fill();
+  ctx.strokeStyle="rgba(255,255,255,.6)"; ctx.lineWidth=1; ctx.stroke();
+  ctx.fillStyle="rgba(255,255,255,.95)"; ctx.font="700 "+Math.max(7,pr*0.82)+"px sans-serif"; ctx.textAlign="center"; ctx.textBaseline="middle";
+  ctx.fillText(label,px,py); ctx.restore();
+}
+function drawPump(P){
+  const ch=P.channels[0]; if(!ch) return;
+  const pumping=P.stim>0.5;
+  const S=PUMP_STAGES[P.pumpStage||0];
+  const k = pumping ? S.k : "idle";
+  const pr = pumping ? Math.min(1,(P.pumpT||0)/S.t) : 0;
+  const [gi,go]=pumpGates(k,pr);
+  const phosph=["phos","flipOut","releaseNa","bindK","dephos"].includes(k);
+  drawPumpBody(ch,gi,go,phosph);
+  // geometry in nm
+  const cx=ch.x, midY=(membraneTopAt(cx)+MEMBOT())/2, insY=MEMBOT()+4.2, outY=membraneTopAt(cx)-4.2;
+  const ez=t=>t*t*(3-2*t), lp=(a,b,t)=>[a[0]+(b[0]-a[0])*t, a[1]+(b[1]-a[1])*t];
+  const jig=i=>0.10*Math.sin(nowMs/240 + i*2.1);
+  const naSlot=[[-1.7,0.3],[0,-1.15],[1.7,0.3]], kSlot=[[-1.0,0.15],[1.0,0.15]];
+  // --- Na⁺ (3): inside -> cavity -> outside ---
+  for(let i=0;i<3;i++){ const s=naSlot[i];
+    const slot=[cx+s[0], midY+s[1]+jig(i)], ins=[cx+s[0]*0.7, insY+(i-1)*0.7], out=[cx+s[0]*0.7, outY-(i-1)*0.7];
+    let pos, a;
+    if(k==="idle"){ pos=ins; a=0.85; }
+    else if(k==="bindNa"){ pos=lp(ins,slot,ez(pr)); a=Math.min(1,pr/0.22); }
+    else if(k==="phos"||k==="flipOut"){ pos=slot; a=1; }
+    else if(k==="releaseNa"){ pos=lp(slot,out,ez(pr)); a=pr>0.7?Math.max(0,(1-pr)/0.3):1; }
+    else { pos=out; a=0; }
+    drawPumpIon(pos[0],pos[1],"#3b82f6",a,"Na");
+  }
+  // --- K⁺ (2): outside -> cavity -> inside ---
+  for(let i=0;i<2;i++){ const s=kSlot[i];
+    const slot=[cx+s[0], midY+s[1]+jig(i+5)], out=[cx+s[0], outY+ i*0.3], ins=[cx+s[0], insY- i*0.3];
+    let pos, a;
+    if(k==="bindK"){ pos=lp(out,slot,ez(pr)); a=Math.min(1,pr/0.22); }
+    else if(k==="dephos"||k==="flipIn"){ pos=slot; a=1; }
+    else if(k==="releaseK"){ pos=lp(slot,ins,ez(pr)); a=pr>0.7?Math.max(0,(1-pr)/0.3):1; }
+    else { pos=out; a=0; }
+    drawPumpIon(pos[0],pos[1],"#f59e0b",a,"K");
+  }
+  // stage label (top) + persistent stoichiometry line + ATP state (near the head)
+  ctx.textAlign="center";
+  ctx.fillStyle=hexA(PUMP_COL,.95); ctx.font="700 12px sans-serif"; ctx.textBaseline="top";
+  ctx.fillText(pumping? S.label : "resting · press Run pump to cycle", X(cx), 8);
+  ctx.fillStyle="rgba(148,163,184,.9)"; ctx.font="600 10px sans-serif";
+  ctx.fillText("3 Na⁺ out · 2 K⁺ in per ATP → net +1 charge out (electrogenic)", X(cx), 24);
+  const atpTxt = k==="phos"||k==="bindNa"&&pr>0.6 ? "ATP" : (phosph? "ADP + Pᵢ" : (k==="flipIn"||k==="releaseK"? "Pᵢ released":""));
+  if(atpTxt){ ctx.fillStyle="rgba(226,232,240,.8)"; ctx.font="700 10px sans-serif"; ctx.textBaseline="middle";
+    ctx.fillText(atpTxt, X(cx), Y(MEMBOT()+2.7)+Math.max(3.4,L(0.85))+9); }
+  ctx.textAlign="left"; ctx.textBaseline="alphabetic";
+}
+function drawPumpGlyph(ch){
+  drawPumpBody(ch,1,0,false);
+  chLabel(ch,"Na⁺/K⁺ pump",PUMP_COL);
+}
+function drawScaleStrip(){
+  for(const ch of curP.channels){
+    if(ch.kind==="leak") drawLeak(ch);
+    else if(ch.kind==="kv") drawKv(ch,0);
+    else if(ch.kind==="achr") drawAChR(ch,0);
+    else if(ch.kind==="piezo") drawPiezo(ch,0);
+    else if(ch.kind==="pump") drawPumpGlyph(ch);
+    else drawVGsingle(ch,ch.ion==="na"?C.na:C.ca,0);
+  }
+  // One particle of EACH kind, drawn to the SAME scale as the channels and membrane, so you can see how
+  // tiny an ion truly is next to a channel (each is only a small fraction of the membrane's thickness).
+  const ly=Y(1.8);
+  const drawDot=(ch,col,r,label)=>{
+    if(!ch) return;
+    const px=X(ch.x), py=Y(membraneTopAt(ch.x)-4.1), pr=Math.max(1.4,L(r));
+    const g=ctx.createRadialGradient(px-pr*0.3,py-pr*0.3,pr*0.2,px,py,pr);
+    g.addColorStop(0,shade(col,70)); g.addColorStop(1,col);
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(px,py,pr,0,7); ctx.fill();
+    ctx.strokeStyle="rgba(255,255,255,.7)"; ctx.lineWidth=1; ctx.stroke();
+    ctx.strokeStyle="rgba(226,232,240,.4)"; ctx.beginPath(); ctx.moveTo(px,py-pr); ctx.lineTo(px,ly+7); ctx.stroke();
+    ctx.fillStyle="rgba(226,232,240,.9)"; ctx.font="600 10px -apple-system,Segoe UI,sans-serif";
+    ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText(label,px,ly);
+  };
+  const chans=curP.channels;
+  // ionic radii, in the same nm units as the channels: ions really are this small
+  drawDot(chans.find(c=>c.ion==="na"), C.na, 0.10, "Na⁺");
+  drawDot(chans.find(c=>c.kind==="kv"),  C.k , 0.14, "K⁺");
+  drawDot(chans.find(c=>c.ion==="ca"&&c.kind!=="piezo"), C.ca, 0.10, "Ca²⁺");
+  // ACh is a small molecule, larger than a bare ion but still tiny next to the receptor
+  const achr=chans.find(c=>c.kind==="achr");
+  if(achr){ const ax=achr.x+achr.tm/2+3.6;                              // sit in the open gap to the RIGHT of the tall receptor
+    const px=X(ax), py=Y(membraneTopAt(achr.x)-4.1), pr=Math.max(2.4,L(0.45));
+    ctx.save(); ctx.shadowColor=C.ligand; ctx.shadowBlur=5; ctx.fillStyle=C.ligand;
+    ctx.beginPath(); ctx.arc(px,py,pr,0,7); ctx.fill(); ctx.restore();
+    ctx.strokeStyle="rgba(226,232,240,.4)"; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(px,py-pr); ctx.lineTo(px,ly+7); ctx.stroke();
+    ctx.fillStyle="rgba(226,232,240,.9)"; ctx.font="600 10px -apple-system,Segoe UI,sans-serif";
+    ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText("ACh",px,ly); }
+  ctx.textAlign="left"; ctx.textBaseline="alphabetic";
+}
+
+/* ============================================================================
+   STATE CHIPS + CONTROLS
+   ============================================================================ */
+const chips={ volt:document.getElementById("st-volt"), lig:document.getElementById("st-lig"), mech:document.getElementById("st-mech"), pump:document.getElementById("st-pump") };
+const btns ={ volt:document.getElementById("btnVolt"), lig:document.getElementById("btnLig"), mech:document.getElementById("btnMech"), pump:document.getElementById("btnPump") };
+function updateChips(){
+  for(const k in chips){ const P=panels[k], on=P.stim>0.5;
+    chips[k].textContent = k==="pump" ? (on?"RUNNING":"IDLE") : (on?"OPEN":"CLOSED");
+    chips[k].className = "state "+(on?"o":"c");
+    if(btns[k]) btns[k].classList.toggle("on", P.stimT>0.5);
+  }
+}
+const autoBtn=document.getElementById("auto"), statusLbl=document.getElementById("statuslbl");
+function autoOff(msg){ auto=false; autoBtn.textContent="▶ Auto-cycle all"; autoBtn.classList.remove("primary");
+  if(msg) statusLbl.textContent=msg; }
+autoBtn.onclick=()=>{ auto=!auto; autoBtn.textContent=auto?"❚❚ Auto-cycle all":"▶ Auto-cycle all";
+  autoBtn.classList.toggle("primary",auto);
+  statusLbl.textContent = auto ? "Auto-cycling each channel in turn. Or press the button on any panel."
+                               : "Manual: press a channel's button.";
+  if(auto){ phase=0; phaseT=0; } };
+// each button toggles ONLY its own panel's stimulus
+for(const k in btns){ btns[k].onclick=()=>{ autoOff("Manual: press a channel's button.");
+  panels[k].stimT = panels[k].stimT>0.5 ? 0 : 1; }; }
+const speedR=document.getElementById("speed"), speedV=document.getElementById("speedv");
+speedR.oninput=()=>{ speed=parseFloat(speedR.value); speedV.textContent=speed.toFixed(1)+"×"; };
+
+/* auto cycle: opens each channel one at a time (rest → voltage → rest → ligand → rest → force → …) */
+let phase=0, phaseT=0;
+const SEQ=[{n:"rest",d:1.1},{n:"volt",d:2.6},{n:"rest",d:1.1},{n:"lig",d:2.6},{n:"rest",d:1.1},{n:"mech",d:2.6},{n:"rest",d:1.1},{n:"pump",d:8.4}];
+function runAuto(dt){ if(!auto) return; phaseT+=dt; const cur=SEQ[phase];
+  panels.volt.stimT = cur.n==="volt"?1:0;
+  panels.lig.stimT  = cur.n==="lig"?1:0;
+  panels.mech.stimT = cur.n==="mech"?1:0;
+  panels.pump.stimT = cur.n==="pump"?1:0;
+  if(phaseT>=cur.d){ phaseT=0; phase=(phase+1)%SEQ.length; } }
+
+/* ============================================================================
+   LOOP
+   ============================================================================ */
+function frame(ts){
+  if(last==null)last=ts;
+  let dt=(ts-last)/1000; last=ts; if(dt>0.05)dt=0.05; nowMs=ts; dt*=speed;
+  runAuto(dt);
+  // ease each panel's own stimulus and clock, independently
+  for(const id in panels){ const P=panels[id];
+    P.stim += (P.stimT-P.stim)*Math.min(1,dt*5);
+    P.depolClock = P.stim>0.5 ? P.depolClock+dt : 0;
+  }
+  for(const id in panels) renderPanel(panels[id], dt);
+  updateChips();
+  requestAnimationFrame(frame);
+}
+resizeAll();
+window.addEventListener("resize",()=>{ clearTimeout(window._rz); window._rz=setTimeout(resizeAll,150); });
+// re-measure whenever the container actually changes size (fixes a 0-width parent at first paint,
+// e.g. inside the desktop sidebar), so the diagram lays out correctly once it becomes visible
+if(window.ResizeObserver){
+  let lastW=0;
+  const ro=new ResizeObserver(entries=>{ const w=entries[0].contentRect.width;
+    if(Math.abs(w-lastW)>2){ lastW=w; clearTimeout(window._rz); window._rz=setTimeout(resizeAll,60); } });
+  const wrapEl=document.querySelector(".wrap");
+  if(wrapEl) ro.observe(wrapEl);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
