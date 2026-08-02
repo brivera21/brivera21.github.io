@@ -120,6 +120,22 @@
    ============================================================ */
 const DIAGRAMS = [
   {
+    id:'life-multicellular-brains',
+    category:'Neuroscience',
+    title:'Life, Multicellular Organisms, and Brains',
+    file:'life-multicellular-and-brains.html',
+    thumbLive:true,
+    tags:['evolution','neuroanatomy','teaching'],
+    label:'INTERACTIVE',
+    blurb:'The brain as nested subsets, from non-living matter to life, multicellular life, animals with a nervous system, and the brain, with the four thresholds crossed between them.',
+    extras:[],
+    connects:'For lectures on the evolution of nervous systems and where the brain sits within life.',
+    caveats:[
+      'The nesting is conceptual; the four thresholds (abiogenesis, multicellularity, nervous systems, encephalization) simplify long, gradual transitions.'
+    ],
+    mine:''
+  },
+  {
     id:'brain-composition',
     category:'Neuroscience',
     title:'Brain Composition Breakdown',
@@ -211,6 +227,24 @@ const DIAGRAMS = [
     mine:''
   },
   {
+    id:'ion-channels',
+    category:'Neuroscience',
+    title:'Ion Channels',
+    file:'ion-channels.html',
+    thumbLive:true,
+    tags:['membrane','neurophysiology','synapses','teaching','animation'],
+    label:'INTERACTIVE',
+    blurb:'The ways ions cross the membrane: leak pores, voltage-gated, ligand-gated and mechanically-gated channels, and the Na⁺/K⁺ pump, each drawn to scale in one 4 nm bilayer.',
+    extras:[],
+    connects:'Pairs with The Action Potential; for lectures on membrane channels and transport.',
+    caveats:[
+      'The out:in flux ratios are a teaching schematic tied to the meter reading, not measured single-channel rates.',
+      'The leak panel settles at the K⁺ equilibrium potential (about -90 mV); whole-cell resting voltage is nearer -70 mV because of a smaller Na⁺ leak that is not shown.',
+      'Channels and the pump are to scale against the 4 nm bilayer, but ions are drawn larger than life so they stay visible.'
+    ],
+    mine:''
+  },
+  {
     id:'action-potential',
     category:'Neuroscience',
     title:'The Action Potential',
@@ -273,41 +307,8 @@ const DIAGRAMS = [
       'The cue card is decorative; landmark anchoring of the head-direction ring is not modelled.'
     ],
     mine:''
-  },
-  {
-    id:'ion-channels',
-    category:'Neuroscience',
-    title:'Ion Channels',
-    file:'ion-channels.html',
-    thumbLive:true,
-    tags:['membrane','neurophysiology','synapses','teaching','animation'],
-    label:'INTERACTIVE',
-    blurb:'The ways ions cross the membrane: leak pores, voltage-gated, ligand-gated and mechanically-gated channels, and the Na⁺/K⁺ pump, each drawn to scale in one 4 nm bilayer.',
-    extras:[],
-    connects:'Pairs with The Action Potential; for lectures on membrane channels and transport.',
-    caveats:[
-      'The out:in flux ratios are a teaching schematic tied to the meter reading, not measured single-channel rates.',
-      'The leak panel settles at the K⁺ equilibrium potential (about -90 mV); whole-cell resting voltage is nearer -70 mV because of a smaller Na⁺ leak that is not shown.',
-      'Channels and the pump are to scale against the 4 nm bilayer, but ions are drawn larger than life so they stay visible.'
-    ],
-    mine:''
-  },
-  {
-    id:'life-multicellular-brains',
-    category:'Neuroscience',
-    title:'Life, Multicellular Organisms, and Brains',
-    file:'life-multicellular-and-brains.html',
-    thumbLive:true,
-    tags:['evolution','neuroanatomy','teaching'],
-    label:'INTERACTIVE',
-    blurb:'The brain as nested subsets, from non-living matter to life, multicellular life, animals with a nervous system, and the brain, with the four thresholds crossed between them.',
-    extras:[],
-    connects:'For lectures on the evolution of nervous systems and where the brain sits within life.',
-    caveats:[
-      'The nesting is conceptual; the four thresholds (abiogenesis, multicellularity, nervous systems, encephalization) simplify long, gradual transitions.'
-    ],
-    mine:''
   }
+
 ];
 function toRoman(n){const m=[["X",10],["IX",9],["V",5],["IV",4],["I",1]];let r="";for(const [g,v] of m){while(n>=v){r+=g;n-=v;}}return r;}
 DIAGRAMS.forEach((d,i)=>{d.num=toRoman(i+1);});
