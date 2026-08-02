@@ -112,6 +112,26 @@
    ============================================================ */
 const DIAGRAMS = [
   {
+    id:'life-multicellular-brains',
+    title:'Life, Multicellular Organisms, and Brains',
+    file:'life-multicellular-and-brains.html',
+    thumbLive:true,
+    tags:['evolution','teaching','neuroanatomy','thresholds'],
+    label:'INTERACTIVE',
+    blurb:'A brain drawn as a set of nested subsets: non-living matter, life, multicellular life, animals with a nervous system, and the brain, with the four thresholds crossed to get there marked as red rings.',
+    extras:[],
+    connects:'For lectures framing the brain as an evolved organ rather than a magical one: abiogenesis, the major transition to multicellularity, the origin of nervous systems, and encephalization. Pairs with the Nervous System family tree.',
+    caveats:[
+      'The rings are spaced evenly for legibility, not to scale. The true fractions differ by orders of magnitude: life is ~1% of the surface carbon and animals ~0.4% of biomass.',
+      '&ldquo;Non-living matter&rdquo; is the ~41,000 Gt C of actively cycling surface carbon (atmosphere, ocean, soil), the pool life exchanges with, not all of Earth&rsquo;s mass.',
+      'The percentages use different yardsticks: carbon biomass for the four outer layers, neuron count in one human for the brain. They are each honest alone but should not be multiplied into a single chain.',
+      'Multicellularity and nervous systems each evolved more than once; the diagram treats each as a single threshold for clarity.',
+      '&ldquo;Animals with a nervous system&rdquo; is a subset of multicellular life by biomass (~0.4%). By species count animals are most of described life, a very different measure the card also notes.',
+      'Nerve-nets-before-brains is the broad pattern; the fine evolutionary history of nervous systems, including possible independent origins in ctenophores, is still debated.'
+    ],
+    mine:''
+  },
+  {
     id:'brain-composition',
     title:'Brain Composition Breakdown',
     file:'brain-composition.html',
@@ -179,13 +199,13 @@ const DIAGRAMS = [
   {
     id:'scale-of-a-neuron',
     title:'Scale of a Neuron',
-    file:'Scale_Of_A_Neuron/scale-of-a-neuron.html',
-    thumb:'Scale_Of_A_Neuron/scale-of-a-neuron.svg',
+    file:'scale-of-a-neuron.html',
+    thumb:'scale-of-a-neuron.svg',
     tags:['neuroanatomy','morphology','scale','teaching'],
     label:'INTERACTIVE',
     blurb:'A corticospinal pyramidal neuron at true scale: the whole cell body and dendrites shrink to a speck beside a one meter axon. Hover any part to light it up across body, tract and cell, and blow the soma up to everyday objects.',
     extras:[
-      {label:'scale-of-a-neuron.svg ↗', href:'Scale_Of_A_Neuron/scale-of-a-neuron.svg'}
+      {label:'scale-of-a-neuron.svg ↗', href:'scale-of-a-neuron.svg'}
     ],
     connects:'For lectures on neuron structure, scale and the corticospinal pathway. Pairs with the action potential and brain composition diagrams.',
     caveats:[

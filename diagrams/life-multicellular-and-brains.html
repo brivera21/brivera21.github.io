@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Life, Multicellular Organisms, and Brains</title>
+<style>
+  :root{
+    --bg:#0b1120; --panel:#111a2e; --panel2:#0e1626; --stroke:#243149;
+    --ink:#e8eef8; --muted:#94a3b8; --faint:#5b6b86;
+    --matter:#64748b; --life:#34d399; --multi:#38bdf8; --animal:#f59e0b;
+    --nervous:#a78bfa; --brain:#f87171; --barrier:#ff5470;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  .wrap{max-width:1180px;margin:0 auto;padding:22px 20px 44px;}
+  header h1{font-size:22px;margin:0 0 5px;font-weight:650;letter-spacing:.2px;}
+  header p{margin:0 0 6px;color:var(--muted);font-size:13.5px;max-width:900px;line-height:1.55;}
+  .stage{display:grid;grid-template-columns:minmax(340px,1fr) minmax(300px,380px);gap:18px;
+    align-items:stretch;margin-top:16px;}
+  @media (max-width:860px){.stage{grid-template-columns:1fr;}}
+  .panel{background:linear-gradient(180deg,var(--panel),var(--panel2));
+    border:1px solid var(--stroke);border-radius:14px;padding:14px 14px 12px;position:relative;}
+  .panel h2{font-size:12px;text-transform:uppercase;letter-spacing:1.4px;color:var(--muted);
+    margin:0 0 8px;font-weight:600;}
+  svg{display:block;width:100%;height:auto;}
+  .ringhit{cursor:pointer;transition:opacity .15s;}
+  .band{transition:opacity .2s, filter .2s;}
+  .lead{stroke:var(--faint);stroke-width:1;opacity:.7;}
+  .leadlbl{fill:var(--ink);font-size:12.5px;font-weight:600;}
+  .leadpct{font-size:12px;font-variant-numeric:tabular-nums;}
+  .leadsub{fill:var(--muted);font-size:10px;}
+  .centerlbl{fill:#fff;font-weight:750;text-anchor:middle;}
+  .centerpct{fill:#fff;text-anchor:middle;font-variant-numeric:tabular-nums;}
+  /* detail card */
+  .detail{display:flex;flex-direction:column;gap:12px;}
+  .dchip{display:flex;align-items:center;gap:9px;font-size:12.5px;color:#cdd7e6;
+    background:#0e1728;border:1px solid var(--stroke);border-radius:10px;padding:9px 11px;cursor:pointer;
+    transition:border-color .15s,background .15s;}
+  .dchip:hover{background:#152039;}
+  .dchip.on{background:#16223c;}
+  .dchip .sw{width:14px;height:14px;border-radius:4px;flex:none;box-shadow:0 0 8px currentColor;}
+  .dchip .nm{flex:1;font-weight:600;color:var(--ink);}
+  .dchip .pc{font-variant-numeric:tabular-nums;font-weight:700;}
+  .readout{background:#0e1728;border:1px solid var(--stroke);border-radius:12px;padding:14px 15px;min-height:150px;}
+  .readout .tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+    padding:3px 10px;border-radius:999px;margin-bottom:9px;}
+  .readout h3{margin:0 0 4px;font-size:16px;font-weight:650;}
+  .readout .big{font-size:15px;color:var(--muted);margin:2px 0 10px;}
+  .readout .big b{font-size:23px;color:var(--ink);font-variant-numeric:tabular-nums;}
+  .readout p{margin:0 0 8px;font-size:13px;line-height:1.55;color:#cdd7e6;}
+  .readout .meta{font-size:11.5px;color:var(--faint);line-height:1.5;border-top:1px solid var(--stroke);padding-top:8px;}
+  .readout .meta b{color:var(--muted);}
+  /* scale reality strip */
+  .scalewrap{margin-top:18px;background:linear-gradient(180deg,var(--panel),var(--panel2));
+    border:1px solid var(--stroke);border-radius:14px;padding:15px 17px;}
+  .scalewrap h2{font-size:12px;text-transform:uppercase;letter-spacing:1.4px;color:var(--muted);margin:0 0 4px;font-weight:600;}
+  .scalewrap p{margin:0 0 12px;font-size:12.5px;color:#aab6c9;line-height:1.55;max-width:960px;}
+  .logrow{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:12px;}
+  .logrow .lbl{width:150px;flex:none;color:#cdd7e6;text-align:right;}
+  .logrow .track{flex:1;height:14px;background:#0e1728;border:1px solid var(--stroke);border-radius:7px;position:relative;overflow:hidden;}
+  .logrow .fill{height:100%;border-radius:7px 0 0 7px;}
+  .logrow .num{width:132px;flex:none;color:var(--muted);font-variant-numeric:tabular-nums;font-size:11px;}
+  .note{margin-top:18px;font-size:12px;color:var(--faint);line-height:1.65;}
+  .note b{color:var(--muted);} .note a{color:#7cb8ff;text-decoration:none;word-break:break-word;} .note a:hover{text-decoration:underline;}
+  .reflist{margin-top:10px;}
+  .reflist p{margin:0 0 9px 0;padding-left:2.2em;text-indent:-2.2em;font-size:11.5px;line-height:1.6;color:var(--faint);}
+  /* thresholds panel */
+  .thresholds{margin-top:18px;background:linear-gradient(180deg,#1b1220,#140d18);
+    border:1px solid #3c2233;border-radius:14px;padding:16px 18px;}
+  .thresholds h2{font-size:12px;text-transform:uppercase;letter-spacing:1.4px;color:#ff8098;margin:0 0 4px;font-weight:600;}
+  .thresholds>p{margin:0 0 14px;font-size:12.5px;color:#e5cdd6;line-height:1.55;max-width:960px;}
+  .tcards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+  @media (max-width:860px){.tcards{grid-template-columns:1fr;}}
+  .tcard{display:flex;gap:11px;background:#0e1728;border:1px solid var(--stroke);border-left:3px solid var(--barrier);
+    border-radius:11px;padding:12px 13px;transition:box-shadow .3s,border-color .3s;}
+  .tcard.flash{box-shadow:0 0 0 2px var(--barrier),0 0 18px rgba(255,84,112,.5);border-color:var(--barrier);}
+  .tnum{flex:none;width:26px;height:26px;border-radius:50%;background:var(--barrier);color:#12060a;
+    font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 8px rgba(255,84,112,.7);}
+  .ttitle{font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:1px;}
+  .ttag{font-size:11.5px;color:var(--barrier);font-weight:600;margin-bottom:6px;}
+  .tcard p{margin:0;font-size:12px;line-height:1.5;color:#c3ccdb;}
+  .toggle{display:inline-flex;gap:6px;margin-top:10px;}
+  .toggle button{font:inherit;font-size:12px;color:var(--muted);background:#0e1728;border:1px solid var(--stroke);
+    border-radius:8px;padding:6px 11px;cursor:pointer;}
+  .toggle button.on{color:#04122b;background:#7cb8ff;border-color:#7cb8ff;font-weight:650;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Life, Multicellular Organisms, and Brains</h1>
+    <p>This diagram is about how a brain sits <b>nested</b> inside much larger patterns. Every ring lives inside the one around it, so a brain is contained within a nervous system, within a multicellular body, within life, within ordinary matter. Moving from the outer ring to the inner one means crossing four hard barriers: matter has to become <b>alive</b>, single cells have to become <b>multicellular bodies</b>, those bodies have to grow a <b>nervous system</b>, and that nervous system has to concentrate into a <b>brain</b>. Each <b style="color:var(--barrier)">red ring</b> marks one crossing. A brain is not magical or sprung from the void, and it never leaves those bigger patterns behind. It stays nested within them, built from the same living cells, the crown of a stack of already remarkable machinery. <b style="color:var(--muted)">Click a layer</b> for its detail, or a <b style="color:var(--barrier)">red marker</b> to jump to that threshold.</p>
+  </header>
+
+  <div class="stage">
+    <div class="panel">
+      <h2>Nested subsets · outer = non-living matter, core = the brain · red = thresholds</h2>
+      <svg id="viz" viewBox="0 0 640 640" role="img"
+           aria-label="Five nested layers from non-living matter to the brain, with four red rings marking the thresholds crossed"></svg>
+    </div>
+    <div class="panel">
+      <h2>The five layers</h2>
+      <div class="detail">
+        <div class="dchips" id="dchips"></div>
+        <div class="readout" id="readout"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="thresholds" id="thresholds">
+    <h2>The four thresholds, where the real barriers are</h2>
+    <p>These are the crossings the diagram is built around. Each one is a genuine barrier, and for billions of years matter sat on the far side of it. The brain is the fourth crossing, and it rests on the earlier three, in order, because each is only possible on top of the one before. You cannot have a brain without a nervous system, a nervous system without a multicellular body, or a multicellular body without living cells. Each layer beneath the brain is already extraordinary in its own right, which is the whole point. The brain is the crown of a stack of amazing machinery, not a break from it.</p>
+    <div class="tcards" id="tcards"></div>
+  </div>
+
+  <div class="note" id="note"></div>
+</div>
+
+<script>
+"use strict";
+
+/* ---- data: each level is a subset of the one before it ----
+   pct = fraction OF ITS PARENT. metric names the yardstick used. */
+const LEVELS = [
+  { key:"nonlife", name:"Non-living matter", color:"#64748b",
+    pctText:"the starting frame", frac:1,
+    figure:"≈ 41,000 Gt C of surface carbon (air, ocean, soil)",
+    metric:"Non-living carbon at Earth's surface",
+    blurb:"Everything begins with ordinary, non-living chemistry. The carbon cycling through Earth's air, oceans and soils is the raw stock that life is built from and returns to. Nothing here senses anything, wants anything, or copies itself. It is just matter obeying chemistry. Every ring inside this one sits behind a barrier that had to be crossed to leave that behind.",
+    src:"Falkowski et al. (2000)." },
+
+  { key:"life", name:"Life", color:"#34d399",
+    pctText:"≈ 1.3% of surface carbon", frac:0.0134,
+    figure:"≈ 550 Gt C, and the first cells were single-celled",
+    metric:"Carbon: living biomass vs the non-living pool",
+    blurb:"The first threshold is chemistry that copies itself. A living cell stores information, runs a metabolism and reproduces, all inside a membrane. For most of Earth's history every living thing was a single cell, and by sheer numbers most life still is; bacteria and archaea outnumber everything. Living matter is only about 1% of the surface carbon at any moment, but it sustains itself in a way non-living matter never does.",
+    src:"Bar-On et al. (2018); reservoirs from Falkowski et al. (2000)." },
+
+  { key:"multi", name:"Multicellular life", color:"#38bdf8",
+    pctText:"≈ 84% of living biomass", frac:0.844,
+    figure:"≈ 464 of 550 Gt C (plants, fungi, animals)",
+    metric:"Biomass (carbon)",
+    blurb:"The second threshold is cells that stop living only for themselves and start working in unison. They stay together, specialise into tissues, and coordinate through chemical and electrical signals, so a body of many cells behaves as one organism. This is already its own kind of magic. A redwood, a fungal network spanning a forest, or a field of grass senses and responds to the world and can live for centuries with no nerves at all. Complex multicellularity evolved independently several times, in plants, fungi, animals and algae, and by weight it now dominates the living world, with plants alone at about 450 Gt C.",
+    src:"Bar-On et al. (2018)." },
+
+  { key:"nervous", name:"Animals with a nervous system", color:"#f59e0b",
+    pctText:"≈ 0.4% of multicellular life", frac:0.0043,
+    figure:"≈ 2 of 464 Gt C, yet most of all species",
+    metric:"Carbon: nerve-bearing animals vs multicellular life",
+    blurb:"The third threshold reaches a smaller subset still. Some cells specialise to carry fast electrical signals, so a body can sense its surroundings and react within milliseconds. Only animals crossed this line, and even among animals the sponges and placozoans never did. The earliest nervous systems were loose nerve nets with no central control, as still seen in jellyfish, hydra and sea anemones; concentrated brains came later, and only in some lineages. Animals are only about 0.4% of living biomass, though by species count they are most of described life.",
+    src:"Biomass: Bar-On et al. (2018). Species: Zhang (2013), ~1.5M described animal species." },
+
+  { key:"brain", name:"The brain", color:"#f87171",
+    pctText:"≈ 98% of the nervous system", frac:0.98,
+    figure:"≈ 86 of ~87.5 billion neurons (human)",
+    metric:"Neuron count (human)",
+    blurb:"The fourth threshold is encephalization: a nervous system centralising, gathering its neurons into one dense place, usually toward the head. It is not a new kind of magic, only concentration. It came well after the nervous system itself, since diffuse nerve nets ran animal bodies for tens of millions of years before the first brains appeared. In a human, roughly 86 of about 87.5 billion neurons (around 98%) sit in the brain, with the spinal cord (~1 billion) and the gut's enteric network (a few hundred million) holding the rest. The brain sits on top of the machinery below it and is built from the same signalling cells and living tissue. It is never a thing apart. It stays nested inside an animal, inside multicellular life, inside life itself, one pattern held within the next.",
+    src:"Azevedo et al. (2009); Herculano-Houzel (2009). Spinal/enteric counts are standard estimates." }
+];
+
+/* the three barriers that are the real subject, drawn as red rings on the boundaries */
+const THRESHOLDS = [
+  { n:1, boundary:1, title:"Life", tagline:"non-living chemistry → self-copying cells",
+    blurb:"Matter that merely obeys chemistry becomes matter that stores information, runs a metabolism, and makes copies of itself. This is the widest gap of all, and every living thing that has ever existed sits on the far side of this one crossing." },
+  { n:2, boundary:2, title:"Multicellularity", tagline:"single cells → coordinated bodies",
+    blurb:"Cells stop living alone. They stay together, specialise and coordinate through chemical and electrical signals, so many cells act as one body. Plants, fungi and seaweeds all cross this line and thrive for ages with no nerves, which shows how much a body can already do before a nervous system is ever involved." },
+  { n:3, boundary:3, title:"Nervous systems", tagline:"no nerves → fast electrical signalling",
+    blurb:"Some animal cells specialise in fast electrical signalling, so a body can perceive and act in milliseconds. It began as diffuse nerve nets, like a jellyfish's, with no brain at all." },
+
+  { n:4, boundary:4, title:"Encephalization (the brain)", tagline:"scattered neurons → a concentrated brain",
+    blurb:"The nervous system centralises. Neurons that were spread through the body gather into one dense bundle, usually at the head, and that bundle is a brain. This is the newest of the four crossings; nerve nets ran animal bodies for tens of millions of years before brains appeared." }
+];
+
+const NS = "http://www.w3.org/2000/svg";
+const svg = document.getElementById("viz");
+function el(tag, attrs){ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k, attrs[k]); return e; }
+
+const CX=320, CY=310;
+const R_OUT=285, R_CORE=58;               // outer radius and innermost disk radius
+const N=LEVELS.length;
+// evenly spaced radii for legibility (NOT proportional; that is the whole point of the honest-scale panel)
+const radii = LEVELS.map((_,i)=> R_OUT - (R_OUT-R_CORE)*(i/(N-1)));
+let selected = N-1;                         // start focused on the brain
+
+function hexA(hex,a){const c=hex.replace("#","");return `rgba(${parseInt(c.substr(0,2),16)},${parseInt(c.substr(2,2),16)},${parseInt(c.substr(4,2),16)},${a})`;}
+
+function buildViz(){
+  while(svg.firstChild) svg.removeChild(svg.firstChild);
+
+  // faint radial vignette
+  const defs=el("defs",{});
+  const rg=el("radialGradient",{id:"vg",cx:"50%",cy:"48%",r:"60%"});
+  rg.appendChild(el("stop",{offset:"0%","stop-color":"#16223c"}));
+  rg.appendChild(el("stop",{offset:"100%","stop-color":"#0b1120"}));
+  defs.appendChild(rg); svg.appendChild(defs);
+  svg.appendChild(el("circle",{cx:CX,cy:CY,r:R_OUT+18,fill:"url(#vg)"}));
+
+  // draw from outside in so inner disks sit on top (concentric subsets)
+  for(let i=0;i<N;i++){
+    const L=LEVELS[i], r=radii[i];
+    const isSel = (i===selected);
+    const g=el("g",{class:"ringgrp","data-i":i});
+    const disk=el("circle",{cx:CX,cy:CY,r,
+      fill:hexA(L.color, i===0?0.16:0.26),
+      stroke:L.color,"stroke-width":isSel?3:1.4,
+      class:"band"});
+    disk.style.opacity = (selected===null||isSel||i<selected) ? 1 : 0.85;
+    if(isSel) disk.style.filter=`drop-shadow(0 0 12px ${hexA(L.color,0.8)})`;
+    g.appendChild(disk);
+    // transparent hit ring (annulus), the visible slice of this level
+    const rInner = (i<N-1)? radii[i+1] : 0;
+    const hit=el("circle",{cx:CX,cy:CY,r,fill:"transparent",class:"ringhit","data-i":i});
+    hit.addEventListener("click",()=>select(i));
+    g.appendChild(hit);
+    svg.appendChild(g);
+  }
+
+  // ---- red THRESHOLD rings: the barriers that are the whole point ----
+  THRESHOLDS.forEach(t=>{
+    const rb = radii[t.boundary];
+    const ring = el("circle",{cx:CX,cy:CY,r:rb,fill:"none",
+      stroke:"var(--barrier)","stroke-width":3.2});
+    ring.style.filter="drop-shadow(0 0 7px rgba(255,84,112,0.85))";
+    svg.appendChild(ring);
+    // numbered badge on the left flank, where the top pills never reach
+    const bx=CX-rb, by=CY;                             // march the badges inward along the left flank
+    const bg=el("g",{}); bg.style.cursor="pointer";
+    const bc=el("circle",{cx:bx,cy:by,r:12.5,fill:"var(--barrier)",stroke:"#0b1120","stroke-width":2});
+    bc.style.filter="drop-shadow(0 0 6px rgba(255,84,112,0.9))";
+    const bt=el("text",{x:bx,y:by+4.5,"text-anchor":"middle",fill:"#12060a","font-size":13,"font-weight":800});
+    bt.textContent=t.n;
+    bg.appendChild(bc); bg.appendChild(bt);
+    bg.addEventListener("click",()=>flashThreshold(t.n));
+    const tp=el("title",{}); tp.textContent=`Threshold ${t.n}: ${t.title}, ${t.tagline}`; bg.appendChild(tp);
+    svg.appendChild(bg);
+  });
+
+  // band labels: a clean centered pill on the TOP arc of each ring (always fits the viewBox).
+  // short percentage forms so the pill stays compact
+  const shortPct = ["100%","≈ 1.3%","≈ 84%","≈ 0.4%","≈ 98%"];
+  for(let i=0;i<N-1;i++){                       // outer levels as top-arc pills; brain (last) uses the center label
+    const L=LEVELS[i], r=radii[i], rInner=radii[i+1], rMid=(r+rInner)/2;
+    const y = CY - rMid;
+    const isSel=(i===selected);
+    const longName = L.name.length>20;
+    // estimate pill width from the longer of the two lines
+    const w = Math.max(L.name.length*(longName?6.2:7.0), shortPct[i].length*6.6) + 22;
+    const g=el("g",{}); g.style.cursor="pointer";
+    const pill=el("rect",{x:CX-w/2,y:y-14,width:w,height:28,rx:8,
+      fill:"rgba(8,13,24,0.85)",stroke:isSel?L.color:"rgba(36,49,73,0.9)","stroke-width":isSel?1.6:1});
+    g.appendChild(pill);
+    const nm=el("text",{x:CX,y:y-2,"text-anchor":"middle",class:"leadlbl","font-size":longName?11:12.5});
+    nm.textContent=L.name; g.appendChild(nm);
+    const pc=el("text",{x:CX,y:y+12,"text-anchor":"middle",class:"leadpct",fill:L.color});
+    pc.textContent=shortPct[i]; g.appendChild(pc);
+    g.addEventListener("click",()=>select(i));
+    svg.appendChild(g);
+  }
+
+  // center label (brain core)
+  const isBrainSel=(selected===N-1);
+  const c0=el("text",{x:CX,y:CY-11,"text-anchor":"middle",fill:hexA(LEVELS[N-1].color,.95),"font-size":10,"font-weight":700,"letter-spacing":"0.5"}); c0.textContent="THE BRAIN"; svg.appendChild(c0);
+  const c2=el("text",{x:CX,y:CY+7,class:"centerpct","font-size":15}); c2.textContent="≈ 98%"; svg.appendChild(c2);
+  const c3=el("text",{x:CX,y:CY+22,"text-anchor":"middle",fill:"rgba(232,238,248,.8)","font-size":9.5}); c3.textContent="of the nervous system"; svg.appendChild(c3);
+}
+
+function select(i){ selected=i; buildViz(); renderChips(); renderReadout(); }
+
+function renderChips(){
+  const host=document.getElementById("dchips"); host.innerHTML="";
+  LEVELS.forEach((L,i)=>{
+    const d=document.createElement("div"); d.className="dchip"+(i===selected?" on":"");
+    if(i===selected) d.style.borderColor=L.color;
+    d.innerHTML=`<span class="sw" style="background:${L.color};color:${L.color}"></span>`+
+      `<span class="nm">${L.name}</span>`+
+      `<span class="pc" style="color:${L.color}">${i===0?"100%":L.pctText.replace(/^≈\s*/,"").replace(/ of.*$/,"")}</span>`;
+    d.addEventListener("click",()=>select(i));
+    host.appendChild(d);
+  });
+}
+
+function renderReadout(){
+  const L=LEVELS[selected], r=document.getElementById("readout");
+  const parent = selected>0 ? LEVELS[selected-1].name : null;
+  r.innerHTML =
+    `<span class="tag" style="background:${hexA(L.color,0.16)};color:${L.color}">Level ${selected+1} of ${N}</span>`+
+    `<h3>${L.name}</h3>`+
+    (selected>0
+      ? `<div class="big">${L.pctText.replace(/^≈\s*/,'≈ ')}<br><b>${L.figure}</b></div>`
+      : `<div class="big"><b>${L.figure}</b></div>`)+
+    `<p>${L.blurb}</p>`+
+    (parent?`<p style="color:var(--muted);font-size:12px;">Shown as a fraction of <b style="color:${LEVELS[selected-1].color}">${parent}</b>, the ring around it.</p>`:``)+
+    `<div class="meta"><b>Metric:</b> ${L.metric}<br><b>Source:</b> ${L.src}</div>`;
+}
+
+/* ---- the three thresholds panel ---- */
+function renderThresholds(){
+  const host=document.getElementById("tcards"); if(!host) return; host.innerHTML="";
+  THRESHOLDS.forEach(t=>{
+    const d=document.createElement("div"); d.className="tcard"; d.setAttribute("data-n",t.n);
+    d.innerHTML=`<div class="tnum">${t.n}</div>`+
+      `<div class="tbody"><div class="ttitle">Threshold ${t.n}: ${t.title}</div>`+
+      `<div class="ttag">${t.tagline}</div><p>${t.blurb}</p></div>`;
+    host.appendChild(d);
+  });
+}
+function flashThreshold(n){
+  const sec=document.getElementById("thresholds");
+  if(sec) sec.scrollIntoView({behavior:"smooth",block:"center"});
+  const card=document.querySelector('.tcard[data-n="'+n+'"]');
+  if(card){ card.classList.add("flash"); setTimeout(()=>card.classList.remove("flash"),1500); }
+}
+
+document.getElementById("note").innerHTML =
+  `<b>References</b>`+
+  `<div class="reflist">`+
+  `<p>Azevedo, F. A. C., Carvalho, L. R. B., Grinberg, L. T., Farfel, J. M., Ferretti, R. E. L., Leite, R. E. P., Jacob Filho, W., Lent, R., &amp; Herculano-Houzel, S. (2009). Equal numbers of neuronal and nonneuronal cells make the human brain an isometrically scaled-up primate brain. <i>Journal of Comparative Neurology, 513</i>(5), 532–541. <a href="https://doi.org/10.1002/cne.21974" target="_blank">https://doi.org/10.1002/cne.21974</a></p>`+
+  `<p>Bar-On, Y. M., Phillips, R., &amp; Milo, R. (2018). The biomass distribution on Earth. <i>Proceedings of the National Academy of Sciences, 115</i>(25), 6506–6511. <a href="https://doi.org/10.1073/pnas.1711842115" target="_blank">https://doi.org/10.1073/pnas.1711842115</a></p>`+
+  `<p>Falkowski, P., Scholes, R. J., Boyle, E., Canadell, J., Canfield, D., Elser, J., Gruber, N., Hibbard, K., Högberg, P., Linder, S., Mackenzie, F. T., Moore, B., III, Pedersen, T., Rosenthal, Y., Seitzinger, S., Smetacek, V., &amp; Steffen, W. (2000). The global carbon cycle: A test of our knowledge of Earth as a system. <i>Science, 290</i>(5490), 291–296. <a href="https://doi.org/10.1126/science.290.5490.291" target="_blank">https://doi.org/10.1126/science.290.5490.291</a></p>`+
+  `<p>Herculano-Houzel, S. (2009). The human brain in numbers: A linearly scaled-up primate brain. <i>Frontiers in Human Neuroscience, 3</i>, 31. <a href="https://doi.org/10.3389/neuro.09.031.2009" target="_blank">https://doi.org/10.3389/neuro.09.031.2009</a></p>`+
+  `<p>Zhang, Z.-Q. (Ed.). (2013). Animal biodiversity: An outline of higher-level classification and survey of taxonomic richness (Addenda 2013). <i>Zootaxa, 3703</i>(1), 1–82. <a href="https://doi.org/10.11646/zootaxa.3703.1.1" target="_blank">https://doi.org/10.11646/zootaxa.3703.1.1</a></p>`+
+  `</div>`;
+
+buildViz(); renderChips(); renderReadout(); renderThresholds();
+</script>
+</body>
+</html>
