@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Digital Concepts</title>
+<title>Diagram Lab</title>
 <style>
   :root{
     --bg:#121212; --panel:#1a1a1a; --panel2:#202020;
@@ -77,7 +77,7 @@
 <body>
 <div class="wrap">
   <header>
-    <h1>Digital Concepts</h1>
+    <h1>Diagram Lab</h1>
   </header>
 
   <div class="controls">
@@ -111,26 +111,6 @@
    give it a `thumb` (image path) or set thumbLive:true.
    ============================================================ */
 const DIAGRAMS = [
-  {
-    id:'life-multicellular-brains',
-    title:'Life, Multicellular Organisms, and Brains',
-    file:'life-multicellular-and-brains.html',
-    thumbLive:true,
-    tags:['evolution','teaching','neuroanatomy','thresholds'],
-    label:'INTERACTIVE',
-    blurb:'A brain drawn as a set of nested subsets: non-living matter, life, multicellular life, animals with a nervous system, and the brain, with the four thresholds crossed to get there marked as red rings.',
-    extras:[],
-    connects:'For lectures framing the brain as an evolved organ rather than a magical one: abiogenesis, the major transition to multicellularity, the origin of nervous systems, and encephalization. Pairs with the Nervous System family tree.',
-    caveats:[
-      'The rings are spaced evenly for legibility, not to scale. The true fractions differ by orders of magnitude: life is ~1% of the surface carbon and animals ~0.4% of biomass.',
-      '&ldquo;Non-living matter&rdquo; is the ~41,000 Gt C of actively cycling surface carbon (atmosphere, ocean, soil), the pool life exchanges with, not all of Earth&rsquo;s mass.',
-      'The percentages use different yardsticks: carbon biomass for the four outer layers, neuron count in one human for the brain. They are each honest alone but should not be multiplied into a single chain.',
-      'Multicellularity and nervous systems each evolved more than once; the diagram treats each as a single threshold for clarity.',
-      '&ldquo;Animals with a nervous system&rdquo; is a subset of multicellular life by biomass (~0.4%). By species count animals are most of described life, a very different measure the card also notes.',
-      'Nerve-nets-before-brains is the broad pattern; the fine evolutionary history of nervous systems, including possible independent origins in ctenophores, is still debated.'
-    ],
-    mine:''
-  },
   {
     id:'brain-composition',
     title:'Brain Composition Breakdown',
@@ -198,7 +178,7 @@ const DIAGRAMS = [
   },
   {
     id:'scale-of-a-neuron',
-    title:'Scale of a Neuron',
+    title:'The Neuron',
     file:'scale-of-a-neuron.html',
     thumb:'scale-of-a-neuron.svg',
     tags:['neuroanatomy','morphology','scale','teaching'],
