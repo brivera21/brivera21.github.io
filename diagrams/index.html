@@ -307,6 +307,44 @@ const DIAGRAMS = [
       'The cue card is decorative; landmark anchoring of the head-direction ring is not modelled.'
     ],
     mine:''
+  },
+  {
+    id:'world-population-history',
+    category:'History',
+    title:'World Population History',
+    file:'human-population.html',
+    thumb:'human-population.png',
+    tags:['evolution','demography','population','teaching'],
+    label:'LOG SCALE',
+    blurb:'The estimated number of Homo sapiens from the origin of the species to today, on a logarithmic axis, with milestones from the out-of-Africa expansion to the Industrial Revolution.',
+    extras:[],
+    connects:'For lectures on human evolution, deep time and demography; pairs with the Neolithic transition and demographic-transition material.',
+    caveats:[
+      'Estimates before about 10,000 BCE are approximate: early Homo sapiens census population is put at roughly 100,000 to 300,000, with an effective breeding population near 10,000 to 30,000.',
+      'Published estimates for 10,000 BCE span about 1 million to 10 million people.',
+      'The vertical axis is logarithmic; on a linear axis the whole pre-modern period would sit against zero and only recent centuries would show.',
+      'Dates before the Holocene are years ago; historical points are calendar years, and the two meet at the crowded right edge.',
+      'Figures come from compiled series (U.S. Census Bureau, HYDE, Our World in Data) that differ; read any single point as order of magnitude.'
+    ],
+    mine:''
+  },
+  {
+    id:'frequencies',
+    category:'Math',
+    title:'Frequencies',
+    file:'frequencies.html',
+    thumbLive:true,
+    tags:['math','waves','frequency','trigonometry','teaching','interactive'],
+    label:'INTERACTIVE',
+    blurb:'Sine waves compared over one shared second: a fixed set from 1 to 100 Hz you can toggle, plus one wave whose frequency and amplitude you set with sliders, with hover readouts, a zoomable time window and a play animation.',
+    extras:[],
+    connects:'For any session that introduces frequency, period and amplitude: waves, oscillations, trigonometric functions or the basics behind EEG rhythms and sound.',
+    caveats:[
+      'Every fixed wave is drawn at the same amplitude; only the slider wave changes height, so the panel isolates frequency from amplitude.',
+      'Past about 20 Hz the cycles pack tighter than the full-second view can separate, which is why the slider stops at 20 Hz and the zoom windows exist for the faster fixed waves.',
+      'These are pure single-frequency sine waves. Real signals such as sound or EEG are sums of many frequencies at once.'
+    ],
+    mine:''
   }
 
 ];

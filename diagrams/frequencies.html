@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Frequencies</title>
+<style>
+  .viz-root {
+    color-scheme: light;
+    --surface-1:      #fcfcfb;
+    --page:           #f9f9f7;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #898781;
+    --grid:           #e1e0d9;
+    --baseline:       #c3c2b7;
+    --border:         rgba(11,11,11,0.10);
+    --s1: #2a78d6;  /* blue    1 Hz  */
+    --s2: #eb6834;  /* orange  2 Hz  */
+    --s3: #1baf7a;  /* aqua    3 Hz  */
+    --s4: #eda100;  /* yellow  4 Hz  */
+    --s5: #e87ba4;  /* magenta 5 Hz  */
+    --s6: #008300;  /* green   10 Hz */
+    --s7: #4a3aa7;  /* violet  20 Hz */
+    --s8: #e34948;  /* red     50 Hz */
+    --s9: #6b6a66;  /* gray    100 Hz (beyond the 8-slot palette; always direct-labeled) */
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .viz-root {
+      color-scheme: dark;
+      --surface-1:      #1a1a19;
+      --page:           #0d0d0d;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted:     #898781;
+      --grid:           #2c2c2a;
+      --baseline:       #383835;
+      --border:         rgba(255,255,255,0.10);
+      --s1: #3987e5; --s2: #d95926; --s3: #199e70;
+      --s4: #c98500; --s5: #d55181; --s6: #008300;
+      --s7: #9085e9; --s8: #e66767; --s9: #a5a49b;
+    }
+  }
+  :root[data-theme="dark"] .viz-root {
+    color-scheme: dark;
+    --surface-1:      #1a1a19;
+    --page:           #0d0d0d;
+    --text-primary:   #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted:     #898781;
+    --grid:           #2c2c2a;
+    --baseline:       #383835;
+    --border:         rgba(255,255,255,0.10);
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70;
+    --s4: #c98500; --s5: #d55181; --s6: #008300;
+    --s7: #9085e9; --s8: #e66767; --s9: #a5a49b;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .viz-root {
+    background: var(--page);
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: 24px;
+  }
+  .wrap { max-width: 960px; margin: 0 auto; }
+
+  h1 { font-size: 20px; font-weight: 650; letter-spacing: -0.01em; }
+  .subtitle { color: var(--text-secondary); font-size: 13.5px; margin-top: 4px; line-height: 1.5; }
+
+  .card {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 18px 12px;
+    margin-top: 16px;
+  }
+  .card h2 { font-size: 14px; font-weight: 600; }
+  .card .hint { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12.5px; font-weight: 550;
+    padding: 5px 11px; border-radius: 999px;
+    border: 1px solid var(--border);
+    background: transparent; color: var(--text-secondary);
+    cursor: pointer; user-select: none;
+    transition: background .12s, opacity .12s;
+  }
+  .chip .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--c); }
+  .chip[aria-pressed="true"] { background: color-mix(in srgb, var(--c) 12%, transparent); color: var(--text-primary); border-color: color-mix(in srgb, var(--c) 45%, var(--border)); }
+  .chip[aria-pressed="false"] .dot { opacity: .3; }
+  .chip.locked { cursor: default; }
+  .playbtn {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12.5px; font-weight: 600;
+    padding: 6px 14px; border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface-1); color: var(--text-primary);
+    cursor: pointer;
+  }
+  .playbtn:hover { background: color-mix(in srgb, var(--text-primary) 6%, var(--surface-1)); }
+  .spacer-flex { flex: 1; }
+  .speed { font-size: 12px; color: var(--text-muted); display: inline-flex; gap: 4px; align-items: center; }
+  .speed button {
+    font-size: 11.5px; padding: 3px 8px; border-radius: 6px;
+    border: 1px solid var(--border); background: transparent;
+    color: var(--text-secondary); cursor: pointer;
+  }
+  .speed button[aria-pressed="true"] { background: color-mix(in srgb, var(--text-primary) 8%, transparent); color: var(--text-primary); font-weight: 600; }
+
+  svg { display: block; width: 100%; height: auto; }
+  svg text { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .axis-label { font-size: 11px; fill: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .row-label   { font-size: 13px; font-weight: 600; fill: var(--text-primary); }
+  .row-sub     { font-size: 11px; fill: var(--text-muted); }
+  .end-label   { font-size: 11.5px; font-weight: 600; }
+
+  .tooltip {
+    position: fixed; pointer-events: none; z-index: 10;
+    background: var(--surface-1); color: var(--text-primary);
+    border: 1px solid var(--border); border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.14);
+    padding: 8px 10px; font-size: 12px; line-height: 1.55;
+    display: none; min-width: 130px;
+  }
+  .tooltip .tt-t { color: var(--text-muted); font-size: 11px; margin-bottom: 3px; }
+  .tooltip .tt-row { display: flex; align-items: center; gap: 6px; font-variant-numeric: tabular-nums; }
+  .tooltip .tt-row .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+  .tooltip .tt-row .nm { color: var(--text-secondary); flex: 1; padding-right: 10px; }
+
+  table { border-collapse: collapse; width: 100%; font-size: 12.5px; margin-top: 8px; }
+  th, td { text-align: left; padding: 6px 12px 6px 0; border-bottom: 1px solid var(--grid); font-variant-numeric: tabular-nums; }
+  th { color: var(--text-muted); font-weight: 550; font-size: 11.5px; }
+  details { margin-top: 14px; }
+  summary { font-size: 12.5px; color: var(--text-secondary); cursor: pointer; user-select: none; }
+  .footer-note { font-size: 12px; color: var(--text-muted); margin-top: 16px; line-height: 1.6; }
+</style>
+</head>
+<body>
+<div class="viz-root" data-palette="#2a78d6,#eb6834,#1baf7a,#eda100,#e87ba4,#008300">
+  <div class="wrap">
+    <h1>Frequencies</h1>
+    <p class="subtitle">
+      Comparing 1 Hz against 2, 3, 4, 5, 10, 20, 50 and 100 Hz.
+      All waves are shown over the same <strong>1-second window</strong>. Frequency (<em>f</em>) is the number of
+      complete cycles per second; the period <em>T</em> = 1/<em>f</em> is how long one cycle takes.
+      Doubling frequency halves the period.
+    </p>
+
+    <!-- ============ OVERLAY ============ -->
+    <div class="card">
+      <h2>Overlay</h2>
+      <p class="hint">All waves on one time axis. 1 Hz is the reference and is always shown. Toggle the others on or off to compare, or sweep the sliders to try any frequency from 1 to 20 Hz at any amplitude. Hover for exact values, and press play to watch a point ride each wave. High frequencies look like dense bands over a full second, so use the window buttons to zoom in on them.</p>
+      <div class="controls" id="chips"></div>
+      <div class="controls">
+        <button class="chip" id="customChip" aria-pressed="true"><span class="dot"></span><span id="customLabel">Slider: 7 Hz</span></button>
+        <span class="speed">Frequency</span>
+        <input type="range" id="fSlider" min="1" max="20" step="1" value="7" aria-label="Slider frequency in hertz" style="flex:1;max-width:240px;accent-color:var(--s1);">
+        <span class="speed" id="aLabel" style="font-variant-numeric:tabular-nums;">Amplitude 1</span>
+        <input type="range" id="aSlider" min="0" max="2" step="0.1" value="1" aria-label="Slider wave amplitude" style="flex:1;max-width:240px;accent-color:var(--s1);">
+      </div>
+      <div class="controls">
+        <button class="playbtn" id="playBtn" aria-pressed="false">▶ Play</button>
+        <span class="speed" id="speedCtl">Speed:
+          <button data-sp="0.02" aria-pressed="false">0.02×</button>
+          <button data-sp="0.1" aria-pressed="false">0.1×</button>
+          <button data-sp="0.25" aria-pressed="true">0.25×</button>
+          <button data-sp="1" aria-pressed="false">1×</button>
+        </span>
+        <span class="speed" id="winCtl">Window:
+          <button data-win="1" aria-pressed="true">1 s</button>
+          <button data-win="0.5" aria-pressed="false">0.5 s</button>
+          <button data-win="0.2" aria-pressed="false">0.2 s</button>
+          <button data-win="0.1" aria-pressed="false">0.1 s</button>
+        </span>
+        <span class="spacer-flex"></span>
+        <span class="speed" id="clock" style="font-variant-numeric: tabular-nums;">t = 0.000 s</span>
+      </div>
+      <svg id="overlay" viewBox="0 0 900 340" role="img" aria-label="Overlaid sine waves of 1 to 10 hertz across one second"></svg>
+    </div>
+
+    <!-- ============ SMALL MULTIPLES ============ -->
+    <div class="card">
+      <h2>Side by side</h2>
+      <p class="hint">Each row is the same 1-second window. Count the peaks in a row and you get its frequency.</p>
+      <svg id="stack" viewBox="0 0 900 845" role="img" aria-label="Nine stacked sine waves from 1 to 100 hertz, each over one second"></svg>
+
+      <details>
+        <summary>Data table</summary>
+        <table>
+          <thead><tr><th>Frequency f</th><th>Period T = 1/f</th><th>Cycles in 1 s</th><th>Angular frequency ω = 2πf</th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </details>
+    </div>
+
+  </div>
+  <div class="tooltip" id="tt"></div>
+</div>
+
+<script>
+(function () {
+  const FREQS = [
+    { f: 1,  slot: 1 },
+    { f: 2,  slot: 2 },
+    { f: 3,  slot: 3 },
+    { f: 4,  slot: 4 },
+    { f: 5,  slot: 5 },
+    { f: 10, slot: 6 },
+    { f: 20, slot: 7 },
+    { f: 50, slot: 8 },
+    { f: 100, slot: 9 },
+  ];
+  const css = s => getComputedStyle(document.querySelector('.viz-root')).getPropertyValue(s).trim();
+  const color = slot => css('--s' + slot);
+
+  const active = { 1: true, 2: true, 3: false, 4: false, 5: false, 10: true, 20: false, 50: false, 100: false };
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  const el = (n, at, parent) => {
+    const e = document.createElementNS(SVGNS, n);
+    for (const k in at) e.setAttribute(k, at[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  };
+
+  /* ---------- chips ---------- */
+  const chipsBox = document.getElementById('chips');
+  FREQS.forEach(d => {
+    const b = document.createElement('button');
+    b.className = 'chip' + (d.f === 1 ? ' locked' : '');
+    b.style.setProperty('--c', color(d.slot));
+    b.setAttribute('aria-pressed', active[d.f]);
+    b.innerHTML = '<span class="dot"></span>' + d.f + ' Hz' + (d.f === 1 ? ' (reference)' : '');
+    if (d.f !== 1) b.addEventListener('click', () => {
+      active[d.f] = !active[d.f];
+      b.setAttribute('aria-pressed', active[d.f]);
+      drawOverlay();
+    });
+    chipsBox.appendChild(b);
+  });
+
+  /* ---------- overlay chart ---------- */
+  const ov = document.getElementById('overlay');
+  const OM = { l: 46, r: 96, t: 16, b: 34 }, OW = 900, OH = 340;
+  const pw = OW - OM.l - OM.r, ph = OH - OM.t - OM.b;
+  let WIN = 1;                                   // visible time window in seconds
+  const YMAX = 2;                                // y axis runs -2 to 2
+  const X = t => OM.l + (t / WIN) * pw;          // t in [0,WIN] s
+  const Y = v => OM.t + ph / 2 - (v / YMAX) * (ph / 2 - 10);
+  const fmtTick = x => (+x.toFixed(4)).toString();
+
+  let overlayCurves = [];  // for hover + animation
+  function drawOverlay() {
+    ov.innerHTML = '';
+    overlayCurves = [];
+    // grid + axes
+    for (let i = 0; i <= 10; i++) {
+      const x = X(i / 10 * WIN);
+      el('line', { x1: x, y1: OM.t, x2: x, y2: OM.t + ph, stroke: 'var(--grid)', 'stroke-width': 1 }, ov);
+      el('text', { x, y: OH - 14, 'text-anchor': 'middle', class: 'axis-label' }, ov)
+        .textContent = fmtTick(i / 10 * WIN);
+    }
+    [2, 1, 0, -1, -2].forEach(v => {
+      el('line', { x1: OM.l, y1: Y(v), x2: OM.l + pw, y2: Y(v), stroke: v === 0 ? 'var(--baseline)' : 'var(--grid)', 'stroke-width': 1 }, ov);
+      el('text', { x: OM.l - 8, y: Y(v) + 3.5, 'text-anchor': 'end', class: 'axis-label' }, ov).textContent = v;
+    });
+    el('text', { x: OM.l + pw / 2, y: OH - 1, 'text-anchor': 'middle', class: 'axis-label' }, ov)
+      .textContent = 'time (seconds)';
+
+    // clip waves to the plot area (the slider wave can exceed the y range)
+    const defs = el('defs', {}, ov);
+    const clip = el('clipPath', { id: 'ovClip' }, defs);
+    el('rect', { x: OM.l, y: OM.t, width: pw, height: ph }, clip);
+    const waveG = el('g', { 'clip-path': 'url(#ovClip)' }, ov);
+
+    // waves (slow waves drawn later so they sit on top; the slider wave is drawn last)
+    const drawn = FREQS.filter(d => active[d.f]).map(d => ({ f: d.f, c: color(d.slot) }));
+    if (customOn) drawn.push({ f: customF, a: customA, c: css('--text-primary'), custom: true });
+    const order = drawn.slice().sort((a, b) => b.f - a.f).sort((a, b) => (a.custom ? 1 : 0) - (b.custom ? 1 : 0));
+    order.forEach(d => {
+      const pts = [];
+      const N = Math.max(240, Math.ceil(d.f * WIN * 60));
+      const amp = d.a == null ? 1 : d.a;
+      for (let i = 0; i <= N; i++) {
+        const t = i / N * WIN;
+        pts.push((i ? 'L' : 'M') + X(t).toFixed(2) + ' ' + Y(amp * Math.sin(2 * Math.PI * d.f * t)).toFixed(2));
+      }
+      const at = { d: pts.join(' '), fill: 'none', stroke: d.c, 'stroke-width': d.custom ? 2.5 : 2, 'stroke-linecap': 'round' };
+      if (d.custom) at['stroke-dasharray'] = '7 5';
+      el('path', at, waveG);
+      // direct label at line end
+      el('text', { x: OM.l + pw + 10, y: OM.t + ph / 2 + 4 - labelNudge(d, drawn), class: 'end-label', fill: d.c }, ov)
+        .textContent = d.f + ' Hz' + (d.custom ? ' (slider)' : '');
+      overlayCurves.push(d);
+    });
+
+    // crosshair + moving dots layer
+    hoverLine = el('line', { x1: 0, y1: OM.t, x2: 0, y2: OM.t + ph, stroke: 'var(--text-muted)', 'stroke-width': 1, 'stroke-dasharray': '3 3', visibility: 'hidden' }, ov);
+    dotLayer = el('g', { 'clip-path': 'url(#ovClip)' }, ov);
+    drawDots(animT, true);
+  }
+
+  // spread end labels so they never collide
+  function labelNudge(d, drawn) {
+    const idx = drawn.slice().sort((a, b) => a.f - b.f).indexOf(d);
+    const n = drawn.length;
+    return (idx - (n - 1) / 2) * 15;
+  }
+
+  /* ---------- slider wave ---------- */
+  let customF = 7, customA = 1, customOn = true;
+  const customChip = document.getElementById('customChip');
+  const customLabel = document.getElementById('customLabel');
+  const fSlider = document.getElementById('fSlider');
+  const aSlider = document.getElementById('aSlider');
+  const aLabel = document.getElementById('aLabel');
+  customChip.style.setProperty('--c', css('--text-primary'));
+  fSlider.addEventListener('input', () => {
+    customF = +fSlider.value;
+    customLabel.textContent = 'Slider: ' + customF + ' Hz';
+    drawOverlay();
+  });
+  aSlider.addEventListener('input', () => {
+    customA = +aSlider.value;
+    aLabel.textContent = 'Amplitude ' + (+customA.toFixed(2));
+    drawOverlay();
+  });
+  customChip.addEventListener('click', () => {
+    customOn = !customOn;
+    customChip.setAttribute('aria-pressed', customOn);
+    drawOverlay();
+  });
+
+  /* ---------- animation ---------- */
+  let animT = 0, playing = false, speed = 0.25, rafId = null, lastTs = null;
+  let hoverLine, dotLayer;
+  const clock = document.getElementById('clock');
+
+  function drawDots(t, force) {
+    if (!dotLayer) return;
+    dotLayer.innerHTML = '';
+    if (!playing && !force) return;
+    overlayCurves.forEach(d => {
+      const v = (d.a == null ? 1 : d.a) * Math.sin(2 * Math.PI * d.f * t);
+      el('circle', {
+        cx: X(t), cy: Y(v), r: 5,
+        fill: d.c, stroke: 'var(--surface-1)', 'stroke-width': 2
+      }, dotLayer);
+    });
+    clock.textContent = 't = ' + t.toFixed(WIN < 0.2 ? 4 : 3) + ' s';
+  }
+
+  function tick(ts) {
+    if (lastTs != null) {
+      animT = (animT + (ts - lastTs) / 1000 * speed) % WIN;
+      drawDots(animT, true);
+    }
+    lastTs = ts;
+    if (playing) rafId = requestAnimationFrame(tick);
+  }
+
+  const playBtn = document.getElementById('playBtn');
+  playBtn.addEventListener('click', () => {
+    playing = !playing;
+    playBtn.textContent = playing ? '⏸ Pause' : '▶ Play';
+    playBtn.setAttribute('aria-pressed', playing);
+    lastTs = null;
+    if (playing) rafId = requestAnimationFrame(tick);
+    else cancelAnimationFrame(rafId);
+  });
+  document.getElementById('speedCtl').querySelectorAll('button').forEach(b => {
+    b.addEventListener('click', () => {
+      speed = parseFloat(b.dataset.sp);
+      document.getElementById('speedCtl').querySelectorAll('button')
+        .forEach(x => x.setAttribute('aria-pressed', x === b));
+    });
+  });
+  document.getElementById('winCtl').querySelectorAll('button').forEach(b => {
+    b.addEventListener('click', () => {
+      WIN = parseFloat(b.dataset.win);
+      animT = animT % WIN;
+      document.getElementById('winCtl').querySelectorAll('button')
+        .forEach(x => x.setAttribute('aria-pressed', x === b));
+      drawOverlay();
+    });
+  });
+
+  /* ---------- hover tooltip on overlay ---------- */
+  const tt = document.getElementById('tt');
+  ov.addEventListener('mousemove', e => {
+    const r = ov.getBoundingClientRect();
+    const sx = (e.clientX - r.left) * (OW / r.width);
+    if (sx < OM.l || sx > OM.l + pw) { ttHide(); return; }
+    const t = (sx - OM.l) / pw * WIN;
+    hoverLine.setAttribute('x1', X(t)); hoverLine.setAttribute('x2', X(t));
+    hoverLine.setAttribute('visibility', 'visible');
+    let html = '<div class="tt-t">t = ' + t.toFixed(WIN < 0.2 ? 4 : 3) + ' s</div>';
+    overlayCurves.slice().sort((a, b) => a.f - b.f).forEach(d => {
+      const v = (d.a == null ? 1 : d.a) * Math.sin(2 * Math.PI * d.f * t);
+      html += '<div class="tt-row"><span class="dot" style="background:' + d.c + '"></span>'
+        + '<span class="nm">' + d.f + ' Hz' + (d.custom ? ' (slider)' : '') + '</span><span>' + (v >= 0 ? '+' : '−') + Math.abs(v).toFixed(2) + '</span></div>';
+    });
+    tt.innerHTML = html;
+    tt.style.display = 'block';
+    const tw = tt.offsetWidth;
+    tt.style.left = Math.min(e.clientX + 14, window.innerWidth - tw - 8) + 'px';
+    tt.style.top = (e.clientY + 14) + 'px';
+    if (!playing) drawDotsAt(t);
+  });
+  ov.addEventListener('mouseleave', ttHide);
+  function ttHide() {
+    tt.style.display = 'none';
+    if (hoverLine) hoverLine.setAttribute('visibility', 'hidden');
+    if (!playing) drawDots(animT, true);
+  }
+  function drawDotsAt(t) {
+    dotLayer.innerHTML = '';
+    overlayCurves.forEach(d => {
+      el('circle', { cx: X(t), cy: Y((d.a == null ? 1 : d.a) * Math.sin(2 * Math.PI * d.f * t)), r: 4.5, fill: d.c, stroke: 'var(--surface-1)', 'stroke-width': 2 }, dotLayer);
+    });
+  }
+
+  /* ---------- small multiples ---------- */
+  const st = document.getElementById('stack');
+  const SM = { l: 150, r: 40, top: 14, rowH: 88, wavePad: 12 };
+  const spw = 900 - SM.l - SM.r;
+
+  function drawStack() {
+    st.innerHTML = '';
+    FREQS.forEach((d, i) => {
+      const y0 = SM.top + i * SM.rowH;
+      const mid = y0 + SM.rowH / 2;
+      const amp = SM.rowH / 2 - SM.wavePad;
+      const sx = t => SM.l + t * spw;
+      const sy = v => mid - v * amp;
+
+      // baseline + light end ticks
+      el('line', { x1: SM.l, y1: mid, x2: SM.l + spw, y2: mid, stroke: 'var(--grid)', 'stroke-width': 1 }, st);
+
+      // one-period bracket (shows T shrinking)
+      const Tpx = spw / d.f;
+      el('line', { x1: SM.l, y1: y0 + SM.rowH - 8, x2: SM.l + Tpx, y2: y0 + SM.rowH - 8, stroke: 'var(--baseline)', 'stroke-width': 1 }, st);
+      el('line', { x1: SM.l, y1: y0 + SM.rowH - 12, x2: SM.l, y2: y0 + SM.rowH - 4, stroke: 'var(--baseline)', 'stroke-width': 1 }, st);
+      el('line', { x1: SM.l + Tpx, y1: y0 + SM.rowH - 12, x2: SM.l + Tpx, y2: y0 + SM.rowH - 4, stroke: 'var(--baseline)', 'stroke-width': 1 }, st);
+
+      // wave
+      const N = Math.max(240, d.f * 30);
+      let path = '';
+      for (let k = 0; k <= N; k++) {
+        const t = k / N;
+        path += (k ? 'L' : 'M') + sx(t).toFixed(2) + ' ' + sy(Math.sin(2 * Math.PI * d.f * t)).toFixed(2);
+      }
+      el('path', { d: path, fill: 'none', stroke: color(d.slot), 'stroke-width': 2, 'stroke-linecap': 'round' }, st);
+
+      // row labels
+      el('text', { x: 12, y: mid - 4, class: 'row-label' }, st).textContent = d.f + ' Hz';
+      el('text', { x: 12, y: mid + 13, class: 'row-sub' }, st).textContent =
+        d.f + (d.f === 1 ? ' cycle' : ' cycles') + ' · T = ' + fmtT(1 / d.f);
+      // T bracket label (beside the bracket when one period is too narrow to fit it)
+      if (Tpx >= 70) {
+        el('text', { x: SM.l + Tpx / 2, y: y0 + SM.rowH + 3, 'text-anchor': 'middle', class: 'row-sub' }, st)
+          .textContent = '⟵ T ⟶';
+      } else {
+        el('text', { x: SM.l + Tpx + 8, y: y0 + SM.rowH - 5, 'text-anchor': 'start', class: 'row-sub' }, st)
+          .textContent = 'T = ' + fmtT(1 / d.f);
+      }
+    });
+    // shared bottom axis
+    const yAx = SM.top + FREQS.length * SM.rowH + 14;
+    for (let i = 0; i <= 10; i += 2) {
+      const x = SM.l + (i / 10) * spw;
+      el('text', { x, y: yAx, 'text-anchor': 'middle', class: 'axis-label' }, st).textContent = (i / 10).toFixed(1);
+    }
+    el('text', { x: SM.l + spw / 2, y: yAx + 16, 'text-anchor': 'middle', class: 'axis-label' }, st)
+      .textContent = 'time (seconds)';
+  }
+  function fmtT(T) { return (+T.toFixed(3)) + ' s'; }
+
+  /* ---------- table ---------- */
+  const tb = document.getElementById('tbody');
+  FREQS.forEach(d => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:'
+      + color(d.slot) + ';margin-right:6px;"></span>' + d.f + ' Hz</td>'
+      + '<td>' + fmtT(1 / d.f) + '</td>'
+      + '<td>' + d.f + '</td>'
+      + '<td>' + (2 * Math.PI * d.f).toFixed(2) + ' rad/s</td>';
+    tb.appendChild(tr);
+  });
+
+  /* ---------- theme change re-draw ---------- */
+  const mq = window.matchMedia('(prefers-color-scheme: dark)');
+  mq.addEventListener && mq.addEventListener('change', () => {
+    customChip.style.setProperty('--c', css('--text-primary'));
+    drawOverlay(); drawStack();
+  });
+
+  drawOverlay();
+  drawStack();
+})();
+</script>
+</body>
+</html>
