@@ -279,5 +279,22 @@ function update(){ const cm=parseFloat(sel.selectedOptions[0].dataset.cm);
   dist.textContent=fmt(cm/100*16667); }
 sel.addEventListener("change",update); update();
 </script>
+<style>
+.diagram-sources{max-width:860px;margin:32px auto 46px;padding:18px 22px 0;border-top:1px solid rgba(255,255,255,.10);font-family:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:11.5px;line-height:1.75;color:#8b94a4;box-sizing:border-box;}
+.diagram-sources b{color:#c3cad7;display:block;margin-bottom:6px;font-size:12px;letter-spacing:.02em;}
+.diagram-sources ol{margin:0;padding-left:18px;}
+.diagram-sources li{margin:3px 0;}
+.diagram-sources a{color:#6ea8fe;text-decoration:none;}
+.diagram-sources a:hover{text-decoration:underline;}
+.diagram-sources i{font-style:italic;}
+</style>
+<div class="diagram-sources">
+<b>References</b>
+<ol>
+<li><a href="https://www.annualreviews.org/content/journals/10.1146/annurev.neuro.31.060407.125547" target="_blank" rel="noopener">Lemon, Descending pathways in motor control, <i>Annu. Rev. Neurosci.</i> 2008</a> (corticospinal tract; layer-5 Betz-type pyramidal cells and their axon course to the lumbosacral spinal cord).</li>
+<li><a href="https://www.nature.com/articles/nrn2286" target="_blank" rel="noopener">Spruston, Pyramidal neurons: dendritic structure and synaptic integration, <i>Nat. Rev. Neurosci.</i> 2008</a> (soma and dendritic dimensions of pyramidal neurons).</li>
+<li>The size comparisons (marble to blue whale, and the matched ~1.1&nbsp;km axon) are arithmetic, holding this neuron's own soma-to-axon length ratio fixed.</li>
+</ol>
+</div>
 </body>
 </html>
