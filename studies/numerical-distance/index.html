@@ -98,6 +98,7 @@ const timeline = [];
 // ---- 2. BROWSER CHECK (desktop only) -------------------------
 timeline.push({
   type: jsPsychBrowserCheck,
+  skip_features: ['vsync_rate'],
   inclusion_function: (data) => data.mobile === false,
   exclusion_message: () =>
     '<p>Sorry, this study must be completed on a desktop or laptop computer with a keyboard.</p>'
