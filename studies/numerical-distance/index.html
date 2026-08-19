@@ -316,6 +316,51 @@ timeline.push({
 
 // ---- 11. EXIT FULLSCREEN + PRELOAD + RUN ---------------------
 timeline.push({ type: jsPsychFullscreen, fullscreen_mode: false });
+// ---- 12. PERSONAL RESULTS SUMMARY (after data is saved) ------
+function summaryHTML() {
+  const main = jsPsych.data.get().filter({ task: 'response', phase: 'main' });
+  const correct = main.filter({ correct: true });
+  const nMain = main.count();
+  const acc = nMain ? Math.round(100 * correct.count() / nMain) : 0;
+  const meanRT = correct.count() ? Math.round(correct.select('rt').mean()) : null;
+  let rows = '';
+  [1, 2, 3, 4].forEach((d) => {
+    const cd = correct.filter({ distance: d });
+    const m = cd.count() ? Math.round(cd.select('rt').mean()) : null;
+    rows += `<tr><td style="padding:4px 16px;border-top:1px solid #ddd">${d}</td>` +
+            `<td style="padding:4px 16px;border-top:1px solid #ddd">${m !== null ? m + ' ms' : '&mdash;'}</td></tr>`;
+  });
+  const d1 = correct.filter({ distance: 1 });
+  const d4 = correct.filter({ distance: 4 });
+  const rt1 = d1.count() ? d1.select('rt').mean() : null;
+  const rt4 = d4.count() ? d4.select('rt').mean() : null;
+  let effect = '';
+  if (rt1 !== null && rt4 !== null) {
+    const diff = Math.round(rt1 - rt4);
+    effect = diff > 0
+      ? `You were about <strong>${diff} ms faster</strong> when the number was far from 5 than when it was close to 5 &mdash; the classic <em>numerical distance effect</em>.`
+      : `Your response times were about the same across distances in this short session.`;
+  }
+  return `<div class="instructions">
+    <h2>Your results</h2>
+    <p>Accuracy: <strong>${acc}%</strong>&nbsp;&nbsp;&middot;&nbsp;&nbsp;Average time on correct trials:
+       <strong>${meanRT !== null ? meanRT + ' ms' : '&mdash;'}</strong></p>
+    <p>Average response time by how far the number was from 5:</p>
+    <table style="margin:8px auto;border-collapse:collapse;font-size:17px">
+      <tr><th style="padding:4px 16px;text-align:left">Distance from 5</th>
+          <th style="padding:4px 16px;text-align:left">Average time</th></tr>
+      ${rows}
+    </table>
+    <p style="margin-top:16px">${effect}</p>
+    <p style="color:#666;font-size:14px">These numbers are just for your interest, based on this one short session.</p>
+  </div>`;
+}
+timeline.push({
+  type: jsPsychHtmlButtonResponse,
+  stimulus: summaryHTML,
+  choices: ['Finish']
+});
+
 timeline.unshift({ type: jsPsychPreload, auto_preload: true });
 jsPsych.run(timeline);
 </script>
