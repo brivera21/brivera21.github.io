@@ -223,3 +223,25 @@ figure.photo {
   overflow: hidden;
   margin-bottom: 2.4em;
 }
+
+
+// ---- Participate / study cards ----
+.study-card {
+  border: 1px solid $grey-color-light;
+  border-radius: 10px;
+  background: #1a1a1a;
+  padding: 1.2em 1.4em;
+  margin: 1.5em 0;
+}
+.study-card h3 { margin-top: 0; color: $brand-color; }
+.begin-button {
+  display: inline-block;
+  margin-top: 0.6em;
+  padding: 0.6em 1.4em;
+  background: $brand-color;
+  color: #121212;
+  font-weight: 600;
+  border-radius: 6px;
+  text-decoration: none;
+}
+.begin-button:hover { background: lighten($brand-color, 10%); color: #121212; text-decoration: none; }
