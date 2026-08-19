@@ -245,3 +245,7 @@ figure.photo {
   text-decoration: none;
 }
 .begin-button:hover { background: lighten($brand-color, 10%); color: #121212; text-decoration: none; }
+
+// Override minima's .page-content a colour so the button text stays dark on gold
+.page-content a.begin-button, .post-content a.begin-button { color: #121212; }
+.page-content a.begin-button:hover, .post-content a.begin-button:hover { color: #121212; }
