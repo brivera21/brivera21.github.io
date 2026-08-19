@@ -31,6 +31,7 @@ header_pages:
   - teaching.markdown
   - publications.markdown
   - cv.markdown
+  - participate.md
 
 # Exclude from processing
 exclude:
