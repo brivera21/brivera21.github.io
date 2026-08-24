@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Introduction to electricity · ERP pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===== SHARED STYLE: copy verbatim into every page ===== */
+:root{
+  --bg:#f6f3ee; --panel:#ffffff; --ink:#1d1f24; --muted:#5c6270; --rule:#e2ddd4;
+  --accent:#0f6e74; --accent-2:#d9573b; --accent-3:#6b5ca5; --gold:#c8962a;
+  --ok:#2f8f4e; --warn:#c2410c; --code-bg:#f0ece4;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --maxw:1040px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+a:hover{text-decoration-thickness:2px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:var(--maxw);margin:0 auto;padding:14px 20px 0}
+.topbar .series{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.topbar .series:hover{color:var(--accent)}
+.topbar .step{font-family:var(--mono);font-size:13px;color:var(--muted)}
+header.hero{max-width:var(--maxw);margin:0 auto;padding:18px 20px 10px}
+header.hero h1{font-size:clamp(26px,4vw,38px);line-height:1.15;margin:0 0 6px;font-weight:600;letter-spacing:-.01em}
+header.hero p.q{margin:0;font-size:clamp(17px,2.2vw,20px);color:var(--muted);font-style:italic}
+main{max-width:var(--maxw);margin:0 auto;padding:8px 20px 40px}
+.stage{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:16px;box-shadow:0 1px 0 rgba(0,0,0,.02),0 8px 24px -18px rgba(0,0,0,.25)}
+.stage .canvas-wrap{position:relative;width:100%}
+.stage canvas,.stage svg{display:block;width:100%;height:auto}
+.controls{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:flex-end;margin-top:14px;padding-top:14px;border-top:1px solid var(--rule)}
+.control{display:flex;flex-direction:column;gap:4px;min-width:150px;flex:1 1 150px}
+.control label{font-size:13px;color:var(--muted);letter-spacing:.02em}
+.control .val{font-family:var(--mono);font-size:13px;color:var(--ink)}
+.control input[type=range]{width:100%;accent-color:var(--accent)}
+.control select,.control input[type=text],.control textarea{font:inherit;font-size:15px;padding:6px 8px;border:1px solid var(--rule);border-radius:8px;background:#fff;color:var(--ink)}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px}
+button{font:inherit;font-size:14px;font-weight:500;padding:8px 14px;border-radius:999px;border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer}
+button.secondary{background:#fff;color:var(--accent)}
+button.ghost{background:transparent;border-color:var(--rule);color:var(--ink)}
+button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+button:disabled{opacity:.5;cursor:not-allowed}
+.readout{display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:12px;font-family:var(--mono);font-size:13.5px;color:var(--muted)}
+.readout b{color:var(--ink);font-weight:500}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12.5px;font-family:var(--mono);border:1px solid var(--rule);background:var(--code-bg)}
+.pill.ok{color:var(--ok);border-color:var(--ok)}
+.pill.warn{color:var(--warn);border-color:var(--warn)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13.5px;color:var(--muted);margin-top:8px}
+.legend span::before{content:"";display:inline-block;width:18px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle;background:var(--sw)}
+section.prose{max-width:720px;margin:28px auto 0;padding:0}
+section.prose h2{font-size:22px;margin:28px 0 8px;font-weight:600}
+section.prose p{margin:0 0 14px}
+section.prose ol,section.prose ul{margin:0 0 14px 22px;padding:0}
+section.prose li{margin-bottom:6px}
+code,pre{font-family:var(--mono);font-size:.92em}
+code{background:var(--code-bg);padding:1px 5px;border-radius:5px}
+pre{background:var(--code-bg);padding:12px 14px;border-radius:10px;overflow-x:auto;line-height:1.45}
+pre code{background:none;padding:0}
+.refs{font-size:14.5px;color:var(--muted)}
+.refs p{padding-left:1.6em;text-indent:-1.6em}
+nav.pager{display:flex;justify-content:space-between;gap:12px;max-width:var(--maxw);margin:30px auto 0;padding:18px 20px;border-top:1px solid var(--rule)}
+nav.pager a{text-decoration:none;font-size:15px;display:flex;flex-direction:column;gap:2px;max-width:48%}
+nav.pager a small{color:var(--muted);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+nav.pager a.next{text-align:right;margin-left:auto}
+footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;color:var(--muted)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:600px){
+  body{font-size:16px}
+  .stage{padding:12px;border-radius:10px}
+  .control{min-width:120px}
+}
+@media (prefers-reduced-motion: reduce){ .anim-hint{display:none} }
+/* ===== END SHARED STYLE ===== */
+
+.worlds{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.worlds span{font-size:13px;color:var(--muted);margin-right:4px}
+.cmp{width:100%;border-collapse:collapse;margin-top:18px;font-size:14.5px}
+.cmp th,.cmp td{text-align:left;padding:8px 10px;border-top:1px solid var(--rule);vertical-align:top}
+.cmp th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.cmp td:first-child{color:var(--muted);width:26%}
+.tablewrap{overflow-x:auto}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="series" href="erp-pipeline.html">ERP pipeline · PSYCH 390</a>
+  <span class="step">step 1 / 12</span>
+</div>
+<header class="hero">
+  <h1>Introduction to electricity</h1>
+  <p class="q">How does electricity work, and how is electrophysiology similar and different?</p>
+</header>
+
+<main>
+  <div class="stage" id="stage">
+    <div class="worlds" role="group" aria-label="Choose which circuit to show">
+      <span>World</span>
+      <button id="mWire" aria-pressed="true">Wire circuit</button>
+      <button id="mHead" aria-pressed="false">The head as a circuit</button>
+      <button class="ghost" id="pause" aria-pressed="false">Pause motion</button>
+    </div>
+    <div class="canvas-wrap">
+      <canvas id="cv" aria-label="An animated circuit. In wire mode a battery drives electrons through a resistor and a hose analogy shows pressure and flow. In head mode a patch of cortex drives ions through the skull, scalp and electrodes into an amplifier that reads the difference between two electrodes, with 60 Hz room noise leaking in as impedance rises."></canvas>
+    </div>
+    <div class="controls">
+      <div class="control">
+        <label for="s1"><span id="l1">Voltage of the battery</span> <span class="val" id="s1v"></span></label>
+        <input type="range" id="s1" min="0" max="100" value="50" step="1">
+      </div>
+      <div class="control">
+        <label for="s2"><span id="l2">Resistance of the resistor</span> <span class="val" id="s2v"></span></label>
+        <input type="range" id="s2" min="0" max="100" value="30" step="1">
+      </div>
+    </div>
+    <div class="readout" id="ro"></div>
+
+    <div class="tablewrap">
+    <table class="cmp" aria-label="Comparison of a wire circuit and the head">
+      <thead><tr><th></th><th>Wire circuit</th><th>The head</th></tr></thead>
+      <tbody>
+        <tr><td>Charge carriers</td><td>Electrons in metal</td><td>Ions (Na<sup>+</sup>, K<sup>+</sup>, Cl<sup>−</sup>) in salty fluid</td></tr>
+        <tr><td>Conductor</td><td>A thin wire; current has one path</td><td>The whole head, a volume conductor; current spreads everywhere at once</td></tr>
+        <tr><td>Voltages</td><td>Volts (a 9 V battery, 120 V at the wall)</td><td>Microvolts at the scalp: EEG 20–100 µV, ERP effects 1–10 µV</td></tr>
+        <tr><td>AC or DC</td><td>Batteries are DC; wall current is 60 Hz AC</td><td>Skin potentials drift like DC; the brain signal itself changes constantly, so EEG is AC-like</td></tr>
+        <tr><td>What is measured</td><td>Voltage across two points of the wire</td><td>Active minus reference (A − R); the ground electrode drops out of the subtraction</td></tr>
+        <tr><td>What limits the signal</td><td>Resistance of the load</td><td>Skull resistance and the impedance of the electrode, gel and skin junction</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <section class="prose">
+    <h2>What you are looking at</h2>
+    <p>Start with the wire. The battery supplies voltage, a push that makes charge move, and the moving dots are electrons carrying current around the loop. The resistor opposes that flow and turns the energy into heat, so it glows as the power rises. The hose underneath says the same thing in water. Voltage is pressure, current is how much water comes out per second, and resistance is how narrow the hose is. Ohm's law ties the three together, I = V / R, and power is P = V × I.</p>
+    <p>Switch to the head and the same parts are all present, made of different materials. The battery is a small patch of cortex whose synchronized neurons behave like a tiny dipole. Current is carried by ions drifting through salt water rather than electrons in copper, the skull is a large resistor in the path, and the scalp is a thin conductive layer that spreads the current sideways. Each electrode sits on gel and skin, a junction that acts as a resistor and a capacitor in parallel, and the amplifier does not read the active electrode by itself. It reads the difference between the active electrode and a reference electrode, A minus R. Nearby room wiring carries 60 Hz alternating current, and a changing current makes a changing magnetic field, which induces a current in any conductor it crosses. That induced hum grows as electrode impedance rises. It is drawn as the wavy blue trace, and at high impedance it swamps the brain signal.</p>
+
+    <h2>Try this</h2>
+    <ol>
+      <li>In the wire circuit, raise the voltage with the resistance fixed. The electrons speed up, the hose pressure gauge climbs, and the current readout follows I = V / R.</li>
+      <li>Now raise the resistance with the voltage fixed. The hose narrows, less water flows, and the dots slow down. The pressure is still there; it just cannot push as much through.</li>
+      <li>Now hold the current constant instead and constrict the hose. The pressure has to rise. That is why a constant neural current through a higher resistance produces a larger voltage.</li>
+      <li>Switch to the head. Slide the source strength from a few hundred neurons to a hundred thousand and watch the scalp voltage climb from a tenth of a microvolt to tens of microvolts.</li>
+      <li>Raise the electrode impedance to 50 kΩ. The scalp voltage from the brain barely changes, but the 60 Hz hum grows until the amplifier trace is mostly noise. Bring it back below 5 kΩ and the trace clears.</li>
+    </ol>
+
+    <h2>Why it matters for the pipeline</h2>
+    <p>Three facts from this page come back on almost every later one. Electricity follows the path of least resistance, so current from a cortical source spreads through the whole head instead of staying under one electrode, and a single channel never sees a single source. Resistances in series add, so the skull costs a great deal of signal. And the amplifier reports A minus R, so the choice of reference changes every waveform. Before a recording starts, the experimenter checks each electrode's impedance and works the gel until it is low and roughly matched across sites, usually below 5 to 10 kΩ. In EEGLAB the recorded values often arrive in the dataset's channel information (<code>EEG.chanlocs</code>), and a channel that was noisy from the start is the one you will later repair with <code>pop_interp</code> or remove during artifact detection. Low, matched impedance is the cheapest noise reduction available (Luck, 2014, chapter 5).</p>
+
+    <h2 id="refs">References</h2>
+    <div class="refs">
+      <p>Luck, S. J. (2014). <i>An introduction to the event-related potential technique</i> (2nd ed.). MIT Press.</p>
+    </div>
+  </section>
+</main>
+
+<nav class="pager">
+  <a class="prev" href="erp-pipeline.html"><small>Previous</small><span>Series overview</span></a>
+  <a class="next" href="erp-02-eeg-signal.html"><small>Next</small><span>The EEG signal</span></a>
+</nav>
+<footer>Part of the ERP pipeline series for PSYCH 390, St. Olaf College. Built as a standalone page; nothing is sent anywhere.</footer>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const cv=$('cv'),ctx=cv.getContext('2d');let W=1000,H=520;
+const C={ink:'#1d1f24',muted:'#5c6270',rule:'#e2ddd4',teal:'#0f6e74',coral:'#d9573b',violet:'#6b5ca5',gold:'#c8962a',ok:'#2f8f4e',warn:'#c2410c',paper:'#f6f3ee',code:'#f0ece4'};
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// ---------- state ----------
+const S={mode:'wire',wire:{a:50,b:30},head:{a:50,b:30},paused:false};
+function wireVals(){const v=0.5+S.wire.a/100*8.5,r=1+S.wire.b/100*99;return{V:v,R:r,I:v/r,P:v*v/r};}
+function headVals(){const n=Math.round(Math.pow(10,2.3+S.head.a/100*2.7)),z=1+S.head.b/100*99;
+  // 0.5 µV per thousand synchronized cells, order-of-magnitude honest; hum leak modelled as 0.25 µV per kΩ
+  const uV=n*0.0005,hum=0.25*z;return{N:n,Z:z,uV:uV,hum:hum};}
+
+// ---------- canvas ----------
+function fit(){const r=cv.getBoundingClientRect();const dpr=window.devicePixelRatio||1;W=r.width;H=W<560?480:Math.max(400,Math.min(560,W*0.56));
+  cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);cv.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);}
+function txt(s,x,y,o={}){ctx.font=(o.w||400)+' '+(o.s||12)+'px "IBM Plex Sans",system-ui,sans-serif';ctx.fillStyle=o.c||C.muted;ctx.textAlign=o.a||'left';ctx.textBaseline=o.b||'alphabetic';ctx.fillText(s,x,y);}
+function line(pts,c,w,dash){ctx.beginPath();ctx.strokeStyle=c;ctx.lineWidth=w||1.2;ctx.setLineDash(dash||[]);pts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.stroke();ctx.setLineDash([]);}
+function dot(x,y,r,c){ctx.beginPath();ctx.arc(x,y,r,0,6.2832);ctx.fillStyle=c;ctx.fill();}
+
+// A closed loop is a list of corner points; we walk it by arc length.
+function loopLen(P){let L=0;for(let i=0;i<P.length;i++){const a=P[i],b=P[(i+1)%P.length];L+=Math.hypot(b[0]-a[0],b[1]-a[1]);}return L;}
+function loopAt(P,s){const L=loopLen(P);s=((s%L)+L)%L;for(let i=0;i<P.length;i++){const a=P[i],b=P[(i+1)%P.length];const d=Math.hypot(b[0]-a[0],b[1]-a[1]);if(s<=d){const t=d?s/d:0;return[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];}s-=d;}return P[0];}
+
+// symbols
+function battery(x,y,vertical,len){ // centered at x,y; drawn along the segment
+  const g=6;ctx.lineWidth=2;ctx.strokeStyle=C.ink;
+  if(vertical){line([[x-11,y-g],[x+11,y-g]],C.ink,2.4);line([[x-6,y+g],[x+6,y+g]],C.ink,2.4);}
+  else{line([[x-g,y-11],[x-g,y+11]],C.ink,2.4);line([[x+g,y-6],[x+g,y+6]],C.ink,2.4);}
+}
+function resistor(x,y,vertical,len,c){ // zigzag centered at x,y spanning len
+  const n=6,pts=[];for(let i=0;i<=n*2;i++){const t=-len/2+len*i/(n*2);const off=(i%2?(i%4===1?7:-7):0);pts.push(vertical?[x+off,y+t]:[x+t,y+off]);}
+  line(pts,c||C.ink,2);
+}
+function rcJunction(x,y,c){ // resistor and capacitor in parallel, vertical, centered
+  const h=30;line([[x,y-h/2-6],[x,y-h/2]],c,1.6);line([[x,y+h/2],[x,y+h/2+6]],c,1.6);
+  line([[x-9,y-h/2],[x+9,y-h/2]],c,1.6);line([[x-9,y+h/2],[x+9,y+h/2]],c,1.6);
+  line([[x-9,y-h/2],[x-9,y+h/2]],c,1.6);ctx.strokeStyle=c;ctx.lineWidth=1.6;ctx.strokeRect(x-13,y-9,8,18);ctx.fillStyle='#fff';ctx.fillRect(x-13,y-9,8,18);
+  line([[x+9,y-h/2],[x+9,y-3]],c,1.6);line([[x+9,y+3],[x+9,y+h/2]],c,1.6);line([[x+3,y-3],[x+15,y-3]],c,2);line([[x+3,y+3],[x+15,y+3]],c,2);
+}
+
+// ---------- wire world ----------
+function drawWire(t){
+  const v=wireVals(),narrow=W<560;
+  const top=narrow?24:28,circH=narrow?H*0.55:H*0.62;
+  const x0=narrow?40:100,x1=narrow?W-40:W*0.52,y0=top+16,y1=top+circH-8;
+  const loop=[[x0,y1],[x0,y0],[x1,y0],[x1,y1]];
+  txt('A wire circuit',x0,top-6,{c:C.ink,w:600,s:13});
+  // wire
+  line([...loop,loop[0]],C.ink,2);
+  // battery on left side, resistor on right
+  const my=(y0+y1)/2;ctx.fillStyle='#fff';ctx.fillRect(x0-14,my-16,28,32);battery(x0,my,true);
+  txt('+',x0-20,my-8,{c:C.ink,s:13,w:600,a:'right'});txt('−',x0-20,my+16,{c:C.ink,s:13,w:600,a:'right'});
+  const bl=narrow?x0+20:x0-20,ba=narrow?'left':'right';
+  txt('battery',bl,my+40,{a:ba,s:11.5});txt(v.V.toFixed(1)+' V',bl,my+54,{a:ba,s:11.5,c:C.ink,w:500});
+  // resistor glow proportional to power (0 to 81 W)
+  const glow=Math.min(1,v.P/40);ctx.fillStyle='#fff';ctx.fillRect(x1-16,my-46,32,92);
+  if(glow>0.02){const g=ctx.createRadialGradient(x1,my,2,x1,my,50);g.addColorStop(0,'rgba(217,87,59,'+(0.55*glow)+')');g.addColorStop(1,'rgba(217,87,59,0)');ctx.fillStyle=g;ctx.fillRect(x1-50,my-50,100,100);}
+  resistor(x1,my,true,80,glow>0.5?C.coral:C.ink);
+  const rl=narrow?x1-20:x1+20,ra=narrow?'right':'left';
+  txt('resistor',rl,my-2,{s:11.5,a:ra});txt(v.R.toFixed(0)+' Ω',rl,my+13,{s:11.5,c:C.ink,w:500,a:ra});
+  txt('heat: '+v.P.toFixed(v.P<1?2:1)+' W',rl,my+28,{s:11.5,c:glow>0.5?C.coral:C.muted,a:ra});
+  // current label along top
+  txt('electrons carry the current, I = V / R = '+fmtA(v.I),(x0+x1)/2,y0-8,{a:'center',s:11.5});
+  // moving electrons: speed proportional to current, clamped for legibility
+  const speed=12+26*v.I;const L=loopLen(loop),n=Math.round(L/26);
+  for(let i=0;i<n;i++){const s=-(t*speed)+i*L/n;const p=loopAt(loop,s);dot(p[0],p[1],3.2,C.teal);}
+  // meter panel (wide only)
+  if(!narrow){const mx=W*0.62,mw=W-mx-14;txt('Readings',mx,top-6,{c:C.ink,w:600,s:13});
+    bar(mx,y0+6,mw,'voltage V',v.V,9,'V',C.gold);bar(mx,y0+56,mw,'current I = V / R',v.I,9,'A',C.teal);bar(mx,y0+106,mw,'power P = V × I',v.P,81,'W',C.coral);
+    txt('bars are on linear scales; current can be tiny',mx,y0+150,{s:10.5});}
+  // ---- hose analogy
+  const hy0=top+circH+18,hy1=H-8,hm=(hy0+hy1)/2;
+  txt('The hose analogy',x0,hy0,{c:C.ink,w:600,s:13});
+  const px0=x0+8,px1=W-30,pw=(narrow?14:18)*(0.55+0.45*v.V/9)*0.4+10;
+  // pressure gauge
+  const gx=px0+22,gy=hm+6,gr=narrow?16:20;ctx.beginPath();ctx.arc(gx,gy,gr,0,6.2832);ctx.strokeStyle=C.ink;ctx.lineWidth=1.5;ctx.fillStyle='#fff';ctx.fill();ctx.stroke();
+  const ang=Math.PI*0.75+Math.PI*1.5*(v.V/9);line([[gx,gy],[gx+Math.cos(ang)*(gr-4),gy+Math.sin(ang)*(gr-4)]],C.coral,2);
+  txt('pressure',gx,gy+gr+13,{a:'center',s:10.5});txt('= voltage',gx,gy+gr+25,{a:'center',s:10.5});
+  // pipe with constriction; constriction width shrinks with resistance
+  const cx=(px0+px1)*0.55,fullW=narrow?18:26,minW=fullW*(1-0.85*(v.R-1)/99);
+  const pipeL=gx+gr+8,pipeR=px1;
+  ctx.beginPath();ctx.moveTo(pipeL,gy-fullW);ctx.lineTo(cx-40,gy-fullW);ctx.lineTo(cx-10,gy-minW);ctx.lineTo(cx+10,gy-minW);ctx.lineTo(cx+40,gy-fullW);ctx.lineTo(pipeR,gy-fullW);
+  ctx.lineTo(pipeR,gy+fullW);ctx.lineTo(cx+40,gy+fullW);ctx.lineTo(cx+10,gy+minW);ctx.lineTo(cx-10,gy+minW);ctx.lineTo(cx-40,gy+fullW);ctx.lineTo(pipeL,gy+fullW);ctx.closePath();
+  ctx.fillStyle='rgba(15,110,116,.10)';ctx.fill();ctx.strokeStyle=C.ink;ctx.lineWidth=1.4;ctx.stroke();
+  txt('constriction = resistance',cx,gy-fullW-6,{a:'center',s:10.5});
+  // flow arrows: count and length scale with current (log-ish so the low end is still visible)
+  const flow=Math.min(1,Math.log10(1+v.I*20)/2.3);const na=Math.max(1,Math.round(1+flow*5));
+  for(let i=0;i<na;i++){const ax=pipeL+18+((t*40*flow*3+i*60)%(pipeR-pipeL-40));const len=8+flow*18;
+    line([[ax,gy],[ax+len,gy]],C.teal,2);line([[ax+len-5,gy-4],[ax+len,gy],[ax+len-5,gy+4]],C.teal,2);}
+  txt('flow = current',pipeR-4,gy+fullW+14,{a:'right',s:10.5});
+}
+function fmtA(i){return i>=1?i.toFixed(2)+' A':(i*1000).toFixed(i*1000<10?1:0)+' mA';}
+function bar(x,y,w,label,val,max,unit,c){txt(label,x,y+10,{s:11.5});ctx.fillStyle=C.code;ctx.fillRect(x,y+16,w,10);ctx.fillStyle=c;ctx.fillRect(x,y+16,w*Math.min(1,val/max),10);
+  txt((val<1?val.toFixed(2):val.toFixed(1))+' '+unit,x+w,y+10,{a:'right',s:11.5,c:C.ink,w:500});}
+
+// ---------- head world ----------
+function drawHead(t){
+  const v=headVals(),narrow=W<560;
+  const top=narrow?24:28,circH=narrow?H*0.58:H*0.62;
+  const x0=narrow?60:150,x1=narrow?W-60:W*0.50;
+  // vertical layout of the loop: amplifier at top, electrodes, scalp, skull, brain with dipole at bottom
+  const yAmp=top+50,yEl=top+circH*0.36,yScalp=top+circH*0.47,ySkull0=yScalp+circH*0.07,ySkull1=ySkull0+circH*0.17,yBot=top+circH-34;
+  txt('The head as a circuit',narrow?12:26,top-6,{c:C.ink,w:600,s:13});
+  // tissue bands
+  const bx0=narrow?12:26,bx1=narrow?W-12:W*0.58;
+  ctx.fillStyle='#f3d9c6';ctx.fillRect(bx0,yScalp,bx1-bx0,ySkull0-yScalp);
+  ctx.fillStyle='#e6e1d6';ctx.fillRect(bx0,ySkull0,bx1-bx0,ySkull1-ySkull0);
+  ctx.fillStyle='#f0e4ec';ctx.fillRect(bx0,ySkull1,bx1-bx0,yBot+22-ySkull1);
+  txt('scalp (thin, conductive)',bx1-6,yScalp+(ySkull0-yScalp)/2+4,{a:'right',s:10.5});
+  txt(narrow?'skull (poor conductor)':'skull (thick, poorly conducting)',bx1-6,ySkull0+(ySkull1-ySkull0)/2+4,{a:'right',s:10.5});
+  txt(narrow?'brain and fluid':'brain and fluid (volume conductor)',bx1-6,ySkull1+14,{a:'right',s:10.5});
+  // the loop: dipole at bottom center, up left side through skull resistor, electrode A, amp, down right side, electrode R, skull, back
+  const loop=[[x0,yBot],[x0,yAmp],[x1,yAmp],[x1,yBot]];
+  line([...loop,loop[0]],C.ink,1.6);
+  // dipole (battery) at bottom center
+  const mx=(x0+x1)/2;ctx.fillStyle='#f0e4ec';ctx.fillRect(mx-18,yBot-16,36,32);battery(mx,yBot,false);
+  txt('+',mx-16,yBot-12,{c:C.ink,s:12,w:600,a:'center'});txt('−',mx+16,yBot-12,{c:C.ink,s:12,w:600,a:'center'});
+  txt(narrow?'cortical patch: a tiny dipole':'cortical patch: a dipole of tens of nanoamps',mx,yBot+17,{a:'center',s:10.5,c:C.ink});
+  // skull resistors on both verticals
+  const ys=(ySkull0+ySkull1)/2;ctx.fillStyle='#e6e1d6';ctx.fillRect(x0-10,ys-20,20,40);ctx.fillRect(x1-10,ys-20,20,40);
+  resistor(x0,ys,true,36);resistor(x1,ys,true,36);txt('skull R',x0-14,ys+4,{a:'right',s:10.5});
+  // electrode junctions (R and C in parallel)
+  ctx.fillStyle='#fff';ctx.fillRect(x0-18,yEl-24,36,48);ctx.fillRect(x1-18,yEl-24,36,48);
+  const zc=v.Z>10?C.warn:C.ink;rcJunction(x0,yEl,zc);rcJunction(x1,yEl,zc);
+  txt(narrow?'active':'active electrode',x0-22,yEl-4,{a:'right',s:10.5});txt(narrow?'R ∥ C':'gel + skin: R ∥ C',x0-22,yEl+9,{a:'right',s:10.5,c:zc});
+  txt(narrow?'ref.':'reference electrode',x1+22,yEl-4,{s:10.5});txt(v.Z.toFixed(0)+' kΩ',x1+22,yEl+9,{s:10.5,c:zc,w:500});
+  // amplifier: triangle in the middle of the top segment
+  ctx.fillStyle='#fff';ctx.fillRect(mx-30,yAmp-18,60,36);
+  ctx.beginPath();ctx.moveTo(mx-26,yAmp-18);ctx.lineTo(mx+26,yAmp);ctx.lineTo(mx-26,yAmp+18);ctx.closePath();ctx.fillStyle='#fff';ctx.fill();ctx.strokeStyle=C.ink;ctx.lineWidth=1.6;ctx.stroke();
+  txt('A',mx-20,yAmp-6,{c:C.ink,s:11,w:600});txt('R',mx-20,yAmp+11,{c:C.ink,s:11,w:600});
+  txt('amplifier reads A − R',mx,yAmp+32,{s:10.5,c:C.ink,a:'center'});
+  // 60 Hz room wiring above, inducing into the electrode cables
+  const hum=Math.min(1,v.hum/25);
+  {const pts=[];for(let i=0;i<=60;i++){const x=x0-30+(x1-x0+60)*i/60;pts.push([x,yAmp-34+Math.sin(i*0.9+t*8)*4]);}line(pts,'#7aa3d6',1.5+hum*1.5);
+    txt('room wiring, 60 Hz AC',x0-30,yAmp-42,{s:10.5,c:'#3e6aa8'});
+    txt('induction',x1+30,yAmp-42,{s:10.5,c:'#3e6aa8',a:'right'});
+    for(const xx of[x0+40,x1-40]){line([[xx,yAmp-28],[xx,yAmp-8]],'#7aa3d6',1+hum*1.5,[2,2]);line([[xx-3,yAmp-12],[xx,yAmp-8],[xx+3,yAmp-12]],'#7aa3d6',1+hum*1.5);}}
+  // moving carriers: ions in the head part (below yScalp), electrons in the cable/amp part
+  const speed=8+34*(S.head.a/100);const L=loopLen(loop),n=Math.round(L/30);
+  const ions=[['Na+',C.coral],['K+',C.violet],['Cl−',C.teal]];
+  for(let i=0;i<n;i++){const s=-(t*speed)+i*L/n;const p=loopAt(loop,s);const inHead=p[1]>yScalp;
+    if(inHead){const k=i%3;const dir=k===2?1:-1;const q=loopAt(loop,-(t*speed*dir)+i*L/n);if(q[1]<=yScalp)continue;
+      dot(q[0],q[1],5.5,ions[k][1]);txt(ions[k][0],q[0],q[1]+3,{a:'center',s:8,c:'#fff',w:600});}
+    else dot(p[0],p[1],3,C.teal);}
+  txt(narrow?'ions drift in salty fluid':'ions drift in salty fluid (motion not to scale)',bx0+4,ySkull1+14,{s:10.5});
+  // meter panel
+  if(!narrow){const px=W*0.64,pw=W-px-14;txt('Readings',px,top-6,{c:C.ink,w:600,s:13});
+    txt('synchronized neurons',px,yAmp+10,{s:11.5});txt(v.N.toLocaleString(),px+pw,yAmp+10,{a:'right',s:11.5,c:C.ink,w:500});
+    bar(px,yAmp+22,pw,'brain signal at scalp (log scale)',v.uV,50,'µV',C.teal);
+    ctx.fillStyle=C.code;ctx.fillRect(px,yAmp+38,pw,10);ctx.fillStyle=C.teal;ctx.fillRect(px,yAmp+38,pw*Math.max(0,(Math.log10(v.uV)+1)/(Math.log10(50)+1)),10);
+    bar(px,yAmp+76,pw,'60 Hz hum leaking in',v.hum,25,'µV','#7aa3d6');
+    txt('0.1 µV',px,yAmp+62,{s:10});txt('1',px+pw*0.37,yAmp+62,{s:10});txt('10',px+pw*0.74,yAmp+62,{s:10});txt('50',px+pw,yAmp+62,{s:10,a:'right'});}
+  // ---- amplifier output trace (A − R) over 0.5 s: a slow brain deflection plus the hum
+  const ty0=top+circH+22,ty1=H-6,tm=(ty0+ty1)/2+6,th=(ty1-ty0)/2-12;
+  txt(narrow?'What the amplifier reads (0.5 s)':'What the amplifier reads over half a second',narrow?12:26,ty0,{c:C.ink,w:600,s:13});
+  const tx0=narrow?44:70,tx1=W-14;const scale=Math.max(2,Math.ceil(Math.max(v.uV,v.hum)*1.1/5)*5);
+  line([[tx0,tm],[tx1,tm]],C.rule,1,[3,3]);txt('+'+scale+' µV',tx0-4,tm-th+6,{a:'right',s:10});txt('−'+scale,tx0-4,tm+th+4,{a:'right',s:10});
+  const pts=[],pts2=[];for(let i=0;i<=300;i++){const s=i/600;const x=tx0+(tx1-tx0)*i/300;
+    const brain=v.uV*Math.exp(-0.5*((s-0.25)/0.05)**2)*(s>0.1?1:0)-0.5*v.uV*Math.exp(-0.5*((s-0.38)/0.05)**2);
+    const y=tm-(brain+v.hum*Math.sin(2*Math.PI*60*s+(reduced?0:t*3)))/scale*th;pts.push([x,y]);pts2.push([x,tm-brain/scale*th]);}
+  line(pts2,C.gold,1.4);line(pts,C.teal,1.3);
+  txt(narrow?'gold: brain only. teal: with '+v.Z.toFixed(0)+' kΩ electrodes':'gold: the brain signal alone. teal: what the amplifier reads with '+v.Z.toFixed(0)+' kΩ electrodes',tx1,ty1-2,{a:'right',s:10.5});
+}
+
+// ---------- loop ----------
+let t0=performance.now(),tAcc=0,last=t0,raf=null;
+function frame(now){const dt=Math.min(0.05,(now-last)/1000);last=now;if(!S.paused&&!reduced)tAcc+=dt;draw();
+  if(!S.paused&&!reduced&&!document.hidden)raf=requestAnimationFrame(frame);else raf=null;}
+function kick(){if(raf==null){last=performance.now();raf=requestAnimationFrame(frame);}}
+function draw(){ctx.clearRect(0,0,W,H);if(S.mode==='wire')drawWire(tAcc);else drawHead(tAcc);}
+
+// ---------- readouts and controls ----------
+function update(){
+  const wire=S.mode==='wire';
+  $('l1').textContent=wire?'Voltage of the battery':'Source strength (synchronized neurons)';
+  $('l2').textContent=wire?'Resistance of the resistor':'Electrode impedance';
+  $('s1').value=S[S.mode].a;$('s2').value=S[S.mode].b;
+  if(wire){const v=wireVals();$('s1v').textContent=v.V.toFixed(1)+' V';$('s2v').textContent=v.R.toFixed(0)+' Ω';
+    $('ro').innerHTML=`<span>current I = V / R <b>${fmtA(v.I)}</b></span><span>power P = V × I <b>${v.P.toFixed(v.P<1?2:1)} W</b></span><span>carriers <b>electrons in copper</b></span>`;}
+  else{const v=headVals();$('s1v').textContent=v.N.toLocaleString()+' neurons';$('s2v').textContent=v.Z.toFixed(0)+' kΩ';
+    const ok=v.Z<=5?'ok':v.Z<=10?'':'warn';const word=v.Z<=5?'good, below 5 kΩ':v.Z<=10?'acceptable':'too high, hum leaks in';
+    $('ro').innerHTML=`<span>scalp voltage from the brain <b>${v.uV<1?v.uV.toFixed(2):v.uV.toFixed(1)} µV</b></span><span>60 Hz hum <b>${v.hum.toFixed(1)} µV</b> <span class="pill ${ok}">${word}</span></span><span>signal to hum <b>${(v.uV/v.hum).toFixed(2)}</b></span><span>carriers <b>ions in fluid</b></span>`;}
+  draw();
+}
+$('s1').addEventListener('input',e=>{S[S.mode].a=+e.target.value;update();});
+$('s2').addEventListener('input',e=>{S[S.mode].b=+e.target.value;update();});
+function setMode(m){S.mode=m;$('mWire').setAttribute('aria-pressed',m==='wire');$('mHead').setAttribute('aria-pressed',m==='head');update();}
+$('mWire').addEventListener('click',()=>setMode('wire'));$('mHead').addEventListener('click',()=>setMode('head'));
+$('pause').addEventListener('click',()=>{S.paused=!S.paused;$('pause').setAttribute('aria-pressed',S.paused);$('pause').textContent=S.paused?'Resume motion':'Pause motion';kick();});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)kick();});
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{fit();draw();},80);});
+if(reduced){$('pause').textContent='Motion off (reduced motion)';$('pause').disabled=true;}
+fit();update();kick();
+})();
+</script>
+</body>
+</html>

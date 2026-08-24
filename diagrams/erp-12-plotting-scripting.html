@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plotting and scripting · ERP pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===== SHARED STYLE: copy verbatim into every page ===== */
+:root{
+  --bg:#f6f3ee; --panel:#ffffff; --ink:#1d1f24; --muted:#5c6270; --rule:#e2ddd4;
+  --accent:#0f6e74; --accent-2:#d9573b; --accent-3:#6b5ca5; --gold:#c8962a;
+  --ok:#2f8f4e; --warn:#c2410c; --code-bg:#f0ece4;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --maxw:1040px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+a:hover{text-decoration-thickness:2px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:var(--maxw);margin:0 auto;padding:14px 20px 0}
+.topbar .series{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.topbar .series:hover{color:var(--accent)}
+.topbar .step{font-family:var(--mono);font-size:13px;color:var(--muted)}
+header.hero{max-width:var(--maxw);margin:0 auto;padding:18px 20px 10px}
+header.hero h1{font-size:clamp(26px,4vw,38px);line-height:1.15;margin:0 0 6px;font-weight:600;letter-spacing:-.01em}
+header.hero p.q{margin:0;font-size:clamp(17px,2.2vw,20px);color:var(--muted);font-style:italic}
+main{max-width:var(--maxw);margin:0 auto;padding:8px 20px 40px}
+.stage{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:16px;box-shadow:0 1px 0 rgba(0,0,0,.02),0 8px 24px -18px rgba(0,0,0,.25)}
+.stage .canvas-wrap{position:relative;width:100%}
+.stage canvas,.stage svg{display:block;width:100%;height:auto}
+.controls{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:flex-end;margin-top:14px;padding-top:14px;border-top:1px solid var(--rule)}
+.control{display:flex;flex-direction:column;gap:4px;min-width:150px;flex:1 1 150px}
+.control label{font-size:13px;color:var(--muted);letter-spacing:.02em}
+.control .val{font-family:var(--mono);font-size:13px;color:var(--ink)}
+.control input[type=range]{width:100%;accent-color:var(--accent)}
+.control select,.control input[type=text],.control textarea{font:inherit;font-size:15px;padding:6px 8px;border:1px solid var(--rule);border-radius:8px;background:#fff;color:var(--ink)}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px}
+button{font:inherit;font-size:14px;font-weight:500;padding:8px 14px;border-radius:999px;border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer}
+button.secondary{background:#fff;color:var(--accent)}
+button.ghost{background:transparent;border-color:var(--rule);color:var(--ink)}
+button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+button:disabled{opacity:.5;cursor:not-allowed}
+.readout{display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:12px;font-family:var(--mono);font-size:13.5px;color:var(--muted)}
+.readout b{color:var(--ink);font-weight:500}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12.5px;font-family:var(--mono);border:1px solid var(--rule);background:var(--code-bg)}
+.pill.ok{color:var(--ok);border-color:var(--ok)}
+.pill.warn{color:var(--warn);border-color:var(--warn)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13.5px;color:var(--muted);margin-top:8px}
+.legend span::before{content:"";display:inline-block;width:18px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle;background:var(--sw)}
+section.prose{max-width:720px;margin:28px auto 0;padding:0}
+section.prose h2{font-size:22px;margin:28px 0 8px;font-weight:600}
+section.prose p{margin:0 0 14px}
+section.prose ol,section.prose ul{margin:0 0 14px 22px;padding:0}
+section.prose li{margin-bottom:6px}
+code,pre{font-family:var(--mono);font-size:.92em}
+code{background:var(--code-bg);padding:1px 5px;border-radius:5px}
+pre{background:var(--code-bg);padding:12px 14px;border-radius:10px;overflow-x:auto;line-height:1.45}
+pre code{background:none;padding:0}
+.refs{font-size:14.5px;color:var(--muted)}
+.refs p{padding-left:1.6em;text-indent:-1.6em}
+nav.pager{display:flex;justify-content:space-between;gap:12px;max-width:var(--maxw);margin:30px auto 0;padding:18px 20px;border-top:1px solid var(--rule)}
+nav.pager a{text-decoration:none;font-size:15px;display:flex;flex-direction:column;gap:2px;max-width:48%}
+nav.pager a small{color:var(--muted);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+nav.pager a.next{text-align:right;margin-left:auto}
+footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;color:var(--muted)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:600px){
+  body{font-size:16px}
+  .stage{padding:12px;border-radius:10px}
+  .control{min-width:120px}
+}
+@media (prefers-reduced-motion: reduce){ .anim-hint{display:none} }
+/* ===== END SHARED STYLE ===== */
+
+.refs p{overflow-wrap:anywhere}
+.stage h2{font-size:17px;margin:0 0 10px;font-weight:600}
+.stage+.stage{margin-top:18px}
+.split{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:16px;align-items:start}
+.split.fig{grid-template-columns:minmax(0,7fr) minmax(0,5fr)}
+@media (max-width:760px){.split,.split.fig{grid-template-columns:minmax(0,1fr)}}
+pre.script{margin:0;font-size:12px;line-height:1.5;max-height:520px;overflow:auto;white-space:pre}
+pre.script .ln{display:block;padding:0 6px;border-radius:4px;margin:0 -6px}
+pre.script .ln.off{opacity:.38}
+pre.script .ln.hl{background:#fbe9c2}
+.ctlgroup{display:flex;flex-wrap:wrap;gap:14px 22px;flex:1 1 100%}
+.ctlgroup h3{flex:1 1 100%;margin:0;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 6px 4px 10px;border:1px solid var(--rule);border-radius:999px;background:var(--code-bg);font-family:var(--mono);font-size:12.5px}
+.chip input{font:inherit;font-size:12px;width:64px;padding:2px 5px;border:1px solid var(--rule);border-radius:6px;background:#fff}
+.chip button{padding:0 6px;font-size:14px;line-height:1.4;border:none;background:transparent;color:var(--muted);cursor:pointer}
+.chip.active{border-color:var(--gold);box-shadow:0 0 0 2px #fbe9c2}
+.checks{list-style:none;margin:0;padding:0;font-size:14px}
+.checks li{display:flex;gap:8px;align-items:flex-start;padding:5px 0;border-bottom:1px solid var(--rule);color:var(--muted)}
+.checks li::before{content:"✕";font-family:var(--mono);color:var(--warn);flex:0 0 16px}
+.checks li.ok{color:var(--ink)}
+.checks li.ok::before{content:"✓";color:var(--ok)}
+.control.check{flex-direction:row;align-items:center;gap:8px;min-width:120px}
+.control.check input{accent-color:var(--accent);width:16px;height:16px}
+.codeline{margin-top:12px;font-family:var(--mono);font-size:13px;background:var(--code-bg);padding:10px 12px;border-radius:8px;overflow-x:auto;white-space:pre}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="series" href="erp-pipeline.html">ERP pipeline · PSYCH 390</a>
+  <span class="step">step 12 / 12</span>
+</div>
+<header class="hero">
+  <h1>Plotting and scripting</h1>
+  <p class="q">How do you turn ten labs into one script?</p>
+</header>
+
+<main>
+  <div class="stage" id="stage1">
+    <h2>The pipeline as a script</h2>
+    <div class="split">
+      <div>
+        <div class="canvas-wrap"><canvas id="flow" aria-label="Ten processing stages drawn as a vertical chain of blocks inside a loop over subjects; a token walks down the chain once per subject when the script runs"></canvas></div>
+        <div class="readout"><span>run <b id="prog">not started</b></span><span>estimated time <b id="est"></b></span></div>
+      </div>
+      <pre class="script" id="script" aria-label="MATLAB script skeleton"></pre>
+    </div>
+    <div class="controls">
+      <div class="ctlgroup">
+        <h3>Flags</h3>
+        <div class="btnrow">
+          <button class="secondary" id="f_import" aria-pressed="true">import_data</button>
+          <button class="secondary" id="f_process" aria-pressed="true">process_data</button>
+          <button class="secondary" id="f_grand" aria-pressed="true">grand_avg</button>
+          <button id="run">Run the script</button>
+        </div>
+      </div>
+      <div class="ctlgroup">
+        <h3>Subjects and channels to interpolate (one cell per subject)</h3>
+        <div class="chips" id="chips"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stage" id="stage2">
+    <h2>The figure</h2>
+    <div class="split fig">
+      <div>
+        <div class="canvas-wrap"><canvas id="fig" aria-label="A publication-style grand-average ERP figure built from the chosen options: waveforms for Related, Unrelated and their difference at one electrode, with optional baseline, axes, legend and a topographic map"></canvas></div>
+        <div class="btnrow" style="margin-top:10px"><button class="secondary" id="dl">Download PNG</button><span class="readout" style="margin:0;align-self:center"><span>rules satisfied <b id="score"></b></span></span></div>
+      </div>
+      <div>
+        <ul class="checks" id="checks"></ul>
+      </div>
+    </div>
+    <div class="controls">
+      <div class="ctlgroup">
+        <h3>What to plot</h3>
+        <div class="control"><label for="chan">Channel</label><select id="chan"><option>Pz</option><option>CPz</option><option>Cz</option><option>Fz</option></select></div>
+        <div class="control"><label for="nsub">Subjects in the grand average <span class="val" id="nsubv"></span></label><input type="range" id="nsub" min="2" max="20" value="2"></div>
+        <div class="control check"><input type="checkbox" id="b_rel" checked><label for="b_rel">Related</label></div>
+        <div class="control check"><input type="checkbox" id="b_unr" checked><label for="b_unr">Unrelated</label></div>
+        <div class="control check"><input type="checkbox" id="b_dif"><label for="b_dif">Difference (Unrelated − Related)</label></div>
+      </div>
+      <div class="ctlgroup">
+        <h3>How to draw it</h3>
+        <div class="control"><label for="style">Line styles</label><select id="style"><option value="color">Colours (teal, coral, violet)</option><option value="kr">Black and red ('k-','r-','b-')</option><option value="dash">Black solid, dashed, dotted</option><option value="same">All black solid</option></select></div>
+        <div class="control"><label for="base">Baseline shown</label><select id="base"><option value="200">200 ms</option><option value="100">100 ms</option><option value="0">none (start at 0 ms)</option></select></div>
+        <div class="control"><label for="pol">Polarity</label><select id="pol"><option value="down">negative down</option><option value="up">negative up</option></select></div>
+        <div class="control"><label for="cal">Calibration</label><select id="cal"><option value="axis">y axis in µV</option><option value="bar">calibration bar</option><option value="none">none</option></select></div>
+        <div class="control check"><input type="checkbox" id="c_site" checked><label for="c_site">Label the site</label></div>
+        <div class="control check"><input type="checkbox" id="c_zero" checked><label for="c_zero">Mark time zero</label></div>
+        <div class="control check"><input type="checkbox" id="c_uv"><label for="c_uv">0 µV line</label></div>
+        <div class="control check"><input type="checkbox" id="c_pol"><label for="c_pol">State the polarity</label></div>
+        <div class="control check"><input type="checkbox" id="c_leg"><label for="c_leg">Legend</label></div>
+        <div class="control check"><input type="checkbox" id="c_topo"><label for="c_topo">Map inset, 300–500 ms</label></div>
+      </div>
+    </div>
+    <div class="codeline" id="plotcode"></div>
+  </div>
+
+  <section class="prose">
+    <h2>What you are looking at</h2>
+    <p>The first panel is the whole lab sequence drawn as one program. Each block is a lab you have already done, in the order the data go through them, and the bracket on the left is a <code>for</code> loop; every block inside it runs once per subject. The three flags at the top of the script switch groups of blocks on and off, so after fixing one subject you can re-run only the grand average instead of importing everything again. The MATLAB skeleton on the right has the real shape of the lab script, and it updates as you add subjects or channels to interpolate.</p>
+    <p>The second panel builds the final figure of the project, the grand-average N400 at one electrode. The checklist beside it holds the plotting rules from Luck (2014): a reader has to be able to see the prestimulus baseline, find time zero and 0 µV, read the voltage scale and polarity, tell the conditions apart, and see the difference wave, all without leaving the figure.</p>
+
+    <h2>Try this</h2>
+    <ol>
+      <li>Press "Run the script" with two subjects and watch the token loop through the chain twice before the grand average runs once. Add subjects up to eight and run again: the code does not change, only the loop count and the time estimate.</li>
+      <li>Turn off <code>import_data</code> and <code>process_data</code> and run again. Only the last block lights up. This is the normal way to redo a figure.</li>
+      <li>Type <code>P7</code> into the interpolation box of one subject and find the matching cell in <code>chan_interpolate</code>.</li>
+      <li>In the figure panel, set the baseline to "none" and the calibration to "none", and note how many rules go red. A waveform with no baseline gives the reader no way to judge whether the effect is real.</li>
+      <li>Move the subject slider from 2 to 20. The waveforms smooth out and the N400 separates cleanly; the map inset follows the same change.</li>
+    </ol>
+
+    <h2>Why it matters for the pipeline</h2>
+    <p>A script is the record of an analysis. It runs the same way on every subject, it can be handed to someone else, and every parameter you chose in the earlier labs, the 0.1 Hz cutoff, the ±100 µV threshold, the 300–500 ms window, is written down where a reviewer can see it. The first draft comes from EEGLAB. Every menu action appends its command to <code>EEG.history</code>, so a script is mostly the history of one subject wrapped in a loop. The loop needs a predictable place to find each file, which is what the BIDS layout gives you (Gorgolewski et al., 2016; Pernet et al., 2019): <code>sub-001/eeg/sub-001_task-N400_eeg.set</code>, built with <code>fullfile</code> so the same script runs on Windows and macOS. A cell array of subject IDs drives the loop, and a matching cell array of channels to interpolate keeps the one thing that differs between subjects out of the code.</p>
+    <p>The grand average, <code>pop_gaverager</code>, is the mean of the subjects' averaged ERPs. With two subjects it shows you whether the pipeline worked; with twenty it shows you the component, and it is what the statistics in the previous step are about. <code>pop_ploterps</code> draws it. Luck's rule for the drawing is that a figure without a prestimulus baseline gives the reader no way to tell signal from drift, and he labels such studies C.R.A.P., a Carelessly Reviewed Awful Publication. The checklist under the figure spells that rule out.</p>
+
+    <h2 id="refs">References</h2>
+    <div class="refs">
+      <p>Luck, S. J. (2014). <i>An introduction to the event-related potential technique</i> (2nd ed.). MIT Press.</p>
+      <p>Lopez-Calderon, J., &amp; Luck, S. J. (2014). ERPLAB: An open-source toolbox for the analysis of event-related potentials. <i>Frontiers in Human Neuroscience, 8</i>, 213. https://doi.org/10.3389/fnhum.2014.00213</p>
+      <p>Gorgolewski, K. J., Auer, T., Calhoun, V. D., Craddock, R. C., Das, S., Duff, E. P., Flandin, G., Ghosh, S. S., Glatard, T., Halchenko, Y. O., Handwerker, D. A., Hanke, M., Keator, D., Li, X., Michael, Z., Maumet, C., Nichols, B. N., Nichols, T. E., Pellman, J., ... Poldrack, R. A. (2016). The brain imaging data structure, a format for organizing and describing outputs of neuroimaging experiments. <i>Scientific Data, 3</i>, 160044. https://doi.org/10.1038/sdata.2016.44</p>
+      <p>Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., Flandin, G., Phillips, C., Delorme, A., &amp; Oostenveld, R. (2019). EEG-BIDS, an extension to the brain imaging data structure for electroencephalography. <i>Scientific Data, 6</i>, 103. https://doi.org/10.1038/s41597-019-0104-8</p>
+      <p>Delorme, A., &amp; Makeig, S. (2004). EEGLAB: An open source toolbox for analysis of single-trial EEG dynamics including independent component analysis. <i>Journal of Neuroscience Methods, 134</i>(1), 9–21. https://doi.org/10.1016/j.jneumeth.2003.10.009</p>
+    </div>
+  </section>
+</main>
+
+<nav class="pager">
+  <a class="prev" href="erp-11-scoring.html"><small>Previous</small><span>ERP scoring and measurement</span></a>
+  <a class="next" href="erp-pipeline.html"><small>Next</small><span>Series overview</span></a>
+</nav>
+<footer>Part of the ERP pipeline series for PSYCH 390, St. Olaf College. Built as a standalone page; nothing is sent anywhere.</footer>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+/* =================== PART 1: the script =================== */
+const STAGES=[
+  {k:'load',label:'Load .set',flag:'import',sec:3},
+  {k:'down',label:'Downsample to 256 Hz',flag:'import',sec:4},
+  {k:'reref',label:'Re-reference (average)',flag:'process',sec:1},
+  {k:'filt',label:'Filter 0.1–30 Hz, interpolate',flag:'process',sec:9},
+  {k:'evl',label:'Event list',flag:'process',sec:2},
+  {k:'bins',label:'Bins (BINLISTER)',flag:'process',sec:1},
+  {k:'epoch',label:'Epoch −200 to 800 ms',flag:'process',sec:2},
+  {k:'art',label:'Artifact detection',flag:'process',sec:3},
+  {k:'avg',label:'Average per bin, save .erp',flag:'process',sec:2},
+  {k:'grand',label:'Grand average and plot',flag:'grand',sec:4}
+];
+const S1={import:true,process:true,grand:true,subs:[{id:'sub-001',interp:''},{id:'sub-002',interp:''}],sel:0};
+let anim=null;   // {sub, stage, t}
+function cellStr(v){const items=v.split(/[\s,;]+/).filter(Boolean);return '{'+items.map(x=>"'"+x+"'").join(', ')+'}';}
+function scriptLines(){
+  const subs=S1.subs.map(s=>"'"+s.id+"'").join(', ');
+  const interp=S1.subs.map(s=>cellStr(s.interp)).join(', ');
+  const L=[];const add=(k,t)=>L.push({k,t});
+  add('',"home_path = fullfile('~', 'Documents', 'PSYCH390', 'N400');");
+  add('',"import_data  = "+(S1.import?1:0)+";   % 1 = run, 0 = skip");
+  add('',"process_data = "+(S1.process?1:0)+";");
+  add('',"grand_avg    = "+(S1.grand?1:0)+";");
+  add('',"subject_list = {"+subs+"};");
+  add('',"chan_interpolate = {"+interp+"};   % one cell per subject");
+  add('',"");
+  add('loop',"for s = 1:numel(subject_list)");
+  add('loop',"    sub = subject_list{s};");
+  add('import',"    if import_data");
+  add('load',"        EEG = pop_loadset(fullfile(home_path, sub, 'eeg', [sub '_task-N400_eeg.set']));");
+  add('down',"        EEG = pop_resample(EEG, 256);");
+  add('import',"    end");
+  add('process',"    if process_data");
+  add('reref',"        EEG = pop_reref(EEG, []);");
+  add('filt',"        EEG = pop_eegfiltnew(EEG, 0.1, []);");
+  add('filt',"        EEG = pop_eegfiltnew(EEG, [], 30);");
+  add('filt',"        if ~isempty(chan_interpolate{s})");
+  add('filt',"            EEG = pop_interp(EEG, chan_interpolate{s}, 'spherical');");
+  add('filt',"        end");
+  add('evl',"        EEG = pop_creabasiceventlist(EEG, 'Eventlist', '');");
+  add('bins',"        EEG = pop_binlister(EEG, 'BDF', fullfile(home_path, 'bins_N400.txt'));");
+  add('epoch',"        EEG = pop_epochbin(EEG, [-200 800], 'pre');");
+  add('art',"        EEG = pop_artmwppth(EEG, 'Channel', 1:31, 'Threshold', 100, 'Windowsize', 200, 'Windowstep', 50);");
+  add('avg',"        ERP = pop_averager(EEG, 'Criterion', 'good');");
+  add('avg',"        pop_savemyerp(ERP, 'erpname', sub, 'filename', [sub '_N400.erp']);");
+  add('process',"    end");
+  add('loop',"end");
+  add('',"");
+  add('grand_if',"if grand_avg");
+  add('grand',"    ERP = pop_gaverager(fullfile(home_path, 'erp_list.txt'), 'Criterion', 100);");
+  add('grand',"    pop_ploterps(ERP, [1 2], 13, 'Style', 'Classic', 'Blc', 'pre', 'Linespec', {'k-', 'r-'});");
+  add('grand',"    saveas(gcf, fullfile(home_path, 'N400_Pz.png'));");
+  add('grand_if',"end");
+  return L;
+}
+const flagOf=k=>{const st=STAGES.find(s=>s.k===k);if(st)return st.flag;return k==='grand_if'?'grand':k==='import'||k==='process'?k:null;};
+function renderScript(){
+  const pre=$('script');pre.innerHTML='';
+  scriptLines().forEach(l=>{const sp=document.createElement('span');sp.className='ln';sp.textContent=l.t||' ';
+    const f=flagOf(l.k);if(f&&!S1[f])sp.classList.add('off');
+    if(anim&&l.k===STAGES[anim.stage].k)sp.classList.add('hl');
+    pre.appendChild(sp);});
+}
+function renderChips(){
+  const box=$('chips');box.innerHTML='';
+  S1.subs.forEach((s,i)=>{const c=document.createElement('span');c.className='chip'+(anim&&anim.sub===i?' active':'');
+    const lab=document.createElement('label');lab.textContent=s.id;lab.htmlFor='interp'+i;
+    const inp=document.createElement('input');inp.type='text';inp.id='interp'+i;inp.placeholder='e.g. P7';inp.value=s.interp;inp.setAttribute('aria-label','Channels to interpolate for '+s.id);
+    inp.addEventListener('input',e=>{s.interp=e.target.value;renderScript();});
+    const rm=document.createElement('button');rm.type='button';rm.textContent='×';rm.setAttribute('aria-label','Remove '+s.id);rm.disabled=S1.subs.length<=1;
+    rm.addEventListener('click',()=>{S1.subs.splice(i,1);refresh1();});
+    c.append(lab,inp,rm);box.appendChild(c);});
+  if(S1.subs.length<8){const b=document.createElement('button');b.className='ghost';b.textContent='+ add subject';b.type='button';
+    b.addEventListener('click',()=>{const n=S1.subs.length+1;S1.subs.push({id:'sub-'+String(n).padStart(3,'0'),interp:''});refresh1();});box.appendChild(b);}
+}
+function estimate(){let per=0;for(const st of STAGES)if(st.k!=='grand'&&S1[st.flag])per+=st.sec;
+  return per*S1.subs.length+(S1.grand?STAGES[9].sec:0);}
+// ---- flow canvas
+const fc=$('flow'),fx=fc.getContext('2d');let FW=400,FH=480;
+function fitFlow(){const r=fc.getBoundingClientRect();const dpr=window.devicePixelRatio||1;FW=r.width;FH=Math.max(400,Math.min(520,FW*1.15));
+  fc.width=Math.round(FW*dpr);fc.height=Math.round(FH*dpr);fc.style.height=FH+'px';fx.setTransform(dpr,0,0,dpr,0,0);}
+function ftxt(s,x,y,o={}){fx.font=(o.w||400)+' '+(o.s||12)+'px "IBM Plex Sans",system-ui,sans-serif';fx.fillStyle=o.c||'#5c6270';fx.textAlign=o.a||'left';fx.textBaseline=o.b||'alphabetic';fx.fillText(s,x,y);}
+function drawFlow(){
+  fx.clearRect(0,0,FW,FH);
+  const top=34,bot=14,left=64,right=FW-46,n=STAGES.length,gap=8,bh=(FH-top-bot-gap*(n-1))/n;
+  // subjects row
+  ftxt('subjects:',10,16,{s:11});
+  S1.subs.forEach((s,i)=>{const x=72+i*38;const act=anim&&anim.sub===i&&anim.stage<9;
+    fx.fillStyle=act?'#c8962a':'#f0ece4';fx.strokeStyle=act?'#c8962a':'#e2ddd4';fx.beginPath();fx.roundRect(x,5,34,16,8);fx.fill();fx.stroke();
+    ftxt(s.id.slice(4),x+17,17,{a:'center',s:10.5,c:act?'#fff':'#5c6270',w:500});});
+  // loop bracket around stages 0..8
+  const y0=top,y1=top+9*bh+8*gap;
+  fx.strokeStyle='#c8962a';fx.lineWidth=1.5;fx.setLineDash([]);fx.beginPath();fx.moveTo(left-10,y0);fx.lineTo(left-22,y0);fx.lineTo(left-22,y1);fx.lineTo(left-10,y1);fx.stroke();
+  fx.save();fx.translate(left-30,(y0+y1)/2);fx.rotate(-Math.PI/2);ftxt('for each subject',0,0,{a:'center',s:11,c:'#c8962a',w:600});fx.restore();
+  STAGES.forEach((st,i)=>{const y=top+i*(bh+gap);const on=S1[st.flag];const act=anim&&anim.stage===i;
+    fx.fillStyle=act?'#fbe9c2':on?'#fff':'#f0ece4';fx.strokeStyle=act?'#c8962a':on?(st.flag==='import'?'#0f6e74':st.flag==='process'?'#6b5ca5':'#d9573b'):'#e2ddd4';fx.lineWidth=act?2:1.2;
+    fx.beginPath();fx.roundRect(left,y,right-left,bh,7);fx.fill();fx.stroke();
+    ftxt((i+1)+'. '+st.label,left+10,y+bh/2+4,{s:FW<420?11.5:12.5,c:on?'#1d1f24':'#9aa0ab',w:500});
+    if(i<n-1){fx.strokeStyle=on&&S1[STAGES[i+1].flag]?'#5c6270':'#e2ddd4';fx.lineWidth=1;fx.beginPath();fx.moveTo((left+right)/2,y+bh);fx.lineTo((left+right)/2,y+bh+gap);fx.stroke();}
+    // token
+    if(act){fx.fillStyle='#c8962a';fx.beginPath();fx.arc(right-14,y+bh/2,6,0,6.29);fx.fill();}
+  });
+  // flag labels on the right edge
+  const fl=[['import_data',0,1,'#0f6e74'],['process_data',2,8,'#6b5ca5'],['grand_avg',9,9,'#d9573b']];
+  fl.forEach(([name,a,b,c])=>{const ya=top+a*(bh+gap),yb=top+b*(bh+gap)+bh;fx.strokeStyle=c;fx.lineWidth=2;fx.beginPath();fx.moveTo(right+4,ya);fx.lineTo(right+4,yb);fx.stroke();});
+  fl.forEach(([name,a,b,c])=>{const ya=top+a*(bh+gap),yb=top+b*(bh+gap)+bh;fx.save();fx.translate(right+18,(ya+yb)/2);fx.rotate(Math.PI/2);ftxt(name,0,0,{a:'center',s:10.5,c,w:600});fx.restore();});
+}
+function refresh1(){renderChips();renderScript();drawFlow();$('est').textContent='about '+estimate()+' s ('+S1.subs.length+' subject'+(S1.subs.length>1?'s':'')+')';}
+['import','process','grand'].forEach(f=>{$('f_'+f).addEventListener('click',e=>{S1[f]=!S1[f];e.currentTarget.setAttribute('aria-pressed',S1[f]);refresh1();});});
+$('run').addEventListener('click',()=>{if(anim)return;
+  const steps=[];S1.subs.forEach((s,i)=>{STAGES.forEach((st,j)=>{if(j<9&&S1[st.flag])steps.push({sub:i,stage:j});});});
+  if(S1.grand)steps.push({sub:-1,stage:9});
+  if(!steps.length){$('prog').textContent='nothing to run: all flags are 0';return;}
+  let k=0;const per=reduced?120:260;$('run').disabled=true;
+  const tick=()=>{if(k>=steps.length){anim=null;$('run').disabled=false;$('prog').textContent='done, '+(S1.grand?'figure saved':'no figure (grand_avg = 0)');refresh1();return;}
+    anim=steps[k];const st=STAGES[anim.stage];
+    $('prog').textContent=(anim.sub>=0?S1.subs[anim.sub].id+' · ':'')+st.label+'  ('+(k+1)+'/'+steps.length+')';
+    refresh1();
+    const el=$('script').querySelector('.hl');if(el)el.scrollIntoView({block:'nearest'});
+    k++;setTimeout(tick,document.hidden?10:per);};
+  tick();});
+
+/* =================== PART 2: the figure =================== */
+const DT=4,T0=-200,T1=800,NS=(T1-T0)/DT+1;const times=[];for(let i=0;i<NS;i++)times.push(T0+i*DT);
+function g(t,mu,sd){return Math.exp(-0.5*((t-mu)/sd)**2);}
+const CH={Pz:{p1:1,n1:.7,p2:.7,n4:1,lp:1},CPz:{p1:.8,n1:.8,p2:.9,n4:1,lp:.9},Cz:{p1:.5,n1:1,p2:1,n4:.8,lp:.7},Fz:{p1:.2,n1:.9,p2:.8,n4:.45,lp:.3}};
+function truth(t,ch,unrel){const w=CH[ch];return 3*w.p1*g(t,100,18)-4*w.n1*g(t,170,25)+3*w.p2*g(t,240,30)+(unrel?-6.5:-2.5)*w.n4*g(t,400,60)+5*w.lp*g(t,650,110);}
+let seed=1;function rnd(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;}
+function gr(){return Math.sqrt(-2*Math.log(rnd()+1e-12))*Math.cos(2*Math.PI*rnd());}
+function noise(sd){const x=new Float64Array(NS);let a=0;for(let i=0;i<NS;i++){a=0.88*a+gr();x[i]=a;}let s=0;for(const v of x)s+=v*v;s=Math.sqrt(s/NS);for(let i=0;i<NS;i++)x[i]=x[i]/s*sd;return x;}
+function grand(ch,unrel,N){seed=(unrel?500:100)+Object.keys(CH).indexOf(ch)*17+N;const nz=noise(3.5/Math.sqrt(N));
+  const w=new Float64Array(NS);for(let i=0;i<NS;i++)w[i]=truth(times[i],ch,unrel)+nz[i];
+  let bl=0,nb=0;for(let i=0;i<NS;i++)if(times[i]<0){bl+=w[i];nb++;}bl/=nb;for(let i=0;i<NS;i++)w[i]-=bl;return w;}
+const S2={chan:'Pz',N:2,rel:true,unr:true,dif:false,style:'color',base:200,pol:'down',cal:'axis',site:true,zero:true,uv:false,polst:false,leg:false,topo:false};
+const fcv=$('fig'),cx=fcv.getContext('2d');let GW=600,GH=400;
+function fitFig(){const r=fcv.getBoundingClientRect();const dpr=window.devicePixelRatio||1;GW=r.width;GH=Math.max(300,Math.min(440,GW*0.68));
+  fcv.width=Math.round(GW*dpr);fcv.height=Math.round(GH*dpr);fcv.style.height=GH+'px';cx.setTransform(dpr,0,0,dpr,0,0);}
+function ctxt(s,x,y,o={}){cx.font=(o.w||400)+' '+(o.s||12)+'px "IBM Plex Sans",system-ui,sans-serif';cx.fillStyle=o.c||'#1d1f24';cx.textAlign=o.a||'left';cx.textBaseline=o.b||'alphabetic';cx.fillText(s,x,y);}
+function styleFor(i){ // i: 0 related, 1 unrelated, 2 difference
+  if(S2.style==='color')return {c:['#0f6e74','#d9573b','#6b5ca5'][i],d:[]};
+  if(S2.style==='kr')return {c:['#111','#c00','#00c'][i],d:[]};
+  if(S2.style==='dash')return {c:'#111',d:[[],[7,4],[2,3]][i]};
+  return {c:'#111',d:[]};
+}
+function drawFig(){
+  cx.fillStyle='#fff';cx.fillRect(0,0,GW,GH);
+  const narrow=GW<420;
+  const insetW=S2.topo?(narrow?76:104):0;
+  const L=S2.cal==='axis'?(narrow?40:52):(S2.cal==='bar'?46:18),R=GW-14-insetW,T=30,B=GH-34;
+  const t0=-S2.base,x=t=>L+((t-t0)/(T1-t0))*(R-L);
+  const sc=10,sign=S2.pol==='up'?-1:1,y=v=>(T+B)/2-sign*(v/sc)*((B-T)/2);
+  const waves=[];if(S2.rel)waves.push([0,grand(S2.chan,false,S2.N),'Related']);if(S2.unr)waves.push([1,grand(S2.chan,true,S2.N),'Unrelated']);
+  if(S2.dif){const a=grand(S2.chan,false,S2.N),b=grand(S2.chan,true,S2.N);const d=new Float64Array(NS);for(let i=0;i<NS;i++)d[i]=b[i]-a[i];waves.push([2,d,'Unrelated − Related']);}
+  // axes
+  cx.strokeStyle='#1d1f24';cx.lineWidth=1;
+  cx.beginPath();cx.moveTo(L,B);cx.lineTo(R,B);cx.stroke();          // time axis
+  for(let ms=Math.ceil(t0/200)*200;ms<=T1;ms+=200){const xx=x(ms);cx.beginPath();cx.moveTo(xx,B);cx.lineTo(xx,B+4);cx.stroke();ctxt(ms+'',xx,B+16,{a:'center',s:11});}
+  ctxt('Time (ms)',(L+R)/2,B+30,{a:'center',s:11.5});
+  if(S2.cal==='axis'){cx.beginPath();cx.moveTo(L,T);cx.lineTo(L,B);cx.stroke();
+    [-10,-5,0,5,10].forEach(v=>{const yy=y(v);cx.beginPath();cx.moveTo(L-4,yy);cx.lineTo(L,yy);cx.stroke();ctxt((v>0?'+':'')+v,L-7,yy+4,{a:'right',s:11});});
+    cx.save();cx.translate(narrow?11:14,(T+B)/2);cx.rotate(-Math.PI/2);ctxt('Amplitude (µV)',0,0,{a:'center',s:11.5});cx.restore();}
+  else if(S2.cal==='bar'){const xb=L-16;cx.lineWidth=2;cx.beginPath();cx.moveTo(xb,y(0));cx.lineTo(xb,y(5));cx.stroke();cx.lineWidth=1;ctxt('5 µV',xb-3,(y(0)+y(5))/2+4,{a:'right',s:10.5});}
+  if(S2.uv){cx.strokeStyle='#8a8f99';cx.setLineDash([3,3]);cx.beginPath();cx.moveTo(L,y(0));cx.lineTo(R,y(0));cx.stroke();cx.setLineDash([]);}
+  if(S2.zero&&S2.base>0){cx.strokeStyle='#8a8f99';cx.setLineDash([2,3]);cx.beginPath();cx.moveTo(x(0),T);cx.lineTo(x(0),B);cx.stroke();cx.setLineDash([]);ctxt('stimulus',x(0)+4,T+11,{s:10.5,c:'#5c6270'});}
+  // waves
+  waves.forEach(([i,w])=>{const st=styleFor(i);cx.strokeStyle=st.c;cx.lineWidth=1.8;cx.setLineDash(st.d);cx.beginPath();let first=true;
+    for(let k=0;k<NS;k++){if(times[k]<t0)continue;const px=x(times[k]),py=y(w[k]);if(first){cx.moveTo(px,py);first=false;}else cx.lineTo(px,py);}cx.stroke();cx.setLineDash([]);});
+  if(S2.site)ctxt(S2.chan,L+8,T+(S2.zero&&S2.base>0?26:12),{s:15,w:600});
+  if(S2.polst)ctxt('negative plotted '+S2.pol,R-4,B-6,{a:'right',s:10.5,c:'#5c6270'});
+  ctxt('Grand average, N = '+S2.N,R-4,T-10,{a:'right',s:11,c:'#5c6270'});
+  if(S2.topo)ctxt('Unrelated − Related',R+insetW/2+2,T-10,{a:'center',s:9.5,c:'#5c6270'});
+  if(S2.leg&&waves.length){const lx=L+(narrow?8:12),ly=B-14-waves.length*15;waves.forEach(([i,w,name],k)=>{const st=styleFor(i);cx.strokeStyle=st.c;cx.lineWidth=2;cx.setLineDash(st.d);cx.beginPath();cx.moveTo(lx,ly+k*15);cx.lineTo(lx+22,ly+k*15);cx.stroke();cx.setLineDash([]);ctxt(name,lx+28,ly+k*15+4,{s:11});});}
+  // topographic inset
+  if(S2.topo){const r=narrow?30:40,cxh=R+insetW/2+2,cyh=T+r+14;
+    // N400 effect per site (Unrelated minus Related mean 300-500) drives the colour
+    const sites=[['Fz',0,-.62],['Cz',0,-.05],['CPz',0,.28],['Pz',0,.6],['C3',-.5,-.05],['C4',.5,-.05],['P3',-.45,.55],['P4',.45,.55],['F3',-.4,-.6],['F4',.4,-.6]];
+    const wgt={Fz:.45,Cz:.8,CPz:1,Pz:1,C3:.65,C4:.65,P3:.85,P4:.85,F3:.4,F4:.4};
+    const a=grand(S2.chan,false,S2.N),b=grand(S2.chan,true,S2.N);let m=0,c=0;for(let k=0;k<NS;k++)if(times[k]>=300&&times[k]<=500){m+=b[k]-a[k];c++;}m=m/c/CH[S2.chan].n4;  // effect scaled to unit weight
+    const grad=cx.createRadialGradient(cxh,cyh+r*0.35,2,cxh,cyh+r*0.35,r*1.1);const k=Math.max(0,Math.min(1,-m/5));
+    grad.addColorStop(0,'rgba(45,80,200,'+(0.15+0.7*k).toFixed(2)+')');grad.addColorStop(1,'rgba(45,80,200,0.03)');
+    cx.save();cx.beginPath();cx.arc(cxh,cyh,r,0,6.29);cx.clip();cx.fillStyle='#fff';cx.fillRect(cxh-r,cyh-r,2*r,2*r);cx.fillStyle=grad;cx.fillRect(cxh-r,cyh-r,2*r,2*r);cx.restore();
+    cx.strokeStyle='#1d1f24';cx.lineWidth=1;cx.beginPath();cx.arc(cxh,cyh,r,0,6.29);cx.stroke();
+    cx.beginPath();cx.moveTo(cxh-6,cyh-r+2);cx.lineTo(cxh,cyh-r-6);cx.lineTo(cxh+6,cyh-r+2);cx.stroke();
+    sites.forEach(([nm,sx,sy])=>{cx.fillStyle=nm===S2.chan?'#d9573b':'#1d1f24';cx.beginPath();cx.arc(cxh+sx*r*0.85,cyh+sy*r*0.85,nm===S2.chan?3:2,0,6.29);cx.fill();});
+    ctxt('300–500 ms',cxh,cyh+r+11,{a:'center',s:9.5,c:'#5c6270'});ctxt((m*CH[S2.chan].n4).toFixed(1)+' µV at '+S2.chan,cxh,cyh+r+21,{a:'center',s:9.5,c:'#5c6270'});}
+}
+const RULES=[
+  ['Electrode site labelled',()=>S2.site],
+  ['Prestimulus baseline shown, at least 100 ms (200 is better)',()=>S2.base>=100],
+  ['Time zero marked',()=>S2.zero&&S2.base>0],
+  ['0 µV line drawn',()=>S2.uv],
+  ['Voltage calibration given (axis or bar)',()=>S2.cal!=='none'],
+  ['Polarity stated (negative up or down)',()=>S2.polst],
+  ['Compared conditions overlaid on one axis',()=>S2.rel&&S2.unr],
+  ['Conditions distinguishable by colour or line style',()=>S2.style!=='same'],
+  ['Legend present',()=>S2.leg&&(S2.rel||S2.unr||S2.dif)],
+  ['Difference wave shown',()=>S2.dif],
+  ['Only a handful of sites, plus a map for the rest',()=>S2.topo]
+];
+function plotCode(){const bins=[];if(S2.rel)bins.push(1);if(S2.unr)bins.push(2);if(S2.dif)bins.push(3);
+  const spec={color:["'-'"],kr:["'k-'","'r-'","'b-'"],dash:["'k-'","'k--'","'k:'"],same:["'k-'","'k-'","'k-'"]}[S2.style];
+  const ls=S2.style==='color'?'':", 'Linespec', {"+bins.map((b,i)=>spec[i]).join(', ')+"}";
+  const chidx={Pz:13,CPz:12,Cz:11,Fz:10}[S2.chan];
+  const pre=S2.dif?"ERP = pop_binoperator(ERP, {'bin3 = bin2 - bin1 label Unrelated minus Related'});\n":'';
+  return pre+"pop_ploterps(ERP, ["+bins.join(' ')+"], "+chidx+", 'Style', 'Classic', 'Blc', "+(S2.base>0?"'pre'":"'none'")+", 'xscale', ["+(-S2.base)+" 800 "+(-S2.base)+":200:800],\n    'yscale', [-10 10 -10:5:10], 'YDir', '"+(S2.pol==='up'?'reverse':'normal')+"', 'Box', [1 1]"+ls+(S2.leg?", 'LegPos', 'bottom'":", 'LegPos', 'none'")+");"+(S2.topo?"\npop_scalplot(ERP, 3, [300 500], 'Value', 'insta', 'Maplimit', 'maxmin');   % map of the difference, 300–500 ms":'');}
+function refresh2(){drawFig();const ul=$('checks');ul.innerHTML='';let n=0;RULES.forEach(([t,f])=>{const li=document.createElement('li');const ok=f();if(ok)n++;li.className=ok?'ok':'';li.textContent=t;ul.appendChild(li);});
+  $('score').textContent=n+' of '+RULES.length;$('nsubv').textContent=S2.N;$('plotcode').textContent=plotCode();}
+$('chan').addEventListener('change',e=>{S2.chan=e.target.value;refresh2();});
+$('nsub').addEventListener('input',e=>{S2.N=+e.target.value;refresh2();});
+[['b_rel','rel'],['b_unr','unr'],['b_dif','dif'],['c_site','site'],['c_zero','zero'],['c_uv','uv'],['c_pol','polst'],['c_leg','leg'],['c_topo','topo']].forEach(([id,k])=>$(id).addEventListener('change',e=>{S2[k]=e.target.checked;refresh2();}));
+$('style').addEventListener('change',e=>{S2.style=e.target.value;refresh2();});
+$('base').addEventListener('change',e=>{S2.base=+e.target.value;refresh2();});
+$('pol').addEventListener('change',e=>{S2.pol=e.target.value;refresh2();});
+$('cal').addEventListener('change',e=>{S2.cal=e.target.value;refresh2();});
+$('dl').addEventListener('click',()=>{fcv.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='N400_'+S2.chan+'_grand_average.png';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);},'image/png');});
+
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{fitFlow();drawFlow();fitFig();drawFig();},80);});
+fitFlow();refresh1();fitFig();refresh2();
+})();
+</script>
+</body>
+</html>

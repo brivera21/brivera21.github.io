@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Re-referencing · ERP pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===== SHARED STYLE: copy verbatim into every page ===== */
+:root{
+  --bg:#f6f3ee; --panel:#ffffff; --ink:#1d1f24; --muted:#5c6270; --rule:#e2ddd4;
+  --accent:#0f6e74; --accent-2:#d9573b; --accent-3:#6b5ca5; --gold:#c8962a;
+  --ok:#2f8f4e; --warn:#c2410c; --code-bg:#f0ece4;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --maxw:1040px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+a:hover{text-decoration-thickness:2px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:var(--maxw);margin:0 auto;padding:14px 20px 0}
+.topbar .series{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.topbar .series:hover{color:var(--accent)}
+.topbar .step{font-family:var(--mono);font-size:13px;color:var(--muted)}
+header.hero{max-width:var(--maxw);margin:0 auto;padding:18px 20px 10px}
+header.hero h1{font-size:clamp(26px,4vw,38px);line-height:1.15;margin:0 0 6px;font-weight:600;letter-spacing:-.01em}
+header.hero p.q{margin:0;font-size:clamp(17px,2.2vw,20px);color:var(--muted);font-style:italic}
+main{max-width:var(--maxw);margin:0 auto;padding:8px 20px 40px}
+.stage{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:16px;box-shadow:0 1px 0 rgba(0,0,0,.02),0 8px 24px -18px rgba(0,0,0,.25)}
+.stage .canvas-wrap{position:relative;width:100%}
+.stage canvas,.stage svg{display:block;width:100%;height:auto}
+.controls{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:flex-end;margin-top:14px;padding-top:14px;border-top:1px solid var(--rule)}
+.control{display:flex;flex-direction:column;gap:4px;min-width:150px;flex:1 1 150px}
+.control label{font-size:13px;color:var(--muted);letter-spacing:.02em}
+.control .val{font-family:var(--mono);font-size:13px;color:var(--ink)}
+.control input[type=range]{width:100%;accent-color:var(--accent)}
+.control select,.control input[type=text],.control textarea{font:inherit;font-size:15px;padding:6px 8px;border:1px solid var(--rule);border-radius:8px;background:#fff;color:var(--ink)}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px}
+button{font:inherit;font-size:14px;font-weight:500;padding:8px 14px;border-radius:999px;border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer}
+button.secondary{background:#fff;color:var(--accent)}
+button.ghost{background:transparent;border-color:var(--rule);color:var(--ink)}
+button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+button:disabled{opacity:.5;cursor:not-allowed}
+.readout{display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:12px;font-family:var(--mono);font-size:13.5px;color:var(--muted)}
+.readout b{color:var(--ink);font-weight:500}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12.5px;font-family:var(--mono);border:1px solid var(--rule);background:var(--code-bg)}
+.pill.ok{color:var(--ok);border-color:var(--ok)}
+.pill.warn{color:var(--warn);border-color:var(--warn)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13.5px;color:var(--muted);margin-top:8px}
+.legend span::before{content:"";display:inline-block;width:18px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle;background:var(--sw)}
+section.prose{max-width:720px;margin:28px auto 0;padding:0}
+section.prose h2{font-size:22px;margin:28px 0 8px;font-weight:600}
+section.prose p{margin:0 0 14px}
+section.prose ol,section.prose ul{margin:0 0 14px 22px;padding:0}
+section.prose li{margin-bottom:6px}
+code,pre{font-family:var(--mono);font-size:.92em}
+code{background:var(--code-bg);padding:1px 5px;border-radius:5px}
+pre{background:var(--code-bg);padding:12px 14px;border-radius:10px;overflow-x:auto;line-height:1.45}
+pre code{background:none;padding:0}
+.refs{font-size:14.5px;color:var(--muted)}
+.refs p{padding-left:1.6em;text-indent:-1.6em}
+nav.pager{display:flex;justify-content:space-between;gap:12px;max-width:var(--maxw);margin:30px auto 0;padding:18px 20px;border-top:1px solid var(--rule)}
+nav.pager a{text-decoration:none;font-size:15px;display:flex;flex-direction:column;gap:2px;max-width:48%}
+nav.pager a small{color:var(--muted);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+nav.pager a.next{text-align:right;margin-left:auto}
+footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;color:var(--muted)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:600px){
+  body{font-size:16px}
+  .stage{padding:12px;border-radius:10px}
+  .control{min-width:120px}
+}
+@media (prefers-reduced-motion: reduce){ .anim-hint{display:none} }
+/* ===== END SHARED STYLE ===== */
+
+/* page-specific */
+.refs p{overflow-wrap:anywhere}
+.ctlgroup{display:flex;flex-wrap:wrap;gap:14px 22px;flex:1 1 100%}
+.ctlgroup h3{flex:1 1 100%;margin:0;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.radios{display:flex;flex-wrap:wrap;gap:6px 14px;flex:1 1 100%}
+.radios label{display:inline-flex;align-items:center;gap:6px;font-size:14px;padding:5px 10px;border:1px solid var(--rule);border-radius:999px;cursor:pointer;background:#fff}
+.radios label.abs{color:var(--muted);border-style:dashed}
+.radios input{accent-color:var(--accent);margin:0}
+.radios label:has(input:checked){border-color:var(--ink);background:var(--ink);color:#fff}
+.arrows{display:inline-flex;gap:4px}
+.arrows button{padding:4px 10px;font-size:14px}
+.why{margin-top:8px;font-size:14.5px;color:var(--ink);padding:8px 12px;border-left:3px solid var(--gold);background:var(--code-bg);border-radius:0 8px 8px 0}
+#cv{touch-action:none;cursor:grab}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="series" href="erp-pipeline.html">ERP pipeline · PSYCH 390</a>
+  <span class="step">step 7 / 12</span>
+</div>
+<header class="hero">
+  <h1>Re-referencing</h1>
+  <p class="q">What is a reference, and why does it matter?</p>
+</header>
+
+<main>
+  <div class="stage" id="stage">
+    <div class="canvas-wrap">
+      <canvas id="cv" tabindex="0" aria-label="Left: a head seen from above with 19 scalp electrodes and two mastoids, coloured by the voltage at the cursor time under the chosen reference, with draggable dipoles inside. Right: waveforms at six sites under that reference, plus the sum of all scalp channels."></canvas>
+    </div>
+    <div class="legend">
+      <span style="--sw:#d9573b">positive</span>
+      <span style="--sw:#3b6fd9">negative</span>
+      <span style="--sw:#c8962a">reference site</span>
+      <span style="--sw:#0f6e74">waveform under this reference</span>
+      <span style="--sw:#b9bec8">true absolute voltage, for comparison</span>
+    </div>
+    <div class="controls">
+      <div class="ctlgroup">
+        <h3>Reference</h3>
+        <div class="radios" role="radiogroup" aria-label="Reference">
+          <label><input type="radio" name="ref" value="M1" checked>Left mastoid (M1)</label>
+          <label><input type="radio" name="ref" value="LM">Linked mastoids (M1+M2)/2</label>
+          <label><input type="radio" name="ref" value="Cz">Cz</label>
+          <label><input type="radio" name="ref" value="AVG">Average of all 19 scalp electrodes</label>
+          <label class="abs"><input type="radio" name="ref" value="ABS">True absolute voltage (not measurable)</label>
+        </div>
+      </div>
+      <div class="ctlgroup">
+        <h3>The sources and the recording</h3>
+        <div class="control">
+          <label for="tslider">Time cursor <span class="val" id="tv"></span></label>
+          <input type="range" id="tslider" min="-200" max="796" value="400" step="4">
+        </div>
+        <div class="control">
+          <label for="dsel">Dipole to move</label>
+          <select id="dsel"><option value="0">Dipole 1 (N400-like, centro-parietal)</option><option value="1">Dipole 2 (early positive, occipital)</option></select>
+        </div>
+        <div class="control">
+          <label for="osel">Orientation of that dipole</label>
+          <select id="osel"><option value="out">Radial, pointing out</option><option value="in">Radial, pointing in</option><option value="fb">Tangential, front to back</option><option value="lr">Tangential, left to right</option></select>
+        </div>
+        <div class="control">
+          <label for="mvU">Nudge it (or drag it on the head)</label>
+          <div class="arrows"><button class="secondary" id="mvL" aria-label="move left">←</button><button class="secondary" id="mvU" aria-label="move forward">↑</button><button class="secondary" id="mvD" aria-label="move back">↓</button><button class="secondary" id="mvR" aria-label="move right">→</button></div>
+        </div>
+        <div class="control">
+          <label for="noise">Background noise at every electrode <span class="val" id="noisev"></span></label>
+          <input type="range" id="noise" min="0" max="4" value="0.5" step="0.5">
+        </div>
+        <div class="btnrow">
+          <button class="secondary" id="d2" aria-pressed="true">Second dipole on</button>
+          <button class="secondary" id="noisyref" aria-pressed="false">Noisy reference (60 Hz + drift on M1)</button>
+          <button class="ghost" id="reseed">New noise</button>
+          <button class="ghost" id="resetBtn">Reset</button>
+        </div>
+      </div>
+    </div>
+    <div class="readout">
+      <span>Pz at cursor: absolute <b id="pzAbs"></b></span>
+      <span>vs M1 <b id="pzM1"></b></span>
+      <span>linked <b id="pzLM"></b></span>
+      <span>vs Cz <b id="pzCz"></b></span>
+      <span>average <b id="pzAVG"></b></span>
+      <span>MATLAB <b id="code">EEG = pop_reref(EEG, []);</b></span>
+    </div>
+    <div class="why" id="why"></div>
+  </div>
+
+  <section class="prose">
+    <h2>What you are looking at</h2>
+    <p>The head on the left is seen from above, nose up. Inside it sit one or two current dipoles, the tiny batteries that a patch of synchronized cortex behaves like. Each dipole produces a voltage field over the whole scalp, warm where the field is positive and cool where it is negative, and each has its own time course: dipole 1 carries an N400-like negativity peaking near 400 ms, dipole 2 an earlier positive wave. The 19 discs are 10/20 electrode sites, and M1 and M2 are the mastoids behind the ears. The waveforms on the right are what six of those sites record from −200 to 800 ms.</p>
+    <p>The grey traces show the true voltage at each site relative to a point infinitely far away. Nothing in a real recording can measure that. An amplifier only ever reports a difference between two electrodes, so every channel is the active site minus a reference site, A − R, and the ground electrode cancels out of the subtraction. Pick a reference with the buttons and the teal traces show what the same brain activity looks like on the recording. The reference site is drawn in gold, and its own channel is flat by definition, because R − R is zero.</p>
+
+    <h2>Try this</h2>
+    <ol>
+      <li>Start with M1. Drag dipole 1 toward the left ear until M1 sits inside the negative part of its field. Every channel, even far-away Fp2, now shows a positive bump at 400 ms that is only the reference going negative.</li>
+      <li>Switch to Cz. The Pz waveform shrinks or even flips sign, because Cz is close to the peak of the same field. A midline effect can vanish under a vertex reference.</li>
+      <li>Choose the average reference and watch the bottom trace: the sum of all 19 channels sits on zero at every time point. Somewhere on the head the N400 must now appear positive, whether or not any source is positive there.</li>
+      <li>Turn on the noisy reference. Under M1 the 60 Hz hum and drift appear in every channel at once; under the linked or average reference they shrink, because they are shared out or excluded.</li>
+      <li>Move the time cursor across the epoch and read the Pz value under each reference. They are all correct measurements of the same field.</li>
+    </ol>
+
+    <h2>Why it matters for the pipeline</h2>
+    <p>There is no neutral site on the head. Any dipole has a line of zero voltage, but it moves with the dipole, so a site that is quiet for one component is active for another. So the choice of reference changes the shape, the size and sometimes the sign of every waveform, and an amplitude at Pz means nothing until the reference is stated (Luck, 2014). Mastoids are the usual compromise. They are convenient, not lateralized once linked, and used by enough labs that results can be compared. The average reference approximates the absolute voltage only when electrodes cover the whole head densely, and its result depends on which electrodes happened to be recorded, since the zero-sum rule is imposed on whatever set exists.</p>
+    <p>Re-referencing is a subtraction, which is linear, so it can be done at any point and undone without loss, and it does not matter whether it comes before or after averaging. Artifact rejection is not linear, so the reference should be settled before trials are thrown out. In the lab the data arrive with the reference used during recording, and the course converts them to the average reference with <code>EEG = pop_reref(EEG, []);</code>, the empty brackets meaning "use all channels". Looking at the same dataset under two references is a quick check that an effect belongs to the brain and not to the electrode it was measured against.</p>
+
+    <h2 id="refs">References</h2>
+    <div class="refs">
+      <p>Luck, S. J. (2014). <i>An introduction to the event-related potential technique</i> (2nd ed.). MIT Press.</p>
+      <p>Kappenman, E. S., Farrens, J. L., Zhang, W., Stewart, A. X., &amp; Luck, S. J. (2021). ERP CORE: An open resource for human event-related potential research. <i>NeuroImage, 225</i>, 117465. https://doi.org/10.1016/j.neuroimage.2020.117465</p>
+      <p>Delorme, A., &amp; Makeig, S. (2004). EEGLAB: An open source toolbox for analysis of single-trial EEG dynamics including independent component analysis. <i>Journal of Neuroscience Methods, 134</i>(1), 9–21. https://doi.org/10.1016/j.jneumeth.2003.10.009</p>
+    </div>
+  </section>
+</main>
+
+<nav class="pager">
+  <a class="prev" href="erp-06-filtering.html"><small>Previous</small><span>Filtering</span></a>
+  <a class="next" href="erp-08-bins.html"><small>Next</small><span>Bin assignment and epoching</span></a>
+</nav>
+<footer>Part of the ERP pipeline series for PSYCH 390, St. Olaf College. Built as a standalone page; nothing is sent anywhere.</footer>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const FS=256,T0=-0.2,NT=256;                    // 256 samples, -200 .. 796 ms
+const times=Array.from({length:NT},(_,i)=>T0+i/FS);
+// ---------- electrodes: [name, polar angle from vertex (deg), azimuth (deg, 0 = nose, + = right)] ----------
+const EL=[['Fp1',90,-18],['Fp2',90,18],['F7',90,-54],['F3',62,-39],['Fz',45,0],['F4',62,39],['F8',90,54],
+  ['T7',90,-90],['C3',45,-90],['Cz',0,0],['C4',45,90],['T8',90,90],['P7',90,-126],['P3',62,-141],['Pz',45,180],['P4',62,141],['P8',90,126],
+  ['O1',90,-162],['O2',90,162],['M1',112,-100],['M2',112,100]];
+const SCALP=19;                                  // first 19 are scalp sites
+const d2r=Math.PI/180;
+function sph(th,ph){th*=d2r;ph*=d2r;return [Math.sin(th)*Math.sin(ph),Math.sin(th)*Math.cos(ph),Math.cos(th)];}  // x right, y front, z up
+const POS=EL.map(e=>sph(e[1],e[2]));
+const IDX=Object.fromEntries(EL.map((e,i)=>[e[0],i]));
+// 2D map: azimuthal equidistant, theta 100 deg = head rim
+function xy2(th,ph){const r=th/100;return [r*Math.sin(ph*d2r),-r*Math.cos(ph*d2r)];}
+const XY=EL.map(e=>xy2(e[1],e[2]));
+
+// ---------- dipoles ----------
+const DEPTH=0.4;
+function locFrom(u,v){const th=Math.min(0.9,Math.hypot(u,v))*100,ph=Math.atan2(u,-v)/d2r;return sph(th,ph).map(c=>c*DEPTH);}  // map point -> point under it at depth
+function orient(loc,o){const n=Math.hypot(...loc);const rad=loc.map(c=>c/n);
+  if(o==='out')return rad;if(o==='in')return rad.map(c=>-c);
+  // tangential: project the requested direction onto the tangent plane
+  const want=o==='fb'?[0,-1,0]:[1,0,0];const dot=want[0]*rad[0]+want[1]*rad[1]+want[2]*rad[2];const t=want.map((c,i)=>c-dot*rad[i]);const m=Math.hypot(...t)||1;return t.map(c=>c/m);}
+const DEF=()=>[{u:0.02,v:0.42,o:'out',amp:-7,wave:t=>Math.exp(-0.5*((t-0.40)/0.07)**2)},
+               {u:0.12,v:0.84,o:'out',amp:5,wave:t=>Math.exp(-0.5*((t-0.15)/0.03)**2)}];
+let DIP=DEF(),d2on=true,sel=0;
+function potential(p,q,loc){const r=[p[0]-loc[0],p[1]-loc[1],p[2]-loc[2]];const d=Math.hypot(...r);return (q[0]*r[0]+q[1]*r[1]+q[2]*r[2])/(d*d*d);}
+const K=0.36;  // scales a unit dipole at depth 0.4 to about 1 at the electrode above it
+function weights(){return DIP.map((d,i)=>{if(i===1&&!d2on)return POS.map(()=>0);const loc=locFrom(d.u,d.v),q=orient(loc,d.o);return POS.map(p=>K*potential(p,q,loc));});}
+
+// ---------- noise ----------
+let seed=13;function rnd(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;}
+function gr(){return Math.sqrt(-2*Math.log(rnd()+1e-12))*Math.cos(6.2832*rnd());}
+let NZ=[],LINE=[];
+function makeNoise(){NZ=EL.map(()=>{let a=0;const o=new Float32Array(NT);for(let i=0;i<NT;i++){a=0.9*a+gr();o[i]=a*0.45;}return o;});
+  const ph=rnd()*6.28;LINE=new Float32Array(NT);for(let i=0;i<NT;i++)LINE[i]=3*Math.sin(2*Math.PI*60*times[i]+ph)+4*Math.sin(2*Math.PI*0.6*times[i]+1.2);}
+makeNoise();
+
+// ---------- state and computation ----------
+const S={ref:'M1',t:0.4,noise:0.5,noisy:false};
+let VABS=[],VREF=[],W=[];
+function compute(){W=weights();
+  VABS=EL.map((e,ei)=>{const o=new Float32Array(NT);for(let i=0;i<NT;i++){let v=0;DIP.forEach((d,k)=>{v+=W[k][ei]*d.amp*d.wave(times[i]);});v+=S.noise*NZ[ei][i];if(S.noisy&&ei===IDX.M1)v+=LINE[i];o[i]=v;}return o;});
+  VREF=referenced(S.ref);}
+function refSignal(ref){const o=new Float32Array(NT);
+  if(ref==='M1')return VABS[IDX.M1];if(ref==='Cz')return VABS[IDX.Cz];
+  if(ref==='LM'){for(let i=0;i<NT;i++)o[i]=(VABS[IDX.M1][i]+VABS[IDX.M2][i])/2;return o;}
+  if(ref==='AVG'){for(let i=0;i<NT;i++){let s=0;for(let e=0;e<SCALP;e++)s+=VABS[e][i];o[i]=s/SCALP;}return o;}
+  return o;}
+function referenced(ref){const r=refSignal(ref);return VABS.map(v=>{const o=new Float32Array(NT);for(let i=0;i<NT;i++)o[i]=v[i]-r[i];return o;});}
+const refSites={M1:['M1'],LM:['M1','M2'],Cz:['Cz'],AVG:EL.slice(0,SCALP).map(e=>e[0]),ABS:[]};
+
+// ---------- drawing ----------
+const cv=$('cv'),ctx=cv.getContext('2d');let Wd=1000,H=560;
+function fit(){const r=cv.getBoundingClientRect();const dpr=devicePixelRatio||1;Wd=r.width;const narrow=Wd<560;H=narrow?Math.round(Wd*0.9+380):Math.max(440,Math.min(600,Wd*0.56));
+  cv.width=Math.round(Wd*dpr);cv.height=Math.round(H*dpr);cv.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);}
+function txt(s,x,y,o={}){ctx.font=(o.w||400)+' '+(o.s||12)+'px "IBM Plex Sans",system-ui,sans-serif';ctx.fillStyle=o.c||'#5c6270';ctx.textAlign=o.a||'left';ctx.textBaseline=o.b||'alphabetic';ctx.fillText(s,x,y);}
+function col(v,vmax){const a=Math.max(-1,Math.min(1,v/vmax));const t=Math.abs(a);
+  const c=a>0?[217,87,59]:[59,111,217];const r=Math.round(255+(c[0]-255)*t),g=Math.round(255+(c[1]-255)*t),b=Math.round(255+(c[2]-255)*t);return `rgb(${r},${g},${b})`;}
+let head={cx:0,cy:0,R:1};
+function drawHead(x0,y0,size){const R=size*0.37,cx=x0+size/2,cy=y0+size/2+22;head={cx,cy,R};
+  const ti=Math.round((S.t-T0)*FS);const rs=refSignal(S.ref)[ti];
+  // field on a grid inside the rim (theta up to 100 deg): true dipole potential on the sphere, minus the reference
+  const cell=Math.max(3,Math.round(size/90));let vmax=1;const vals=[];
+  for(let e=0;e<EL.length;e++)vmax=Math.max(vmax,Math.abs(VREF[e][ti]));vmax=Math.ceil(vmax);
+  for(let py=-R;py<=R;py+=cell)for(let px=-R;px<=R;px+=cell){const rr=Math.hypot(px,py)/R;if(rr>1)continue;const th=rr*100,ph=Math.atan2(px,-py)/d2r;const p=sph(th,ph);let v=0;
+    DIP.forEach((d,k)=>{if(k===1&&!d2on)return;const loc=locFrom(d.u,d.v);v+=K*potential(p,orient(loc,d.o),loc)*d.amp*d.wave(S.t);});v-=rs;
+    ctx.fillStyle=col(v,vmax);ctx.fillRect(cx+px-cell/2,cy+py-cell/2,cell+0.5,cell+0.5);}
+  // rim, nose, ears
+  ctx.save();ctx.beginPath();ctx.arc(cx,cy,R,0,6.2832);ctx.strokeStyle='#1d1f24';ctx.lineWidth=1.5;ctx.stroke();ctx.restore();
+  ctx.beginPath();ctx.moveTo(cx-R*0.12,cy-R*0.99);ctx.lineTo(cx,cy-R*1.12);ctx.lineTo(cx+R*0.12,cy-R*0.99);ctx.strokeStyle='#1d1f24';ctx.stroke();
+  [[cx-R*1.02,cy],[cx+R*1.02,cy]].forEach(([x,y])=>{ctx.beginPath();ctx.ellipse(x,y,R*0.05,R*0.13,0,0,6.2832);ctx.stroke();});
+  // electrodes
+  const rad=Math.max(7,size*0.028);
+  EL.forEach((e,i)=>{const [u,v]=XY[i];let x=cx+u*R,y=cy+v*R;if(i>=SCALP){const m=1.18;x=cx+Math.sign(u)*R*1.0;y=cy+R*0.42;}
+    const isRef=refSites[S.ref].includes(e[0]);ctx.beginPath();ctx.arc(x,y,rad,0,6.2832);ctx.fillStyle=col(VREF[i][ti],vmax);ctx.fill();
+    ctx.lineWidth=isRef?2.5:1;ctx.strokeStyle=isRef?'#c8962a':'#1d1f24';ctx.stroke();
+    txt(e[0],x,y+rad+10,{a:'center',s:10,c:isRef?'#a67612':'#1d1f24',w:isRef?600:400});});
+  // dipoles
+  DIP.forEach((d,k)=>{if(k===1&&!d2on)return;const x=cx+d.u*R,y=cy+d.v*R;const q=orient(locFrom(d.u,d.v),d.o);const L=R*0.13;
+    const dx=q[0],dy=-q[1];const tang=Math.hypot(dx,dy)>0.2;
+    ctx.beginPath();ctx.arc(x,y,k===sel?7:5.5,0,6.2832);ctx.fillStyle=k===sel?'#1d1f24':'#fff';ctx.strokeStyle='#1d1f24';ctx.lineWidth=2;ctx.fill();ctx.stroke();
+    if(tang){ctx.beginPath();ctx.moveTo(x-dx*L,y-dy*L);ctx.lineTo(x+dx*L,y+dy*L);ctx.stroke();ctx.beginPath();ctx.arc(x+dx*L,y+dy*L,3,0,6.2832);ctx.fillStyle='#d9573b';ctx.fill();}
+    else{ctx.beginPath();ctx.arc(x,y,11,0,6.2832);ctx.strokeStyle=d.o==='out'?'#d9573b':'#3b6fd9';ctx.lineWidth=1.5;ctx.setLineDash([2,3]);ctx.stroke();ctx.setLineDash([]);}
+    txt('dipole '+(k+1),x+12,y-8,{s:10.5,c:'#1d1f24',w:500});});
+  txt('Scalp voltage at '+Math.round(S.t*1000)+' ms, ref: '+refLabel(S.ref),x0,y0+2,{c:'#1d1f24',w:600,s:13,b:'top'});
+  txt('colour scale ±'+vmax+' µV, white = 0',x0,y0+18,{s:11,b:'top'});
+  txt('nose',cx,cy-R*1.16,{a:'center',s:10});}
+function refLabel(r){return {M1:'M1',LM:'linked mastoids',Cz:'Cz',AVG:'average',ABS:'absolute (unmeasurable)'}[r];}
+const SHOW=['Fz','Cz','Pz','O1','T7','M1'];
+function drawWaves(x0,y0,w,h){const narrow=Wd<560,L=x0+(narrow?50:44),R=x0+w-10,rows=SHOW.length+1,rh=(h-52)/rows,top=y0+34;
+  let sc=6;for(const n of SHOW)for(let i=0;i<NT;i++)sc=Math.max(sc,Math.abs(VREF[IDX[n]][i]),Math.abs(VABS[IDX[n]][i]));sc=Math.ceil(sc/2)*2;const SC=sc;
+  txt('Waveforms under this reference',x0,y0+2,{c:'#1d1f24',w:600,s:13,b:'top'});txt('negative plotted down, each row ±'+SC+' µV',R,y0+18,{a:'right',s:11,b:'top'});
+  const X=i=>L+(i/(NT-1))*(R-L);const ti=Math.round((S.t-T0)*FS);
+  for(let r=0;r<rows;r++){const yc=top+rh*(r+0.5);const half=rh*0.46;const Y=v=>yc-(v/sc)*half;
+    ctx.strokeStyle='#e2ddd4';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(L,yc);ctx.lineTo(R,yc);ctx.stroke();
+    const x00=X(Math.round(-T0*FS));ctx.setLineDash([2,3]);ctx.beginPath();ctx.moveTo(x00,yc-half);ctx.lineTo(x00,yc+half);ctx.stroke();ctx.setLineDash([]);
+    if(r<SHOW.length){const n=SHOW[r],e=IDX[n];const isRef=refSites[S.ref].includes(n)&&S.ref!=='AVG';
+      txt(n,L-6,yc+4,{a:'right',s:12,w:isRef?600:500,c:isRef?'#a67612':'#1d1f24'});
+      ctx.beginPath();ctx.strokeStyle='#b9bec8';ctx.lineWidth=1;for(let i=0;i<NT;i++){const y=Y(VABS[e][i]);i?ctx.lineTo(X(i),y):ctx.moveTo(X(i),y);}ctx.stroke();
+      ctx.beginPath();ctx.strokeStyle=isRef?'#c8962a':'#0f6e74';ctx.lineWidth=1.6;for(let i=0;i<NT;i++){const y=Y(VREF[e][i]);i?ctx.lineTo(X(i),y):ctx.moveTo(X(i),y);}ctx.stroke();
+      if(isRef)txt('reference: flat by definition',R-4,yc-half+9,{a:'right',s:10.5,c:'#a67612'});
+      txt(VREF[e][ti].toFixed(1)+' µV',R-4,yc+half-2,{a:'right',s:10.5,c:'#0f6e74'});}
+    else{txt('sum of',L-6,yc-4,{a:'right',s:10.5});txt(narrow?'19 ch.':'19 sites',L-6,yc+8,{a:'right',s:10.5});
+      let mx=0;const sum=new Float32Array(NT);for(let i=0;i<NT;i++){let s=0;for(let e=0;e<SCALP;e++)s+=VREF[e][i];sum[i]=s;mx=Math.max(mx,Math.abs(s));}
+      const div=mx>sc?Math.ceil(mx/sc):1;ctx.beginPath();ctx.strokeStyle='#6b5ca5';ctx.lineWidth=1.2;for(let i=0;i<NT;i++){const y=Y(sum[i]/div);i?ctx.lineTo(X(i),y):ctx.moveTo(X(i),y);}ctx.stroke();
+      txt(S.ref==='AVG'?(narrow?'zero at every time point':'zero at every time point under the average reference'):'scale ÷ '+div+(mx<0.5?'':', far from zero'),R-4,yc+half-2,{a:'right',s:10.5,c:'#6b5ca5'});}
+  }
+  // time axis
+  const ya=top+rh*rows+4;(narrow?[-200,0,400,800]:[-200,0,200,400,600,800]).forEach(ms=>{const x=X(Math.min(NT-1,Math.round((ms/1000-T0)*FS)));ctx.strokeStyle='#5c6270';ctx.beginPath();ctx.moveTo(x,ya-4);ctx.lineTo(x,ya);ctx.stroke();txt(narrow&&ms!==800?String(ms):ms+' ms',x,ya+11,{a:ms===800?'right':ms===-200?'left':'center',s:10.5});});
+  // time cursor
+  const xc=X(ti);ctx.strokeStyle='#c8962a';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(xc,top);ctx.lineTo(xc,top+rh*rows);ctx.stroke();}
+function draw(){ctx.clearRect(0,0,Wd,H);const narrow=Wd<560;
+  if(narrow){const s=Wd;drawHead(0,0,s*0.92);drawWaves(0,s*0.92+16,Wd,H-s*0.92-16);}
+  else{const s=Math.min(H,Wd*0.42);drawHead(4,0,s);drawWaves(s+14,0,Wd-s-14,H);}}
+
+// ---------- readouts ----------
+function readouts(){const ti=Math.round((S.t-T0)*FS),pz=IDX.Pz;
+  const at=ref=>(VABS[pz][ti]-refSignal(ref)[ti]);
+  $('pzAbs').textContent=VABS[pz][ti].toFixed(1)+' µV';$('pzM1').textContent=at('M1').toFixed(1);$('pzLM').textContent=at('LM').toFixed(1);$('pzCz').textContent=at('Cz').toFixed(1);$('pzAVG').textContent=at('AVG').toFixed(1);
+  $('tv').textContent=Math.round(S.t*1000)+' ms';$('noisev').textContent=S.noise+' µV';
+  $('code').textContent={M1:"EEG = pop_reref(EEG, 'M1');",LM:"EEG = pop_reref(EEG, {'M1','M2'});",Cz:"EEG = pop_reref(EEG, 'Cz');",AVG:'EEG = pop_reref(EEG, []);',ABS:'(no command; not measurable)'}[S.ref];
+  const rs=refSignal(S.ref)[ti];const sgn=v=>v>0.3?'positive':v<-0.3?'negative':'near zero';
+  const why={M1:`Every channel is site minus M1. At ${Math.round(S.t*1000)} ms the field at M1 is ${sgn(rs)} (${rs.toFixed(1)} µV), so ${rs.toFixed(1)} µV is subtracted from every site at once${S.noisy?', and so is the hum and drift picked up at M1':''}.`,
+    LM:`Every channel is site minus the mean of M1 and M2 (${rs.toFixed(1)} µV now). Noise unique to one mastoid is halved, and a source near one ear no longer tilts the whole map.`,
+    Cz:`Every channel is site minus Cz (${rs.toFixed(1)} µV now). Cz sits near the peak of a centro-parietal field, so midline sites lose most of their signal and distant sites gain an inverted copy of it.`,
+    AVG:`Every channel is site minus the mean of the 19 scalp sites (${rs.toFixed(1)} µV now). The channels are forced to sum to zero, so a negativity at Pz must be balanced by positivity elsewhere.`,
+    ABS:`This is the voltage against a point infinitely far away. No electrode can be placed there, so this is the picture a reference can only approximate.`}[S.ref];
+  $('why').textContent=why;}
+function update(){compute();draw();readouts();}
+
+// ---------- controls ----------
+document.querySelectorAll('input[name=ref]').forEach(r=>r.addEventListener('change',()=>{S.ref=r.value;update();}));
+$('tslider').addEventListener('input',e=>{S.t=+e.target.value/1000;draw();readouts();});
+$('noise').addEventListener('input',e=>{S.noise=+e.target.value;update();});
+$('dsel').addEventListener('change',e=>{sel=+e.target.value;$('osel').value=DIP[sel].o;draw();});
+$('osel').addEventListener('change',e=>{DIP[sel].o=e.target.value;update();});
+function nudge(du,dv){const d=DIP[sel];d.u=Math.max(-0.85,Math.min(0.85,d.u+du));d.v=Math.max(-0.85,Math.min(0.85,d.v+dv));if(Math.hypot(d.u,d.v)>0.88){const k=0.88/Math.hypot(d.u,d.v);d.u*=k;d.v*=k;}update();}
+$('mvL').addEventListener('click',()=>nudge(-0.08,0));$('mvR').addEventListener('click',()=>nudge(0.08,0));$('mvU').addEventListener('click',()=>nudge(0,-0.08));$('mvD').addEventListener('click',()=>nudge(0,0.08));
+cv.addEventListener('keydown',e=>{const m={ArrowLeft:[-0.05,0],ArrowRight:[0.05,0],ArrowUp:[0,-0.05],ArrowDown:[0,0.05]}[e.key];if(m){e.preventDefault();nudge(...m);}});
+$('d2').addEventListener('click',e=>{d2on=!d2on;e.target.setAttribute('aria-pressed',d2on);e.target.textContent=d2on?'Second dipole on':'Second dipole off';update();});
+$('noisyref').addEventListener('click',e=>{S.noisy=!S.noisy;e.target.setAttribute('aria-pressed',S.noisy);update();});
+$('reseed').addEventListener('click',()=>{makeNoise();update();});
+$('resetBtn').addEventListener('click',()=>{DIP=DEF();sel=0;$('dsel').value='0';$('osel').value='out';d2on=true;$('d2').setAttribute('aria-pressed','true');$('d2').textContent='Second dipole on';S.noisy=false;$('noisyref').setAttribute('aria-pressed','false');S.t=0.4;$('tslider').value=400;S.noise=0.5;$('noise').value=0.5;S.ref='M1';document.querySelector('input[name=ref][value=M1]').checked=true;update();});
+// drag on the head
+let drag=null;
+function ptr(e){const r=cv.getBoundingClientRect();return [e.clientX-r.left,e.clientY-r.top];}
+cv.addEventListener('pointerdown',e=>{const [x,y]=ptr(e);let best=null,bd=18;DIP.forEach((d,k)=>{if(k===1&&!d2on)return;const dx=head.cx+d.u*head.R-x,dy=head.cy+d.v*head.R-y;const dd=Math.hypot(dx,dy);if(dd<bd){bd=dd;best=k;}});
+  if(best!==null){drag=best;sel=best;$('dsel').value=String(sel);$('osel').value=DIP[sel].o;cv.setPointerCapture(e.pointerId);cv.style.cursor='grabbing';draw();}});
+cv.addEventListener('pointermove',e=>{if(drag===null)return;const [x,y]=ptr(e);let u=(x-head.cx)/head.R,v=(y-head.cy)/head.R;const n=Math.hypot(u,v);if(n>0.88){u*=0.88/n;v*=0.88/n;}DIP[drag].u=u;DIP[drag].v=v;update();});
+const endDrag=()=>{drag=null;cv.style.cursor='grab';};cv.addEventListener('pointerup',endDrag);cv.addEventListener('pointercancel',endDrag);
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{fit();draw();},80);});
+fit();update();
+})();
+</script>
+</body>
+</html>

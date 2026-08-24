@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What is an ERP? · ERP pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===== SHARED STYLE: copy verbatim into every page ===== */
+:root{
+  --bg:#f6f3ee; --panel:#ffffff; --ink:#1d1f24; --muted:#5c6270; --rule:#e2ddd4;
+  --accent:#0f6e74; --accent-2:#d9573b; --accent-3:#6b5ca5; --gold:#c8962a;
+  --ok:#2f8f4e; --warn:#c2410c; --code-bg:#f0ece4;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --maxw:1040px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+a:hover{text-decoration-thickness:2px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:var(--maxw);margin:0 auto;padding:14px 20px 0}
+.topbar .series{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.topbar .series:hover{color:var(--accent)}
+.topbar .step{font-family:var(--mono);font-size:13px;color:var(--muted)}
+header.hero{max-width:var(--maxw);margin:0 auto;padding:18px 20px 10px}
+header.hero h1{font-size:clamp(26px,4vw,38px);line-height:1.15;margin:0 0 6px;font-weight:600;letter-spacing:-.01em}
+header.hero p.q{margin:0;font-size:clamp(17px,2.2vw,20px);color:var(--muted);font-style:italic}
+main{max-width:var(--maxw);margin:0 auto;padding:8px 20px 40px}
+.stage{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:16px;box-shadow:0 1px 0 rgba(0,0,0,.02),0 8px 24px -18px rgba(0,0,0,.25)}
+.stage .canvas-wrap{position:relative;width:100%}
+.stage canvas,.stage svg{display:block;width:100%;height:auto}
+.controls{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:flex-end;margin-top:14px;padding-top:14px;border-top:1px solid var(--rule)}
+.control{display:flex;flex-direction:column;gap:4px;min-width:150px;flex:1 1 150px}
+.control label{font-size:13px;color:var(--muted);letter-spacing:.02em}
+.control .val{font-family:var(--mono);font-size:13px;color:var(--ink)}
+.control input[type=range]{width:100%;accent-color:var(--accent)}
+.control select,.control input[type=text],.control textarea{font:inherit;font-size:15px;padding:6px 8px;border:1px solid var(--rule);border-radius:8px;background:#fff;color:var(--ink)}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px}
+button{font:inherit;font-size:14px;font-weight:500;padding:8px 14px;border-radius:999px;border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer}
+button.secondary{background:#fff;color:var(--accent)}
+button.ghost{background:transparent;border-color:var(--rule);color:var(--ink)}
+button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+button:disabled{opacity:.5;cursor:not-allowed}
+.readout{display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:12px;font-family:var(--mono);font-size:13.5px;color:var(--muted)}
+.readout b{color:var(--ink);font-weight:500}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12.5px;font-family:var(--mono);border:1px solid var(--rule);background:var(--code-bg)}
+.pill.ok{color:var(--ok);border-color:var(--ok)}
+.pill.warn{color:var(--warn);border-color:var(--warn)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13.5px;color:var(--muted);margin-top:8px}
+.legend span::before{content:"";display:inline-block;width:18px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle;background:var(--sw)}
+section.prose{max-width:720px;margin:28px auto 0;padding:0}
+section.prose h2{font-size:22px;margin:28px 0 8px;font-weight:600}
+section.prose p{margin:0 0 14px}
+section.prose ol,section.prose ul{margin:0 0 14px 22px;padding:0}
+section.prose li{margin-bottom:6px}
+code,pre{font-family:var(--mono);font-size:.92em}
+code{background:var(--code-bg);padding:1px 5px;border-radius:5px}
+pre{background:var(--code-bg);padding:12px 14px;border-radius:10px;overflow-x:auto;line-height:1.45}
+pre code{background:none;padding:0}
+.refs{font-size:14.5px;color:var(--muted)}
+.refs p{padding-left:1.6em;text-indent:-1.6em}
+nav.pager{display:flex;justify-content:space-between;gap:12px;max-width:var(--maxw);margin:30px auto 0;padding:18px 20px;border-top:1px solid var(--rule)}
+nav.pager a{text-decoration:none;font-size:15px;display:flex;flex-direction:column;gap:2px;max-width:48%}
+nav.pager a small{color:var(--muted);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+nav.pager a.next{text-align:right;margin-left:auto}
+footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;color:var(--muted)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:600px){
+  body{font-size:16px}
+  .stage{padding:12px;border-radius:10px}
+  .control{min-width:120px}
+}
+@media (prefers-reduced-motion: reduce){ .anim-hint{display:none} }
+/* ===== END SHARED STYLE ===== */
+
+.ctlgroup{display:flex;flex-wrap:wrap;gap:14px 22px;flex:1 1 100%;align-items:flex-end}
+.grp{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.grp span.lab{font-size:13px;color:var(--muted);margin-right:4px}
+.refs p{overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="series" href="erp-pipeline.html">ERP pipeline · PSYCH 390</a>
+  <span class="step">step 3 / 12</span>
+</div>
+<header class="hero">
+  <h1>What is an ERP?</h1>
+  <p class="q">How does averaging pull a tiny signal out of noise?</p>
+</header>
+
+<main>
+  <div class="stage" id="stage">
+    <div class="canvas-wrap">
+      <canvas id="cv" aria-label="A live oddball experiment. Top: a stream of standard X and rare oddball O stimuli above one channel of continuous EEG with event markers. Middle: the epochs cut around each stimulus, stacked separately for standards and oddballs. Bottom: the running average of each condition drawn over the true hidden waveform, the oddball minus standard difference wave, and an inset showing residual noise falling as one over the square root of the number of trials."></canvas>
+    </div>
+    <div class="legend">
+      <span style="--sw:#b9bec8">single trials</span>
+      <span style="--sw:#0f6e74">standard average</span>
+      <span style="--sw:#d9573b">oddball average</span>
+      <span style="--sw:#c8962a">true ERP (hidden in every trial)</span>
+      <span style="--sw:#6b5ca5">difference wave</span>
+    </div>
+    <div class="controls">
+      <div class="ctlgroup">
+        <div class="grp">
+          <button id="play" aria-pressed="true">Pause</button>
+          <button class="secondary" id="add10">Add 10 trials</button>
+          <button class="secondary" id="add100">Add 100 trials</button>
+          <button class="ghost" id="reset">Reset</button>
+          <button class="ghost" id="reseed">New noise</button>
+          <button class="ghost" id="truth" aria-pressed="true">Show true ERP</button>
+        </div>
+        <div class="grp" role="group" aria-label="Playback speed">
+          <span class="lab">Speed</span>
+          <button class="secondary" data-sp="1" aria-pressed="true">1×</button>
+          <button class="secondary" data-sp="4" aria-pressed="false">4×</button>
+          <button class="secondary" data-sp="16" aria-pressed="false">16×</button>
+        </div>
+      </div>
+      <div class="control">
+        <label for="noise">Background EEG noise <span class="val" id="noisev"></span></label>
+        <input type="range" id="noise" min="10" max="80" value="40" step="1">
+      </div>
+    </div>
+    <div class="readout" id="ro"></div>
+  </div>
+
+  <section class="prose">
+    <h2>What you are looking at</h2>
+    <p>A participant is watching a stream of letters. Most are X, the standard; about one in five is O, the rare oddball, and the task is to count the O's. The top trace is one EEG channel at Pz, twenty to sixty microvolts of ongoing rhythms with a marker at each stimulus. Every stimulus also evokes a response, a few microvolts of P1, N1 and P2 for the standards and a large P3 near 380 ms for the oddballs, but you cannot see it in the raw trace because it is buried in noise five to ten times its size. That response is the event-related potential, the part of the EEG that is time-locked to an event.</p>
+    <p>The middle row cuts an epoch from −200 to 800 ms around each stimulus and stacks them, and the bottom row averages them. The noise is random with respect to the stimulus, positive on one trial and negative on the next at any given latency, so it cancels as more epochs are added. The response is the same on every trial, so it survives. The gold curve is the true waveform that was injected into every trial, and the teal and coral averages settle onto it. The difference wave in violet, oddball minus standard, removes everything the two conditions share and leaves only what changed, the P3. The inset plots the noise left in the average against the number of trials; it falls along the 1/√N curve, so doubling the trials improves the signal-to-noise ratio by 41 percent and quadrupling it doubles the ratio. Every epoch is baseline-corrected first by subtracting its mean prestimulus voltage, so the traces all start at zero.</p>
+
+    <h2>Try this</h2>
+    <ol>
+      <li>Press Reset and watch the first ten trials arrive at 1×. Each average is still a wobbly line that looks nothing like the gold curve.</li>
+      <li>Click Add 100 trials. The standard average, with five times as many trials as the oddball, is already smooth; the oddball average still carries visible noise. Add 100 more and compare the residual noise readouts.</li>
+      <li>Raise the background noise to 80 µV and reset. Read off how many trials the inset says you now need to reach the same noise in the average. Four times the noise needs sixteen times the trials.</li>
+      <li>Turn off the true ERP and decide, at 20 oddball trials, whether you would trust the P3 you see. Turn it back on to check.</li>
+      <li>Set the speed to 16× and let it run to the 1000-trial cap. The last few hundred trials barely change the picture; the square-root law gives diminishing returns.</li>
+    </ol>
+
+    <h2>Why it matters for the pipeline</h2>
+    <p>Most of the later steps exist to make this average trustworthy. Filtering removes noise that averaging handles badly, artifact rejection throws out trials whose noise is not random, and bins define which events are averaged together. In ERPLAB the average is computed by <code>ERP = pop_averager(EEG, 'Criterion', 'good')</code> after epochs have been cut with <code>pop_epochbin(EEG, [-200 800], 'pre')</code>, and a difference wave is made with <code>pop_binoperator</code>. Components are named by polarity and typical latency, P1, N1, P3, N400, and measured in a window such as 300 to 500 ms. ERPs are very good at timing, at telling which stage of processing changed, and at measuring a process without asking for a response. They are poor at telling where in the brain the activity came from, they cannot capture slow or non-time-locked activity, and they need enough trials to average. The ERP CORE resource (Kappenman et al., 2021) supplies standardized paradigms for the P3, N400 and five other components, and the numbers on this page follow its P3 oddball task.</p>
+
+    <h2 id="refs">References</h2>
+    <div class="refs">
+      <p>Kappenman, E. S., Farrens, J. L., Zhang, W., Stewart, A. X., &amp; Luck, S. J. (2021). ERP CORE: An open resource for human event-related potential research. <i>NeuroImage, 225</i>, 117465. https://doi.org/10.1016/j.neuroimage.2020.117465</p>
+      <p>Lopez-Calderon, J., &amp; Luck, S. J. (2014). ERPLAB: An open-source toolbox for the analysis of event-related potentials. <i>Frontiers in Human Neuroscience, 8</i>, 213. https://doi.org/10.3389/fnhum.2014.00213</p>
+      <p>Luck, S. J. (2014). <i>An introduction to the event-related potential technique</i> (2nd ed.). MIT Press.</p>
+    </div>
+  </section>
+</main>
+
+<nav class="pager">
+  <a class="prev" href="erp-02-eeg-signal.html"><small>Previous</small><span>The EEG signal</span></a>
+  <a class="next" href="erp-04-eeglab-gui.html"><small>Next</small><span>EEGLAB and data loading</span></a>
+</nav>
+<footer>Part of the ERP pipeline series for PSYCH 390, St. Olaf College. Built as a standalone page; nothing is sent anywhere.</footer>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const FS=256,SOA=1.0,EP0=-0.2,EP1=0.8,NEP=Math.round((EP1-EP0)*FS),NB=Math.round(-EP0*FS),CAP=1000,WIN=6;
+const C={ink:'#1d1f24',muted:'#5c6270',rule:'#e2ddd4',teal:'#0f6e74',coral:'#d9573b',violet:'#6b5ca5',gold:'#c8962a',grey:'#b9bec8',code:'#f0ece4'};
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// ---------- the true ERPs (µV) ----------
+function gauss(t,mu,sd){return Math.exp(-0.5*((t-mu)/sd)**2);}
+function erpStd(t){if(t<0)return 0;return 2*gauss(t,0.10,0.016)-4*gauss(t,0.17,0.024)+3*gauss(t,0.23,0.03)-1*gauss(t,0.30,0.04);}
+function erpOdd(t){if(t<0)return 0;return erpStd(t)-1.5*gauss(t,0.27,0.03)+10*gauss(t,0.38,0.07);}
+const TRUE={std:new Float64Array(NEP),odd:new Float64Array(NEP)};
+for(let i=0;i<NEP;i++){const t=EP0+i/FS;TRUE.std[i]=erpStd(t);TRUE.odd[i]=erpOdd(t);}
+
+// ---------- deterministic noise: 1/f-ish background plus a 10 Hz alpha resonance ----------
+let seed=3;function rnd(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;}
+function gaussRnd(){return Math.sqrt(-2*Math.log(rnd()+1e-12))*Math.cos(2*Math.PI*rnd());}
+function newGen(){return{a:0,y1:0,y2:0,b:0};}
+const AW=2*Math.PI*10/FS,AR=0.965;
+function step(g){g.a=0.985*g.a+gaussRnd();const y=2*AR*Math.cos(AW)*g.y1-AR*AR*g.y2+gaussRnd();g.y2=g.y1;g.y1=y;g.b=0.6*g.b+gaussRnd();
+  return g.a*0.05+y*0.10+g.b*0.35;}
+// calibrate so the generator has unit rms
+let UNIT=1;{const g=newGen();let s=0;for(let i=0;i<8192;i++){const v=step(g);if(i>512)s+=v*v;}UNIT=Math.sqrt(s/(8192-512));}
+
+// ---------- state ----------
+const S={noise:40,speed:1,playing:true,truth:true};
+let live,cond,inset;
+function rmsOf(g){return S.noise/4;}   // slider = rough peak-to-peak; rms is about a quarter of it
+function newCond(){return{n:0,sum:new Float64Array(NEP),recent:[],trialRms:0};}
+function reset(){seed=3;live={g:newGen(),t:0,buf:[],stims:[],nextStim:0.6,pending:[]};cond={std:newCond(),odd:newCond()};inset=[];}
+function baseline(ep){let b=0;for(let i=0;i<NB;i++)b+=ep[i];b/=NB;for(let i=0;i<NEP;i++)ep[i]-=b;}
+function addEpoch(ep,which){baseline(ep);const c=cond[which];if(c.n>=CAP)return;c.n++;for(let i=0;i<NEP;i++)c.sum[i]+=ep[i];
+  let s=0;for(let i=0;i<NB;i++)s+=ep[i]*ep[i];c.trialRms+=Math.sqrt(s/NB);
+  c.recent.push(ep);if(c.recent.length>40)c.recent.shift();
+  if(which==='odd')inset.push([c.n,avgNoise('odd')]);}
+function avg(which){const c=cond[which];const a=new Float64Array(NEP);if(!c.n)return a;for(let i=0;i<NEP;i++)a[i]=c.sum[i]/c.n;return a;}
+function avgNoise(which){const c=cond[which];if(!c.n)return NaN;let s=0;for(let i=0;i<NB;i++){const v=c.sum[i]/c.n;s+=v*v;}return Math.sqrt(s/NB);}
+// synthesize a trial offline (used by the Add buttons)
+const offG=newGen();
+function offlineTrial(){const odd=rnd()<0.2;const ep=new Float64Array(NEP);const k=rmsOf()/UNIT;const tr=odd?TRUE.odd:TRUE.std;
+  for(let i=0;i<NEP;i++)ep[i]=step(offG)*k+tr[i];addEpoch(ep,odd?'odd':'std');}
+// live stream: advance by dt seconds of simulated time
+function advance(dt){const n=Math.round(dt*FS);const k=rmsOf()/UNIT;
+  for(let j=0;j<n;j++){const t=live.t;let v=step(live.g)*k;
+    if(t>=live.nextStim){const odd=rnd()<0.2;live.stims.push({t:t,odd:odd});live.pending.push({t:t,odd:odd,start:live.buf.length+Math.round(EP0*FS)});live.nextStim+=SOA;}
+    for(const s of live.stims){const dt2=t-s.t;if(dt2>=0&&dt2<1)v+=(s.odd?erpOdd:erpStd)(dt2);}
+    live.buf.push(v);live.t+=1/FS;}
+  // cut finished epochs
+  while(live.pending.length&&live.pending[0].start+NEP<=live.buf.length){const p=live.pending.shift();const ep=Float64Array.from(live.buf.slice(p.start,p.start+NEP));addEpoch(ep,p.odd?'odd':'std');}
+  // trim buffers to the display window
+  const keep=Math.round((WIN+2)*FS);if(live.buf.length>keep&&!live.pending.length){const cut=live.buf.length-keep;live.buf=live.buf.slice(cut);live.pending.forEach(p=>p.start-=cut);}
+  else if(live.buf.length>keep){const cut=Math.min(live.buf.length-keep,live.pending[0].start);if(cut>0){live.buf=live.buf.slice(cut);live.pending.forEach(p=>p.start-=cut);}}
+  live.stims=live.stims.filter(s=>s.t>live.t-WIN-1);
+}
+
+// ---------- canvas ----------
+const cv=$('cv'),ctx=cv.getContext('2d');let W=1000,H=620;
+function fit(){const r=cv.getBoundingClientRect();const dpr=window.devicePixelRatio||1;W=r.width;H=W<560?690:590;
+  cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);cv.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);}
+function txt(s,x,y,o={}){ctx.font=(o.w||400)+' '+(o.s||12)+'px "IBM Plex Sans",system-ui,sans-serif';ctx.fillStyle=o.c||C.muted;ctx.textAlign=o.a||'left';ctx.textBaseline=o.b||'alphabetic';ctx.fillText(s,x,y);}
+function line(pts,c,w,dash){ctx.beginPath();ctx.strokeStyle=c;ctx.lineWidth=w||1.2;ctx.setLineDash(dash||[]);pts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.stroke();ctx.setLineDash([]);}
+function panelFrame(x,y,w,h){ctx.strokeStyle=C.rule;ctx.lineWidth=1;ctx.strokeRect(x,y,w,h);}
+function erpAxes(x,y,w,h,sc,narrow){panelFrame(x,y,w,h);const ym=y+h/2;line([[x,ym],[x+w,ym]],C.rule,1,[3,3]);
+  const x0=x+w*(-EP0)/(EP1-EP0);line([[x0,y],[x0,y+h]],C.muted,1,[2,3]);
+  [0,400,800].forEach(ms=>{const xx=x+w*((ms/1000)-EP0)/(EP1-EP0);line([[xx,y+h],[xx,y+h+3]],C.muted,1);txt(ms+(ms===800?' ms':''),xx,y+h+13,{a:ms===800?'right':'center',s:10});});
+  txt('+'+sc,x+3,y+11,{s:10});txt('−'+sc,x+3,y+h-3,{s:10});}
+function plotEp(ep,x,y,w,h,sc,c,lw){const pts=[];for(let i=0;i<NEP;i+=2)pts.push([x+w*i/(NEP-1),y+h/2-ep[i]/sc*h/2]);line(pts,c,lw);}
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  const narrow=W<560,L=narrow?10:24,R=W-(narrow?10:24),gap=narrow?12:16;
+  let y=0;
+  // ---- row 1: stimulus stream + continuous EEG
+  const h1=narrow?120:140;txt(narrow?'Stimulus stream and EEG at Pz, last 6 s':'Stimulus stream (X = standard, O = oddball) and continuous EEG at Pz, last 6 s',L,y+16,{c:C.ink,w:600,s:13});y+=24;
+  const sy=y+8,ey=y+30,eh=h1-30;const t1=live.t,t0=t1-WIN;const X=t=>L+34+(R-L-34)*(t-t0)/WIN;
+  panelFrame(L+34,ey,R-L-34,eh);
+  const sc1=Math.max(20,Math.ceil(S.noise*0.9/10)*10);txt('+'+sc1+' µV',L+30,ey+10,{a:'right',s:10});txt('−'+sc1,L+30,ey+eh-2,{a:'right',s:10});
+  line([[L+34,ey+eh/2],[R,ey+eh/2]],C.rule,1,[3,3]);
+  for(const s of live.stims){if(s.t<t0)continue;const x=X(s.t);line([[x,ey],[x,ey+eh]],s.odd?C.coral:C.grey,1,[2,3]);
+    txt(s.odd?'O':'X',x,sy+8,{a:'center',s:15,w:600,c:s.odd?C.coral:C.muted});}
+  
+  {const pts=[];const n=live.buf.length;const i0=Math.max(0,n-Math.round(WIN*FS));
+    for(let i=i0;i<n;i+=1){const t=live.t-(n-i)/FS;pts.push([X(t),ey+eh/2-live.buf[i]/sc1*eh/2]);}if(pts.length>1)line(pts,C.teal,1);}
+  y+=h1+gap+6;
+  // ---- row 2: stacked epochs
+  const h2=narrow?110:120;const pw2=(R-L-gap)/2;
+  txt(narrow?'Epochs, −200 to 800 ms':'Epochs cut from the stream, −200 to 800 ms',L,y+14,{c:C.ink,w:600,s:13});y+=22;
+  const sc2=Math.max(20,Math.ceil(S.noise*0.9/10)*10);
+  [['std','Standards',C.teal],['odd','Oddballs',C.coral]].forEach(([k,name,col],j)=>{const x=L+j*(pw2+gap);
+    erpAxes(x,y,pw2,h2,sc2);txt(narrow?name+', '+cond[k].n:name+', last '+Math.min(cond[k].n,40)+' of '+cond[k].n,x+pw2-4,y+11,{a:'right',s:10.5,c:col});
+    for(const ep of cond[k].recent)plotEp(ep,x,y,pw2,h2,sc2,'rgba(100,106,118,.22)',0.8);});
+  y+=h2+gap+14;
+  // ---- row 3: averages, difference, inset
+  const h3=narrow?150:160;const a={std:avg('std'),odd:avg('odd')};
+  const sc3=12;
+  txt(narrow?'Averages, difference wave, noise vs N':'Averages over the true ERP, the difference wave, and how the noise falls with N',L,y+14,{c:C.ink,w:600,s:13});y+=22;
+  const cols=narrow?2:4,pw3=(R-L-gap*(cols-1))/cols;
+  const panels=[['std','Standard average',C.teal],['odd','Oddball average',C.coral]];
+  panels.forEach(([k,name,col],j)=>{const x=L+j*(pw3+gap);erpAxes(x,y,pw3,h3,sc3);
+    txt((narrow?name.split(' ')[0]:name)+' (N = '+cond[k].n+')',x+pw3-4,y+11,{a:'right',s:10.5,c:col});
+    if(S.truth)plotEp(TRUE[k],x,y,pw3,h3,sc3,C.gold,2);
+    if(cond[k].n)plotEp(a[k],x,y,pw3,h3,sc3,col,1.5);});
+  if(narrow)y+=h3+gap+16;
+  const xd=narrow?L:L+2*(pw3+gap),xi=narrow?L+pw3+gap:L+3*(pw3+gap);
+  erpAxes(xd,y,pw3,h3,sc3);txt('Oddball − standard',xd+pw3-4,y+11,{a:'right',s:10.5,c:C.violet});
+  if(S.truth){const d=new Float64Array(NEP);for(let i=0;i<NEP;i++)d[i]=TRUE.odd[i]-TRUE.std[i];plotEp(d,xd,y,pw3,h3,sc3,C.gold,2);}
+  if(cond.std.n&&cond.odd.n){const d=new Float64Array(NEP);for(let i=0;i<NEP;i++)d[i]=a.odd[i]-a.std[i];plotEp(d,xd,y,pw3,h3,sc3,C.violet,1.5);}
+  // inset: residual noise vs N (log-log) with the 1/sqrt(N) curve
+  panelFrame(xi,y,pw3,h3);txt(narrow?'Noise vs N':'Noise in the oddball average vs N',xi+pw3-4,y+11,{a:'right',s:10.5,c:C.ink});
+  const s1=cond.odd.n?cond.odd.trialRms/cond.odd.n:rmsOf();
+  const lx=n=>xi+8+(pw3-16)*Math.log10(n)/3,ly=v=>y+h3-16-(h3-30)*(Math.log10(Math.max(v,0.1))+1)/(Math.log10(40)+1);
+  [1,10,100,1000].forEach(n=>{line([[lx(n),y+h3-16],[lx(n),y+h3-13]],C.muted);txt(n,lx(n),y+h3-3,{a:'center',s:9.5});});
+  [0.1,1,10].forEach(v=>txt(v+' µV',xi+10,ly(v)-2,{s:9.5}));
+  {const pts=[];for(let i=0;i<=60;i++){const n=Math.pow(10,3*i/60);pts.push([lx(n),ly(s1/Math.sqrt(n))]);}line(pts,C.gold,1.4,[4,3]);}
+  txt('dashed: single-trial noise / √N',xi+pw3-6,y+24,{a:'right',s:9.5,c:C.gold});
+  for(const [n,v] of inset)if(n>=1&&isFinite(v)){ctx.fillStyle=C.coral;ctx.fillRect(lx(n)-1.2,ly(v)-1.2,2.4,2.4);}
+}
+
+// ---------- loop ----------
+let last=performance.now(),raf=null,acc=0;
+function frame(now){const dt=Math.min(0.1,(now-last)/1000);last=now;
+  if(S.playing&&(cond.std.n<CAP||cond.odd.n<CAP)){advance(dt*S.speed);acc+=dt;}
+  draw();if(acc>0.2){acc=0;readouts();}
+  if(S.playing&&!document.hidden)raf=requestAnimationFrame(frame);else raf=null;}
+function kick(){if(raf==null){last=performance.now();raf=requestAnimationFrame(frame);}}
+
+// ---------- readouts ----------
+function f1(v){return isFinite(v)?v.toFixed(v<1?2:1):'–';}
+function readouts(){
+  const nS=cond.std.n,nO=cond.odd.n;const s1=nO?cond.odd.trialRms/nO:rmsOf();
+  $('noisev').textContent='about ±'+(S.noise/2).toFixed(0)+' µV (rms '+rmsOf().toFixed(0)+')';
+  $('ro').innerHTML=`<span>trials: standard <b>${nS}</b>, oddball <b>${nO}</b></span>`+
+    `<span>noise in the standard average <b>${f1(avgNoise('std'))} µV</b></span>`+
+    `<span>noise in the oddball average <b>${f1(avgNoise('odd'))} µV</b> (rule: ${f1(s1)} / √${nO} = ${nO?f1(s1/Math.sqrt(nO)):'–'} µV)</span>`+
+    (nS>=CAP&&nO>=CAP?'<span class="pill">cap of 1000 per condition reached</span>':'');
+}
+function refresh(){draw();readouts();}
+$('play').addEventListener('click',()=>{S.playing=!S.playing;$('play').setAttribute('aria-pressed',S.playing);$('play').textContent=S.playing?'Pause':'Play';kick();});
+$('add10').addEventListener('click',()=>{for(let i=0;i<10;i++)offlineTrial();refresh();});
+$('add100').addEventListener('click',()=>{for(let i=0;i<100;i++)offlineTrial();refresh();});
+$('reset').addEventListener('click',()=>{reset();refresh();kick();});
+$('reseed').addEventListener('click',()=>{const s=Math.floor(Math.random()*1e9);reset();seed=s;refresh();kick();});
+$('truth').addEventListener('click',()=>{S.truth=!S.truth;$('truth').setAttribute('aria-pressed',S.truth);draw();});
+document.querySelectorAll('button[data-sp]').forEach(b=>b.addEventListener('click',()=>{S.speed=+b.dataset.sp;document.querySelectorAll('button[data-sp]').forEach(x=>x.setAttribute('aria-pressed',x===b));}));
+$('noise').addEventListener('input',e=>{S.noise=+e.target.value;readouts();draw();});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)kick();});
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{fit();draw();},80);});
+reset();if(reduced){S.playing=false;$('play').setAttribute('aria-pressed','false');$('play').textContent='Play';for(let i=0;i<10;i++)offlineTrial();}
+fit();refresh();kick();
+})();
+</script>
+</body>
+</html>

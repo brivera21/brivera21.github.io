@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The ERP pipeline · PSYCH 390</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f3ee; --panel:#ffffff; --ink:#1d1f24; --muted:#5c6270; --rule:#e2ddd4;
+  --accent:#0f6e74; --accent-2:#d9573b; --accent-3:#6b5ca5; --gold:#c8962a;
+  --ok:#2f8f4e; --warn:#c2410c; --code-bg:#f0ece4;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --maxw:1040px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:var(--maxw);margin:0 auto;padding:14px 20px 0}
+.topbar .series{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.topbar .series:hover{color:var(--accent)}
+.topbar .step{font-family:var(--mono);font-size:13px;color:var(--muted)}
+header.hero{max-width:var(--maxw);margin:0 auto;padding:18px 20px 10px}
+header.hero h1{font-size:clamp(28px,4.4vw,42px);line-height:1.12;margin:0 0 8px;font-weight:600;letter-spacing:-.01em}
+header.hero p.q{margin:0;font-size:clamp(17px,2.2vw,20px);color:var(--muted);font-style:italic}
+header.hero p.lede{max-width:720px;margin:14px 0 0;color:var(--ink)}
+main{max-width:var(--maxw);margin:0 auto;padding:8px 20px 40px}
+.stage{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:16px;box-shadow:0 1px 0 rgba(0,0,0,.02),0 8px 24px -18px rgba(0,0,0,.25)}
+.stage svg{display:block;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13.5px;color:var(--muted);margin-top:10px}
+.legend span::before{content:"";display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px;background:var(--sw)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-top:26px}
+.card{position:relative;display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:14px 16px 16px;text-decoration:none;color:var(--ink);transition:transform .12s,border-color .12s,box-shadow .12s;border-top:4px solid var(--c)}
+.card:hover{transform:translateY(-2px);border-color:var(--c);box-shadow:0 10px 24px -18px rgba(0,0,0,.35)}
+.card .n{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.06em}
+.card h2{margin:0;font-size:17px;font-weight:600;line-height:1.25}
+.card p{margin:0;font-size:14px;color:var(--muted);line-height:1.45}
+.card .tag{margin-top:auto;padding-top:6px;font-size:12px;color:var(--c);font-weight:500}
+section.prose{max-width:720px;margin:30px auto 0}
+section.prose h2{font-size:22px;margin:28px 0 8px;font-weight:600}
+section.prose p{margin:0 0 14px}
+code{font-family:var(--mono);font-size:.92em;background:var(--code-bg);padding:1px 5px;border-radius:5px}
+.refs{font-size:14.5px;color:var(--muted)}
+.refs p{padding-left:1.6em;text-indent:-1.6em;overflow-wrap:anywhere}
+footer{max-width:var(--maxw);margin:0 auto;padding:20px 20px 40px;font-size:13px;color:var(--muted);border-top:1px solid var(--rule)}
+@media (max-width:600px){body{font-size:16px}.stage{padding:12px}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="series" href="index.html">← Digital Concepts</a>
+  <span class="step">12 interactive pages</span>
+</div>
+<header class="hero">
+  <h1>The ERP pipeline</h1>
+  <p class="q">From electricity in a wire to a publication figure, one interactive step at a time.</p>
+  <p class="lede">These pages follow the lab sequence of PSYCH 390 (Electrophysiology of Complex Cognition, St. Olaf College). Each one opens on a single interactive built around the question behind that step, followed by a short explanation and the EEGLAB or ERPLAB command used in lab. Try the controls first, then read.</p>
+</header>
+
+<main>
+  <div class="stage" aria-label="Map of the twelve steps, grouped into foundations, preprocessing, and results">
+    <svg viewBox="0 0 1000 250" role="img" aria-labelledby="mapTitle">
+      <title id="mapTitle">The twelve steps as a flow: foundations, then preprocessing, then measurement and plotting</title>
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#5c6270"/></marker>
+      </defs>
+      <!-- group bands -->
+      <rect x="10" y="30" width="400" height="200" rx="14" fill="#0f6e74" opacity=".07"/>
+      <rect x="425" y="30" width="400" height="200" rx="14" fill="#6b5ca5" opacity=".08"/>
+      <rect x="840" y="30" width="150" height="200" rx="14" fill="#d9573b" opacity=".08"/>
+      <text x="30" y="56" font-family="IBM Plex Sans,system-ui,sans-serif" font-size="13" font-weight="600" fill="#0f6e74" letter-spacing=".08em">FOUNDATIONS</text>
+      <text x="445" y="56" font-family="IBM Plex Sans,system-ui,sans-serif" font-size="13" font-weight="600" fill="#6b5ca5" letter-spacing=".08em">PREPROCESSING, IN LAB ORDER</text>
+      <text x="860" y="56" font-family="IBM Plex Sans,system-ui,sans-serif" font-size="13" font-weight="600" fill="#d9573b" letter-spacing=".08em">RESULTS</text>
+      <g font-family="IBM Plex Sans,system-ui,sans-serif" font-size="13.5" fill="#1d1f24">
+        <!-- foundations: 1-5 -->
+        <a href="erp-01-electricity.html"><rect x="30" y="80" width="110" height="40" rx="8" fill="#fff" stroke="#0f6e74"/><text x="85" y="105" text-anchor="middle">1 Electricity</text></a>
+        <a href="erp-02-eeg-signal.html"><rect x="160" y="80" width="110" height="40" rx="8" fill="#fff" stroke="#0f6e74"/><text x="215" y="105" text-anchor="middle">2 EEG signal</text></a>
+        <a href="erp-03-what-is-an-erp.html"><rect x="290" y="80" width="100" height="40" rx="8" fill="#fff" stroke="#0f6e74"/><text x="340" y="105" text-anchor="middle">3 The ERP</text></a>
+        <a href="erp-04-eeglab-gui.html"><rect x="30" y="160" width="160" height="40" rx="8" fill="#fff" stroke="#0f6e74"/><text x="110" y="185" text-anchor="middle">4 EEGLAB and the GUI</text></a>
+        <a href="erp-05-matlab-intro.html"><rect x="210" y="160" width="180" height="40" rx="8" fill="#fff" stroke="#0f6e74"/><text x="300" y="185" text-anchor="middle">5 MATLAB basics</text></a>
+        <!-- preprocessing 6-10 -->
+        <a href="erp-06-filtering.html"><rect x="445" y="80" width="110" height="40" rx="8" fill="#fff" stroke="#6b5ca5"/><text x="500" y="105" text-anchor="middle">6 Filtering</text></a>
+        <a href="erp-07-rereferencing.html"><rect x="570" y="80" width="120" height="40" rx="8" fill="#fff" stroke="#6b5ca5"/><text x="630" y="105" text-anchor="middle">7 Re-reference</text></a>
+        <a href="erp-08-bins.html"><rect x="705" y="80" width="100" height="40" rx="8" fill="#fff" stroke="#6b5ca5"/><text x="755" y="105" text-anchor="middle">8 Bins</text></a>
+        <a href="erp-09-interpolation.html"><rect x="445" y="160" width="160" height="40" rx="8" fill="#fff" stroke="#6b5ca5"/><text x="525" y="185" text-anchor="middle">9 Interpolation</text></a>
+        <a href="erp-10-artifacts.html"><rect x="625" y="160" width="180" height="40" rx="8" fill="#fff" stroke="#6b5ca5"/><text x="715" y="185" text-anchor="middle">10 Artifact detection</text></a>
+        <!-- results 11-12 -->
+        <a href="erp-11-scoring.html"><rect x="860" y="80" width="110" height="40" rx="8" fill="#fff" stroke="#d9573b"/><text x="915" y="105" text-anchor="middle">11 Scoring</text></a>
+        <a href="erp-12-plotting-scripting.html"><rect x="860" y="160" width="110" height="40" rx="8" fill="#fff" stroke="#d9573b"/><text x="915" y="185" text-anchor="middle">12 Plot, script</text></a>
+      </g>
+      <g stroke="#5c6270" stroke-width="1.4" fill="none" marker-end="url(#arr)">
+        <path d="M140 100H158"/><path d="M270 100H288"/><path d="M340 120V140Q340 150 330 150H120Q110 150 110 158"/>
+        <path d="M190 180H208"/><path d="M390 180H410Q420 180 420 170V110Q420 100 430 100H443"/>
+        <path d="M555 100H568"/><path d="M690 100H703"/><path d="M755 120V140Q755 150 745 150H535Q525 150 525 158"/>
+        <path d="M605 180H623"/><path d="M805 180H825Q835 180 835 170V110Q835 100 845 100H858"/>
+        <path d="M915 120V158"/>
+      </g>
+    </svg>
+    <div class="legend">
+      <span style="--sw:#0f6e74">what a signal is and how the tools work</span>
+      <span style="--sw:#6b5ca5">cleaning and cutting the recording, in the order the labs run</span>
+      <span style="--sw:#d9573b">turning epochs into numbers and figures</span>
+    </div>
+  </div>
+
+  <div class="grid">
+    <a class="card" style="--c:#0f6e74" href="erp-01-electricity.html"><span class="n">STEP 1</span><h2>Introduction to electricity</h2><p>Voltage, current and resistance in a wire, then the same ideas inside a head where the charge carriers are ions.</p><span class="tag">Ohm's law, impedance</span></a>
+    <a class="card" style="--c:#0f6e74" href="erp-02-eeg-signal.html"><span class="n">STEP 2</span><h2>The EEG signal</h2><p>A patch of pyramidal cells becomes a dipole; synchrony, alignment and the skull decide what the scalp electrode sees.</p><span class="tag">Dipoles, volume conduction</span></a>
+    <a class="card" style="--c:#0f6e74" href="erp-03-what-is-an-erp.html"><span class="n">STEP 3</span><h2>What is an ERP?</h2><p>An oddball task runs live; watch averaging pull a few microvolts out of noise ten times larger.</p><span class="tag">Averaging, the square-root law</span></a>
+    <a class="card" style="--c:#0f6e74" href="erp-04-eeglab-gui.html"><span class="n">STEP 4</span><h2>EEGLAB and data loading</h2><p>A working sketch of the EEGLAB window: every menu click writes the command it stands for.</p><span class="tag">GUI, EEG structure, EEG.history</span></a>
+    <a class="card" style="--c:#0f6e74" href="erp-05-matlab-intro.html"><span class="n">STEP 5</span><h2>MATLAB introduction</h2><p>A small MATLAB sandbox with an editor, command window, workspace and figure. Run the Lab 1 sine wave.</p><span class="tag">Variables, arrays, functions, comments</span></a>
+    <a class="card" style="--c:#6b5ca5" href="erp-06-filtering.html"><span class="n">STEP 6</span><h2>Filtering</h2><p>Mix drift, hum and muscle into a recording, set the cutoffs, and see what the filter removes and what it distorts.</p><span class="tag">pop_eegfiltnew</span></a>
+    <a class="card" style="--c:#6b5ca5" href="erp-07-rereferencing.html"><span class="n">STEP 7</span><h2>Re-referencing</h2><p>Move a dipole under a 10/20 montage and switch the reference; every waveform changes shape, some change sign.</p><span class="tag">pop_reref</span></a>
+    <a class="card" style="--c:#6b5ca5" href="erp-08-bins.html"><span class="n">STEP 8</span><h2>Bin assignment and epoching</h2><p>Edit a bin descriptor file and watch BINLISTER sort the event codes, cut the epochs and count the trials.</p><span class="tag">pop_binlister, pop_epochbin</span></a>
+    <a class="card" style="--c:#6b5ca5" href="erp-09-interpolation.html"><span class="n">STEP 9</span><h2>Channel interpolation</h2><p>Break an electrode, then rebuild it from its neighbours and see how much of the truth comes back.</p><span class="tag">pop_interp</span></a>
+    <a class="card" style="--c:#6b5ca5" href="erp-10-artifacts.html"><span class="n">STEP 10</span><h2>Artifact detection</h2><p>Forty-eight trials, some with blinks. Set a threshold and count hits, misses and false alarms.</p><span class="tag">pop_artextval, pop_artmwppth</span></a>
+    <a class="card" style="--c:#d9573b" href="erp-11-scoring.html"><span class="n">STEP 11</span><h2>ERP scoring and measurement</h2><p>Mean amplitude, peaks and latencies on the N400, with a panel that shows which measures noise fools.</p><span class="tag">pop_geterpvalues</span></a>
+    <a class="card" style="--c:#d9573b" href="erp-12-plotting-scripting.html"><span class="n">STEP 12</span><h2>Plotting and scripting</h2><p>The ten labs as one script that loops over subjects, and a figure builder graded against the plotting rules.</p><span class="tag">pop_ploterps, the full pipeline</span></a>
+  </div>
+
+  <section class="prose">
+    <h2>How to use these pages</h2>
+    <p>Each page stands on its own, so you can open the one that matches the lab you are in. If you are new to EEG, read in order. The first five pages build the vocabulary (what a voltage is, where the brain's voltage comes from, why averaging works, and how EEGLAB and MATLAB fit together), and the rest follow the order of the processing pipeline you will run on the ERP CORE N400 data. Every interactive uses simulated signals with realistic sizes and timing, so nothing here is a recording from a real participant, and every page says where its simplifications are.</p>
+    <p>The commands quoted on the pages are the ones from the lab guides: <code>pop_loadset</code>, <code>pop_eegfiltnew</code>, <code>pop_reref</code>, <code>pop_binlister</code>, <code>pop_epochbin</code>, <code>pop_interp</code>, <code>pop_artextval</code>, <code>pop_artmwppth</code>, <code>pop_averager</code>, <code>pop_geterpvalues</code> and <code>pop_ploterps</code>. If you find something that looks wrong, or a control that does not behave as the text says, send a note to rivera21@stolaf.edu.</p>
+    <h2>Sources</h2>
+    <div class="refs">
+      <p>Luck, S. J. (2014). <i>An introduction to the event-related potential technique</i> (2nd ed.). MIT Press.</p>
+      <p>Kappenman, E. S., Farrens, J. L., Zhang, W., Stewart, A. X., &amp; Luck, S. J. (2021). ERP CORE: An open resource for human event-related potential research. <i>NeuroImage, 225</i>, 117465. https://doi.org/10.1016/j.neuroimage.2020.117465</p>
+      <p>Delorme, A., &amp; Makeig, S. (2004). EEGLAB: An open source toolbox for analysis of single-trial EEG dynamics including independent component analysis. <i>Journal of Neuroscience Methods, 134</i>(1), 9–21. https://doi.org/10.1016/j.jneumeth.2003.10.009</p>
+      <p>Lopez-Calderon, J., &amp; Luck, S. J. (2014). ERPLAB: An open-source toolbox for the analysis of event-related potentials. <i>Frontiers in Human Neuroscience, 8</i>, 213. https://doi.org/10.3389/fnhum.2014.00213</p>
+    </div>
+  </section>
+</main>
+<footer>ERP pipeline series for PSYCH 390, St. Olaf College. Slides on which several pages draw are from S. J. Luck's ERP Boot Camp, used for nonprofit educational purposes.</footer>
+</body>
+</html>

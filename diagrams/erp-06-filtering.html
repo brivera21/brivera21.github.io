@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Filtering · ERP pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===== SHARED STYLE: copy verbatim into every page ===== */
+:root{
+  --bg:#f6f3ee; --panel:#ffffff; --ink:#1d1f24; --muted:#5c6270; --rule:#e2ddd4;
+  --accent:#0f6e74; --accent-2:#d9573b; --accent-3:#6b5ca5; --gold:#c8962a;
+  --ok:#2f8f4e; --warn:#c2410c; --code-bg:#f0ece4;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --maxw:1040px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+a:hover{text-decoration-thickness:2px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:var(--maxw);margin:0 auto;padding:14px 20px 0}
+.topbar .series{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.topbar .series:hover{color:var(--accent)}
+.topbar .step{font-family:var(--mono);font-size:13px;color:var(--muted)}
+header.hero{max-width:var(--maxw);margin:0 auto;padding:18px 20px 10px}
+header.hero h1{font-size:clamp(26px,4vw,38px);line-height:1.15;margin:0 0 6px;font-weight:600;letter-spacing:-.01em}
+header.hero p.q{margin:0;font-size:clamp(17px,2.2vw,20px);color:var(--muted);font-style:italic}
+main{max-width:var(--maxw);margin:0 auto;padding:8px 20px 40px}
+.stage{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:16px;box-shadow:0 1px 0 rgba(0,0,0,.02),0 8px 24px -18px rgba(0,0,0,.25)}
+.stage .canvas-wrap{position:relative;width:100%}
+.stage canvas,.stage svg{display:block;width:100%;height:auto}
+.controls{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:flex-end;margin-top:14px;padding-top:14px;border-top:1px solid var(--rule)}
+.control{display:flex;flex-direction:column;gap:4px;min-width:150px;flex:1 1 150px}
+.control label{font-size:13px;color:var(--muted);letter-spacing:.02em}
+.control .val{font-family:var(--mono);font-size:13px;color:var(--ink)}
+.control input[type=range]{width:100%;accent-color:var(--accent)}
+.control select,.control input[type=text],.control textarea{font:inherit;font-size:15px;padding:6px 8px;border:1px solid var(--rule);border-radius:8px;background:#fff;color:var(--ink)}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px}
+button{font:inherit;font-size:14px;font-weight:500;padding:8px 14px;border-radius:999px;border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer}
+button.secondary{background:#fff;color:var(--accent)}
+button.ghost{background:transparent;border-color:var(--rule);color:var(--ink)}
+button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+button:disabled{opacity:.5;cursor:not-allowed}
+.readout{display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:12px;font-family:var(--mono);font-size:13.5px;color:var(--muted)}
+.readout b{color:var(--ink);font-weight:500}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12.5px;font-family:var(--mono);border:1px solid var(--rule);background:var(--code-bg)}
+.pill.ok{color:var(--ok);border-color:var(--ok)}
+.pill.warn{color:var(--warn);border-color:var(--warn)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13.5px;color:var(--muted);margin-top:8px}
+.legend span::before{content:"";display:inline-block;width:18px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle;background:var(--sw)}
+section.prose{max-width:720px;margin:28px auto 0;padding:0}
+section.prose h2{font-size:22px;margin:28px 0 8px;font-weight:600}
+section.prose p{margin:0 0 14px}
+section.prose ol,section.prose ul{margin:0 0 14px 22px;padding:0}
+section.prose li{margin-bottom:6px}
+code,pre{font-family:var(--mono);font-size:.92em}
+code{background:var(--code-bg);padding:1px 5px;border-radius:5px}
+pre{background:var(--code-bg);padding:12px 14px;border-radius:10px;overflow-x:auto;line-height:1.45}
+pre code{background:none;padding:0}
+.refs{font-size:14.5px;color:var(--muted)}
+.refs p{padding-left:1.6em;text-indent:-1.6em}
+nav.pager{display:flex;justify-content:space-between;gap:12px;max-width:var(--maxw);margin:30px auto 0;padding:18px 20px;border-top:1px solid var(--rule)}
+nav.pager a{text-decoration:none;font-size:15px;display:flex;flex-direction:column;gap:2px;max-width:48%}
+nav.pager a small{color:var(--muted);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+nav.pager a.next{text-align:right;margin-left:auto}
+footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;color:var(--muted)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:600px){
+  body{font-size:16px}
+  .stage{padding:12px;border-radius:10px}
+  .control{min-width:120px}
+}
+@media (prefers-reduced-motion: reduce){ .anim-hint{display:none} }
+/* ===== END SHARED STYLE ===== */
+
+.ctlgroup{display:flex;flex-wrap:wrap;gap:14px 22px;flex:1 1 100%}
+.ctlgroup h3{flex:1 1 100%;margin:0;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.presets{flex:1 1 100%;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.presets span{font-size:13px;color:var(--muted);margin-right:4px}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="series" href="erp-pipeline.html">ERP pipeline · PSYCH 390</a>
+  <span class="step">step 6 / 12</span>
+</div>
+<header class="hero">
+  <h1>Filtering</h1>
+  <p class="q">What is a filter, and why do we need one?</p>
+</header>
+
+<main>
+  <div class="stage" id="stage">
+    <div class="canvas-wrap">
+      <canvas id="cv" aria-label="Three panels: eight seconds of EEG before and after filtering, the frequency spectrum with the filter passband, and the averaged ERP compared with the true waveform"></canvas>
+    </div>
+    <div class="legend">
+      <span style="--sw:#b9bec8">raw signal</span>
+      <span style="--sw:#0f6e74">after the filter</span>
+      <span style="--sw:#c8962a">true ERP hidden in the recording</span>
+      <span style="--sw:#d9573b">distortion added by the filter</span>
+    </div>
+    <div class="controls">
+      <div class="ctlgroup">
+        <h3>What is mixed into the recording</h3>
+        <div class="control">
+          <label for="drift">Slow drift (skin potentials) <span class="val" id="driftv"></span></label>
+          <input type="range" id="drift" min="0" max="60" value="30" step="1">
+        </div>
+        <div class="control">
+          <label for="line">60 Hz line noise <span class="val" id="linev"></span></label>
+          <input type="range" id="line" min="0" max="20" value="6" step="0.5">
+        </div>
+        <div class="control">
+          <label for="emg">Muscle noise (EMG) <span class="val" id="emgv"></span></label>
+          <input type="range" id="emg" min="0" max="20" value="5" step="0.5">
+        </div>
+        <div class="control">
+          <label for="eeg">Background EEG <span class="val" id="eegv"></span></label>
+          <input type="range" id="eeg" min="0" max="30" value="12" step="1">
+        </div>
+      </div>
+      <div class="ctlgroup">
+        <h3>The filter</h3>
+        <div class="control">
+          <label for="hp">High-pass cutoff (removes below) <span class="val" id="hpv"></span></label>
+          <input type="range" id="hp" min="0" max="8" value="3" step="1">
+        </div>
+        <div class="control">
+          <label for="lp">Low-pass cutoff (removes above) <span class="val" id="lpv"></span></label>
+          <input type="range" id="lp" min="0" max="7" value="3" step="1">
+        </div>
+        <div class="presets">
+          <span>Presets</span>
+          <button class="secondary" data-hp="0" data-lp="0">No filter</button>
+          <button class="secondary" data-hp="3" data-lp="3">Lab default 0.1–30 Hz</button>
+          <button class="secondary" data-hp="6" data-lp="3">Too strong high-pass (1 Hz)</button>
+          <button class="secondary" data-hp="3" data-lp="6">Too strong low-pass (5 Hz)</button>
+          <button class="ghost" id="reseed">New noise</button>
+        </div>
+      </div>
+    </div>
+    <div class="readout">
+      <span>passband <b id="band"></b></span>
+      <span>noise left after filter <b id="resid"></b></span>
+      <span>ERP distortion <b id="err"></b> <span class="pill" id="verdict"></span></span>
+      <span>MATLAB <b id="code"></b></span>
+    </div>
+  </div>
+
+  <section class="prose">
+    <h2>What you are looking at</h2>
+    <p>The top panel is eight seconds from one EEG channel. A small event-related potential is buried in it four times, once per second-long trial, and it is drawn in gold so you can see where it hides. Everything else in the grey trace is noise: a slow wander from sweat and skin potentials, a 60 Hz hum picked up from the room's wiring, high-frequency crackle from jaw and neck muscles, and the brain's own ongoing rhythms. The teal trace is the same recording after the filter.</p>
+    <p>The middle panel shows the same recording as a spectrum: how much of the signal lives at each frequency. Slow drift piles up at the far left, the line noise is the spike at 60 Hz, and muscle noise spreads across the right. The ERP itself occupies roughly 0.1 to 30 Hz. A filter is a rule for how much of each frequency to keep, and the shaded region is the band this filter lets through.</p>
+    <p>The bottom panel sets the noise aside and shows only what the filter does to the ERP itself. The gold curve is the true waveform, teal is that same waveform after passing through the filter, and whatever coral shows between them is damage the filter did.</p>
+
+    <h2>Try this</h2>
+    <ol>
+      <li>Set both cutoffs to "off" (slide them fully left). The filter does no damage, but the teal recording on top is swamped by drift and hum, and the "noise left" readout shows how much would have to be averaged away.</li>
+      <li>Apply the lab default, 0.1 Hz high-pass and 30 Hz low-pass. Drift and hum vanish from the top panel, and the bottom panel shows the ERP passing through almost untouched.</li>
+      <li>Push the high-pass up to 1 or 2 Hz. The slow positive wave late in the trial shrinks, and a negative bump appears before it that was never in the data. Tanner, Morgan-Short, and Luck (2015) showed this same artifact turning a P600 into a spurious N400 in published language studies.</li>
+      <li>Push the low-pass down to 5 Hz. The sharp early peaks smear and shrink, and their timing shifts. Sharper filtering in frequency always costs precision in time.</li>
+      <li>Raise the muscle and line sliders until the raw trace is unreadable, then watch how much the 30 Hz low-pass recovers.</li>
+    </ol>
+
+    <h2>Why filters are needed, and why they are dangerous</h2>
+    <p>Averaging removes noise that is random from trial to trial, but it needs many trials to beat drift that lasts seconds and hum that is present on every trial. Filters remove those by frequency instead, which is why a 0.1 Hz high-pass and a 30 Hz low-pass are the first cleaning step in the pipeline. In EEGLAB the two calls are <code>EEG = pop_eegfiltnew(EEG, 0.1, []);</code> and <code>EEG = pop_eegfiltnew(EEG, [], 30);</code>, and <code>spectopo</code> draws the before-and-after spectrum you see in the middle panel.</p>
+    <p>A filter works by replacing each time point with a weighted average of its neighbours, so it necessarily spreads every feature out in time. A high-pass filter goes further: it subtracts the slow version of the waveform, which pushes an inverted copy of each component forward and backward in time. That is the source of the artificial negative bump. Luck (2014) draws the practical rules from this: keep the high-pass at or below 0.1 Hz, apply the low-pass late (after averaging) and only as strongly as plotting or peak measurement needs, and record clean data in the first place, because no filter substitutes for that.</p>
+
+    <h2 id="refs">References</h2>
+    <div class="refs">
+      <p>Luck, S. J. (2014). <i>An introduction to the event-related potential technique</i> (2nd ed.). MIT Press.</p>
+      <p>Tanner, D., Morgan-Short, K., &amp; Luck, S. J. (2015). How inappropriate high-pass filters can produce artifactual effects and incorrect conclusions in ERP studies of language and cognition. <i>Psychophysiology, 52</i>(8), 997–1009. https://doi.org/10.1111/psyp.12437</p>
+      <p>Delorme, A., &amp; Makeig, S. (2004). EEGLAB: An open source toolbox for analysis of single-trial EEG dynamics including independent component analysis. <i>Journal of Neuroscience Methods, 134</i>(1), 9–21. https://doi.org/10.1016/j.jneumeth.2003.10.009</p>
+    </div>
+  </section>
+</main>
+
+<nav class="pager">
+  <a class="prev" href="erp-05-matlab-intro.html"><small>Previous</small><span>MATLAB introduction</span></a>
+  <a class="next" href="erp-07-rereferencing.html"><small>Next</small><span>Re-referencing</span></a>
+</nav>
+<footer>Part of the ERP pipeline series for PSYCH 390, St. Olaf College. Built as a standalone page; nothing is sent anywhere.</footer>
+
+<script>
+(function(){
+const FS=256, N=2048, T=N/FS;             // 8 s at 256 Hz
+const HP=[0,0.01,0.05,0.1,0.3,0.5,1,2,4];  // Hz; 0 = off
+const LP=[0,100,40,30,20,10,5,2];          // Hz; 0 = off
+const EVENTS=[1,3,5,7];                    // stimulus onsets (s)
+const EPOCH=[-0.2,0.8];
+
+// ---------- the true ERP (µV), t in seconds from stimulus ----------
+function gauss(t,mu,sd){return Math.exp(-0.5*((t-mu)/sd)**2);}
+function erp(t){
+  if(t<0||t>1)return 0;
+  return 3*gauss(t,0.10,0.018)-4*gauss(t,0.17,0.025)+3*gauss(t,0.24,0.03)
+        -5*gauss(t,0.40,0.06)+6*gauss(t,0.65,0.11);
+}
+const trueEpoch=[];{const n=Math.round((EPOCH[1]-EPOCH[0])*FS);for(let i=0;i<n;i++)trueEpoch.push(erp(EPOCH[0]+i/FS));}
+
+// ---------- deterministic noise ----------
+let seed=7;
+function rnd(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;}
+function gaussRnd(){return Math.sqrt(-2*Math.log(rnd()+1e-12))*Math.cos(2*Math.PI*rnd());}
+let noise={};
+function makeNoise(){
+  // drift: sum of very slow sines with random phase, plus a random walk
+  const drift=new Float64Array(N), eeg=new Float64Array(N), emg=new Float64Array(N), line=new Float64Array(N);
+  const ph=[rnd(),rnd(),rnd()].map(x=>x*6.28);
+  let walk=0;
+  for(let i=0;i<N;i++){const t=i/FS;
+    walk+=gaussRnd()*0.02;
+    drift[i]=Math.sin(2*Math.PI*0.05*t+ph[0])*0.6+Math.sin(2*Math.PI*0.02*t+ph[1])*0.4+walk*0.6;
+    line[i]=Math.sin(2*Math.PI*60*t+ph[2]);
+  }
+  // background EEG: 1/f-ish (filtered white noise) plus alpha bursts
+  let a=0,b=0;for(let i=0;i<N;i++){const t=i/FS;a=0.97*a+gaussRnd();b=0.75*b+gaussRnd();
+    const alpha=Math.sin(2*Math.PI*10*t+ph[0])*(0.5+0.5*Math.sin(2*Math.PI*0.3*t+ph[1]));
+    eeg[i]=(a*0.08+b*0.25+alpha*0.5);}
+  // muscle: bursts of high-frequency noise
+  let env=0;for(let i=0;i<N;i++){if(rnd()<0.004)env=1;env*=0.985;emg[i]=gaussRnd()*(0.25+env);}
+  const norm=x=>{let s=0;for(const v of x)s+=v*v;s=Math.sqrt(s/N);for(let i=0;i<N;i++)x[i]/=s;};
+  [drift,eeg,emg,line].forEach(norm);
+  noise={drift,eeg,emg,line};
+}
+makeNoise();
+
+// ---------- FFT ----------
+function fft(re,im,inv){const n=re.length;for(let i=1,j=0;i<n;i++){let bit=n>>1;for(;j&bit;bit>>=1)j^=bit;j^=bit;if(i<j){[re[i],re[j]]=[re[j],re[i]];[im[i],im[j]]=[im[j],im[i]];}}
+  for(let len=2;len<=n;len<<=1){const ang=2*Math.PI/len*(inv?1:-1);const wr=Math.cos(ang),wi=Math.sin(ang);
+    for(let i=0;i<n;i+=len){let cr=1,ci=0;for(let k=0;k<len/2;k++){const ur=re[i+k],ui=im[i+k];const vr=re[i+k+len/2]*cr-im[i+k+len/2]*ci,vi=re[i+k+len/2]*ci+im[i+k+len/2]*cr;
+      re[i+k]=ur+vr;im[i+k]=ui+vi;re[i+k+len/2]=ur-vr;im[i+k+len/2]=ui-vi;const t=cr*wr-ci*wi;ci=cr*wi+ci*wr;cr=t;}}}
+  if(inv)for(let i=0;i<n;i++){re[i]/=n;im[i]/=n;}}
+function gain(f,hp,lp){let g=1;if(hp>0)g*=1/Math.sqrt(1+Math.pow(hp/Math.max(f,1e-6),4));if(lp>0)g*=1/Math.sqrt(1+Math.pow(f/lp,8));return g;}
+function applyFilter(x,hp,lp){const re=Float64Array.from(x),im=new Float64Array(N);
+  // mirror-pad edges is overkill here; the 8 s window and zero-phase response keep edge effects small
+  fft(re,im,false);const out=new Float64Array(N);
+  for(let k=0;k<N;k++){const f=(k<=N/2?k:N-k)*FS/N;const g=gain(f,hp,lp);re[k]*=g;im[k]*=g;}
+  fft(re,im,true);return re;}
+function spectrum(x){const re=Float64Array.from(x),im=new Float64Array(N);fft(re,im,false);const m=new Float64Array(N/2);for(let k=0;k<N/2;k++)m[k]=Math.hypot(re[k],im[k])*2/N;return m;}
+
+// ---------- state ----------
+const $=id=>document.getElementById(id);
+const S={drift:30,line:6,emg:5,eeg:12,hp:3,lp:3};
+let raw,filt,specRaw,specFilt,avgF,avgR;
+function build(){
+  raw=new Float64Array(N);
+  for(let i=0;i<N;i++){const t=i/FS;let v=S.drift*noise.drift[i]+S.line*noise.line[i]+S.emg*noise.emg[i]+S.eeg*noise.eeg[i];
+    for(const e of EVENTS)v+=erp(t-e);raw[i]=v;}
+  const hp=HP[S.hp],lp=LP[S.lp];
+  filt=applyFilter(raw,hp,lp);
+  specRaw=spectrum(raw);specFilt=spectrum(filt);
+  // bottom panel: the filter applied to the noise-free ERP train, so the difference is pure filter distortion
+  const clean=new Float64Array(N);for(let i=0;i<N;i++){const t=i/FS;for(const e of EVENTS)clean[i]+=erp(t-e);}
+  const cf=applyFilter(clean,hp,lp);
+  const n=trueEpoch.length;avgF=new Float64Array(n);
+  for(const e of EVENTS){const i0=Math.round((e+EPOCH[0])*FS);let bF=0;const nb=Math.round(0.2*FS);
+    for(let i=0;i<nb;i++)bF+=cf[i0+i];bF/=nb;   // baseline correction on -200..0 ms
+    for(let i=0;i<n;i++)avgF[i]+=(cf[i0+i]-bF)/EVENTS.length;}
+}
+
+// ---------- drawing ----------
+const cv=$('cv'),ctx=cv.getContext('2d');let W=1000,H=620;
+function fit(){const r=cv.getBoundingClientRect();const dpr=window.devicePixelRatio||1;W=r.width;H=Math.max(420,Math.min(680,W*0.66));
+  cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);cv.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);}
+const C={raw:'#b9bec8',filt:'#0f6e74',truth:'#c8962a',bad:'#d9573b',ink:'#1d1f24',muted:'#5c6270',rule:'#e2ddd4',band:'rgba(15,110,116,.10)'};
+function txt(s,x,y,o={}){ctx.font=(o.w||400)+' '+(o.s||12)+'px "IBM Plex Sans",system-ui,sans-serif';ctx.fillStyle=o.c||C.muted;ctx.textAlign=o.a||'left';ctx.textBaseline=o.b||'alphabetic';ctx.fillText(s,x,y);}
+function line(pts,c,w,dash){ctx.beginPath();ctx.strokeStyle=c;ctx.lineWidth=w||1.2;ctx.setLineDash(dash||[]);pts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.stroke();ctx.setLineDash([]);}
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  const narrow=W<560,L=narrow?36:54,R=W-14;
+  const gap=narrow?44:46,bot=26,ph1=Math.round((H-3*gap-bot)*0.36),ph2=Math.round((H-3*gap-bot)*0.30),ph3=(H-3*gap-bot)-ph1-ph2;
+  const top1=gap,top2=top1+ph1+gap,top3=top2+ph2+gap;
+  // ---- panel 1: time domain
+  txt('Continuous EEG, one channel',L,top1-12,{c:C.ink,w:600,s:13});
+  const sc1=Math.max(40,Math.ceil(Math.max(...raw.map(Math.abs))/20)*20);
+  const y1=v=>top1+ph1/2-(v/sc1)*(ph1/2),x1=i=>L+(i/N)*(R-L);
+  ctx.strokeStyle=C.rule;ctx.lineWidth=1;ctx.strokeRect(L,top1,R-L,ph1);
+  line([[L,y1(0)],[R,y1(0)]],C.rule,1,[3,3]);
+  for(let s=0;s<=T;s++){const x=x1(s*FS);line([[x,top1+ph1],[x,top1+ph1+4]],C.muted,1);if(s<T)txt(s+' s',x+3,top1+ph1+14,{s:11});}
+  txt('+'+sc1+' µV',L-4,top1+10,{a:'right',s:10.5});txt('−'+sc1,L-4,top1+ph1-2,{a:'right',s:10.5});
+  for(const e of EVENTS){const x=x1(e*FS);line([[x,top1],[x,top1+ph1]],C.truth,1,[2,4]);
+    const pts=[];for(let i=0;i<=FS;i++)pts.push([x1(e*FS+i),y1(erp(i/FS)*1)]);line(pts,C.truth,1.4);}
+  {const pts=[];for(let i=0;i<N;i+=1)pts.push([x1(i),y1(raw[i])]);line(pts,C.raw,1);}
+  {const pts=[];for(let i=0;i<N;i+=1)pts.push([x1(i),y1(filt[i])]);line(pts,C.filt,1.3);}
+  // ---- panel 2: spectrum (log x)
+  txt('Spectrum: how much signal at each frequency',L,top2-12,{c:C.ink,w:600,s:13});
+  const fmin=0.02,fmax=FS/2,lx=f=>L+(Math.log10(f)-Math.log10(fmin))/(Math.log10(fmax)-Math.log10(fmin))*(R-L);
+  const amax=Math.max(1e-6,...specRaw.slice(1));const ly=a=>top2+ph2-(Math.log10(Math.max(a,amax*1e-3))-Math.log10(amax*1e-3))/(3)*ph2;
+  ctx.strokeStyle=C.rule;ctx.strokeRect(L,top2,R-L,ph2);
+  // passband shading
+  const hpf=HP[S.hp],lpf=LP[S.lp];
+  ctx.fillStyle=C.band;ctx.fillRect(lx(hpf||fmin),top2,lx(lpf||fmax)-lx(hpf||fmin),ph2);
+  // gain curve
+  {const pts=[];for(let i=0;i<=200;i++){const f=fmin*Math.pow(fmax/fmin,i/200);pts.push([lx(f),top2+ph2-gain(f,hpf,lpf)*ph2*0.92]);}line(pts,C.filt,1,[4,3]);}
+  [0.1,1,10,60,100].forEach(f=>{const x=lx(f);line([[x,top2+ph2],[x,top2+ph2+4]],C.muted);txt(f+' Hz',x,top2+ph2+14,{a:'center',s:11});});
+  [['drift',0.04],['ERP band 0.1–30',1.8],['EMG',95]].forEach(([s,f])=>txt(s,lx(f),top2+12,{a:'center',s:10.5}));
+  {const pts=[];for(let k=1;k<N/2;k++){const f=k*FS/N;if(f<fmin)continue;pts.push([lx(f),ly(specRaw[k])]);}line(pts,C.raw,1);}
+  {const pts=[];for(let k=1;k<N/2;k++){const f=k*FS/N;if(f<fmin)continue;pts.push([lx(f),ly(specFilt[k])]);}line(pts,C.filt,1.3);}
+  txt('amplitude, log scale',L+6,top2+ph2-6,{s:10.5});
+  // ---- panel 3: average vs truth
+  txt('What the filter does to the ERP itself (noise set aside)',L,top3-12,{c:C.ink,w:600,s:13});
+  const n=trueEpoch.length;const sc3=Math.max(8,Math.ceil(Math.max(...avgF.map(Math.abs),...trueEpoch.map(Math.abs))/2)*2);
+  const y3=v=>top3+ph3/2-(v/sc3)*(ph3/2),x3=i=>L+(i/(n-1))*(R-L);
+  ctx.strokeStyle=C.rule;ctx.strokeRect(L,top3,R-L,ph3);line([[L,y3(0)],[R,y3(0)]],C.rule,1,[3,3]);
+  const x0=x3(Math.round(0.2*FS));line([[x0,top3],[x0,top3+ph3]],C.muted,1,[2,3]);txt('stimulus',x0+3,top3+12,{s:10.5});
+  [-200,0,200,400,600,800].forEach(ms=>{const x=x3(Math.round((ms/1000-EPOCH[0])*FS));line([[x,top3+ph3],[x,top3+ph3+4]],C.muted);txt(ms+' ms',x,top3+ph3+14,{a:ms===800?'right':ms===-200?'left':'center',s:11});});
+  txt('+'+sc3+' µV',L-4,top3+10,{a:'right',s:10.5});txt('−'+sc3,L-4,top3+ph3-2,{a:'right',s:10.5});
+  // distortion fill
+  ctx.beginPath();for(let i=0;i<n;i++)ctx.lineTo(x3(i),y3(avgF[i]));for(let i=n-1;i>=0;i--)ctx.lineTo(x3(i),y3(trueEpoch[i]));ctx.closePath();ctx.fillStyle='rgba(217,87,59,.28)';ctx.fill();
+  {const pts=[];for(let i=0;i<n;i++)pts.push([x3(i),y3(trueEpoch[i])]);line(pts,C.truth,2);}
+  {const pts=[];for(let i=0;i<n;i++)pts.push([x3(i),y3(avgF[i])]);line(pts,C.filt,1.6);}
+  txt('negative is plotted down',R-4,top3+ph3-4,{a:'right',s:10.5});
+}
+
+// ---------- readouts ----------
+function update(){
+  build();draw();
+  const hp=HP[S.hp],lp=LP[S.lp];
+  $('driftv').textContent=S.drift+' µV';$('linev').textContent=S.line+' µV';$('emgv').textContent=S.emg+' µV';$('eegv').textContent=S.eeg+' µV';
+  $('hpv').textContent=hp?hp+' Hz':'off';$('lpv').textContent=lp?lp+' Hz':'off';
+  $('band').textContent=(hp?hp:'0')+' – '+(lp?lp:'128')+' Hz';
+  // residual noise: RMS of filtered signal minus the embedded ERPs
+  let s=0;for(let i=0;i<N;i++){const t=i/FS;let e=0;for(const ev of EVENTS)e+=erp(t-ev);s+=(filt[i]-e)**2;}
+  $('resid').textContent=Math.sqrt(s/N).toFixed(1)+' µV rms';
+  let d=0,p=0;for(let i=0;i<trueEpoch.length;i++){d+=(avgF[i]-trueEpoch[i])**2;p+=trueEpoch[i]**2;}
+  const err=Math.sqrt(d/trueEpoch.length);const rel=Math.sqrt(d/p)*100;
+  $('err').textContent=err.toFixed(2)+' µV rms';
+  const v=$('verdict');v.className='pill '+(rel<15?'ok':rel<40?'':'warn');v.textContent=rel<15?'faithful':rel<40?'some distortion':'badly distorted';
+  const a=hp?`EEG = pop_eegfiltnew(EEG, ${hp}, []);`:'';const b=lp?`EEG = pop_eegfiltnew(EEG, [], ${lp});`:'';
+  $('code').textContent=(a+' '+b).trim()||'(no filter applied)';
+}
+['drift','line','emg','eeg','hp','lp'].forEach(id=>{$(id).addEventListener('input',e=>{S[id]=+e.target.value;update();});});
+document.querySelectorAll('.presets button[data-hp]').forEach(b=>b.addEventListener('click',()=>{S.hp=+b.dataset.hp;S.lp=+b.dataset.lp;$('hp').value=S.hp;$('lp').value=S.lp;update();}));
+$('reseed').addEventListener('click',()=>{makeNoise();update();});
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{fit();draw();},80);});
+fit();update();
+})();
+</script>
+</body>
+</html>

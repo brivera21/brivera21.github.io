@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EEGLAB and data loading · ERP pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===== SHARED STYLE: copy verbatim into every page ===== */
+:root{
+  --bg:#f6f3ee; --panel:#ffffff; --ink:#1d1f24; --muted:#5c6270; --rule:#e2ddd4;
+  --accent:#0f6e74; --accent-2:#d9573b; --accent-3:#6b5ca5; --gold:#c8962a;
+  --ok:#2f8f4e; --warn:#c2410c; --code-bg:#f0ece4;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --maxw:1040px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+a:hover{text-decoration-thickness:2px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:var(--maxw);margin:0 auto;padding:14px 20px 0}
+.topbar .series{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.topbar .series:hover{color:var(--accent)}
+.topbar .step{font-family:var(--mono);font-size:13px;color:var(--muted)}
+header.hero{max-width:var(--maxw);margin:0 auto;padding:18px 20px 10px}
+header.hero h1{font-size:clamp(26px,4vw,38px);line-height:1.15;margin:0 0 6px;font-weight:600;letter-spacing:-.01em}
+header.hero p.q{margin:0;font-size:clamp(17px,2.2vw,20px);color:var(--muted);font-style:italic}
+main{max-width:var(--maxw);margin:0 auto;padding:8px 20px 40px}
+.stage{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:16px;box-shadow:0 1px 0 rgba(0,0,0,.02),0 8px 24px -18px rgba(0,0,0,.25)}
+.stage .canvas-wrap{position:relative;width:100%}
+.stage canvas,.stage svg{display:block;width:100%;height:auto}
+.controls{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:flex-end;margin-top:14px;padding-top:14px;border-top:1px solid var(--rule)}
+.control{display:flex;flex-direction:column;gap:4px;min-width:150px;flex:1 1 150px}
+.control label{font-size:13px;color:var(--muted);letter-spacing:.02em}
+.control .val{font-family:var(--mono);font-size:13px;color:var(--ink)}
+.control input[type=range]{width:100%;accent-color:var(--accent)}
+.control select,.control input[type=text],.control textarea{font:inherit;font-size:15px;padding:6px 8px;border:1px solid var(--rule);border-radius:8px;background:#fff;color:var(--ink)}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px}
+button{font:inherit;font-size:14px;font-weight:500;padding:8px 14px;border-radius:999px;border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer}
+button.secondary{background:#fff;color:var(--accent)}
+button.ghost{background:transparent;border-color:var(--rule);color:var(--ink)}
+button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+button:disabled{opacity:.5;cursor:not-allowed}
+.readout{display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:12px;font-family:var(--mono);font-size:13.5px;color:var(--muted)}
+.readout b{color:var(--ink);font-weight:500}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12.5px;font-family:var(--mono);border:1px solid var(--rule);background:var(--code-bg)}
+.pill.ok{color:var(--ok);border-color:var(--ok)}
+.pill.warn{color:var(--warn);border-color:var(--warn)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13.5px;color:var(--muted);margin-top:8px}
+.legend span::before{content:"";display:inline-block;width:18px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle;background:var(--sw)}
+section.prose{max-width:720px;margin:28px auto 0;padding:0}
+section.prose h2{font-size:22px;margin:28px 0 8px;font-weight:600}
+section.prose p{margin:0 0 14px}
+section.prose ol,section.prose ul{margin:0 0 14px 22px;padding:0}
+section.prose li{margin-bottom:6px}
+code,pre{font-family:var(--mono);font-size:.92em}
+code{background:var(--code-bg);padding:1px 5px;border-radius:5px}
+pre{background:var(--code-bg);padding:12px 14px;border-radius:10px;overflow-x:auto;line-height:1.45}
+pre code{background:none;padding:0}
+.refs{font-size:14.5px;color:var(--muted)}
+.refs p{padding-left:1.6em;text-indent:-1.6em}
+nav.pager{display:flex;justify-content:space-between;gap:12px;max-width:var(--maxw);margin:30px auto 0;padding:18px 20px;border-top:1px solid var(--rule)}
+nav.pager a{text-decoration:none;font-size:15px;display:flex;flex-direction:column;gap:2px;max-width:48%}
+nav.pager a small{color:var(--muted);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+nav.pager a.next{text-align:right;margin-left:auto}
+footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;color:var(--muted)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:600px){
+  body{font-size:16px}
+  .stage{padding:12px;border-radius:10px}
+  .control{min-width:120px}
+}
+@media (prefers-reduced-motion: reduce){ .anim-hint{display:none} }
+/* ===== END SHARED STYLE ===== */
+
+/* page-specific */
+.refs p{overflow-wrap:anywhere}
+.menubar[hidden],.cli[hidden]{display:none}
+.win .title .dots{flex:0 0 auto;white-space:nowrap}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.tabs .hint{font-size:13px;color:var(--muted);margin-left:auto}
+.win{position:relative;border:1px solid #b9bec8;border-radius:8px;background:#ececec;overflow:hidden;font-size:14px}
+.win .title{display:flex;align-items:center;gap:8px;padding:6px 10px;background:#dcdcdc;border-bottom:1px solid #b9bec8;font-family:var(--mono);font-size:12.5px;color:#333}
+.win .title .dots span{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;background:#b9bec8}
+.menubar{display:flex;flex-wrap:wrap;background:#f7f7f7;border-bottom:1px solid #cfcfcf;padding:0 4px;position:relative}
+.menubar>div{position:relative}
+.menubar button.m{background:transparent;border:0;border-radius:0;color:#222;padding:6px 11px;font-size:14px;font-weight:400}
+.menubar button.m[aria-expanded="true"]{background:#0f6e74;color:#fff}
+.menubar button.m:hover{background:#e0e0e0}
+.menubar button.m[aria-expanded="true"]:hover{background:#0f6e74}
+.dd{position:absolute;top:100%;left:0;z-index:20;min-width:240px;background:#fff;border:1px solid #b9bec8;box-shadow:0 8px 20px -8px rgba(0,0,0,.35);padding:4px 0;margin:0;list-style:none;display:none}
+.dd.open{display:block}
+.dd li{margin:0}
+.dd .hd{padding:5px 12px 3px;font-size:12px;color:var(--muted);border-top:1px solid var(--rule);margin-top:3px}
+.dd button{display:block;width:100%;text-align:left;background:transparent;border:0;border-radius:0;color:#222;padding:5px 12px;font-size:13.5px;font-weight:400;white-space:nowrap}
+.dd button.sub{padding-left:26px}
+.dd button:hover,.dd button:focus{background:#0f6e74;color:#fff;outline:none}
+.dd button:disabled{color:#9a9a9a;background:transparent}
+.body{display:grid;grid-template-columns:300px 1fr;gap:0}
+.info{background:#f2f2f2;border-right:1px solid #cfcfcf;padding:8px 10px 10px}
+.info h4{margin:0 0 6px;font-size:13px;font-weight:600;color:#222}
+.info table{border-collapse:collapse;width:100%;font-size:13px}
+.info td{padding:2px 4px 2px 0;vertical-align:top;color:#333}
+.info td:last-child{font-family:var(--mono);font-size:12.5px;text-align:right;color:#111}
+.info td.chg{color:var(--accent);font-weight:500}
+.info .empty{color:#777;font-style:italic;font-size:13px;padding:6px 0}
+.right{display:grid;grid-template-rows:auto auto;gap:0;min-width:0}
+.pane{background:#fff;border-bottom:1px solid #cfcfcf;min-width:0}
+.pane h4{margin:0;padding:5px 10px;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:#555;background:#f7f7f7;border-bottom:1px solid #e3e3e3;display:flex;justify-content:space-between;align-items:center}
+.pane h4 button{padding:2px 9px;font-size:12px}
+.pane pre{margin:0;background:#fff;border-radius:0;padding:8px 10px;font-size:12.5px;line-height:1.4;min-height:96px;max-height:180px;overflow:auto;color:#111;white-space:pre-wrap;word-break:break-word}
+.pane pre .err{color:#c2410c}
+.pane pre .ok{color:#2f8f4e}
+.pane pre .pr{color:#0f6e74}
+.cli{background:#fff;padding:8px 10px;border-bottom:1px solid #cfcfcf}
+.cli p{margin:0 0 6px;font-size:13px;color:var(--muted)}
+.cli .row{display:flex;gap:8px;align-items:center;margin:3px 0;font-family:var(--mono);font-size:12.5px}
+.cli .row button{padding:2px 10px;font-size:12px;flex:0 0 auto}
+.cli .row code{background:none;padding:0;overflow-wrap:anywhere;color:#111}
+.cli .row.done code{color:#777}
+.scroll{background:#fff;border-bottom:1px solid #cfcfcf;padding:6px 10px 8px;display:none}
+.scroll.on{display:block}
+.scroll .bar{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:#555;margin-bottom:4px}
+.scroll .bar button{padding:2px 9px;font-size:12px}
+.scroll canvas{display:block;width:100%;height:auto;border:1px solid #e3e3e3}
+.modal{position:absolute;inset:0;background:rgba(40,40,40,.28);display:none;align-items:center;justify-content:center;z-index:30;padding:10px}
+.modal.open{display:flex}
+.dlg{background:#f4f4f4;border:1px solid #888;border-radius:6px;width:min(440px,100%);box-shadow:0 14px 30px -10px rgba(0,0,0,.5)}
+.dlg .dt{background:#dcdcdc;padding:6px 12px;font-size:13px;font-weight:600;color:#222;border-bottom:1px solid #aaa}
+.dlg .df{padding:12px 14px;display:grid;grid-template-columns:1fr auto;gap:8px 12px;align-items:center;font-size:13.5px;color:#222}
+.dlg .df label{color:#222}
+.dlg .df input{font:inherit;font-family:var(--mono);font-size:13px;padding:4px 6px;border:1px solid #999;border-radius:3px;width:150px;background:#fff}
+.dlg .note{grid-column:1/-1;font-size:12.5px;color:#555;margin:0}
+.dlg .db{display:flex;justify-content:flex-end;gap:8px;padding:0 14px 12px}
+.dlg .db button{border-radius:4px;padding:5px 16px;font-size:13px}
+.script{margin-top:12px;display:none}
+.script.on{display:block}
+.script pre{font-size:13px;margin:0}
+.script .cap{font-size:13px;color:var(--muted);margin:0 0 6px}
+@media (max-width:760px){
+  .body{grid-template-columns:1fr}
+  .info{border-right:0;border-bottom:1px solid #cfcfcf}
+  .dd{min-width:210px}
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="series" href="erp-pipeline.html">ERP pipeline · PSYCH 390</a>
+  <span class="step">step 4 / 12</span>
+</div>
+<header class="hero">
+  <h1>EEGLAB and data loading</h1>
+  <p class="q">What is a GUI?</p>
+</header>
+
+<main>
+  <div class="stage" id="stage">
+    <div class="tabs" role="tablist" aria-label="Two ways to do the same steps">
+      <button id="tabGui" role="tab" aria-pressed="true" aria-controls="menubar">Menus and dialogs</button>
+      <button id="tabCli" role="tab" aria-pressed="false" aria-controls="cli">Same thing, no GUI</button>
+      <span class="hint">Every menu click and every command lands in the same EEG variable.</span>
+    </div>
+
+    <div class="win" id="win" aria-label="A mock of the EEGLAB main window">
+      <div class="title"><span class="dots"><span></span><span></span><span></span></span><span id="wtitle">EEGLAB v2024 (mock): no dataset loaded</span></div>
+
+      <nav class="menubar" id="menubar" aria-label="EEGLAB menu bar">
+        <div><button class="m" data-menu="File" aria-haspopup="true" aria-expanded="false">File</button>
+          <ul class="dd" role="menu" aria-label="File menu">
+            <li><button role="menuitem" disabled>Import data</button></li>
+            <li><button role="menuitem" data-act="load">Load existing dataset</button></li>
+            <li><button role="menuitem" disabled>Save current dataset</button></li>
+            <li><button role="menuitem" disabled>Quit</button></li>
+          </ul></div>
+        <div><button class="m" data-menu="Edit" aria-haspopup="true" aria-expanded="false">Edit</button>
+          <ul class="dd" role="menu" aria-label="Edit menu">
+            <li><button role="menuitem" disabled>Dataset info</button></li>
+            <li><button role="menuitem" disabled>Channel locations</button></li>
+            <li><button role="menuitem" disabled>Select data</button></li>
+          </ul></div>
+        <div><button class="m" data-menu="Tools" aria-haspopup="true" aria-expanded="false">Tools</button>
+          <ul class="dd" role="menu" aria-label="Tools menu">
+            <li><button role="menuitem" disabled>Change sampling rate</button></li>
+            <li class="hd">Filter the data</li>
+            <li><button role="menuitem" class="sub" data-act="filt">Basic FIR filter (new, default)</button></li>
+            <li><button role="menuitem" class="sub" disabled>Windowed sinc FIR filter</button></li>
+            <li><button role="menuitem" data-act="reref">Re-reference the data</button></li>
+            <li><button role="menuitem" disabled>Run ICA</button></li>
+          </ul></div>
+        <div><button class="m" data-menu="Plot" aria-haspopup="true" aria-expanded="false">Plot</button>
+          <ul class="dd" role="menu" aria-label="Plot menu">
+            <li><button role="menuitem" disabled>Channel locations</button></li>
+            <li><button role="menuitem" data-act="scroll">Channel data (scroll)</button></li>
+            <li><button role="menuitem" disabled>Channel spectra and maps</button></li>
+          </ul></div>
+        <div><button class="m" data-menu="ERPLAB" aria-haspopup="true" aria-expanded="false">ERPLAB</button>
+          <ul class="dd" role="menu" aria-label="ERPLAB menu">
+            <li class="hd">EventList</li>
+            <li><button role="menuitem" class="sub" data-act="elist">Create EEG EventList</button></li>
+            <li><button role="menuitem" data-act="bins">Assign bins (BINLISTER)</button></li>
+            <li><button role="menuitem" data-act="epoch">Extract bin-based epochs</button></li>
+            <li><button role="menuitem" disabled>Artifact detection in epoched data</button></li>
+            <li><button role="menuitem" data-act="avg">Compute averaged ERPs</button></li>
+          </ul></div>
+        <div><button class="m" data-menu="Help" aria-haspopup="true" aria-expanded="false">Help</button>
+          <ul class="dd" role="menu" aria-label="Help menu">
+            <li><button role="menuitem" disabled>About EEGLAB</button></li>
+            <li><button role="menuitem" disabled>EEGLAB functions</button></li>
+          </ul></div>
+      </nav>
+
+      <div class="cli" id="cli" hidden>
+        <p>The same seven steps as typed commands. Click Run on each; the dataset panel below changes exactly as it did from the menu.</p>
+        <div id="clirows"></div>
+      </div>
+
+      <div class="body">
+        <div class="info">
+          <h4 id="dsname">No current dataset</h4>
+          <div id="infoEmpty" class="empty">Use File &gt; Load existing dataset, or run pop_loadset.</div>
+          <table id="infoTbl" hidden><tbody></tbody></table>
+        </div>
+        <div class="right">
+          <div class="pane"><h4>MATLAB Command Window</h4><pre id="cmdw" aria-live="polite">&gt;&gt; eeglab
+eeglab: adding "ERPLAB" v12 plugin
+</pre></div>
+          <div class="pane"><h4>EEG.history <button class="secondary" id="copyBtn">Copy history as script</button></h4><pre id="hist">(empty)</pre></div>
+        </div>
+      </div>
+
+      <div class="scroll" id="scroll">
+        <div class="bar"><span>Scroll channel activities: <span id="scrollName"></span>, 5 s window, 8 of 33 channels</span><button class="ghost" id="scrollClose">Close</button></div>
+        <canvas id="scv" aria-label="Eight channels of continuous EEG scrolling past, with blinks visible on the frontal and eye channels"></canvas>
+      </div>
+
+      <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="dlgTitle">
+        <div class="dlg">
+          <div class="dt" id="dlgTitle"></div>
+          <div class="df" id="dlgFields"></div>
+          <div class="db"><button class="ghost" id="dlgCancel">Cancel</button><button id="dlgOk">Ok</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="script" id="script">
+      <p class="cap">The history, written out as a script. Paste it into a .m file and it reproduces every click.</p>
+      <pre id="scriptPre"></pre>
+    </div>
+    <div class="readout">
+      <span>steps done <b id="rsteps">0 / 7</b></span>
+      <span>dataset <b id="rname">none</b></span>
+      <span>EEG.data <b id="rdata">[]</b></span>
+      <button class="ghost" id="resetBtn" style="padding:3px 10px;font-size:12.5px">Start over</button>
+    </div>
+  </div>
+
+  <section class="prose">
+    <h2>What you are looking at</h2>
+    <p>A GUI (graphical user interface) is a window with menus, buttons and dialog boxes. Each menu item stands for one function. Choosing it opens a dialog, the fields you fill in become the function's arguments, and pressing Ok runs it. The window above is a plausible sketch of EEGLAB's main window, not a pixel copy. The panel on the left describes the current dataset, the Command Window on the right shows the command that each click generated, and the pane under it is <code>EEG.history</code>, the record EEGLAB keeps of everything done to the data so far.</p>
+    <p>Everything in EEGLAB lives in one MATLAB variable called <code>EEG</code>, a structure with named fields. <code>EEG.data</code> is the voltage, a matrix with one row per channel and one column per sample (or channels × samples × epochs once the data are cut up). <code>EEG.srate</code> is the sampling rate, <code>EEG.nbchan</code> the channel count, <code>EEG.chanlocs</code> the electrode positions, <code>EEG.event</code> the list of event codes and their times. A dataset is saved as a pair of files: the <code>.set</code> file holds every field except the voltages, which go in the large <code>.fdt</code> file next to it. ERPLAB adds its own menu and its own variable, <code>ERP</code>, once averages have been computed.</p>
+
+    <h2>Try this</h2>
+    <ol>
+      <li>Open File and load the dataset. Read the left panel: 33 channels including HEOG and VEOG, 256 Hz, about 300 s of continuous data and roughly 400 events. Those four numbers are the first thing to check after any load.</li>
+      <li>Work through Tools and ERPLAB in order: filter, re-reference, event list, bins, epochs, average. Watch the dataset name grow a suffix each time and the history pane grow a line.</li>
+      <li>After extracting epochs, look at Frames per epoch and Epochs. The continuous 76 800 samples have become about 200 epochs of 256 samples each, from −0.2 to 0.796 s.</li>
+      <li>Open Plot and scroll the channel data. The blinks on Fp1 and VEOG are what artifact detection will hunt later.</li>
+      <li>Switch to "Same thing, no GUI", press Start over, and run the same commands. The panel fills in identically, and "Copy history as script" hands you the bridge to the next page.</li>
+    </ol>
+
+    <h2>Why it matters for the pipeline</h2>
+    <p>EEGLAB has both a GUI and a command line, and they call the same functions. The menu is a good way to learn what the options are, and it guarantees that every argument gets recorded, since each dialog writes its <code>pop_</code> call into <code>EEG.history</code>. The command is the better way to do the same thing a second time, and the pipeline for this course needs to do it for every participant. In Lab 2 the first command is <code>EEG = pop_loadset('filename','sub-001_N400.set','filepath',...)</code>, followed by typing <code>EEG</code> without a semicolon to print the fields and confirm the channel count, sampling rate, number of points and events match the recording (Delorme &amp; Makeig, 2004; Lopez-Calderon &amp; Luck, 2014). The ERP CORE data used here were recorded at 1024 Hz and are downsampled to 256 Hz before anything else (Kappenman et al., 2021).</p>
+
+    <h2 id="refs">References</h2>
+    <div class="refs">
+      <p>Delorme, A., &amp; Makeig, S. (2004). EEGLAB: An open source toolbox for analysis of single-trial EEG dynamics including independent component analysis. <i>Journal of Neuroscience Methods, 134</i>(1), 9–21. https://doi.org/10.1016/j.jneumeth.2003.10.009</p>
+      <p>Kappenman, E. S., Farrens, J. L., Zhang, W., Stewart, A. X., &amp; Luck, S. J. (2021). ERP CORE: An open resource for human event-related potential research. <i>NeuroImage, 225</i>, 117465. https://doi.org/10.1016/j.neuroimage.2020.117465</p>
+      <p>Lopez-Calderon, J., &amp; Luck, S. J. (2014). ERPLAB: An open-source toolbox for the analysis of event-related potentials. <i>Frontiers in Human Neuroscience, 8</i>, 213. https://doi.org/10.3389/fnhum.2014.00213</p>
+    </div>
+  </section>
+</main>
+
+<nav class="pager">
+  <a class="prev" href="erp-03-what-is-an-erp.html"><small>Previous</small><span>What is an ERP?</span></a>
+  <a class="next" href="erp-05-matlab-intro.html"><small>Next</small><span>MATLAB introduction</span></a>
+</nav>
+<footer>Part of the ERP pipeline series for PSYCH 390, St. Olaf College. Built as a standalone page; nothing is sent anywhere.</footer>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const PATH="/Users/student/PSYCH390/data/sub-001/";
+const FS=256, SECS=300, NEV=412, NCH=33;
+
+// ---------- dataset state ----------
+let D=null, history=[], erp=null;
+function fresh(){return {name:'sub-001_N400',file:'sub-001_N400.set',nch:NCH,pnts:SECS*FS,trials:1,events:NEV,srate:FS,xmin:0,xmax:(SECS*FS-1)/FS,ref:'unknown',locs:'Yes',elist:false,bins:false,filt:false};}
+function sizeMb(d){return (d.nch*d.pnts*d.trials*4/1048576).toFixed(1);}
+let prev={};
+function renderInfo(){
+  const tbl=$('infoTbl'),empty=$('infoEmpty');
+  if(!D){tbl.hidden=true;empty.hidden=false;$('dsname').textContent='No current dataset';$('wtitle').textContent='EEGLAB v2024 (mock): no dataset loaded';
+    $('rname').textContent='none';$('rdata').textContent='[]';prev={};return;}
+  tbl.hidden=false;empty.hidden=true;
+  $('dsname').textContent='#1: '+D.name;$('wtitle').textContent='EEGLAB v2024 (mock): '+D.name;
+  const rows=[['Filename',D.file],['Channels per frame',D.nch],['Frames per epoch',D.pnts],['Epochs',D.trials],['Events',D.events],['Sampling rate (Hz)',D.srate],['Epoch start (sec)',D.xmin.toFixed(3)],['Epoch end (sec)',D.xmax.toFixed(3)],['Reference',D.ref],['Channel locations',D.locs],['ICA weights','No'],['Dataset size (Mb)',sizeMb(D)]];
+  const tb=tbl.querySelector('tbody');tb.innerHTML='';
+  const cur={};
+  rows.forEach(([k,v])=>{cur[k]=String(v);const tr=document.createElement('tr');const a=document.createElement('td');a.textContent=k;const b=document.createElement('td');b.textContent=v;
+    if(prev[k]!==undefined&&prev[k]!==cur[k])b.className='chg';tr.append(a,b);tb.append(tr);});
+  prev=cur;
+  $('rname').textContent=D.name;$('rdata').textContent=D.trials>1?`${D.nch} × ${D.pnts} × ${D.trials}`:`${D.nch} × ${D.pnts}`;
+}
+function renderHist(){const h=$('hist');h.textContent=history.length?history.join('\n'):'(empty)';h.scrollTop=h.scrollHeight;
+  const done=new Set(history.map(l=>l.match(/pop_\w+/)?.[0]));const names=['pop_loadset','pop_eegfiltnew','pop_reref','pop_creabasiceventlist','pop_binlister','pop_epochbin','pop_averager'];
+  $('rsteps').textContent=names.filter(n=>done.has(n)).length+' / 7';
+  if($('script').classList.contains('on'))showScript();
+  document.querySelectorAll('#clirows .row').forEach(r=>r.classList.toggle('done',done.has(r.dataset.fn)));}
+function say(lines){const w=$('cmdw');lines.forEach(l=>{const s=document.createElement('span');if(typeof l==='string'){s.textContent=l+'\n';}else{s.className=l.c;s.textContent=l.t+'\n';}w.append(s);});
+  while(w.childNodes.length>60)w.removeChild(w.firstChild);w.scrollTop=w.scrollHeight;}
+function run(cmd,out){say([{t:'>> '+cmd,c:'pr'}].concat(out||[]));history.push(cmd);renderInfo();renderHist();}
+function needData(){if(!D){say([{t:'Error: no dataset loaded. Use File > Load existing dataset first.',c:'err'}]);return true;}return false;}
+
+// ---------- the seven actions ----------
+const ACT={
+  load:{title:'Load an existing dataset -- pop_loadset()',fields:[['Dataset filename','sub-001_N400.set'],['Filepath',PATH]],
+    go:(f)=>{D=fresh();D.file=f[0]||'sub-001_N400.set';D.name=D.file.replace(/\.set$/,'');
+      run(`EEG = pop_loadset('filename','${D.file}','filepath','${f[1]||PATH}');`,[`pop_loadset(): loading file ${f[1]||PATH}${D.file} ...`,'Reading float file \''+D.name+'.fdt\'...','Creating a new ALLEEG dataset 1','Done.']);}},
+  filt:{title:'Filter the data -- pop_eegfiltnew()',fields:[['Lower edge of the frequency pass band (Hz)','0.1'],['Higher edge of the frequency pass band (Hz)','30']],
+    note:'Leave a field empty to skip that edge. A high-pass and a low-pass are two separate calls.',
+    go:(f)=>{if(needData())return;const hp=parseFloat(f[0]),lp=parseFloat(f[1]);
+      if(!isNaN(hp)){run(`EEG = pop_eegfiltnew(EEG, ${hp}, []);`,[`pop_eegfiltnew() - performing ${Math.round(3.3/hp*FS)|1}-point highpass filtering.`,`pop_eegfiltnew() - cutoff frequency (-6 dB): ${hp} Hz`,'pop_eegfiltnew() - filtering the data (zero-phase)']);}
+      if(!isNaN(lp)){run(`EEG = pop_eegfiltnew(EEG, [], ${lp});`,[`pop_eegfiltnew() - performing ${Math.round(3.3/(lp*0.25)*FS)|1}-point lowpass filtering.`,`pop_eegfiltnew() - cutoff frequency (-6 dB): ${lp} Hz`]);}
+      if(!isNaN(hp)||!isNaN(lp)){D.name+='_filt';D.filt=true;renderInfo();}}},
+  reref:{title:'Re-reference the data -- pop_reref()',fields:[['Compute average reference','checked']],note:'Leave the channel list empty for the average of all channels.',
+    go:()=>{if(needData())return;D.ref='average';D.name+='_reref';run('EEG = pop_reref(EEG, []);',['pop_reref(): re-referencing to the average of 33 channels.','Done.']);}},
+  elist:{title:'Create EEG EventList -- pop_creabasiceventlist()',fields:[['Boundary event code (string)','boundary'],['Numeric code to assign it','-99']],
+    go:(f)=>{if(needData())return;D.elist=true;D.name+='_elist';run(`EEG = pop_creabasiceventlist(EEG, 'Eventlist','', 'BoundaryNumeric',{${f[1]||-99}}, 'BoundaryString',{'${f[0]||'boundary'}'});`,['Creating a basic EventList...',`${D.events} events found.`,'EEG.EVENTLIST created.']);}},
+  bins:{title:'Assign bins (BINLISTER) -- pop_binlister()',fields:[['Bin descriptor file','N400_bins.txt']],note:'bin 1 Related target .{111;112}   bin 2 Unrelated target .{121;122}',
+    go:(f)=>{if(needData())return;if(!D.elist){say([{t:'Error: BINLISTER needs an EventList. Run Create EEG EventList first.',c:'err'}]);return;}
+      D.bins=true;D.name+='_bins';run(`EEG = pop_binlister(EEG, 'BDF','${f[0]||'N400_bins.txt'}', 'IndexEL',1, 'SendEL2','EEG', 'Voutput','EEG');`,['BINLISTER: reading bin descriptor file...','bin 1: Related target      101 trials','bin 2: Unrelated target    102 trials','Total bins: 2']);}},
+  epoch:{title:'Extract bin-based epochs -- pop_epochbin()',fields:[['Time window (ms)','-200 800'],['Baseline correction','pre']],
+    go:(f)=>{if(needData())return;if(!D.bins){say([{t:'Error: no bins assigned yet. Run BINLISTER first.',c:'err'}]);return;}
+      const w=(f[0]||'-200 800').trim().split(/[\s,]+/).map(Number);const a=isNaN(w[0])?-200:w[0],b=isNaN(w[1])?800:w[1];
+      D.trials=203;D.pnts=Math.round((b-a)/1000*FS);D.xmin=a/1000;D.xmax=a/1000+(D.pnts-1)/FS;D.events=406;D.name+='_be';
+      run(`EEG = pop_epochbin(EEG, [${a} ${b}], '${f[1]||'pre'}');`,[`pop_epochbin(): ${D.trials} epochs extracted, ${D.pnts} samples each.`,`Baseline corrected using the pre-stimulus interval [${a} 0] ms.`]);}},
+  avg:{title:'Compute averaged ERPs -- pop_averager()',fields:[['Artifact criterion','good'],['Include ERPsets','current dataset']],
+    go:()=>{if(needData())return;if(D.trials<2){say([{t:'Error: the dataset is not epoched. Extract bin-based epochs first.',c:'err'}]);return;}
+      erp=true;run(`ERP = pop_averager(ALLEEG, 'Criterion','good', 'DSindex',1, 'ExcludeBoundary','on', 'SEM','on');`,['Averaging bin 1 (Related target): 101 trials, 0 rejected','Averaging bin 2 (Unrelated target): 102 trials, 0 rejected',{t:'ERP set created: 2 bins × 33 channels × 256 samples',c:'ok'}]);}},
+  scroll:{go:()=>{if(needData())return;openScroll();run('pop_eegplot(EEG, 1, 1, 1);',['eegplot(): scrolling '+D.nch+' channels.']);}}
+};
+const ORDER=['load','filt','reref','elist','bins','epoch','avg','scroll'];
+
+// ---------- menus ----------
+const mb=$('menubar');
+function closeMenus(){mb.querySelectorAll('.m').forEach(b=>b.setAttribute('aria-expanded','false'));mb.querySelectorAll('.dd').forEach(d=>d.classList.remove('open'));}
+mb.querySelectorAll('.m').forEach(b=>{b.addEventListener('click',e=>{const open=b.getAttribute('aria-expanded')==='true';closeMenus();if(!open){b.setAttribute('aria-expanded','true');b.nextElementSibling.classList.add('open');const f=b.nextElementSibling.querySelector('button:not(:disabled)');if(f&&e.detail===0)f.focus();}});});
+mb.querySelectorAll('.dd button[data-act]').forEach(b=>b.addEventListener('click',()=>{closeMenus();openDialog(b.dataset.act);}));
+document.addEventListener('click',e=>{if(!mb.contains(e.target))closeMenus();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMenus();closeDialog();}});
+
+// ---------- dialogs ----------
+let pending=null;
+function openDialog(act){const A=ACT[act];if(!A.fields){A.go([]);return;}
+  if(!D&&act!=='load'){needData();return;}
+  pending=act;$('dlgTitle').textContent=A.title;const F=$('dlgFields');F.innerHTML='';
+  A.fields.forEach(([lab,val],i)=>{const l=document.createElement('label');l.textContent=lab;l.htmlFor='dlgf'+i;
+    let inp;if(val==='checked'){inp=document.createElement('input');inp.type='checkbox';inp.checked=true;inp.style.width='auto';}else{inp=document.createElement('input');inp.type='text';inp.value=val;}
+    inp.id='dlgf'+i;F.append(l,inp);});
+  if(A.note){const p=document.createElement('p');p.className='note';p.textContent=A.note;F.append(p);}
+  $('modal').classList.add('open');setTimeout(()=>{const i=F.querySelector('input');if(i)i.focus();},0);}
+function closeDialog(){$('modal').classList.remove('open');pending=null;}
+$('dlgCancel').addEventListener('click',closeDialog);
+$('dlgOk').addEventListener('click',()=>{if(!pending)return;const vals=[...$('dlgFields').querySelectorAll('input')].map(i=>i.type==='checkbox'?i.checked:i.value);const a=pending;closeDialog();ACT[a].go(vals);});
+$('modal').addEventListener('click',e=>{if(e.target===$('modal'))closeDialog();});
+$('dlgFields').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('dlgOk').click();}});
+
+// ---------- command-line tab ----------
+const CLI=[['pop_loadset',`EEG = pop_loadset('filename','sub-001_N400.set','filepath','${PATH}');`,()=>ACT.load.go(['sub-001_N400.set',PATH])],
+  ['pop_eegfiltnew','EEG = pop_eegfiltnew(EEG, 0.1, []); EEG = pop_eegfiltnew(EEG, [], 30);',()=>ACT.filt.go(['0.1','30'])],
+  ['pop_reref','EEG = pop_reref(EEG, []);',()=>ACT.reref.go([])],
+  ['pop_creabasiceventlist',"EEG = pop_creabasiceventlist(EEG, 'Eventlist','', 'BoundaryNumeric',{-99}, 'BoundaryString',{'boundary'});",()=>ACT.elist.go(['boundary','-99'])],
+  ['pop_binlister',"EEG = pop_binlister(EEG, 'BDF','N400_bins.txt', 'IndexEL',1, 'SendEL2','EEG', 'Voutput','EEG');",()=>ACT.bins.go(['N400_bins.txt'])],
+  ['pop_epochbin',"EEG = pop_epochbin(EEG, [-200 800], 'pre');",()=>ACT.epoch.go(['-200 800','pre'])],
+  ['pop_averager',"ERP = pop_averager(ALLEEG, 'Criterion','good', 'DSindex',1, 'ExcludeBoundary','on', 'SEM','on');",()=>ACT.avg.go([])],
+  ['pop_eegplot','pop_eegplot(EEG, 1, 1, 1);',()=>ACT.scroll.go([])]];
+const rows=$('clirows');
+CLI.forEach(([fn,cmd,go],i)=>{const r=document.createElement('div');r.className='row';r.dataset.fn=fn;const b=document.createElement('button');b.className='secondary';b.textContent='Run';b.setAttribute('aria-label','Run '+fn);b.addEventListener('click',go);const c=document.createElement('code');c.textContent=cmd;r.append(b,c);rows.append(r);});
+function setTab(gui){$('tabGui').setAttribute('aria-pressed',gui);$('tabCli').setAttribute('aria-pressed',!gui);mb.hidden=!gui;$('cli').hidden=gui;closeMenus();}
+$('tabGui').addEventListener('click',()=>setTab(true));$('tabCli').addEventListener('click',()=>setTab(false));
+
+// ---------- script view, reset ----------
+function showScript(){const s=['% Generated from EEG.history, '+D?.name,"% Lab pipeline for one participant; run from the folder that holds the data",'eeglab;'].concat(history).join('\n');$('scriptPre').textContent=s;}
+$('copyBtn').addEventListener('click',()=>{if(!history.length){say([{t:'EEG.history is empty; do something first.',c:'err'}]);return;}$('script').classList.add('on');showScript();
+  if(navigator.clipboard)navigator.clipboard.writeText($('scriptPre').textContent).catch(()=>{});$('script').scrollIntoView({block:'nearest',behavior:'smooth'});});
+$('resetBtn').addEventListener('click',()=>{D=null;history=[];erp=null;closeScroll();$('script').classList.remove('on');$('cmdw').textContent='>> clear; eeglab\neeglab: adding "ERPLAB" v12 plugin\n';renderInfo();renderHist();});
+
+// ---------- scrolling EEG (deterministic noise) ----------
+const scv=$('scv'),sctx=scv.getContext('2d');let seed=11;function rnd(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;}
+function gr(){return Math.sqrt(-2*Math.log(rnd()+1e-12))*Math.cos(6.2832*rnd());}
+const CH=['Fp1','VEOG','F3','Fz','C3','Cz','Pz','O1'],SN=FS*12;const sig=CH.map(()=>new Float32Array(SN));
+(function(){let a=0,b=0;const blinks=[];for(let i=0;i<SN;i++)if(rnd()<0.0012)blinks.push(i);
+  for(let c=0;c<CH.length;c++){a=0;b=0;const ph=rnd()*6.28,alpha=c>=6?1:0.3;for(let i=0;i<SN;i++){const t=i/FS;a=0.96*a+gr();b=0.7*b+gr();let v=a*1.3+b*3+alpha*7*Math.sin(6.2832*10*t+ph)*(0.5+0.5*Math.sin(6.2832*0.25*t+c));
+    for(const bl of blinks){const d=(i-bl)/FS;if(d>0&&d<0.3)v+=(c===0?110:c===1?-160:c===2?45:c===3?40:c<6?15:5)*Math.sin(Math.PI*d/0.3);}
+    sig[c][i]=v;}}})();
+let scrollOn=false,t0=0,raf=0;const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function fitScroll(){const r=scv.getBoundingClientRect();const dpr=devicePixelRatio||1;const h=Math.max(150,Math.min(230,r.width*0.32));scv.width=Math.round(r.width*dpr);scv.height=Math.round(h*dpr);scv.style.height=h+'px';sctx.setTransform(dpr,0,0,dpr,0,0);return {w:r.width,h};}
+function drawScroll(ts){const {w,h}=fitScroll();sctx.clearRect(0,0,w,h);const L=44,R=w-8;const win=5*FS;let off=reduce?FS*2:Math.floor(((ts-t0)/1000*FS))%(SN-win);
+  const rh=(h-18)/CH.length;const sc=rh/80;
+  sctx.font='11px "IBM Plex Sans",system-ui,sans-serif';sctx.fillStyle='#5c6270';sctx.textAlign='right';
+  for(let s=0;s<=5;s++){const x=L+(s/5)*(R-L);sctx.strokeStyle='#eee';sctx.beginPath();sctx.moveTo(x,0);sctx.lineTo(x,h-16);sctx.stroke();sctx.textAlign='center';sctx.fillText(Math.floor(off/FS)+s+' s',x,h-4);}
+  for(let c=0;c<CH.length;c++){const y0=rh*(c+0.5);sctx.textAlign='right';sctx.fillStyle='#333';sctx.fillText(CH[c],L-6,y0+4);
+    sctx.beginPath();sctx.strokeStyle=c<2?'#6b5ca5':'#0f6e74';sctx.lineWidth=1;for(let i=0;i<win;i++){const x=L+(i/win)*(R-L),y=y0-sig[c][off+i]*sc;i?sctx.lineTo(x,y):sctx.moveTo(x,y);}sctx.stroke();}
+  sctx.textAlign='left';sctx.fillStyle='#5c6270';sctx.fillText('100 µV',L+4,12);sctx.strokeStyle='#5c6270';sctx.beginPath();sctx.moveTo(L+1,4);sctx.lineTo(L+1,4+100*sc);sctx.stroke();
+  if(scrollOn&&!reduce&&!document.hidden)raf=requestAnimationFrame(drawScroll);}
+function openScroll(){$('scroll').classList.add('on');$('scrollName').textContent=D?D.name:'';scrollOn=true;t0=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(drawScroll);}
+function closeScroll(){scrollOn=false;cancelAnimationFrame(raf);$('scroll').classList.remove('on');}
+$('scrollClose').addEventListener('click',closeScroll);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&scrollOn)raf=requestAnimationFrame(drawScroll);});
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{if(scrollOn&&reduce)drawScroll(t0);},80);});
+renderInfo();renderHist();
+})();
+</script>
+</body>
+</html>

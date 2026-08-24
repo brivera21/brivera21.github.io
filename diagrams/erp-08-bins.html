@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bin assignment and epoching · ERP pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===== SHARED STYLE: copy verbatim into every page ===== */
+:root{
+  --bg:#f6f3ee; --panel:#ffffff; --ink:#1d1f24; --muted:#5c6270; --rule:#e2ddd4;
+  --accent:#0f6e74; --accent-2:#d9573b; --accent-3:#6b5ca5; --gold:#c8962a;
+  --ok:#2f8f4e; --warn:#c2410c; --code-bg:#f0ece4;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --maxw:1040px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+a:hover{text-decoration-thickness:2px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:var(--maxw);margin:0 auto;padding:14px 20px 0}
+.topbar .series{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.topbar .series:hover{color:var(--accent)}
+.topbar .step{font-family:var(--mono);font-size:13px;color:var(--muted)}
+header.hero{max-width:var(--maxw);margin:0 auto;padding:18px 20px 10px}
+header.hero h1{font-size:clamp(26px,4vw,38px);line-height:1.15;margin:0 0 6px;font-weight:600;letter-spacing:-.01em}
+header.hero p.q{margin:0;font-size:clamp(17px,2.2vw,20px);color:var(--muted);font-style:italic}
+main{max-width:var(--maxw);margin:0 auto;padding:8px 20px 40px}
+.stage{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:16px;box-shadow:0 1px 0 rgba(0,0,0,.02),0 8px 24px -18px rgba(0,0,0,.25)}
+.stage .canvas-wrap{position:relative;width:100%}
+.stage canvas,.stage svg{display:block;width:100%;height:auto}
+.controls{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:flex-end;margin-top:14px;padding-top:14px;border-top:1px solid var(--rule)}
+.control{display:flex;flex-direction:column;gap:4px;min-width:150px;flex:1 1 150px}
+.control label{font-size:13px;color:var(--muted);letter-spacing:.02em}
+.control .val{font-family:var(--mono);font-size:13px;color:var(--ink)}
+.control input[type=range]{width:100%;accent-color:var(--accent)}
+.control select,.control input[type=text],.control textarea{font:inherit;font-size:15px;padding:6px 8px;border:1px solid var(--rule);border-radius:8px;background:#fff;color:var(--ink)}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px}
+button{font:inherit;font-size:14px;font-weight:500;padding:8px 14px;border-radius:999px;border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer}
+button.secondary{background:#fff;color:var(--accent)}
+button.ghost{background:transparent;border-color:var(--rule);color:var(--ink)}
+button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+button:disabled{opacity:.5;cursor:not-allowed}
+.readout{display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:12px;font-family:var(--mono);font-size:13.5px;color:var(--muted)}
+.readout b{color:var(--ink);font-weight:500}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12.5px;font-family:var(--mono);border:1px solid var(--rule);background:var(--code-bg)}
+.pill.ok{color:var(--ok);border-color:var(--ok)}
+.pill.warn{color:var(--warn);border-color:var(--warn)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13.5px;color:var(--muted);margin-top:8px}
+.legend span::before{content:"";display:inline-block;width:18px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle;background:var(--sw)}
+section.prose{max-width:720px;margin:28px auto 0;padding:0}
+section.prose h2{font-size:22px;margin:28px 0 8px;font-weight:600}
+section.prose p{margin:0 0 14px}
+section.prose ol,section.prose ul{margin:0 0 14px 22px;padding:0}
+section.prose li{margin-bottom:6px}
+code,pre{font-family:var(--mono);font-size:.92em}
+code{background:var(--code-bg);padding:1px 5px;border-radius:5px}
+pre{background:var(--code-bg);padding:12px 14px;border-radius:10px;overflow-x:auto;line-height:1.45}
+pre code{background:none;padding:0}
+.refs{font-size:14.5px;color:var(--muted)}
+.refs p{padding-left:1.6em;text-indent:-1.6em}
+nav.pager{display:flex;justify-content:space-between;gap:12px;max-width:var(--maxw);margin:30px auto 0;padding:18px 20px;border-top:1px solid var(--rule)}
+nav.pager a{text-decoration:none;font-size:15px;display:flex;flex-direction:column;gap:2px;max-width:48%}
+nav.pager a small{color:var(--muted);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+nav.pager a.next{text-align:right;margin-left:auto}
+footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;color:var(--muted)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:600px){
+  body{font-size:16px}
+  .stage{padding:12px;border-radius:10px}
+  .control{min-width:120px}
+}
+@media (prefers-reduced-motion: reduce){ .anim-hint{display:none} }
+/* ===== END SHARED STYLE ===== */
+
+.top{display:grid;grid-template-columns:minmax(220px,300px) 1fr;gap:16px;margin-bottom:12px}
+.top .control textarea{font-family:var(--mono);font-size:13.5px;line-height:1.45;min-height:190px;resize:vertical;white-space:pre}
+.presets{display:flex;flex-direction:column;gap:8px}
+.presets h3{margin:0;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.presets .btnrow button{font-size:13px;padding:6px 12px}
+.status{font-family:var(--mono);font-size:13px;min-height:1.4em;margin-top:4px}
+.status.err{color:var(--warn)}
+.status.ok{color:var(--ok)}
+.check{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:4px 18px;font-size:14px}
+.check li{display:flex;gap:8px;align-items:flex-start}
+.check li .m{font-family:var(--mono);font-weight:500;flex:0 0 1.2em}
+.check li.ok .m{color:var(--ok)}.check li.warn .m{color:var(--warn)}.check li.info .m{color:var(--muted)}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:#fff;font-size:12.5px;font-family:var(--mono);padding:5px 8px;border-radius:6px;max-width:260px;line-height:1.35;display:none;z-index:2}
+.control input[type=number]{font:inherit;font-size:14px;padding:5px 8px;border:1px solid var(--rule);border-radius:8px;width:100%}
+.codebox{margin-top:12px;font-size:13px}
+@media (max-width:720px){.top{grid-template-columns:1fr}}
+.refs p,.readout span{overflow-wrap:anywhere}
+.top .control textarea{width:100%;max-width:100%}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="series" href="erp-pipeline.html">ERP pipeline · PSYCH 390</a>
+  <span class="step">step 8 / 12</span>
+</div>
+<header class="hero">
+  <h1>Bin assignment and epoching</h1>
+  <p class="q">How do you make good bins?</p>
+</header>
+
+<main>
+  <div class="stage" id="stage">
+    <div class="top">
+      <div class="control">
+        <label for="bdf">Bin descriptor file (N400_bins.txt), edit freely</label>
+        <textarea id="bdf" spellcheck="false" rows="9"></textarea>
+        <div class="status" id="status" aria-live="polite"></div>
+      </div>
+      <div class="presets">
+        <h3>Presets</h3>
+        <div class="btnrow">
+          <button class="secondary" data-p="lab">Lab default (collapse across accuracy)</button>
+          <button class="secondary" data-p="correct">Correct trials only via response window</button>
+          <button class="secondary" data-p="split">Split by accuracy (4 bins)</button>
+          <button class="secondary" data-p="typo">Typo: wrong code (131)</button>
+          <button class="secondary" data-p="blank">Missing blank line</button>
+        </div>
+        <ul class="check" id="check" aria-label="Bin quality checklist"></ul>
+      </div>
+    </div>
+    <div class="canvas-wrap">
+      <canvas id="cv" aria-label="Top: a stretch of continuous EEG with event codes stamped above it, matched events coloured by bin with their epoch windows shaded. Bottom: the epochs cut out per bin, stacked, with the averaged waveform for each bin."></canvas>
+      <div class="tip" id="tip"></div>
+    </div>
+    <div class="legend">
+      <span style="--sw:#0f6e74">bin 1</span>
+      <span style="--sw:#d9573b">bin 2</span>
+      <span style="--sw:#6b5ca5">bin 3</span>
+      <span style="--sw:#c8962a">bin 4</span>
+      <span style="--sw:#b9bec8">unassigned event (hover for the reason)</span>
+    </div>
+    <div class="controls">
+      <div class="control">
+        <label for="pos">Where in the recording (6 min total) <span class="val" id="posv"></span></label>
+        <input type="range" id="pos" min="0" max="320" value="100" step="1">
+      </div>
+      <div class="control" style="flex:0 1 120px;min-width:110px">
+        <label for="pre">Epoch start (ms)</label>
+        <input type="number" id="pre" value="-200" step="50" min="-1000" max="0">
+      </div>
+      <div class="control" style="flex:0 1 120px;min-width:110px">
+        <label for="post">Epoch end (ms)</label>
+        <input type="number" id="post" value="800" step="50" min="100" max="1500">
+      </div>
+      <div class="btnrow"><button class="ghost" id="reseed">New noise</button></div>
+    </div>
+    <div class="readout" id="ro"></div>
+    <pre class="codebox"><code id="code"></code></pre>
+  </div>
+
+  <section class="prose">
+    <h2>What you are looking at</h2>
+    <p>Every time a word appeared on the screen or the participant pressed a button, the stimulus computer stamped a number into the EEG file. These event codes are the experiment's bookkeeping. In the N400 task the target word carries a three-digit code: 111 for a related target with a correct response, 112 related but wrong, 121 unrelated correct, 122 unrelated wrong. The small 11 and 12 flags are prime words, 201 and 202 are the button presses, and "boundary" marks a place where the recording was paused. The grey trace is one channel of the continuous EEG, which by itself tells you nothing about conditions.</p>
+    <p>A bin is a condition defined by a sequence of codes. The text box on the left is a bin descriptor file: each bin has a number, a label, and a descriptor line that lists the codes in braces, separated by semicolons. The dot marks the time-locking event, the moment that becomes time zero of every epoch. BINLISTER walks through the event list, and every event that fits a bin is coloured with that bin's colour and given an epoch window, here −200 to 800 ms. Events that fit nothing stay grey; hover one to see why. Below the timeline, the epochs are cut out, baseline-corrected on the prestimulus part, stacked as thin lines, and averaged into the heavy line, so you can see the unrelated bin come out more negative between 300 and 500 ms.</p>
+
+    <h2>Try this</h2>
+    <ol>
+      <li>Start from the lab default. Both bins collect a little over fifty trials, and the checklist is all green.</li>
+      <li>Click "Correct trials only via response window". The descriptor <code>.{111}{t&lt;200-1000&gt;201}</code> now requires a correct button press between 200 and 1000 ms after the target. Hover the grey targets to find responses that were too fast to be real decisions or too slow to be trusted.</li>
+      <li>Split by accuracy into four bins. The error bins have far too few trials to average, which is exactly why the lab collapses across accuracy in the default file.</li>
+      <li>Try the typo preset. Code 131 exists nowhere in the recording, so the bin stays empty and <code>trialsperbin</code> reports zero. A zero here almost always means the file and the recording disagree about a code.</li>
+      <li>Delete the blank line between the two bins (or use the preset) and read the error message. Then widen the epoch to −500 to 1200 ms and watch a few epochs near a boundary get dropped.</li>
+    </ol>
+
+    <h2>Why it matters for the pipeline</h2>
+    <p>Bin assignment is where the experimental design meets the data. <code>EEG = pop_binlister(EEG, 'BDF', 'N400_bins.txt', 'IndexEL', 1, 'UpdateEEG', 'on');</code> reads the descriptor file and stores the result in <code>EEG.EVENTLIST</code>; <code>EEG = pop_epochbin(EEG, [-200 800], 'pre');</code> then cuts a fixed window around each time-locking event and subtracts the mean of the prestimulus baseline from every epoch, so slow drift and DC offsets do not carry into the average. Always look at <code>EEG.EVENTLIST.trialsperbin</code> afterwards. Somewhere between 50 and 200 trials per bin is typical; fewer than about 30 leaves a noisy average, and zero means a code mismatch.</p>
+    <p>A time-conditioned list such as <code>{t&lt;200-1000&gt;201}</code> keeps only trials with a proper response. Responses faster than 200 ms are guesses that started before the word was read, and responses slower than a second usually mean a lapse of attention. Whether to drop error trials at all depends on why errors happen: in a simple task an error is usually a lapse, so dropping them cleans the data, but in a hard memory task errors are genuine outcomes and throwing them away changes the question. Good bins are numbered consecutively from 1, carry a label that says what they contain, differ from each other only in the thing you care about, and end up with similar trial counts (Luck, 2014; Lopez-Calderon &amp; Luck, 2014). The codes themselves follow the ERP CORE convention (Kappenman et al., 2021).</p>
+
+    <h2 id="refs">References</h2>
+    <div class="refs">
+      <p>Kappenman, E. S., Farrens, J. L., Zhang, W., Stewart, A. X., &amp; Luck, S. J. (2021). ERP CORE: An open resource for human event-related potential research. <i>NeuroImage, 225</i>, 117465. https://doi.org/10.1016/j.neuroimage.2020.117465</p>
+      <p>Lopez-Calderon, J., &amp; Luck, S. J. (2014). ERPLAB: An open-source toolbox for the analysis of event-related potentials. <i>Frontiers in Human Neuroscience, 8</i>, 213. https://doi.org/10.3389/fnhum.2014.00213</p>
+      <p>Luck, S. J. (2014). <i>An introduction to the event-related potential technique</i> (2nd ed.). MIT Press.</p>
+    </div>
+  </section>
+</main>
+
+<nav class="pager">
+  <a class="prev" href="erp-07-rereferencing.html"><small>Previous</small><span>Re-referencing</span></a>
+  <a class="next" href="erp-09-interpolation.html"><small>Next</small><span>Channel interpolation</span></a>
+</nav>
+<footer>Part of the ERP pipeline series for PSYCH 390, St. Olaf College. Built as a standalone page; nothing is sent anywhere.</footer>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const FS=256, DUR=360, N=DUR*FS;      // six minutes at 256 Hz
+const BINC=['#0f6e74','#d9573b','#6b5ca5','#c8962a','#2f8f4e','#c2410c'];
+const GREY='#b9bec8';
+
+// ---------- presets ----------
+const P={
+ lab:'bin 1\nRelated Target\n.{111;112}\n\nbin 2\nUnrelated Target\n.{121;122}',
+ correct:'bin 1\nRelated Target, correct\n.{111}{t<200-1000>201}\n\nbin 2\nUnrelated Target, correct\n.{121}{t<200-1000>201}',
+ split:'bin 1\nRelated correct\n.{111}\n\nbin 2\nRelated error\n.{112}\n\nbin 3\nUnrelated correct\n.{121}\n\nbin 4\nUnrelated error\n.{122}',
+ typo:'bin 1\nRelated Target\n.{111;112}\n\nbin 2\nUnrelated Target\n.{131;132}',
+ blank:'bin 1\nRelated Target\n.{111;112}\nbin 2\nUnrelated Target\n.{121;122}'
+};
+
+// ---------- deterministic noise ----------
+let seed=11;
+function rnd(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;}
+function gaussRnd(){return Math.sqrt(-2*Math.log(rnd()+1e-12))*Math.cos(2*Math.PI*rnd());}
+
+// ---------- the experiment: events ----------
+let events=[];   // {t (s), code (number) or 'boundary'}
+function makeEvents(){
+  seed=2024; events=[];
+  let t=2.0;
+  const conds=[];for(let k=0;k<120;k++)conds.push(k%2===0);
+  for(let k=119;k>0;k--){const j=Math.floor(rnd()*(k+1));[conds[k],conds[j]]=[conds[j],conds[k]];}
+  for(let k=0;k<120;k++){
+    const related=conds[k], correct=rnd()<0.9;
+    events.push({t:t,code:related?11:12,kind:'prime'});
+    const tt=t+1.0;
+    events.push({t:tt,code:(related?110:120)+(correct?1:2),kind:'target',related,correct});
+    let rt;const u=rnd();
+    if(u<0.06)rt=0.12+rnd()*0.07; else if(u<0.12)rt=1.05+rnd()*0.4; else rt=0.5+rnd()*0.4;
+    events.push({t:tt+rt,code:correct?201:202,kind:'resp'});
+    if(k===39||k===79)events.push({t:tt+0.45,code:'boundary',kind:'boundary'});
+    t+=2.6+rnd()*0.6;
+  }
+  events.sort((a,b)=>a.t-b.t);
+}
+makeEvents();
+
+// ---------- the recording ----------
+function gauss(t,mu,sd){return Math.exp(-0.5*((t-mu)/sd)**2);}
+function erp(t,related){ if(t<0||t>1)return 0;
+  return -3*gauss(t,0.11,0.02)+3.5*gauss(t,0.20,0.03)+(related?-1.5:-5.5)*gauss(t,0.40,0.07)+2.5*gauss(t,0.62,0.10);}
+let eeg=new Float32Array(N);
+function makeEEG(){
+  let a=0,b=0,slow=0;const ph=rnd()*6.28;
+  for(let i=0;i<N;i++){const t=i/FS;a=0.97*a+gaussRnd();b=0.8*b+gaussRnd();slow=0.999*slow+gaussRnd()*0.05;
+    const alpha=Math.sin(2*Math.PI*10*t+ph)*(0.5+0.5*Math.sin(2*Math.PI*0.25*t));
+    eeg[i]=a*1.4+b*3+alpha*3.5+slow*5;}
+  for(const e of events)if(e.kind==='target'){const i0=Math.round(e.t*FS);for(let i=0;i<=FS;i++)if(i0+i<N)eeg[i0+i]+=erp(i/FS,e.related);}
+}
+makeEEG();
+
+// ---------- BINLISTER: parse the descriptor ----------
+function parseBDF(text){
+  const lines=text.replace(/\r/g,'').split('\n').map(s=>s.trim());
+  const bins=[];let i=0;
+  while(i<lines.length){
+    if(lines[i]===''){i++;continue;}
+    const start=i;const block=[];
+    while(i<lines.length&&lines[i]!==''){block.push(lines[i]);i++;}
+    if(block.length>3){const extra=block[3];
+      throw new Error(`Line ${start+4}: found "${extra}" where a blank line was expected. Each bin is three lines (bin number, label, descriptor) followed by a blank line.`);}
+    if(block.length<3)throw new Error(`Line ${start+1}: the bin starting here has only ${block.length} line${block.length===1?'':'s'}; a bin needs a number, a label and a descriptor.`);
+    const m=/^bin\s+(\d+)$/i.exec(block[0]);
+    if(!m)throw new Error(`Line ${start+1}: expected "bin <number>", found "${block[0]}".`);
+    const bin={num:+m[1],label:block[1],desc:block[2],lists:[],line:start+1};
+    // descriptor: sequence of optional-dot lists {t<a-b>c1;c2} or {c1;c2}
+    const re=/(\.)?\{([^}]*)\}/g;let pos=0,mm,dots=0;
+    const s=block[2].replace(/\s+/g,'');
+    while((mm=re.exec(s))){
+      if(mm.index!==pos)throw new Error(`Line ${start+3}: could not read "${s.slice(pos,mm.index)}" in the descriptor.`);
+      pos=re.lastIndex;
+      const L={lock:!!mm[1],codes:[],win:null};if(L.lock)dots++;
+      let body=mm[2];const tm=/^t<(\d+)-(\d+)>/.exec(body);
+      if(tm){L.win=[+tm[1],+tm[2]];body=body.slice(tm[0].length);}
+      for(const c of body.split(';')){if(c==='')continue;if(!/^\d+$/.test(c))throw new Error(`Line ${start+3}: "${c}" is not an event code (codes are whole numbers).`);L.codes.push(+c);}
+      if(!L.codes.length)throw new Error(`Line ${start+3}: an empty list {} in the descriptor.`);
+      bin.lists.push(L);
+    }
+    if(pos!==s.length||!bin.lists.length)throw new Error(`Line ${start+3}: the descriptor must be a sequence of lists in braces, like .{111;112}.`);
+    if(dots!==1)throw new Error(`Line ${start+3}: exactly one list must carry the "." time-locking marker (found ${dots}).`);
+    bin.lockIdx=bin.lists.findIndex(L=>L.lock);
+    bins.push(bin);
+  }
+  if(!bins.length)throw new Error('No bins found in the descriptor file.');
+  return bins;
+}
+
+// ---------- BINLISTER: assign events to bins ----------
+let bins=[],parseErr=null,assign=[],epochs=[],stats={};
+function matchList(L,i,dir){
+  // returns {ok:true,j} or {ok:false,why}
+  const e=events[i];
+  if(L.win){const lo=L.win[0]/1000,hi=L.win[1]/1000;let found=null,near=null;
+    for(let j=i+dir;j>=0&&j<events.length;j+=dir){const d=(events[j].t-e.t)*dir;if(d>hi)break;
+      if(events[j].code==='boundary')break;
+      if(L.codes.includes(events[j].code)){if(d>=lo){found=j;break;}near=j;}}
+    if(found!==null)return {ok:true,j:found};
+    // look a little further for a diagnostic
+    for(let j=i+dir;j>=0&&j<events.length;j+=dir){const d=(events[j].t-e.t)*dir;if(d>3)break;if(L.codes.includes(events[j].code)){near=j;break;}}
+    if(near!==null){const ms=Math.round(Math.abs(events[near].t-e.t)*1000);return {ok:false,why:`code ${events[near].code} came at ${ms} ms, outside the ${L.win[0]}–${L.win[1]} ms window`};}
+    return {ok:false,why:`no code ${L.codes.join('/')} within ${L.win[0]}–${L.win[1]} ms ${dir>0?'after':'before'} it`};
+  }
+  const j=i+dir;
+  if(j<0||j>=events.length)return {ok:false,why:'no adjacent event'};
+  if(L.codes.includes(events[j].code))return {ok:true,j};
+  return {ok:false,why:`the ${dir>0?'next':'previous'} code was ${events[j].code}, the bin needs ${L.codes.join('/')}`};
+}
+function runBinlister(){
+  const pre=+$('pre').value/1000,post=+$('post').value/1000;
+  assign=events.map(()=>({bin:0,why:''}));
+  stats={reasons:{},perBin:[]};
+  if(parseErr){return;}
+  events.forEach((e,i)=>{
+    const a=assign[i];
+    if(e.code==='boundary'){a.why='boundary: the recording was paused here';return;}
+    let why=null;
+    for(const b of bins){
+      const lock=b.lists[b.lockIdx];
+      if(!lock.codes.includes(e.code))continue;
+      let ok=true;
+      for(let k=b.lockIdx+1;k<b.lists.length&&ok;k++){const r=matchList(b.lists[k],i,1);if(!r.ok){ok=false;why=r.why;}}
+      for(let k=b.lockIdx-1;k>=0&&ok;k--){const r=matchList(b.lists[k],i,-1);if(!r.ok){ok=false;why=r.why;}}
+      if(ok){
+        // epoch must fit inside the recording and not cross a boundary
+        const t0=e.t+pre,t1=e.t+post;
+        if(t0<0||t1>DUR){ok=false;why='epoch runs past the edge of the recording';}
+        else if(events.some(x=>x.code==='boundary'&&x.t>t0&&x.t<t1)){ok=false;why='epoch overlaps a boundary';}
+      }
+      if(ok){a.bin=b.num;a.why='';break;}
+    }
+    if(!a.bin){
+      if(why)a.why=why;
+      else if(e.kind==='prime')a.why=`code ${e.code} (prime word) is not in any bin`;
+      else if(e.kind==='resp')a.why=`code ${e.code} (response) is not a time-locking code`;
+      else a.why=`code ${e.code} is not in any bin`;
+    }
+    if(a.why){const key=a.why.replace(/\d+ ms/,'N ms').replace(/code \d+/,'code N');stats.reasons[key]=(stats.reasons[key]||0)+1;}
+  });
+  // cut the epochs
+  epochs=bins.map(()=>[]);
+  const n0=Math.round(pre*FS),n1=Math.round(post*FS);
+  events.forEach((e,i)=>{const b=assign[i].bin;if(!b)return;const bi=bins.findIndex(x=>x.num===b);
+    const i0=Math.round(e.t*FS);const ep=new Float32Array(n1-n0);let base=0,nb=0;
+    for(let k=n0;k<n1;k++){ep[k-n0]=eeg[i0+k];if(k<0){base+=eeg[i0+k];nb++;}}
+    if(nb)base/=nb;for(let k=0;k<ep.length;k++)ep[k]-=base;epochs[bi].push(ep);});
+  stats.perBin=epochs.map(a=>a.length);
+}
+
+// ---------- checklist and readouts ----------
+function checklist(){
+  const ul=$('check');ul.innerHTML='';
+  const add=(cls,txt)=>{const li=document.createElement('li');li.className=cls;li.innerHTML=`<span class="m">${cls==='ok'?'✓':cls==='warn'?'!':'·'}</span><span>${txt}</span>`;ul.appendChild(li);};
+  if(parseErr){add('warn','The file does not parse; BINLISTER stops here and assigns nothing.');return;}
+  const nums=bins.map(b=>b.num);const consec=nums.every((n,i)=>n===i+1);
+  add(consec?'ok':'warn',consec?`Numbered consecutively from 1 (${nums.length} bin${nums.length>1?'s':''})`:`Bins should be numbered 1, 2, 3 … (found ${nums.join(', ')})`);
+  const lab=bins.every(b=>b.label.length>2&&!/^bin\s*\d+$/i.test(b.label));
+  add(lab?'ok':'warn',lab?'Every bin has a meaningful label':'Give every bin a label that says what it contains');
+  add('ok','Each bin marks its time-locking event with "."');
+  const c=stats.perBin,min=Math.min(...c),max=Math.max(...c);
+  if(min===0)add('warn',`A bin has zero trials (${c.join(', ')}): a code in the file does not exist in the recording`);
+  else if(min<30)add('warn',`Too few trials in a bin (${c.join(', ')}); aim for 50–200 per bin`);
+  else add('ok',`Enough trials per bin (${c.join(', ')})`);
+  if(min>0){const bal=max/min<=1.5;add(bal?'ok':'warn',bal?'Trial counts are similar across bins':`Unbalanced counts (${c.join(', ')}): the noisier bin will drive any difference`);}
+  const same=bins.every(b=>JSON.stringify(b.lists.map((L,k)=>k===b.lockIdx?'lock':[L.win,L.codes]))===JSON.stringify(bins[0].lists.map((L,k)=>k===bins[0].lockIdx?'lock':[L.win,L.codes])));
+  add(same?'ok':'warn',same?'Bins differ only in the time-locking code, so any difference is about the condition':'Bins use different response rules; they now differ in more than the condition');
+}
+function readouts(){
+  const ro=$('ro');
+  if(parseErr){ro.innerHTML='<span>EEG.EVENTLIST.trialsperbin <b>(not created)</b></span>';return;}
+  const tot=bins.reduce((s,b,i)=>s+stats.perBin[i],0);
+  const targets=events.filter(e=>e.kind==='target').length;
+  let h=`<span>EEG.EVENTLIST.trialsperbin = <b>[${stats.perBin.join(' ')}]</b></span>`;
+  h+=bins.map((b,i)=>`<span><span class="pill" style="border-color:${BINC[i%BINC.length]};color:${BINC[i%BINC.length]}">bin ${b.num}</span> ${b.label}: <b>${stats.perBin[i]}</b></span>`).join('');
+  h+=`<span>targets not assigned <b>${targets-tot}</b> of ${targets}</span>`;
+  const rs=Object.entries(stats.reasons).filter(([k])=>!/prime|response|boundary:/.test(k)).sort((a,b)=>b[1]-a[1]);
+  if(rs.length)h+=`<span style="flex:1 1 100%">reasons: ${rs.map(([k,v])=>`${v} × ${k}`).join('; ')}</span>`;
+  ro.innerHTML=h;
+}
+function codeBox(){
+  $('code').textContent=`EEG = pop_binlister(EEG, 'BDF', 'N400_bins.txt', 'IndexEL', 1, 'UpdateEEG', 'on');\nEEG = pop_epochbin(EEG, [${$('pre').value} ${$('post').value}], 'pre');   % epoch and baseline-correct on the prestimulus part`;
+}
+
+// ---------- drawing ----------
+const cv=$('cv'),ctx=cv.getContext('2d');let W=1000,H=600,hits=[];
+const C={ink:'#1d1f24',muted:'#5c6270',rule:'#e2ddd4'};
+function txt(s,x,y,o={}){ctx.font=(o.w||400)+' '+(o.s||12)+'px '+(o.m?'"IBM Plex Mono",monospace':'"IBM Plex Sans",system-ui,sans-serif');ctx.fillStyle=o.c||C.muted;ctx.textAlign=o.a||'left';ctx.textBaseline=o.b||'alphabetic';ctx.fillText(s,x,y);}
+function line(pts,c,w,dash){ctx.beginPath();ctx.strokeStyle=c;ctx.lineWidth=w||1.2;ctx.setLineDash(dash||[]);pts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.stroke();ctx.setLineDash([]);}
+function layout(){const narrow=W<560;const nb=Math.max(1,bins.length);const cols=narrow?2:Math.min(5,nb+1);const rows=Math.ceil((nb+1)/cols);
+  return {narrow,cols,rows,th:narrow?200:220,eh:narrow?150:170};}
+function fit(){const r=cv.getBoundingClientRect();const dpr=window.devicePixelRatio||1;W=r.width;const L=layout();H=L.th+L.rows*(L.eh+40)+30;
+  cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);cv.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);}
+function binColor(num){const i=bins.findIndex(b=>b.num===num);return BINC[i%BINC.length];}
+function draw(){
+  ctx.clearRect(0,0,W,H);hits=[];
+  const Ly=layout(),narrow=Ly.narrow,L=narrow?34:50,R=W-12;
+  const span=narrow?20:40,t0=+$('pos').value,t1=t0+span;
+  const pre=+$('pre').value/1000,post=+$('post').value/1000;
+  // ---- timeline
+  const top=36,flagH=54,trTop=top+flagH,trH=Ly.th-flagH-40;
+  txt((narrow?'EEG (Cz) + event codes, ':'Continuous EEG (Cz) with event codes, ')+t0+'–'+t1+' s',L,top-14,{c:C.ink,w:600,s:13});
+  const x=t=>L+(t-t0)/span*(R-L);
+  ctx.strokeStyle=C.rule;ctx.lineWidth=1;ctx.strokeRect(L,trTop,R-L,trH);
+  const sc=60,y=v=>trTop+trH/2-(v/sc)*(trH/2);
+  line([[L,y(0)],[R,y(0)]],C.rule,1,[3,3]);
+  txt('+'+sc+' µV',L-4,trTop+10,{a:'right',s:10.5});txt('−'+sc,L-4,trTop+trH-2,{a:'right',s:10.5});
+  for(let s=Math.ceil(t0);s<=t1;s+=narrow?5:5){const xx=x(s);line([[xx,trTop+trH],[xx,trTop+trH+4]],C.muted,1);txt(s+' s',xx,trTop+trH+15,{a:'center',s:11});}
+  // epoch windows
+  events.forEach((e,i)=>{const a=assign[i];if(!a.bin||e.t+post<t0||e.t+pre>t1)return;
+    ctx.fillStyle=binColor(a.bin)+'22';ctx.fillRect(x(e.t+pre),trTop,x(e.t+post)-x(e.t+pre),trH);});
+  // trace
+  {const i0=Math.max(0,Math.floor(t0*FS)),i1=Math.min(N,Math.ceil(t1*FS));const pts=[];const step=Math.max(1,Math.floor((i1-i0)/(R-L)/2));
+    for(let i=i0;i<i1;i+=step)pts.push([x(i/FS),y(eeg[i])]);line(pts,'#9aa0aa',1);}
+  // flags
+  events.forEach((e,i)=>{if(e.t<t0||e.t>t1)return;const a=assign[i];const xx=x(e.t);
+    if(e.code==='boundary'){line([[xx,trTop],[xx,trTop+trH]],C.ink,1.2,[4,3]);txt('boundary',xx+3,trTop+trH-6,{s:10.5,c:C.ink,w:500});
+      hits.push({x:xx-6,y:trTop,w:12,h:trH,txt:a.why});return;}
+    const row=e.kind==='target'?0:e.kind==='resp'?1:2;const fy=top+8+row*15;
+    const col=a.bin?binColor(a.bin):e.code==='boundary'?C.ink:GREY;
+    line([[xx,fy+4],[xx,trTop]],col,a.bin?1.4:1,a.bin?[]:[2,2]);
+    if(e.kind==='target'&&a.bin)line([[xx,trTop],[xx,trTop+trH]],col,1.2);
+    const lab=e.code==='boundary'?'boundary':String(e.code);
+    ctx.font='500 '+(narrow?10:11)+'px "IBM Plex Mono",monospace';const tw=ctx.measureText(lab).width;
+    ctx.fillStyle=a.bin?col:'#fff';ctx.strokeStyle=col;ctx.lineWidth=1;ctx.beginPath();ctx.roundRect(xx-tw/2-3,fy-9,tw+6,13,3);ctx.fill();ctx.stroke();
+    txt(lab,xx,fy+1,{a:'center',s:narrow?10:11,w:500,m:1,c:a.bin?'#fff':(e.code==='boundary'?C.ink:C.muted)});
+    hits.push({x:xx-tw/2-4,y:fy-10,w:tw+8,h:15,txt:a.bin?`code ${e.code} → bin ${a.bin} (${bins.find(b=>b.num===a.bin).label})`:a.why});
+  });
+  // ---- epochs per bin
+  const eTop=Ly.th+34;const cw=(R-L)/Ly.cols,eh=Ly.eh;
+  const n=epochs.length?epochs[0].length&&epochs[0][0].length||Math.round((post-pre)*FS):Math.round((post-pre)*FS);
+  const cells=[];bins.forEach((b,i)=>cells.push({kind:'bin',i}));cells.push({kind:'avg'});
+  const sc2=20;
+  cells.forEach((cell,ci)=>{
+    const col=ci%Ly.cols,row=Math.floor(ci/Ly.cols);const cx0=L+col*cw+6,cx1=L+(col+1)*cw-6,cy0=eTop+row*(eh+40),cy1=cy0+eh;
+    const xe=k=>cx0+k/(n-1)*(cx1-cx0),ye=v=>cy0+eh/2-(v/sc2)*(eh/2);
+    ctx.strokeStyle=C.rule;ctx.strokeRect(cx0,cy0,cx1-cx0,eh);line([[cx0,ye(0)],[cx1,ye(0)]],C.rule,1,[3,3]);
+    const xz=xe(Math.round(-pre*FS));line([[xz,cy0],[xz,cy1]],C.muted,1,[2,3]);
+    const ms0=Math.round(pre*1000),ms1=Math.round(post*1000);
+    (narrow?[[ms0,'left'],[ms1,'right']]:[[ms0,'left'],[0,'center'],[ms1,'right']]).forEach(([ms,al])=>{const xx=xe(Math.round((ms/1000-pre)*FS));txt(ms+(ms===ms1?' ms':''),xx,cy1+13,{a:al,s:10.5});});
+    if(col===0){txt('+'+sc2+' µV',cx0-3,cy0+9,{a:'right',s:10});txt('−'+sc2,cx0-3,cy1-2,{a:'right',s:10});}
+    if(cell.kind==='bin'){const b=bins[cell.i],c=BINC[cell.i%BINC.length],eps=epochs[cell.i];
+      txt(narrow?`bin ${b.num}`:`bin ${b.num}: ${b.label}`,cx0,cy0-6,{c:c,w:600,s:12});
+      txt(narrow?`${eps.length} ep.`:`${eps.length} epoch${eps.length===1?'':'s'}`,cx1,cy0-6,{a:'right',s:11});
+      ctx.save();ctx.beginPath();ctx.rect(cx0,cy0,cx1-cx0,eh);ctx.clip();
+      ctx.globalAlpha=Math.max(0.05,Math.min(0.25,3/Math.max(1,eps.length)));
+      const step=Math.max(1,Math.floor(n/(cx1-cx0)));
+      for(const ep of eps){const pts=[];for(let k=0;k<n;k+=step)pts.push([xe(k),ye(ep[k])]);line(pts,c,0.8);}
+      ctx.globalAlpha=1;
+      if(eps.length){const av=avg(eps);const pts=[];for(let k=0;k<n;k+=step)pts.push([xe(k),ye(av[k])]);line(pts,c,2.2);}
+      else txt('no trials',(cx0+cx1)/2,cy0+eh/2+4,{a:'center',s:12,c:'#c2410c'});
+      ctx.restore();
+    } else {
+      txt('Averages overlaid',cx0,cy0-6,{c:C.ink,w:600,s:12});
+      const step=Math.max(1,Math.floor(n/(cx1-cx0)));
+      // N400 window
+      const xa=xe(Math.round((0.3-pre)*FS)),xb=xe(Math.round((0.5-pre)*FS));
+      if(post>=0.3){ctx.fillStyle='rgba(200,150,42,.12)';ctx.fillRect(xa,cy0,Math.min(xb,cx1)-xa,eh);txt('300–500',(xa+Math.min(xb,cx1))/2,cy0+11,{a:'center',s:10});}
+      bins.forEach((b,i)=>{if(!epochs[i].length)return;const av=avg(epochs[i]);const pts=[];for(let k=0;k<n;k+=step)pts.push([xe(k),ye(av[k])]);line(pts,BINC[i%BINC.length],2);});
+      if(!bins.length)txt('no bins',(cx0+cx1)/2,cy0+eh/2+4,{a:'center',s:12});
+      txt('negative down',cx1-3,cy1-4,{a:'right',s:10});
+    }
+  });
+}
+function avg(eps){const n=eps[0].length,o=new Float32Array(n);for(const e of eps)for(let k=0;k<n;k++)o[k]+=e[k]/eps.length;return o;}
+
+// ---------- hover ----------
+const tip=$('tip');
+cv.addEventListener('mousemove',ev=>{const r=cv.getBoundingClientRect();const mx=ev.clientX-r.left,my=ev.clientY-r.top;
+  const h=hits.find(h=>mx>=h.x&&mx<=h.x+h.w&&my>=h.y&&my<=h.y+h.h);
+  if(!h){tip.style.display='none';return;}
+  tip.textContent=h.txt;tip.style.display='block';tip.style.left=Math.min(mx+10,W-270)+'px';tip.style.top=(my+14)+'px';});
+cv.addEventListener('mouseleave',()=>tip.style.display='none');
+
+// ---------- wiring ----------
+function update(){
+  const st=$('status');
+  try{bins=parseBDF($('bdf').value);parseErr=null;st.className='status ok';st.textContent=`BINLISTER: ${bins.length} bin${bins.length>1?'s':''} read`;}
+  catch(e){bins=[];parseErr=e.message;st.className='status err';st.textContent='BINLISTER error. '+e.message;}
+  runBinlister();checklist();readouts();codeBox();fit();draw();
+}
+$('bdf').value=P.lab;
+$('bdf').addEventListener('input',update);
+document.querySelectorAll('.presets button[data-p]').forEach(b=>b.addEventListener('click',()=>{$('bdf').value=P[b.dataset.p];update();}));
+['pre','post'].forEach(id=>$(id).addEventListener('input',()=>{if(+$('pre').value<+$('post').value)update();}));
+$('pos').addEventListener('input',()=>{$('posv').textContent='from '+$('pos').value+' s';draw();});
+$('posv').textContent='from '+$('pos').value+' s';
+$('reseed').addEventListener('click',()=>{makeEEG();update();});
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(update,80);});
+update();
+})();
+</script>
+</body>
+</html>

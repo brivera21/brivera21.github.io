@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Channel interpolation · ERP pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===== SHARED STYLE: copy verbatim into every page ===== */
+:root{
+  --bg:#f6f3ee; --panel:#ffffff; --ink:#1d1f24; --muted:#5c6270; --rule:#e2ddd4;
+  --accent:#0f6e74; --accent-2:#d9573b; --accent-3:#6b5ca5; --gold:#c8962a;
+  --ok:#2f8f4e; --warn:#c2410c; --code-bg:#f0ece4;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --maxw:1040px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+a:hover{text-decoration-thickness:2px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:var(--maxw);margin:0 auto;padding:14px 20px 0}
+.topbar .series{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.topbar .series:hover{color:var(--accent)}
+.topbar .step{font-family:var(--mono);font-size:13px;color:var(--muted)}
+header.hero{max-width:var(--maxw);margin:0 auto;padding:18px 20px 10px}
+header.hero h1{font-size:clamp(26px,4vw,38px);line-height:1.15;margin:0 0 6px;font-weight:600;letter-spacing:-.01em}
+header.hero p.q{margin:0;font-size:clamp(17px,2.2vw,20px);color:var(--muted);font-style:italic}
+main{max-width:var(--maxw);margin:0 auto;padding:8px 20px 40px}
+.stage{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:16px;box-shadow:0 1px 0 rgba(0,0,0,.02),0 8px 24px -18px rgba(0,0,0,.25)}
+.stage .canvas-wrap{position:relative;width:100%}
+.stage canvas,.stage svg{display:block;width:100%;height:auto}
+.controls{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:flex-end;margin-top:14px;padding-top:14px;border-top:1px solid var(--rule)}
+.control{display:flex;flex-direction:column;gap:4px;min-width:150px;flex:1 1 150px}
+.control label{font-size:13px;color:var(--muted);letter-spacing:.02em}
+.control .val{font-family:var(--mono);font-size:13px;color:var(--ink)}
+.control input[type=range]{width:100%;accent-color:var(--accent)}
+.control select,.control input[type=text],.control textarea{font:inherit;font-size:15px;padding:6px 8px;border:1px solid var(--rule);border-radius:8px;background:#fff;color:var(--ink)}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px}
+button{font:inherit;font-size:14px;font-weight:500;padding:8px 14px;border-radius:999px;border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer}
+button.secondary{background:#fff;color:var(--accent)}
+button.ghost{background:transparent;border-color:var(--rule);color:var(--ink)}
+button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+button:disabled{opacity:.5;cursor:not-allowed}
+.readout{display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:12px;font-family:var(--mono);font-size:13.5px;color:var(--muted)}
+.readout b{color:var(--ink);font-weight:500}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12.5px;font-family:var(--mono);border:1px solid var(--rule);background:var(--code-bg)}
+.pill.ok{color:var(--ok);border-color:var(--ok)}
+.pill.warn{color:var(--warn);border-color:var(--warn)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13.5px;color:var(--muted);margin-top:8px}
+.legend span::before{content:"";display:inline-block;width:18px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle;background:var(--sw)}
+section.prose{max-width:720px;margin:28px auto 0;padding:0}
+section.prose h2{font-size:22px;margin:28px 0 8px;font-weight:600}
+section.prose p{margin:0 0 14px}
+section.prose ol,section.prose ul{margin:0 0 14px 22px;padding:0}
+section.prose li{margin-bottom:6px}
+code,pre{font-family:var(--mono);font-size:.92em}
+code{background:var(--code-bg);padding:1px 5px;border-radius:5px}
+pre{background:var(--code-bg);padding:12px 14px;border-radius:10px;overflow-x:auto;line-height:1.45}
+pre code{background:none;padding:0}
+.refs{font-size:14.5px;color:var(--muted)}
+.refs p{padding-left:1.6em;text-indent:-1.6em}
+nav.pager{display:flex;justify-content:space-between;gap:12px;max-width:var(--maxw);margin:30px auto 0;padding:18px 20px;border-top:1px solid var(--rule)}
+nav.pager a{text-decoration:none;font-size:15px;display:flex;flex-direction:column;gap:2px;max-width:48%}
+nav.pager a small{color:var(--muted);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+nav.pager a.next{text-align:right;margin-left:auto}
+footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;color:var(--muted)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:600px){
+  body{font-size:16px}
+  .stage{padding:12px;border-radius:10px}
+  .control{min-width:120px}
+}
+@media (prefers-reduced-motion: reduce){ .anim-hint{display:none} }
+/* ===== END SHARED STYLE ===== */
+
+.pop{position:absolute;z-index:3;background:#fff;border:1px solid var(--rule);border-radius:10px;padding:10px;box-shadow:0 8px 24px -10px rgba(0,0,0,.35);display:none;width:210px}
+.pop h4{margin:0 0 6px;font-size:13px;font-weight:600}
+.pop h4 small{color:var(--muted);font-weight:400}
+.pop .btnrow{flex-direction:column;gap:5px}
+.pop button{font-size:13px;padding:5px 10px;text-align:left}
+.pop .close{position:absolute;top:6px;right:8px;background:none;border:none;color:var(--muted);padding:0 4px;font-size:16px}
+.refs p,.readout span{overflow-wrap:anywhere}
+.hint{font-size:13px;color:var(--muted);margin:6px 0 0}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="series" href="erp-pipeline.html">ERP pipeline · PSYCH 390</a>
+  <span class="step">step 9 / 12</span>
+</div>
+<header class="hero">
+  <h1>Channel interpolation</h1>
+  <p class="q">How do you repair a bad electrode?</p>
+</header>
+
+<main>
+  <div class="stage" id="stage">
+    <div class="canvas-wrap">
+      <canvas id="cv" aria-label="Left: a top-down head with the electrode montage and a colour map of scalp voltage at the time cursor; bad electrodes are marked and their neighbours are joined by lines whose thickness shows their weight. Right: the true, corrupted and interpolated waveforms of the selected electrode."></canvas>
+      <div class="pop" id="pop" role="dialog" aria-label="Electrode options">
+        <button class="close" id="popx" aria-label="Close">×</button>
+        <h4 id="popt"></h4>
+        <div class="btnrow">
+          <button class="secondary" data-f="flat">Flat (lost contact)</button>
+          <button class="secondary" data-f="hf">High-frequency noise (poor contact)</button>
+          <button class="secondary" data-f="drift">Slow drift</button>
+          <button data-f="interp">Interpolate this channel</button>
+          <button class="ghost" data-f="none">Restore the real recording</button>
+        </div>
+      </div>
+    </div>
+    <p class="hint">Click an electrode to break it, click again to choose how to fix it.</p>
+    <div class="legend">
+      <span style="--sw:#c8962a">true waveform</span>
+      <span style="--sw:#9aa0aa">what the bad electrode recorded</span>
+      <span style="--sw:#0f6e74">interpolated from neighbours</span>
+    </div>
+    <div class="controls">
+      <div class="control">
+        <label for="tcur">Time cursor for the scalp map <span class="val" id="tcurv"></span></label>
+        <input type="range" id="tcur" min="-200" max="800" value="400" step="4">
+      </div>
+      <div class="control">
+        <label for="sel">Selected electrode</label>
+        <select id="sel"></select>
+      </div>
+      <div class="control" style="flex:0 1 auto">
+        <label>Electrode density</label>
+        <div class="btnrow">
+          <button class="secondary" id="d30" aria-pressed="true">30 channels</button>
+          <button class="secondary" id="d19" aria-pressed="false">19 channels</button>
+        </div>
+      </div>
+      <div class="btnrow">
+        <button id="interpall">Interpolate all bad channels</button>
+        <button class="ghost" id="reset">Reset</button>
+      </div>
+    </div>
+    <div class="readout" id="ro"></div>
+    <pre style="margin-top:12px;font-size:13px"><code id="code"></code></pre>
+  </div>
+
+  <section class="prose">
+    <h2>What you are looking at</h2>
+    <p>The head is seen from above, nose at the top, with the 30 electrodes of the lab montage in their 10/20 positions. Underneath them the colour shows the scalp voltage at the time set by the cursor, built from whatever each electrode is reporting. In the clean recording the map is smooth, because voltage spreads through the skull like a blur and neighbouring electrodes always see similar values. On the right are the three versions of the selected electrode's waveform: the true signal in gold, what the electrode actually recorded in grey, and the repair in teal.</p>
+    <p>An electrode goes bad in a few recognisable ways. A lost connection gives a flat line. Poor contact, with high impedance, lets high-frequency noise in. A slowly changing junction between gel and skin produces drift that survives the high-pass filter. In every case the sign is the same: the channel stops resembling its neighbours, visible in the channel scroll and as a bright spot in an otherwise smooth map. Interpolation replaces the channel with a weighted blend of the good electrodes around it, nearer ones counting more; the line thickness shows each neighbour's weight. The page uses a Gaussian of the great-circle distance, an approximation of the spherical spline that EEGLAB fits (Perrin et al., 1989).</p>
+
+    <h2>Try this</h2>
+    <ol>
+      <li>Click Cz and choose "Flat". The scalp map collapses to a hole at the vertex, and the grey trace is a line at zero.</li>
+      <li>Click Cz again and choose "Interpolate this channel". The map is smooth again and the teal trace sits almost on top of the gold one; read the rms error in the readout.</li>
+      <li>Do the same to an edge electrode such as T7 or O1. With neighbours on only one side the error is larger.</li>
+      <li>Switch to the 19-channel montage and repeat step 1 and 2. With the nearest neighbours farther away, the same repair is worse.</li>
+      <li>Break four or more channels in the 30-channel montage. The readout passes 10% and the warning appears: at that point the participant is probably not worth keeping.</li>
+    </ol>
+
+    <h2>Why it matters for the pipeline</h2>
+    <p>The average reference computed in the previous step, and the topographic maps and grand averages later on, all assume that every participant has the same electrodes in the same places. Dropping a bad channel would break that: the average reference would be built from a different set of sites for that person, and their scalp maps could not be compared with anyone else's. Interpolating keeps the montage identical. In the lab script the bad channels are listed per participant and repaired with <code>bad_chans = [15 22]; EEG = pop_interp(EEG, bad_chans, 'spherical');</code> (Delorme &amp; Makeig, 2004).</p>
+    <p>The repair comes with two cautions. An interpolated channel carries no information of its own; it is a smooth guess made from its neighbours, so it cannot be counted as an independent measurement, and if the effect you care about lives at that site the estimate is only as good as the surrounding coverage. The order also matters. Interpolate before re-referencing. If a flat or noisy channel goes into the average reference, its problem is subtracted from every other channel on the head. The usual rule from the lab is to allow up to about 10% interpolated channels, three in a 30-channel montage, and to consider excluding a participant who needs more (Luck, 2014).</p>
+
+    <h2 id="refs">References</h2>
+    <div class="refs">
+      <p>Delorme, A., &amp; Makeig, S. (2004). EEGLAB: An open source toolbox for analysis of single-trial EEG dynamics including independent component analysis. <i>Journal of Neuroscience Methods, 134</i>(1), 9–21. https://doi.org/10.1016/j.jneumeth.2003.10.009</p>
+      <p>Luck, S. J. (2014). <i>An introduction to the event-related potential technique</i> (2nd ed.). MIT Press.</p>
+      <p>Perrin, F., Pernier, J., Bertrand, O., &amp; Echallier, J. F. (1989). Spherical splines for scalp potential and current density mapping. <i>Electroencephalography and Clinical Neurophysiology, 72</i>(2), 184–187. https://doi.org/10.1016/0013-4694(89)90180-6</p>
+    </div>
+  </section>
+</main>
+
+<nav class="pager">
+  <a class="prev" href="erp-08-bins.html"><small>Previous</small><span>Bin assignment and epoching</span></a>
+  <a class="next" href="erp-10-artifacts.html"><small>Next</small><span>Artifact detection</span></a>
+</nav>
+<footer>Part of the ERP pipeline series for PSYCH 390, St. Olaf College. Built as a standalone page; nothing is sent anywhere.</footer>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+// ---------- montage: [name, radius (0 = vertex, 1 = head rim), azimuth deg (0 = nose, + = right)] ----------
+const M30=[['Fp1',.82,-18],['Fp2',.82,18],['F7',.82,-54],['F3',.5,-40],['Fz',.41,0],['F4',.5,40],['F8',.82,54],
+ ['FC5',.62,-64],['FC1',.27,-42],['FC2',.27,42],['FC6',.62,64],['T7',.82,-90],['C3',.41,-90],['Cz',0,0],['C4',.41,90],['T8',.82,90],
+ ['CP5',.62,-116],['CP1',.27,-138],['CP2',.27,138],['CP6',.62,116],['P7',.82,-126],['P3',.5,-140],['Pz',.41,180],['P4',.5,140],['P8',.82,126],
+ ['PO7',.82,-148],['PO8',.82,148],['O1',.82,-166],['Oz',.82,180],['O2',.82,166]];
+const M19names=['Fp1','Fp2','F7','F3','Fz','F4','F8','T7','C3','Cz','C4','T8','P7','P3','Pz','P4','P8','O1','O2'];
+function build(names){return M30.filter(m=>!names||names.includes(m[0])).map(m=>{const th=m[1]*Math.PI/2,ph=m[2]*Math.PI/180;
+  return {name:m[0],r:m[1],az:m[2],x:m[1]*Math.sin(ph),y:-m[1]*Math.cos(ph),v:[Math.sin(th)*Math.sin(ph),Math.sin(th)*Math.cos(ph),Math.cos(th)]};});}
+function gc(a,b){return Math.acos(Math.max(-1,Math.min(1,a.v[0]*b.v[0]+a.v[1]*b.v[1]+a.v[2]*b.v[2])))*180/Math.PI;}
+
+// ---------- the scalp field: three sources with ERP-like time courses ----------
+const FS=250,T0=-200,T1=800,NT=Math.round((T1-T0)/1000*FS)+1;
+const tms=k=>T0+k/FS*1000;
+function gauss(t,mu,sd){return Math.exp(-0.5*((t-mu)/sd)**2);}
+const SRC=[ // centre (as a pseudo electrode), spatial sd in degrees, time course in µV
+ {c:build(['Cz'])[0],sd:45,f:t=>-7*gauss(t,110,22)+8*gauss(t,200,30)},
+ {c:build(['Pz'])[0],sd:50,f:t=>-12*gauss(t,400,70)+6*gauss(t,620,110)},
+ {c:build(['Fz'])[0],sd:40,f:t=>4*gauss(t,420,90)}
+];
+function fieldAt(e,t){let v=0;for(const s of SRC){const d=gc(e,s.c);v+=s.f(t)*Math.exp(-0.5*(d/s.sd)**2);}return v;}
+
+// ---------- deterministic noise for the failure modes ----------
+let seed=5;function rnd(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;}
+function gaussRnd(){return Math.sqrt(-2*Math.log(rnd()+1e-12))*Math.cos(2*Math.PI*rnd());}
+
+// ---------- state ----------
+let E=[],state={},selected='Cz',density=30;
+function setMontage(n){density=n;E=build(n===19?M19names:null);
+  for(const e of E){e.truth=new Float32Array(NT);for(let k=0;k<NT;k++)e.truth[k]=fieldAt(e,tms(k));}
+  const keep={};for(const e of E)if(state[e.name])keep[e.name]=state[e.name];state=keep;
+  if(!E.find(e=>e.name===selected))selected='Cz';
+  const sel=$('sel');sel.innerHTML=E.map(e=>`<option value="${e.name}">${e.name}</option>`).join('');sel.value=selected;
+  compute();}
+function corrupt(e){const s=state[e.name];const out=new Float32Array(NT);
+  if(!s||s.fail==='none'){out.set(e.truth);return out;}
+  seed=100+E.indexOf(e);
+  if(s.fail==='flat'){for(let k=0;k<NT;k++)out[k]=gaussRnd()*0.15;}
+  else if(s.fail==='hf'){let b=0;for(let k=0;k<NT;k++){b=0.3*b+gaussRnd();out[k]=e.truth[k]+b*9;}}
+  else if(s.fail==='drift'){const ph=rnd()*6.28;for(let k=0;k<NT;k++){const t=tms(k)/1000;out[k]=e.truth[k]+25*Math.sin(2*Math.PI*0.35*t+ph)+15*t;}}
+  return out;}
+function weightsFor(e){const good=E.filter(o=>o!==e&&!(state[o.name]&&state[o.name].fail!=='none'));
+  const w=good.map(o=>({e:o,w:Math.exp(-0.5*(gc(e,o)/28)**2)}));const s=w.reduce((a,b)=>a+b.w,0);w.forEach(x=>x.w/=s||1);return w;}
+function compute(){
+  for(const e of E){e.rec=corrupt(e);e.bad=!!(state[e.name]&&state[e.name].fail!=='none');e.interp=e.bad&&state[e.name].interp;}
+  for(const e of E){e.out=e.rec;e.rms=null;
+    if(e.bad){const w=weightsFor(e);e.w=w;const v=new Float32Array(NT);for(const {e:o,w:ww} of w)for(let k=0;k<NT;k++)v[k]+=o.rec[k]*ww;e.est=v;
+      let s=0;for(let k=0;k<NT;k++)s+=(v[k]-e.truth[k])**2;e.rms=Math.sqrt(s/NT);if(e.interp)e.out=v;}
+    else{e.w=null;e.est=null;}}
+  readouts();draw();
+}
+
+// ---------- drawing ----------
+const cv=$('cv'),ctx=cv.getContext('2d');let W=1000,H=520,pts=[];
+const off=document.createElement('canvas'),octx=off.getContext('2d');
+const C={ink:'#1d1f24',muted:'#5c6270',rule:'#e2ddd4',gold:'#c8962a',grey:'#9aa0aa',teal:'#0f6e74',coral:'#d9573b'};
+function txt(s,x,y,o={}){ctx.font=(o.w||400)+' '+(o.s||12)+'px '+(o.m?'"IBM Plex Mono",monospace':'"IBM Plex Sans",system-ui,sans-serif');ctx.fillStyle=o.c||C.muted;ctx.textAlign=o.a||'left';ctx.textBaseline=o.b||'alphabetic';ctx.fillText(s,x,y);}
+function line(p,c,w,dash){ctx.beginPath();ctx.strokeStyle=c;ctx.lineWidth=w||1.2;ctx.setLineDash(dash||[]);p.forEach((q,i)=>i?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1]));ctx.stroke();ctx.setLineDash([]);}
+function narrow(){return W<620;}
+function fit(){const r=cv.getBoundingClientRect();const dpr=window.devicePixelRatio||1;W=r.width;H=narrow()?W+320:Math.max(400,Math.min(520,W*0.5));
+  cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);cv.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);}
+function cmap(v,scale){const x=Math.max(-1,Math.min(1,v/scale));
+  // teal (negative) .. white .. coral (positive)
+  const a=x<0?[15,110,116]:[217,87,59],t=Math.abs(x);return [255+(a[0]-255)*t,255+(a[1]-255)*t,255+(a[2]-255)*t];}
+function draw(){
+  ctx.clearRect(0,0,W,H);pts=[];
+  const nr=narrow();const tcur=+$('tcur').value,kc=Math.round((tcur-T0)/1000*FS);
+  // ---- head panel
+  const hx=nr?W/2:H/2+10,hy=nr?W/2+14:H/2+12,R=(nr?W/2-58:H/2-44);
+  txt('Scalp voltage at '+tcur+' ms, seen from above',nr?12:16,18,{c:C.ink,w:600,s:13});
+  // colour map on an offscreen grid
+  const G=64;off.width=G;off.height=G;const img=octx.createImageData(G,G);
+  const scale=10;
+  for(let j=0;j<G;j++)for(let i=0;i<G;i++){const x=(i+0.5)/G*2-1,y=(j+0.5)/G*2-1;const p=(j*G+i)*4;
+    if(x*x+y*y>1.02){img.data[p+3]=0;continue;}
+    let s=0,ws=0;for(const e of E){const d2=(e.x-x)**2+(e.y-y)**2;const w=Math.exp(-d2/(2*0.13*0.13));s+=w*e.out[kc];ws+=w;}
+    const c=cmap(ws?s/ws:0,scale);img.data[p]=c[0];img.data[p+1]=c[1];img.data[p+2]=c[2];img.data[p+3]=255;}
+  octx.putImageData(img,0,0);
+  ctx.save();ctx.beginPath();ctx.arc(hx,hy,R,0,6.29);ctx.clip();ctx.imageSmoothingEnabled=true;ctx.drawImage(off,hx-R,hy-R,2*R,2*R);ctx.restore();
+  // head outline, nose, ears
+  ctx.strokeStyle=C.ink;ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(hx,hy,R,0,6.29);ctx.stroke();
+  line([[hx-R*0.12,hy-R*0.99],[hx,hy-R*1.12],[hx+R*0.12,hy-R*0.99]],C.ink,1.5);
+  [[hx-R,1],[hx+R,-1]].forEach(([x,s])=>{ctx.beginPath();ctx.ellipse(x,hy,R*0.05,R*0.13,0,0,6.29);ctx.stroke();});
+  // colour bar
+  const bx=hx+R+14,by=hy-R*0.5,bh=R;
+  for(let i=0;i<40;i++){const c=cmap(scale-(i/39)*2*scale,scale);ctx.fillStyle=`rgb(${c[0]},${c[1]},${c[2]})`;ctx.fillRect(bx,by+i*bh/40,8,bh/40+0.5);}
+  ctx.strokeStyle=C.rule;ctx.strokeRect(bx,by,8,bh);
+  txt('+'+scale+' µV',bx+12,by+5,{s:10.5});txt('0',bx+12,by+bh/2+4,{s:10.5});txt('−'+scale,bx+12,by+bh,{s:10.5});
+  // neighbour lines for the selected electrode
+  const S=E.find(e=>e.name===selected);const P=e=>[hx+e.x*R,hy+e.y*R];
+  if(S&&S.w){for(const {e:o,w} of S.w){if(w<0.02)continue;line([P(S),P(o)],S.interp?C.teal:C.muted,0.5+w*22);}}
+  // electrodes
+  for(const e of E){const [x,y]=P(e);const r=nr?7:8;pts.push({e,x,y,r:r+5});
+    ctx.beginPath();ctx.arc(x,y,r,0,6.29);
+    ctx.fillStyle=e.bad?(e.interp?C.teal:'#fff'):'#fff';ctx.fill();
+    ctx.lineWidth=e===S?2.5:1.2;ctx.strokeStyle=e.bad&&!e.interp?C.coral:e===S?C.ink:C.muted;ctx.stroke();
+    if(e.bad&&!e.interp){line([[x-3,y-3],[x+3,y+3]],C.coral,1.5);line([[x-3,y+3],[x+3,y-3]],C.coral,1.5);}
+    txt(e.name,x,y-r-3,{a:'center',s:nr?9.5:10.5,c:e===S?C.ink:C.muted,w:e===S?600:400});
+  }
+  txt(density+' channels · × bad · filled = interpolated',hx,hy+R+30,{a:'center',s:11});
+  // ---- traces panel
+  const px0=nr?44:H+70,px1=W-14,py0=nr?W+40:42,py1=H-28;
+  txt((S?S.name:'')+(S&&S.bad?S.interp?': interpolated':': bad, not yet interpolated':': good channel'),px0,py0-14,{c:C.ink,w:600,s:13});
+  const rows=[['true',C.gold,S.truth],['recorded',C.grey,S.rec],[S.interp?'interpolated':'preview of interpolation',C.teal,S.est]];
+  const rh=(py1-py0)/3,sc0=12;
+  const xt=k=>px0+k/(NT-1)*(px1-px0);
+  const xc=xt(kc);
+  rows.forEach(([lab,col,data],i)=>{const y0=py0+i*rh,ym=y0+rh/2;
+    let sc=sc0;if(i===1&&data){const mx=Math.max(...Array.from(data).map(Math.abs));if(mx>sc0)sc=Math.ceil(mx/5)*5;}
+    const yv=v=>ym-(v/sc)*(rh/2)*0.9;
+    line([[px0,ym],[px1,ym]],C.rule,1,[3,3]);
+    txt('+'+sc+(i===0?' µV':''),px0-4,yv(sc)+9,{a:'right',s:10});
+    txt('0',px0-4,ym+4,{a:'right',s:10});
+    if(!data){txt(S.bad?'':'nothing to interpolate: the channel is good',px0+8,ym-6,{s:11});return;}
+    ctx.save();ctx.beginPath();ctx.rect(px0,y0,px1-px0,rh);ctx.clip();
+    const p=[];for(let k=0;k<NT;k++)p.push([xt(k),yv(data[k])]);line(p,col,i===1?1.2:1.8);
+    if(i===2&&S.est){const q=[];for(let k=0;k<NT;k++)q.push([xt(k),yv(S.truth[k])]);line(q,C.gold,1,[3,3]);}
+    ctx.restore();
+    ctx.font='600 11px "IBM Plex Sans",system-ui,sans-serif';const lw=ctx.measureText(lab).width;ctx.fillStyle='rgba(255,255,255,.85)';ctx.fillRect(px1-lw-8,y0+2,lw+6,14);
+    txt(lab,px1-4,y0+13,{a:'right',s:11,c:col,w:600});
+    let note='';if(i===1&&sc!==sc0)note='note the larger scale, ±'+sc+' µV';if(i===2&&S.est)note='rms error '+S.rms.toFixed(2)+' µV'+(nr?' vs true (dashed)':' against the true waveform (dashed)');
+    if(note){ctx.font='400 10.5px "IBM Plex Sans",system-ui,sans-serif';const nw=ctx.measureText(note).width;ctx.fillStyle='rgba(255,255,255,.85)';ctx.fillRect(px0+4,y0+rh-16,nw+6,14);txt(note,px0+7,y0+rh-5,{s:10.5,c:i===1?C.coral:C.muted});}
+  });
+  line([[xc,py0],[xc,py1]],C.gold,1,[2,3]);
+  [-200,0,200,400,600,800].forEach(ms=>{const x=xt(Math.round((ms-T0)/1000*FS));line([[x,py1],[x,py1+4]],C.muted);txt(ms+(ms===800?' ms':''),x,py1+15,{a:ms===800?'right':'center',s:10.5});});
+  ctx.strokeStyle=C.rule;ctx.strokeRect(px0,py0,px1-px0,py1-py0);
+}
+
+// ---------- readouts ----------
+function readouts(){
+  const bad=E.filter(e=>e.bad),ip=E.filter(e=>e.interp);const pct=ip.length/E.length*100;
+  const S=E.find(e=>e.name===selected);
+  let h=`<span>bad channels <b>${bad.length?bad.map(e=>e.name).join(', '):'none'}</b></span>`;
+  h+=`<span>interpolated <b>${ip.length} of ${E.length}</b> (${pct.toFixed(0)}%) <span class="pill ${pct>10?'warn':'ok'}">${pct>10?'over 10%: consider excluding this participant':'under 10%'}</span></span>`;
+  if(S&&S.est)h+=`<span>${S.name} rms error <b>${S.rms.toFixed(2)} µV</b> (signal ${(Math.sqrt(S.truth.reduce((a,v)=>a+v*v,0)/NT)).toFixed(2)} µV rms)</span>`;
+  $('ro').innerHTML=h;
+  const idx=bad.map(e=>E.indexOf(e)+1);
+  $('code').textContent=`bad_chans = [${idx.join(' ')}];   % ${bad.length?bad.map(e=>e.name).join(', '):'no bad channels'}\nEEG = pop_interp(EEG, bad_chans, 'spherical');`;
+}
+
+// ---------- interaction ----------
+const pop=$('pop');
+function openPop(e,x,y){selected=e.name;$('sel').value=e.name;
+  const s=state[e.name]||{fail:'none'};
+  $('popt').innerHTML=e.name+' <small>'+(s.fail==='none'?'good channel':s.fail==='flat'?'flat':s.fail==='hf'?'noisy':'drifting')+(s.interp?', interpolated':'')+'</small>';
+  pop.querySelector('[data-f=interp]').disabled=s.fail==='none'||!!s.interp;
+  pop.querySelector('[data-f=none]').disabled=s.fail==='none';
+  pop.style.display='block';pop.style.left=Math.max(0,Math.min(x+12,W-220))+'px';pop.style.top=Math.max(0,y-10)+'px';
+  compute();}
+cv.addEventListener('click',ev=>{const r=cv.getBoundingClientRect();const mx=ev.clientX-r.left,my=ev.clientY-r.top;
+  const h=pts.find(p=>Math.hypot(p.x-mx,p.y-my)<=p.r);
+  if(h)openPop(h.e,mx,my);else{pop.style.display='none';}});
+$('popx').addEventListener('click',()=>pop.style.display='none');
+pop.querySelectorAll('button[data-f]').forEach(b=>b.addEventListener('click',()=>{const f=b.dataset.f;const s=state[selected]||{fail:'none',interp:false};
+  if(f==='interp')s.interp=true;else if(f==='none'){s.fail='none';s.interp=false;}else{s.fail=f;s.interp=false;}
+  state[selected]=s;pop.style.display='none';compute();}));
+$('sel').addEventListener('change',()=>{selected=$('sel').value;const p=pts.find(p=>p.e.name===selected);if(p)openPop(p.e,p.x,p.y);else compute();});
+$('tcur').addEventListener('input',()=>{$('tcurv').textContent=$('tcur').value+' ms';draw();});
+$('tcurv').textContent=$('tcur').value+' ms';
+$('d30').addEventListener('click',()=>{$('d30').setAttribute('aria-pressed','true');$('d19').setAttribute('aria-pressed','false');pop.style.display='none';setMontage(30);});
+$('d19').addEventListener('click',()=>{$('d19').setAttribute('aria-pressed','true');$('d30').setAttribute('aria-pressed','false');pop.style.display='none';setMontage(19);});
+$('interpall').addEventListener('click',()=>{for(const e of E)if(e.bad)state[e.name].interp=true;pop.style.display='none';compute();});
+$('reset').addEventListener('click',()=>{state={};pop.style.display='none';compute();});
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{fit();draw();},80);});
+fit();setMontage(30);
+// start with one broken channel so the picture is not empty
+state['C3']={fail:'hf',interp:false};selected='C3';$('sel').value='C3';compute();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MATLAB introduction · ERP pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===== SHARED STYLE: copy verbatim into every page ===== */
+:root{
+  --bg:#f6f3ee; --panel:#ffffff; --ink:#1d1f24; --muted:#5c6270; --rule:#e2ddd4;
+  --accent:#0f6e74; --accent-2:#d9573b; --accent-3:#6b5ca5; --gold:#c8962a;
+  --ok:#2f8f4e; --warn:#c2410c; --code-bg:#f0ece4;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --maxw:1040px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+a:hover{text-decoration-thickness:2px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:var(--maxw);margin:0 auto;padding:14px 20px 0}
+.topbar .series{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.topbar .series:hover{color:var(--accent)}
+.topbar .step{font-family:var(--mono);font-size:13px;color:var(--muted)}
+header.hero{max-width:var(--maxw);margin:0 auto;padding:18px 20px 10px}
+header.hero h1{font-size:clamp(26px,4vw,38px);line-height:1.15;margin:0 0 6px;font-weight:600;letter-spacing:-.01em}
+header.hero p.q{margin:0;font-size:clamp(17px,2.2vw,20px);color:var(--muted);font-style:italic}
+main{max-width:var(--maxw);margin:0 auto;padding:8px 20px 40px}
+.stage{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:16px;box-shadow:0 1px 0 rgba(0,0,0,.02),0 8px 24px -18px rgba(0,0,0,.25)}
+.stage .canvas-wrap{position:relative;width:100%}
+.stage canvas,.stage svg{display:block;width:100%;height:auto}
+.controls{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:flex-end;margin-top:14px;padding-top:14px;border-top:1px solid var(--rule)}
+.control{display:flex;flex-direction:column;gap:4px;min-width:150px;flex:1 1 150px}
+.control label{font-size:13px;color:var(--muted);letter-spacing:.02em}
+.control .val{font-family:var(--mono);font-size:13px;color:var(--ink)}
+.control input[type=range]{width:100%;accent-color:var(--accent)}
+.control select,.control input[type=text],.control textarea{font:inherit;font-size:15px;padding:6px 8px;border:1px solid var(--rule);border-radius:8px;background:#fff;color:var(--ink)}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px}
+button{font:inherit;font-size:14px;font-weight:500;padding:8px 14px;border-radius:999px;border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer}
+button.secondary{background:#fff;color:var(--accent)}
+button.ghost{background:transparent;border-color:var(--rule);color:var(--ink)}
+button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+button:disabled{opacity:.5;cursor:not-allowed}
+.readout{display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:12px;font-family:var(--mono);font-size:13.5px;color:var(--muted)}
+.readout b{color:var(--ink);font-weight:500}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12.5px;font-family:var(--mono);border:1px solid var(--rule);background:var(--code-bg)}
+.pill.ok{color:var(--ok);border-color:var(--ok)}
+.pill.warn{color:var(--warn);border-color:var(--warn)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13.5px;color:var(--muted);margin-top:8px}
+.legend span::before{content:"";display:inline-block;width:18px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle;background:var(--sw)}
+section.prose{max-width:720px;margin:28px auto 0;padding:0}
+section.prose h2{font-size:22px;margin:28px 0 8px;font-weight:600}
+section.prose p{margin:0 0 14px}
+section.prose ol,section.prose ul{margin:0 0 14px 22px;padding:0}
+section.prose li{margin-bottom:6px}
+code,pre{font-family:var(--mono);font-size:.92em}
+code{background:var(--code-bg);padding:1px 5px;border-radius:5px}
+pre{background:var(--code-bg);padding:12px 14px;border-radius:10px;overflow-x:auto;line-height:1.45}
+pre code{background:none;padding:0}
+.refs{font-size:14.5px;color:var(--muted)}
+.refs p{padding-left:1.6em;text-indent:-1.6em}
+nav.pager{display:flex;justify-content:space-between;gap:12px;max-width:var(--maxw);margin:30px auto 0;padding:18px 20px;border-top:1px solid var(--rule)}
+nav.pager a{text-decoration:none;font-size:15px;display:flex;flex-direction:column;gap:2px;max-width:48%}
+nav.pager a small{color:var(--muted);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+nav.pager a.next{text-align:right;margin-left:auto}
+footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;color:var(--muted)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:600px){
+  body{font-size:16px}
+  .stage{padding:12px;border-radius:10px}
+  .control{min-width:120px}
+}
+@media (prefers-reduced-motion: reduce){ .anim-hint{display:none} }
+/* ===== END SHARED STYLE ===== */
+
+/* page-specific */
+.refs p{overflow-wrap:anywhere}
+.ide{display:grid;grid-template-columns:150px 1fr 1fr;grid-template-rows:auto auto;gap:8px;font-size:13px}
+.p{background:#fff;border:1px solid #cfcfcf;border-radius:6px;display:flex;flex-direction:column;min-width:0;overflow:hidden}
+.p h4{margin:0;padding:5px 10px;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:#555;background:#f3f3f3;border-bottom:1px solid #e0e0e0;display:flex;justify-content:space-between;align-items:center;gap:6px}
+.folder{grid-row:1/3}
+.folder ul{list-style:none;margin:0;padding:6px 10px;font-family:var(--mono);font-size:12px;color:#444;line-height:1.7}
+.folder li{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.folder li.cur{color:var(--accent);font-weight:500}
+.folder li::before{content:"▫ ";color:#aaa}
+.editor{grid-column:2;grid-row:1}
+.fig{grid-column:3;grid-row:1}
+.cmd{grid-column:2;grid-row:2}
+.ws{grid-column:3;grid-row:2}
+.ed{position:relative;flex:1;min-height:200px}
+.ed .lines{margin:0;padding:8px 10px;font-family:var(--mono);font-size:12.5px;line-height:1.6;white-space:pre;overflow-x:auto;color:#111;background:#fff}
+.ed .ln{display:block;padding:0 4px;border-left:3px solid transparent}
+.ed .ln.cur{background:#fff5d6;border-left-color:var(--gold)}
+.ed .ln.done{opacity:.75}
+.tk{border-radius:3px;cursor:help;outline:none}
+.tk.v{color:#1d1f24;border-bottom:1.5px solid #6b5ca5}
+.tk.f{color:#0f6e74;font-weight:500}
+.tk.c{color:#2f8f4e;font-style:italic}
+.tk.s{color:#a0522d}
+.tk.a{color:#1d1f24;background:#eef0fa}
+.tk.o{color:#5c6270}
+.tk:hover,.tk:focus{background:#fff0c2}
+.tip{position:absolute;z-index:5;background:#1d1f24;color:#fff;font-size:12px;padding:4px 8px;border-radius:6px;pointer-events:none;display:none;white-space:nowrap;font-family:var(--sans)}
+.tip.on{display:block}
+.edbtns{display:flex;gap:6px;flex-wrap:wrap;padding:6px 8px;border-top:1px solid #e0e0e0;background:#fafafa}
+.edbtns button{padding:4px 11px;font-size:12.5px}
+.cw{flex:1;font-family:var(--mono);font-size:12.5px;line-height:1.45;padding:8px 10px;margin:0;overflow:auto;min-height:150px;max-height:230px;white-space:pre-wrap;word-break:break-word;color:#111;background:#fff}
+.cw .in{color:#0f6e74}
+.cw .err{color:#c2410c}
+.cw .cm{color:#2f8f4e}
+.cin{display:flex;align-items:center;gap:6px;border-top:1px solid #e0e0e0;padding:4px 8px;font-family:var(--mono);font-size:12.5px;background:#fafafa}
+.cin input{flex:1;min-width:0;font:inherit;border:1px solid #cfcfcf;border-radius:4px;padding:4px 6px;background:#fff}
+.cin button{padding:4px 11px;font-size:12.5px}
+.ws table{border-collapse:collapse;width:100%;font-size:12.5px}
+.ws th{text-align:left;font-weight:500;color:#555;background:#fafafa;padding:3px 8px;border-bottom:1px solid #e0e0e0}
+.ws td{padding:3px 8px;border-bottom:1px solid #f0f0f0;font-family:var(--mono);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}
+.ws td.n{color:#1d1f24;font-weight:500}
+.ws .wrap{overflow:auto;flex:1;min-height:120px;max-height:230px}
+.ws .empty{padding:10px;color:#777;font-style:italic}
+.fig canvas{display:block;width:100%;height:auto}
+.fig .fw{flex:1;padding:6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:12px}
+.chips span{font-size:13px;color:var(--muted);margin-right:4px}
+.chips button{font-family:var(--mono);font-size:12.5px;padding:4px 10px}
+.key{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--muted);margin-top:10px}
+.key i{font-style:normal;font-family:var(--mono);font-size:12px;padding:1px 6px;border-radius:3px}
+@media (max-width:820px){
+  .ide{grid-template-columns:1fr 1fr}
+  .folder{display:none}
+  .editor{grid-column:1;grid-row:1}.fig{grid-column:2;grid-row:1}.cmd{grid-column:1;grid-row:2}.ws{grid-column:2;grid-row:2}
+}
+@media (max-width:560px){
+  .ide{grid-template-columns:1fr}
+  .editor,.fig,.cmd,.ws{grid-column:1;grid-row:auto}
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="series" href="erp-pipeline.html">ERP pipeline · PSYCH 390</a>
+  <span class="step">step 5 / 12</span>
+</div>
+<header class="hero">
+  <h1>MATLAB introduction</h1>
+  <p class="q">What is a variable, an array, a function, a comment?</p>
+</header>
+
+<main>
+  <div class="stage" id="stage">
+    <div class="ide" aria-label="A small MATLAB-like sandbox with Editor, Figure, Command Window and Workspace panels">
+      <div class="p folder"><h4>Current folder</h4>
+        <ul><li>data/</li><li class="cur">lab1_sine.m</li><li>lab2_load.m</li><li>N400_bins.txt</li><li>sub-001_N400.set</li><li>sub-001_N400.fdt</li></ul></div>
+      <div class="p editor"><h4>Editor: lab1_sine.m <span id="edstat" style="font-weight:400;text-transform:none;letter-spacing:0"></span></h4>
+        <div class="ed"><pre class="lines" id="lines" tabindex="0" aria-label="Script lines; hover or focus a token to see what it is"></pre><div class="tip" id="tip" role="tooltip"></div></div>
+        <div class="edbtns"><button id="runBtn">Run script</button><button class="secondary" id="stepBtn">Step</button><button class="ghost" id="resetBtn">Reset workspace</button></div></div>
+      <div class="p fig"><h4>Figure 1</h4><div class="fw"><canvas id="fig" aria-label="The current plot, drawn by the plot command"></canvas></div></div>
+      <div class="p cmd"><h4>Command Window</h4><pre class="cw" id="cw" aria-live="polite"></pre>
+        <div class="cin"><label for="cin">&gt;&gt;</label><input id="cin" type="text" autocomplete="off" spellcheck="false" placeholder="type a command and press Enter"><button id="cinRun">Enter</button></div></div>
+      <div class="p ws"><h4>Workspace</h4><div class="wrap"><table><thead><tr><th>Name</th><th>Value</th><th>Size</th><th>Class</th></tr></thead><tbody id="wsb"></tbody></table><div class="empty" id="wsEmpty">(empty; run something)</div></div></div>
+    </div>
+    <div class="chips" id="chips"><span>Try</span></div>
+    <div class="key">
+      <span><i style="background:#eef0fa;border-bottom:1.5px solid #6b5ca5">x</i> variable</span>
+      <span><i style="color:#0f6e74;font-weight:500">sin</i> function</span>
+      <span><i style="background:#eef0fa">[1, 2, 3]</i> array</span>
+      <span><i style="color:#2f8f4e;font-style:italic">% note</i> comment</span>
+      <span><i style="color:#a0522d">'text'</i> string</span>
+      <span>Hover or focus any token in the editor to name it.</span>
+    </div>
+  </div>
+
+  <section class="prose">
+    <h2>What you are looking at</h2>
+    <p>The four panels of the MATLAB desktop. The Editor holds a script, a plain text file ending in <code>.m</code> that lists commands in order. The Command Window is where a single command is typed and answered. The Workspace lists every variable that currently exists, with its size and class. The Figure window is where <code>plot</code> draws. The Current folder on the left is where MATLAB looks for files. When a script that runs on one laptop fails on another, the usual cause is that this folder is different.</p>
+    <p>A variable is a named box. <code>x = 5</code> creates a box called <code>x</code> and puts 5 in it, and the Workspace shows the box appear. An array is a row of boxes under one name: <code>data = [1, 2, 3, 4, 5]</code> makes five, and <code>data(2)</code> reads the second one, because MATLAB counts from 1. The colon operator builds long arrays without typing them, so <code>t = 0:0.01:2</code> is 201 time points spaced 10 ms apart. A function takes inputs and returns outputs: <code>sin(2*pi*t)</code> hands the whole array to <code>sin</code> and gets a whole array back, and <code>mean</code>, <code>size</code> and <code>plot</code> work the same way. A comment begins with <code>%</code> and is for the human reading the script; MATLAB skips it.</p>
+    <p>Two small rules cause most early errors. A semicolon at the end of a line stops MATLAB from printing the result, so <code>x = 5</code> echoes and <code>x = 5;</code> is silent. Names are case sensitive: <code>Data</code> and <code>data</code> are different boxes, and asking for one that does not exist produces the red "Undefined function or variable" message.</p>
+
+    <h2>Try this</h2>
+    <ol>
+      <li>Press Run script and watch the Workspace fill as each line is highlighted: <code>t</code> appears as a 1 × 201 double, then <code>y</code>, then the figure draws.</li>
+      <li>Click the <code>data = [1, 2, 3, 4, 5];</code> chip, then <code>mean(data)</code> and <code>data(2:4)</code>. Change the 4 to 6 and read the error.</li>
+      <li>Type <code>x = 5</code> with and without a semicolon.</li>
+      <li>Click <code>EEG.srate</code> and <code>size(EEG.data)</code>. The EEG variable is a struct: one box that holds named sub-boxes, and the 3 × 512 array inside it is three channels of voltage.</li>
+      <li>Click <code>plot(EEG.data(2,:))</code>, then try <code>plot(EEG.data(1, 1:128))</code> to zoom into the first half second.</li>
+    </ol>
+
+    <h2>Why it matters for the pipeline</h2>
+    <p>Every step of the ERP pipeline is a function call that takes the <code>EEG</code> variable in and hands a changed one back. <code>EEG = pop_eegfiltnew(EEG, 0.1, [])</code> has the same shape as <code>y = sin(2*pi*t)</code>, with a bigger input and a longer name. The <code>EEG</code> struct is the same kind of variable as <code>data</code>: <code>EEG.srate</code> is a number, <code>EEG.data</code> is an array with one row per channel and one column per sample, and <code>EEG.data(2, 1:5)</code> is the first five samples of channel 2. A script is these calls written down in order. Once ten labs' worth of them are in one file, processing a second participant means changing one filename. The MathWorks documentation (The MathWorks, Inc., 2024) has a page for every function used here; the Lab 1 script in the editor is the one from the course.</p>
+
+    <h2 id="refs">References</h2>
+    <div class="refs">
+      <p>The MathWorks, Inc. (2024). <i>MATLAB documentation</i>. https://www.mathworks.com/help/matlab/</p>
+      <p>Luck, S. J. (2014). <i>An introduction to the event-related potential technique</i> (2nd ed.). MIT Press.</p>
+    </div>
+  </section>
+</main>
+
+<nav class="pager">
+  <a class="prev" href="erp-04-eeglab-gui.html"><small>Previous</small><span>EEGLAB and data loading</span></a>
+  <a class="next" href="erp-06-filtering.html"><small>Next</small><span>Filtering</span></a>
+</nav>
+<footer>Part of the ERP pipeline series for PSYCH 390, St. Olaf College. Built as a standalone page; nothing is sent anywhere.</footer>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const SCRIPT=[
+"% Lab 1: draw one second-long sine wave",
+"t = 0:0.01:2;            % time axis, 10 ms steps",
+"y = sin(2*pi*t);         % one cycle per second",
+"plot(t, y)",
+"xlabel('Time (s)')",
+"ylabel('Amplitude')",
+"title('Sine Wave')",
+"n_points = length(t)"];
+
+// ---------- values ----------
+// number: {t:'num',v:[[...]] rows}, string {t:'str',v}, struct {t:'struct',v:{}}, fn handle names
+const num=(rows)=>({t:'num',v:rows});
+const scalar=x=>num([[x]]);
+const isNum=x=>x&&x.t==='num';
+const rowsOf=x=>x.v.length, colsOf=x=>x.v[0]?x.v[0].length:0;
+const numel=x=>rowsOf(x)*colsOf(x);
+const flat=x=>[].concat(...x.v);
+function fmt(n){if(Number.isInteger(n))return String(n);if(Math.abs(n)>=1e5||(Math.abs(n)<1e-4&&n!==0))return n.toExponential(4);return n.toFixed(4).replace(/\.?0+$/,'');}
+function fmtVal(x){
+  if(x.t==='str')return "'"+x.v+"'";
+  if(x.t==='struct')return '1×1 struct';
+  const r=rowsOf(x),c=colsOf(x);
+  if(r===1&&c===1)return fmt(x.v[0][0]);
+  if(r===1&&c<=10)return '['+x.v[0].map(fmt).join(', ')+']';
+  return r+'×'+c+' double';}
+function sizeOf(x){if(x.t==='str')return '1×'+x.v.length;if(x.t==='struct')return '1×1';return rowsOf(x)+'×'+colsOf(x);}
+function classOf(x){return x.t==='str'?'char':x.t==='struct'?'struct':'double';}
+function display(name,x){
+  if(x.t==='str')return `${name} =\n\n    '${x.v}'\n`;
+  if(x.t==='struct'){return `${name} = \n\n  struct with fields:\n\n`+Object.keys(x.v).map(k=>`    ${k.padStart(8)}: ${x.v[k].t==='num'&&numel(x.v[k])===1?fmt(x.v[k].v[0][0]):x.v[k].t==='str'?"'"+x.v[k].v+"'":'['+sizeOf(x.v[k])+' '+classOf(x.v[k])+']'}`).join('\n')+'\n';}
+  const r=rowsOf(x),c=colsOf(x);
+  if(r*c===0)return `${name} =\n\n     []\n`;
+  if(r===1&&c===1)return `${name} =\n\n    ${fmt(x.v[0][0])}\n`;
+  if(c<=12)return `${name} =\n\n`+x.v.map(row=>'    '+row.map(v=>fmt(v).padStart(8)).join('')).join('\n')+'\n';
+  const head=x.v.slice(0,Math.min(r,4)).map(row=>'    '+row.slice(0,8).map(v=>fmt(v).padStart(9)).join('')).join('\n');
+  return `${name} =\n\n  Columns 1 through 8\n\n${head}\n\n  ... (${r}×${c} double, ${c-8} more columns)\n`;}
+
+// ---------- built-in EEG struct (deterministic) ----------
+let seed=5;function rnd(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;}
+function gr(){return Math.sqrt(-2*Math.log(rnd()+1e-12))*Math.cos(6.2832*rnd());}
+function makeEEG(){seed=5;const rows=[];for(let c=0;c<3;c++){let a=0,b=0;const row=[];for(let i=0;i<512;i++){const t=i/256;a=0.95*a+gr();b=0.6*b+gr();row.push(Math.round((a*2+b*4+8*Math.sin(6.2832*10*t+c)*(0.5+0.5*Math.sin(6.2832*0.5*t)))*100)/100);}rows.push(row);}
+  return {t:'struct',v:{srate:scalar(256),nbchan:scalar(33),pnts:scalar(512),data:num(rows),setname:{t:'str',v:'sub-001_N400'}}};}
+
+// ---------- tokenizer ----------
+function tokenize(src){const toks=[];let i=0;
+  while(i<src.length){const ch=src[i];
+    if(ch===' '||ch==='\t'){i++;continue;}
+    if(ch==='%'){toks.push({t:'comment',v:src.slice(i)});break;}
+    if(ch==="'"&&(toks.length===0||!/^(id|num|rp|rb)$/.test(toks[toks.length-1].t))){let j=i+1,s='';while(j<src.length){if(src[j]==="'"){if(src[j+1]==="'"){s+="'";j+=2;continue;}break;}s+=src[j];j++;}if(j>=src.length)throw new Error('A quoted string is unterminated.');toks.push({t:'str',v:s});i=j+1;continue;}
+    if(ch==="'"){toks.push({t:'op',v:"'"});i++;continue;}
+    if(/[0-9.]/.test(ch)&&/[0-9]/.test(src.slice(i,i+2).replace('.',''))){const m=src.slice(i).match(/^(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?/);toks.push({t:'num',v:parseFloat(m[0])});i+=m[0].length;continue;}
+    if(/[A-Za-z_]/.test(ch)){const m=src.slice(i).match(/^[A-Za-z_][\w·]*/);toks.push({t:'id',v:m[0]});i+=m[0].length;continue;}
+    const two=src.slice(i,i+2);if(['.*','./','.^','==','~=','<=','>='].includes(two)){toks.push({t:'op',v:two});i+=2;continue;}
+    if('+-*/^=(),:;[]<>'.includes(ch)){toks.push({t:ch==='('?'lp':ch===')'?'rp':ch==='['?'lb':ch===']'?'rb':'op',v:ch});i++;continue;}
+    throw new Error(`Invalid character '${ch}'.`);}
+  return toks;}
+
+// ---------- interpreter ----------
+const FN={sin:Math.sin,cos:Math.cos,sqrt:Math.sqrt,abs:Math.abs,round:Math.round,exp:Math.exp,log:Math.log,floor:Math.floor,ceil:Math.ceil};
+const RED={mean:a=>a.reduce((s,v)=>s+v,0)/a.length,max:a=>Math.max(...a),min:a=>Math.min(...a),sum:a=>a.reduce((s,v)=>s+v,0),length:(a,x)=>numel(x)?Math.max(rowsOf(x),colsOf(x)):0,numel:(a,x)=>numel(x),std:a=>{const m=a.reduce((s,v)=>s+v,0)/a.length;return Math.sqrt(a.reduce((s,v)=>s+(v-m)**2,0)/Math.max(1,a.length-1));}};
+const PLOTFN=['plot','xlabel','ylabel','title','legend','figure','hold','grid','disp','fprintf','clc','clear','size','zeros','ones','linspace','who','whos'];
+function isFn(n){return n in FN||n in RED||PLOTFN.includes(n)||n==='pi';}
+let W={},fig={series:[],xlabel:'',ylabel:'',title:'',legend:null};
+function reset(){W={EEG:makeEEG()};fig={series:[],xlabel:'',ylabel:'',title:'',legend:null};}
+function binop(op,a,b){
+  if(a.t!=='num'||b.t!=='num')throw new Error(`Operator '${op}' is not supported for operands of type '${classOf(a)}' and '${classOf(b)}'.`);
+  const ra=rowsOf(a),ca=colsOf(a),rb=rowsOf(b),cb=colsOf(b);
+  const f={'+':(x,y)=>x+y,'-':(x,y)=>x-y,'*':(x,y)=>x*y,'.*':(x,y)=>x*y,'/':(x,y)=>x/y,'./':(x,y)=>x/y,'^':(x,y)=>Math.pow(x,y),'.^':(x,y)=>Math.pow(x,y),'==':(x,y)=>+(x===y),'~=':(x,y)=>+(x!==y),'<':(x,y)=>+(x<y),'>':(x,y)=>+(x>y),'<=':(x,y)=>+(x<=y),'>=':(x,y)=>+(x>=y)}[op];
+  if(!f)throw new Error(`Unsupported operator '${op}'.`);
+  if(ra===1&&ca===1)return num(b.v.map(r=>r.map(v=>f(a.v[0][0],v))));
+  if(rb===1&&cb===1)return num(a.v.map(r=>r.map(v=>f(v,b.v[0][0]))));
+  if(ra===rb&&ca===cb)return num(a.v.map((r,i)=>r.map((v,j)=>f(v,b.v[i][j]))));
+  throw new Error(`Arrays have incompatible sizes for this operation (${ra}×${ca} and ${rb}×${cb}). Element-wise operators need the same size.`);}
+function colon(a,b,c){const s=x=>{if(!isNum(x)||numel(x)!==1)throw new Error('Colon operands must be scalars.');return x.v[0][0];};
+  const lo=s(a),step=c?s(b):1,hi=c?s(c):s(b);const out=[];if(step===0)return num([[]]);
+  const n=Math.floor((hi-lo)/step+1e-10);for(let i=0;i<=n;i++)out.push(Math.round((lo+i*step)*1e10)/1e10);return num([out]);}
+
+function Parser(toks,ctx){this.toks=toks;this.i=0;this.ctx=ctx;}
+Parser.prototype={
+  peek(){return this.toks[this.i];},next(){return this.toks[this.i++];},
+  is(t,v){const k=this.peek();return k&&k.t===t&&(v===undefined||k.v===v);},
+  expect(t,v){if(!this.is(t,v))throw new Error(`Expected '${v||t}' but found ${this.peek()?"'"+this.peek().v+"'":'end of line'}.`);return this.next();},
+  expr(){return this.cmp();},
+  cmp(){let a=this.range();while(this.peek()&&this.peek().t==='op'&&['==','~=','<','>','<=','>='].includes(this.peek().v)){const op=this.next().v;a=binop(op,a,this.range());}return a;},
+  range(){let a=this.add();if(this.is('op',':')&&!this.inIndex){this.next();const b=this.add();if(this.is('op',':')){this.next();const c=this.add();return colon(a,b,c);}return colon(a,b);}return a;},
+  add(){let a=this.mul();while(this.is('op','+')||this.is('op','-')){const op=this.next().v;a=binop(op,a,this.mul());}return a;},
+  mul(){let a=this.unary();while(this.peek()&&this.peek().t==='op'&&['*','/','.*','./'].includes(this.peek().v)){const op=this.next().v;a=binop(op,a,this.unary());}return a;},
+  unary(){if(this.is('op','-')){this.next();return binop('*',scalar(-1),this.unary());}if(this.is('op','+')){this.next();return this.unary();}return this.pow();},
+  pow(){let a=this.post();if(this.is('op','^')||this.is('op','.^')){const op=this.next().v;return binop(op,a,this.unary());}return a;},
+  post(){let a=this.atom();while(this.is('op',"'")){this.next();a=num(a.v[0].map((_,j)=>a.v.map(r=>r[j])));}return a;},
+  args(){const out=[];this.expect('lp');const saved=this.inIndex;this.inIndex=false;if(!this.is('rp')){out.push(this.expr());while(this.is('op',',')){this.next();out.push(this.expr());}}this.inIndex=saved;this.expect('rp');return out;},
+  index(x){const out=[];this.expect('lp');const saved=this.inIndex;this.inIndex=false;const dim=(n)=>{if(this.is('op',':')){this.next();if(!this.is('op',',')&&!this.is('rp'))throw new Error("Expected ')' after ':'.");return null;}
+      const e=this.expr();return e;};
+    if(!this.is('rp')){out.push(dim(0));while(this.is('op',',')){this.next();out.push(dim(1));}}this.inIndex=saved;this.expect('rp');return out;},
+  atom(){const k=this.next();if(!k)throw new Error('Expression ended unexpectedly.');
+    if(k.t==='num')return scalar(k.v);
+    if(k.t==='str')return {t:'str',v:k.v};
+    if(k.t==='lp'){const e=this.expr();this.expect('rp');return e;}
+    if(k.t==='lb'){const rows=[[]];while(!this.is('rb')){if(this.is('op',',')){this.next();continue;}if(this.is('op',';')){this.next();rows.push([]);continue;}
+        if(!this.peek())throw new Error("Expected ']' to close the array.");const e=this.expr();if(e.t!=='num')throw new Error('Only numbers can go inside [ ] here.');
+        const last=rows[rows.length-1];if(rowsOf(e)===1)last.push(...e.v[0]);else if(colsOf(e)===1)e.v.forEach((r,i)=>{if(!rows[i])rows[i]=[];rows[i].push(r[0]);});else throw new Error('Nested matrices are not supported here.');}
+      this.next();if(rows.length>1&&rows.some(r=>r.length!==rows[0].length))throw new Error('Dimensions of arrays being concatenated are not consistent.');return num(rows[0].length?rows:[[]]);}
+    if(k.t==='id')return this.ident(k.v);
+    throw new Error(`Unexpected '${k.v}'.`);},
+  ident(name){
+    if(name==='pi')return scalar(Math.PI);
+    if(name in W){let v=W[name];while(this.is('lp'))v=this.doIndex(v,this.index(v),name);return v;}
+    if(name in FN){const a=this.args();if(a.length!==1)throw new Error(`${name} expects one input.`);if(a[0].t!=='num')throw new Error(`${name} needs a numeric input.`);return num(a[0].v.map(r=>r.map(FN[name])));}
+    if(name in RED){const a=this.args();if(a.length!==1)throw new Error(`${name} expects one input.`);if(a[0].t!=='num')throw new Error(`${name} needs a numeric input.`);const x=a[0];
+      if(name==='length'||name==='numel')return scalar(RED[name](null,x));
+      if(rowsOf(x)===1||colsOf(x)===1)return scalar(RED[name](flat(x)));
+      return num([x.v[0].map((_,j)=>RED[name](x.v.map(r=>r[j])))]);}
+    if(name==='size'){const a=this.args();if(a.length!==1)throw new Error('size expects one input.');const x=a[0];return num([[x.t==='str'?1:rowsOf(x),x.t==='str'?x.v.length:x.t==='struct'?1:colsOf(x)]]);}
+    if(name==='zeros'||name==='ones'||name==='linspace'){const a=this.args().map(v=>v.v[0][0]);if(name==='linspace'){const n=a[2]||100;return num([Array.from({length:n},(_,i)=>a[0]+(a[1]-a[0])*i/(n-1))]);}
+      const r=a[0],c=a.length>1?a[1]:a[0];return num(Array.from({length:r},()=>Array(c).fill(name==='ones'?1:0)));}
+    if(PLOTFN.includes(name)){const a=this.is('lp')?this.args():[];return this.ctx.call(name,a);}
+    throw new Error(`Undefined function or variable '${name}'.`);},
+  doIndex(v,idx,name){
+    if(v.t!=='num')throw new Error(`Indexing a ${classOf(v)} with ( ) is not supported here.`);
+    const chk=(i,n,what)=>{if(!Number.isInteger(i)||i<1)throw new Error('Array indices must be positive integers.');if(i>n)throw new Error(`Index exceeds the number of array elements. Index must not exceed ${n}.`);return i-1;};
+    if(idx.length===1){const all=flat(v);const sel=idx[0]===null?all.map((_,i)=>i+1):flat(idx[0]);const out=sel.map(i=>all[chk(i,all.length)]);return num([out]);}
+    if(idx.length===2){const R=idx[0]===null?v.v.map((_,i)=>i+1):flat(idx[0]);const C=idx[1]===null?v.v[0].map((_,j)=>j+1):flat(idx[1]);
+      return num(R.map(i=>{const ri=chk(i,rowsOf(v));return C.map(j=>v.v[ri][chk(j,colsOf(v))]);}));}
+    throw new Error('Only one or two indices are supported.');}
+};
+function evalLine(src,ctx){
+  const t0=tokenize(src.replace(/([A-Za-z_]\w*)\.([A-Za-z_])/g,'$1·$2'));  // guard struct dots before tokenizing
+  const toks=[];for(const k of t0){if(k.t==='id'&&k.v.includes('·')){toks.push({t:'id',v:k.v.split('·').join('.')});}else toks.push(k);}
+  // resolve struct paths: an id containing '.' is a field lookup
+  const resolved=toks.map(k=>{if(k.t==='id'&&k.v.includes('.')){const parts=k.v.split('.');return {t:'id',v:k.v,path:parts};}return k;});
+  const comment=resolved.find(k=>k.t==='comment');const body=resolved.filter(k=>k.t!=='comment');
+  let silent=false;if(body.length&&body[body.length-1].t==='op'&&body[body.length-1].v===';'){silent=true;body.pop();}
+  if(!body.length)return;
+  // assignment?
+  let target=null,rest=body;
+  if(body[0].t==='id'&&body[1]&&body[1].t==='op'&&body[1].v==='='){target=body[0];rest=body.slice(2);if(!rest.length)throw new Error('Expected an expression after =.');}
+  // install struct path lookup
+  const P=new Parser(rest,ctx);const origIdent=P.ident;
+  P.ident=function(name){const k=this.toks[this.i-1];if(k.path){let v=W[k.path[0]];if(v===undefined)throw new Error(`Undefined function or variable '${k.path[0]}'.`);
+      for(let p=1;p<k.path.length;p++){if(v.t!=='struct')throw new Error(`Dot indexing is not supported for variables of this type.`);if(!(k.path[p] in v.v))throw new Error(`Unrecognized field name "${k.path[p]}".`);v=v.v[k.path[p]];}
+      while(this.is('lp'))v=this.doIndex(v,this.index(v),name);return v;}
+    return origIdent.call(this,name);};
+  const val=P.expr();
+  if(P.peek())throw new Error(`Unexpected '${P.peek().v}'. Check for a missing operator or comma.`);
+  if(target){if(isFn(target.v))throw new Error(`'${target.v}' is a built-in function here; pick another name.`);if(val===undefined)throw new Error('The right-hand side produced no value.');W[target.v]=val;if(!silent)ctx.out(display(target.v,val));}
+  else if(val!==undefined&&!silent){const name=(rest.length===1&&rest[0].t==='id'&&!rest[0].path)?rest[0].v:'ans';if(name==='ans')W.ans=val;ctx.out(display(name,val));}
+}
+
+// ---------- figure ----------
+const fc=$('fig'),fx=fc.getContext('2d');
+function fitFig(){const r=fc.getBoundingClientRect();const dpr=devicePixelRatio||1;const w=r.width,h=Math.max(150,Math.min(240,w*0.6));fc.width=Math.round(w*dpr);fc.height=Math.round(h*dpr);fc.style.height=h+'px';fx.setTransform(dpr,0,0,dpr,0,0);return {w,h};}
+function niceTicks(lo,hi){const span=hi-lo||1;const step=Math.pow(10,Math.floor(Math.log10(span/4)));const m=span/step;const s=m>=8?2*step:m>=4?step:step/2;const out=[];for(let v=Math.ceil(lo/s)*s;v<=hi+1e-9;v+=s)out.push(Math.round(v*1e9)/1e9);return out;}
+function drawFig(){const {w,h}=fitFig();fx.clearRect(0,0,w,h);const L=44,R=w-10,T=fig.title?22:10,B=h-(fig.xlabel?34:22);
+  fx.font='11px "IBM Plex Sans",system-ui,sans-serif';fx.fillStyle='#5c6270';
+  if(!fig.series.length){fx.textAlign='center';fx.fillText('no figure yet',w/2,h/2);return;}
+  let xlo=Infinity,xhi=-Infinity,ylo=Infinity,yhi=-Infinity;fig.series.forEach(s=>s.x.forEach((v,i)=>{xlo=Math.min(xlo,v);xhi=Math.max(xhi,v);ylo=Math.min(ylo,s.y[i]);yhi=Math.max(yhi,s.y[i]);}));
+  if(ylo===yhi){ylo-=1;yhi+=1;}if(xlo===xhi){xlo-=1;xhi+=1;}const yt=niceTicks(ylo,yhi);ylo=Math.min(ylo,yt[0]);yhi=Math.max(yhi,yt[yt.length-1]);
+  const X=v=>L+(v-xlo)/(xhi-xlo)*(R-L),Y=v=>B-(v-ylo)/(yhi-ylo)*(B-T);
+  fx.strokeStyle='#cfcfcf';fx.lineWidth=1;fx.strokeRect(L,T,R-L,B-T);
+  fx.textAlign='right';yt.forEach(v=>{fx.fillText(fmt(v),L-4,Y(v)+3);fx.beginPath();fx.moveTo(L,Y(v));fx.lineTo(L+4,Y(v));fx.stroke();});
+  fx.textAlign='center';niceTicks(xlo,xhi).forEach(v=>{fx.fillText(fmt(v),X(v),B+12);fx.beginPath();fx.moveTo(X(v),B);fx.lineTo(X(v),B-4);fx.stroke();});
+  if(fig.xlabel)fx.fillText(fig.xlabel,(L+R)/2,h-4);
+  if(fig.ylabel){fx.save();fx.translate(10,(T+B)/2);fx.rotate(-Math.PI/2);fx.fillText(fig.ylabel,0,0);fx.restore();}
+  if(fig.title){fx.fillStyle='#1d1f24';fx.font='600 12px "IBM Plex Sans",system-ui,sans-serif';fx.fillText(fig.title,(L+R)/2,14);}
+  const cols=['#0f6e74','#d9573b','#6b5ca5','#c8962a'];
+  fig.series.forEach((s,k)=>{fx.beginPath();fx.strokeStyle=cols[k%4];fx.lineWidth=1.5;s.x.forEach((v,i)=>i?fx.lineTo(X(v),Y(s.y[i])):fx.moveTo(X(v),Y(s.y[i])));fx.stroke();});
+  if(fig.legend){fx.font='11px "IBM Plex Sans",system-ui,sans-serif';fx.textAlign='left';fig.legend.forEach((l,k)=>{const y=T+12+k*14;fx.strokeStyle=cols[k%4];fx.beginPath();fx.moveTo(R-90,y-3);fx.lineTo(R-72,y-3);fx.stroke();fx.fillStyle='#1d1f24';fx.fillText(l,R-66,y);});}}
+
+// ---------- command window ----------
+const cw=$('cw');
+function out(s,cls){const sp=document.createElement('span');if(cls)sp.className=cls;sp.textContent=s;cw.append(sp);while(cw.childNodes.length>80)cw.removeChild(cw.firstChild);cw.scrollTop=cw.scrollHeight;}
+function sprintf(f,args){let ai=0;return f.replace(/\\n/g,'\n').replace(/\\t/g,'\t').replace(/%(\d*)\.?(\d*)([dfsg])/g,(m,wd,pr,c)=>{const a=args[ai++];if(a===undefined)return '';let s;
+  if(c==='s')s=a.t==='str'?a.v:fmt(a.v[0][0]);else{const v=a.t==='str'?NaN:a.v[0][0];s=c==='d'?String(Math.round(v)):c==='f'?v.toFixed(pr===''?4:+pr):fmt(v);}return wd?s.padStart(+wd):s;});}
+const ctx={out,call(name,a){
+  const str=x=>{if(!x||x.t!=='str')throw new Error(`${name} expects text in single quotes.`);return x.v;};
+  switch(name){
+    case 'plot':{if(!a.length)throw new Error('plot needs at least one input.');let x,y;if(a.length===1){y=a[0];x=num([flat(y).map((_,i)=>i+1)]);}else{x=a[0];y=a[1];}
+      if(x.t!=='num'||y.t!=='num')throw new Error('plot needs numeric inputs.');
+      const ys=rowsOf(y)===1||colsOf(y)===1?[flat(y)]:y.v;const xs=flat(x);
+      if(ys.some(r=>r.length!==xs.length))throw new Error('Vectors must be the same length.');
+      if(!fig.hold)fig.series=[];ys.forEach(r=>fig.series.push({x:xs,y:r}));drawFig();return;}
+    case 'xlabel':fig.xlabel=str(a[0]);drawFig();return;
+    case 'ylabel':fig.ylabel=str(a[0]);drawFig();return;
+    case 'title':fig.title=str(a[0]);drawFig();return;
+    case 'legend':fig.legend=a.map(str);drawFig();return;
+    case 'figure':fig={series:[],xlabel:'',ylabel:'',title:'',legend:null};drawFig();return;
+    case 'hold':fig.hold=!(a[0]&&a[0].t==='str'&&a[0].v==='off');return;
+    case 'grid':return;
+    case 'clc':cw.textContent='';return;
+    case 'clear':W={EEG:makeEEG()};return;
+    case 'disp':{if(!a.length)throw new Error('disp needs one input.');const x=a[0];out(x.t==='str'?x.v+'\n':display('',x).replace(/^ =\n\n/,''));return;}
+    case 'fprintf':{if(!a.length)throw new Error('fprintf needs a format string.');out(sprintf(str(a[0]),a.slice(1)));return;}
+    case 'who':case 'whos':out('Your variables are:\n\n'+Object.keys(W).join('  ')+'\n');return;
+  }}};
+function exec(src,echo){if(echo!==false)out('>> '+src+'\n','in');
+  try{evalLine(src,ctx);}catch(e){out(e.message+'\n','err');}renderWS();}
+
+// ---------- workspace ----------
+function renderWS(){const tb=$('wsb');tb.innerHTML='';const names=Object.keys(W).sort();$('wsEmpty').style.display=names.length?'none':'block';
+  names.forEach(n=>{const x=W[n];const tr=document.createElement('tr');[[n,'n'],[fmtVal(x)],[sizeOf(x)],[classOf(x)]].forEach(([v,c])=>{const td=document.createElement('td');td.textContent=v;td.title=v;if(c)td.className=c;tr.append(td);});tb.append(tr);});}
+
+// ---------- editor with tokens and tooltips ----------
+const NAMES={v:'variable (a named box in the Workspace)',f:'function (takes inputs, returns outputs)',c:'comment (for humans; MATLAB skips it)',a:'array (a row of boxes, built with [ ] or :)',s:'string (text in single quotes)',o:'operator',n:'number',semi:'semicolon: run but do not print'};
+function classify(tok,src){if(tok.t==='comment')return 'c';if(tok.t==='str')return 's';if(tok.t==='num')return 'n';if(tok.t==='id')return isFn(tok.v)?'f':'v';if(tok.t==='op'&&tok.v===';')return 'semi';if(tok.t==='lb'||tok.t==='rb')return 'a';if(tok.t==='op'&&tok.v===':')return 'a';return 'o';}
+function renderEditor(){const pre=$('lines');pre.innerHTML='';
+  SCRIPT.forEach((line,li)=>{const sp=document.createElement('span');sp.className='ln';sp.dataset.i=li;
+    let toks=[];try{toks=tokenize(line.replace(/([A-Za-z_]\w*)\.([A-Za-z_])/g,'$1·$2'));}catch(e){}
+    let pos=0;const raw=line;
+    toks.forEach(k=>{let text=k.t==='comment'?k.v:k.t==='str'?"'"+k.v.replace(/'/g,"''")+"'":k.t==='num'?raw.slice(pos).match(/^\s*([\d.]+(?:[eE][+-]?\d+)?)/)?.[1]:String(k.v).replace(/·/g,'.');
+      const at=raw.indexOf(text,pos);if(at<0)return;sp.append(raw.slice(pos,at));const t=document.createElement('span');const c=classify(k);t.className='tk '+(c==='semi'||c==='n'?'o':c);t.textContent=text;t.tabIndex=0;t.dataset.kind=NAMES[c]+(c==='a'?'':'');
+      if(c==='v'&&/\b(t|y)\b/.test(text))t.dataset.kind='variable '+text+' (a named box in the Workspace)';
+      if(c==='f')t.dataset.kind='function '+text+' (takes inputs, returns outputs)';
+      sp.append(t);pos=at+text.length;});
+    sp.append(raw.slice(pos)+'\n');pre.append(sp);});}
+const tip=$('tip');
+function showTip(el){const r=el.getBoundingClientRect(),pr=$('lines').parentElement.getBoundingClientRect();tip.textContent=el.dataset.kind;tip.classList.add('on');
+  let x=r.left-pr.left,y=r.bottom-pr.top+4;tip.style.left='0';tip.style.top=y+'px';const tw=tip.offsetWidth;x=Math.max(0,Math.min(x,pr.width-tw-4));tip.style.left=x+'px';}
+$('lines').addEventListener('mouseover',e=>{const t=e.target.closest('.tk');if(t)showTip(t);});
+$('lines').addEventListener('mouseout',e=>{if(e.target.closest('.tk'))tip.classList.remove('on');});
+$('lines').addEventListener('focusin',e=>{const t=e.target.closest('.tk');if(t)showTip(t);});
+$('lines').addEventListener('focusout',()=>tip.classList.remove('on'));
+
+// ---------- run / step ----------
+let cur=0,running=false,timer=null;
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function mark(){document.querySelectorAll('.ln').forEach((l,i)=>{l.classList.toggle('cur',i===cur&&cur<SCRIPT.length);l.classList.toggle('done',i<cur);});
+  $('edstat').textContent=cur>=SCRIPT.length?'(finished)':running?'(running, line '+(cur+1)+')':cur>0?'(paused at line '+(cur+1)+')':'';}
+function stepOnce(){if(cur>=SCRIPT.length){cur=0;}const line=SCRIPT[cur];const s=line.trim();
+  if(s&&!s.startsWith('%'))exec(line);else if(s)out(line+'\n','cm');cur++;mark();}
+function runAll(){if(running)return;if(cur>=SCRIPT.length)cur=0;running=true;$('runBtn').disabled=true;
+  const tick=()=>{if(cur>=SCRIPT.length){running=false;$('runBtn').disabled=false;mark();return;}stepOnce();timer=setTimeout(tick,reduce?0:380);};tick();}
+$('runBtn').addEventListener('click',runAll);
+$('stepBtn').addEventListener('click',()=>{if(running)return;stepOnce();});
+$('resetBtn').addEventListener('click',()=>{clearTimeout(timer);running=false;$('runBtn').disabled=false;cur=0;reset();cw.textContent='';out('>> clear; clc\n','in');drawFig();renderWS();mark();});
+function runInput(){const v=$('cin').value.trim();if(!v)return;exec(v);$('cin').value='';}
+$('cinRun').addEventListener('click',runInput);
+$('cin').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();runInput();}});
+['data = [1, 2, 3, 4, 5];','mean(data)','data(2:4)','EEG.srate','size(EEG.data)','plot(EEG.data(2,:))','y2 = sin(2*pi*3*t);','x = 5'].forEach(c=>{const b=document.createElement('button');b.className='secondary';b.textContent=c;b.addEventListener('click',()=>{$('cin').value=c;$('cin').focus();runInput();});$('chips').append(b);});
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(drawFig,80);});
+reset();renderEditor();renderWS();drawFig();mark();
+out('MATLAB-like sandbox (a small subset of the language). Type a command below or run the script.\n','cm');
+window.__sandbox={exec,W:()=>W,cw:()=>cw.textContent};
+})();
+</script>
+</body>
+</html>

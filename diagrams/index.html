@@ -48,6 +48,14 @@
   .tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px}
   .tag{font-size:11px;color:var(--gold);border:1px solid rgba(228,160,27,.35);padding:2px 8px;border-radius:999px}
   .card p{margin:0;font-size:13.5px;color:var(--muted)}
+  .series-strip{margin:0 0 22px}
+  .series-link{display:grid;grid-template-columns:1fr auto;grid-template-areas:"kicker cta" "title cta" "desc cta";gap:2px 20px;align-items:center;background:var(--panel);border:1px solid var(--line);border-left:4px solid #2aa198;border-radius:12px;padding:14px 18px;text-decoration:none;color:var(--text);transition:border-color .15s,transform .15s}
+  .series-link:hover{border-color:#2aa198;transform:translateY(-2px)}
+  .series-kicker{grid-area:kicker;font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:#2aa198;font-weight:700}
+  .series-title{grid-area:title;font-size:18px;font-weight:600}
+  .series-desc{grid-area:desc;font-size:13.5px;color:var(--muted)}
+  .series-cta{grid-area:cta;color:#2aa198;font-size:14px;white-space:nowrap}
+  @media(max-width:600px){.series-link{grid-template-columns:1fr;grid-template-areas:"kicker" "title" "desc" "cta"}}
   .empty{color:var(--muted);text-align:center;padding:40px 0}
 
   .overlay{position:fixed;inset:0;background:rgba(8,8,8,.96);display:none;z-index:60}
@@ -86,6 +94,14 @@
     <h1>Digital Concepts</h1>
     <p class="lede">Welcome to this library of animated concepts. The diagrams here are at different stages of development; I work on improving them continuously. However, because the main priority is scientific accuracy, they take a lot of time to develop and to complete. So it is likely some aspect of a diagram might not be complete or accurate. If you find something that needs to be updated, corrected, or fixed, please let me know at <a href="mailto:rivera21@stolaf.edu">rivera21@stolaf.edu</a>.</p>
   </header>
+  <div class="series-strip">
+    <a class="series-link" href="erp-pipeline.html">
+      <span class="series-kicker">Course series · PSYCH 390</span>
+      <span class="series-title">The ERP pipeline</span>
+      <span class="series-desc">Twelve interactive pages on EEG/ERP methods, from electricity to a publication figure, with their own landing page and step-by-step navigation.</span>
+      <span class="series-cta">Open the series →</span>
+    </a>
+  </div>
 
   <div class="cats" id="cats"></div>
   <div class="controls">
@@ -120,10 +136,28 @@
    ============================================================ */
 const DIAGRAMS = [
   {
+    id:'erp-pipeline',
+    category:'PSYCH 390',
+    title:'The ERP Pipeline',
+    file:'erp-pipeline.html',
+    thumbLive:true,
+    tags:['EEG','ERP','methods','teaching','interactive','PSYCH 390'],
+    label:'COURSE SERIES',
+    blurb:'Twelve interactive pages that follow the EEG/ERP processing pipeline in lab order: electricity, where the EEG comes from, averaging, the EEGLAB GUI, MATLAB basics, filtering, re-referencing, bins and epochs, channel interpolation, artifact detection, scoring, and plotting and scripting.',
+    extras:[],
+    connects:'The Thursday labs of PSYCH 390 (Labs 1 through 10) and Luck (2014). Each page quotes the EEGLAB or ERPLAB call used in that lab.',
+    caveats:[
+      'All signals are simulated with realistic sizes and timing; nothing is a recording from a participant.',
+      'Head models are simplified (homogeneous sphere or half-space; skull blur approximated). Each page states its own simplifications.',
+      'Interpolation uses a distance-weighted average as a stand-in for the spherical spline; BINLISTER matching is simplified to adjacent events.'
+    ],
+    mine:''
+  },
+  {
     id:'life-multicellular-brains',
     category:'Neuroscience',
     title:'Life, Multicellular Organisms, and Brains',
-    file:'life-multicellular-and-brains.html',
+    file:'Life_Multicellular_And_Brains/life-multicellular-and-brains.html',
     thumbLive:true,
     tags:['evolution','neuroanatomy','teaching'],
     label:'INTERACTIVE',
@@ -139,7 +173,7 @@ const DIAGRAMS = [
     id:'brain-composition',
     category:'Neuroscience',
     title:'Brain Composition Breakdown',
-    file:'brain-composition.html',
+    file:'Brain_Composition_Breakdown/brain-composition.html',
     thumbLive:true,
     tags:['neuroanatomy','teaching','reference'],
     label:'INTERACTIVE',
@@ -160,14 +194,14 @@ const DIAGRAMS = [
     id:'nervous-tree',
     category:'Neuroscience',
     title:"The Nervous System's Family Tree",
-    file:'nervous-system-tree.html',
-    thumb:'tree.svg',
+    file:'Nervous_System_Family_Tree/nervous-system-tree.html',
+    thumb:'Nervous_System_Family_Tree/tree.svg',
     tags:['evolution','neuroanatomy','teaching'],
     label:'SCROLLABLE',
     blurb:'From LUCA to Homo sapiens, with every relative that branched off along the way. Each carries its neuron count, shared DNA and a life-history bar.',
     extras:[
-      {label:'Print PDF (A3) ↗', href:'nervous-system-tree.pdf'},
-      {label:'tree.svg ↗', href:'tree.svg'}
+      {label:'Print PDF (A3) ↗', href:'Nervous_System_Family_Tree/nervous-system-tree.pdf'},
+      {label:'tree.svg ↗', href:'Nervous_System_Family_Tree/tree.svg'}
     ],
     connects:'Complements the Animals, Primate and Hominins evolution lectures; the dates, innovations and life-history values are pulled from those decks.',
     caveats:[
@@ -184,13 +218,13 @@ const DIAGRAMS = [
     id:'ontogeny-energy',
     category:'Neuroscience',
     title:'Energy use across ontogeny',
-    file:'ontogeny-energy.html',
-    thumb:'energy-curve.svg',
+    file:'Ontogeny_Energy_Budget/ontogeny-energy.html',
+    thumb:'Ontogeny_Energy_Budget/energy-curve.svg',
     tags:['physiology','metabolism','development','teaching'],
     label:'BROKEN AXIS',
     blurb:'Metabolic rate from conception to death, with gestation, puberty and pregnancy each given their own zoom.',
     extras:[
-      {label:'energy-curve.svg ↗', href:'energy-curve.svg'}
+      {label:'energy-curve.svg ↗', href:'Ontogeny_Energy_Budget/energy-curve.svg'}
     ],
     connects:'For lectures on ontogeny, energetics and life-history trade-offs.',
     caveats:[
@@ -207,13 +241,13 @@ const DIAGRAMS = [
     id:'scale-of-a-neuron',
     category:'Neuroscience',
     title:'The Neuron',
-    file:'scale-of-a-neuron.html',
-    thumb:'scale-of-a-neuron.svg',
+    file:'Scale_Of_A_Neuron/scale-of-a-neuron.html',
+    thumb:'Scale_Of_A_Neuron/scale-of-a-neuron.svg',
     tags:['neuroanatomy','morphology','scale','teaching'],
     label:'INTERACTIVE',
     blurb:'A corticospinal pyramidal neuron at true scale: the whole cell body and dendrites shrink to a speck beside a one meter axon. Hover any part to light it up across body, tract and cell, and blow the soma up to everyday objects.',
     extras:[
-      {label:'scale-of-a-neuron.svg ↗', href:'scale-of-a-neuron.svg'}
+      {label:'scale-of-a-neuron.svg ↗', href:'Scale_Of_A_Neuron/scale-of-a-neuron.svg'}
     ],
     connects:'For lectures on neuron structure, scale and the corticospinal pathway. Pairs with the action potential and brain composition diagrams.',
     caveats:[
@@ -230,7 +264,7 @@ const DIAGRAMS = [
     id:'ion-channels',
     category:'Neuroscience',
     title:'Ion Channels',
-    file:'ion-channels.html',
+    file:'Ion_Channels/ion-channels.html',
     thumbLive:true,
     tags:['membrane','neurophysiology','synapses','teaching','animation'],
     label:'INTERACTIVE',
@@ -248,7 +282,7 @@ const DIAGRAMS = [
     id:'action-potential',
     category:'Neuroscience',
     title:'The Action Potential',
-    file:'action-potential.html',
+    file:'Action_Potential_Propagation/action-potential.html',
     thumbLive:true,
     tags:['neurophysiology','membrane','synapses','teaching','animation'],
     label:'INTERACTIVE',
@@ -269,7 +303,7 @@ const DIAGRAMS = [
     id:'cortical-rhythms',
     category:'Neuroscience',
     title:'Cortical Rhythms',
-    file:'cortical-rhythms.html',
+    file:'Cortical_Rhythms_And_Areas/cortical-rhythms.html',
     thumbLive:true,
     tags:['neuroanatomy','oscillations','teaching','animation'],
     label:'INTERACTIVE',
@@ -292,7 +326,7 @@ const DIAGRAMS = [
     id:'spatial-cells',
     category:'Neuroscience',
     title:'Spatial Navigation',
-    file:'spatial-cells.html',
+    file:'Spatial_Cognition_Cells/spatial-cells.html',
     thumbLive:true,
     tags:['spatial','hippocampus','teaching','animation'],
     label:'INTERACTIVE',
@@ -312,8 +346,8 @@ const DIAGRAMS = [
     id:'world-population-history',
     category:'History',
     title:'World Population History',
-    file:'human-population.html',
-    thumb:'human-population.png',
+    file:'Human_Population_History/human-population.html',
+    thumb:'Human_Population_History/human-population.png',
     tags:['evolution','demography','population','teaching'],
     label:'LOG SCALE',
     blurb:'The estimated number of Homo sapiens from the origin of the species to today, on a logarithmic axis, with milestones from the out-of-Africa expansion to the Industrial Revolution.',
@@ -332,7 +366,7 @@ const DIAGRAMS = [
     id:'frequencies',
     category:'Math',
     title:'Frequencies',
-    file:'frequencies.html',
+    file:'Frequencies/frequencies.html',
     thumbLive:true,
     tags:['math','waves','frequency','trigonometry','teaching','interactive'],
     label:'INTERACTIVE',

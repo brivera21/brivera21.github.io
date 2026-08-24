@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The EEG signal · ERP pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===== SHARED STYLE: copy verbatim into every page ===== */
+:root{
+  --bg:#f6f3ee; --panel:#ffffff; --ink:#1d1f24; --muted:#5c6270; --rule:#e2ddd4;
+  --accent:#0f6e74; --accent-2:#d9573b; --accent-3:#6b5ca5; --gold:#c8962a;
+  --ok:#2f8f4e; --warn:#c2410c; --code-bg:#f0ece4;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --maxw:1040px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+a:hover{text-decoration-thickness:2px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:var(--maxw);margin:0 auto;padding:14px 20px 0}
+.topbar .series{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.topbar .series:hover{color:var(--accent)}
+.topbar .step{font-family:var(--mono);font-size:13px;color:var(--muted)}
+header.hero{max-width:var(--maxw);margin:0 auto;padding:18px 20px 10px}
+header.hero h1{font-size:clamp(26px,4vw,38px);line-height:1.15;margin:0 0 6px;font-weight:600;letter-spacing:-.01em}
+header.hero p.q{margin:0;font-size:clamp(17px,2.2vw,20px);color:var(--muted);font-style:italic}
+main{max-width:var(--maxw);margin:0 auto;padding:8px 20px 40px}
+.stage{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:16px;box-shadow:0 1px 0 rgba(0,0,0,.02),0 8px 24px -18px rgba(0,0,0,.25)}
+.stage .canvas-wrap{position:relative;width:100%}
+.stage canvas,.stage svg{display:block;width:100%;height:auto}
+.controls{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:flex-end;margin-top:14px;padding-top:14px;border-top:1px solid var(--rule)}
+.control{display:flex;flex-direction:column;gap:4px;min-width:150px;flex:1 1 150px}
+.control label{font-size:13px;color:var(--muted);letter-spacing:.02em}
+.control .val{font-family:var(--mono);font-size:13px;color:var(--ink)}
+.control input[type=range]{width:100%;accent-color:var(--accent)}
+.control select,.control input[type=text],.control textarea{font:inherit;font-size:15px;padding:6px 8px;border:1px solid var(--rule);border-radius:8px;background:#fff;color:var(--ink)}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px}
+button{font:inherit;font-size:14px;font-weight:500;padding:8px 14px;border-radius:999px;border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer}
+button.secondary{background:#fff;color:var(--accent)}
+button.ghost{background:transparent;border-color:var(--rule);color:var(--ink)}
+button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+button:disabled{opacity:.5;cursor:not-allowed}
+.readout{display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:12px;font-family:var(--mono);font-size:13.5px;color:var(--muted)}
+.readout b{color:var(--ink);font-weight:500}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12.5px;font-family:var(--mono);border:1px solid var(--rule);background:var(--code-bg)}
+.pill.ok{color:var(--ok);border-color:var(--ok)}
+.pill.warn{color:var(--warn);border-color:var(--warn)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13.5px;color:var(--muted);margin-top:8px}
+.legend span::before{content:"";display:inline-block;width:18px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle;background:var(--sw)}
+section.prose{max-width:720px;margin:28px auto 0;padding:0}
+section.prose h2{font-size:22px;margin:28px 0 8px;font-weight:600}
+section.prose p{margin:0 0 14px}
+section.prose ol,section.prose ul{margin:0 0 14px 22px;padding:0}
+section.prose li{margin-bottom:6px}
+code,pre{font-family:var(--mono);font-size:.92em}
+code{background:var(--code-bg);padding:1px 5px;border-radius:5px}
+pre{background:var(--code-bg);padding:12px 14px;border-radius:10px;overflow-x:auto;line-height:1.45}
+pre code{background:none;padding:0}
+.refs{font-size:14.5px;color:var(--muted)}
+.refs p{padding-left:1.6em;text-indent:-1.6em}
+nav.pager{display:flex;justify-content:space-between;gap:12px;max-width:var(--maxw);margin:30px auto 0;padding:18px 20px;border-top:1px solid var(--rule)}
+nav.pager a{text-decoration:none;font-size:15px;display:flex;flex-direction:column;gap:2px;max-width:48%}
+nav.pager a small{color:var(--muted);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+nav.pager a.next{text-align:right;margin-left:auto}
+footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;color:var(--muted)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:600px){
+  body{font-size:16px}
+  .stage{padding:12px;border-radius:10px}
+  .control{min-width:120px}
+}
+@media (prefers-reduced-motion: reduce){ .anim-hint{display:none} }
+/* ===== END SHARED STYLE ===== */
+
+.ctlgroup{display:flex;flex-wrap:wrap;gap:14px 22px;flex:1 1 100%}
+.ctlgroup h3{flex:1 1 100%;margin:0;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.grp{display:flex;flex-wrap:wrap;gap:8px;align-items:center;flex:1 1 260px}
+.grp span.lab{font-size:13px;color:var(--muted);flex:1 1 100%}
+.why{margin-top:12px;padding:10px 14px;border-left:3px solid var(--gold);background:var(--code-bg);border-radius:0 8px 8px 0;font-size:15px}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="series" href="erp-pipeline.html">ERP pipeline · PSYCH 390</a>
+  <span class="step">step 2 / 12</span>
+</div>
+<header class="hero">
+  <h1>The EEG signal</h1>
+  <p class="q">Where do EEGs come from?</p>
+</header>
+
+<main>
+  <div class="stage" id="stage">
+    <div class="canvas-wrap">
+      <canvas id="cv" aria-label="Cross-section of scalp, skull and a patch of cortex with pyramidal neurons. Synaptic input creates a current dipole whose field spreads through the head and is read by three scalp electrodes with voltage meters. A ticker below shows the EEG at the middle electrode over the last four seconds."></canvas>
+    </div>
+    <div class="legend">
+      <span style="--sw:#d9573b">positive potential</span>
+      <span style="--sw:#3e6aa8">negative potential</span>
+      <span style="--sw:#0f6e74">current flow</span>
+      <span style="--sw:#c8962a">synchronized events in the EEG</span>
+    </div>
+    <div class="controls">
+      <div class="ctlgroup">
+        <div class="grp" role="group" aria-label="Type and location of synaptic input">
+          <span class="lab">Input</span>
+          <button data-in="exc-apical" aria-pressed="true">Excitatory, apical dendrites</button>
+          <button data-in="inh-apical" aria-pressed="false">Inhibitory, apical dendrites</button>
+          <button data-in="exc-basal" aria-pressed="false">Excitatory, soma and basal dendrites</button>
+        </div>
+        <div class="grp" role="group" aria-label="Cortex geometry">
+          <span class="lab">Cortex geometry</span>
+          <button data-geo="gyrus" aria-pressed="true">Gyrus crown (radial)</button>
+          <button data-geo="sulcus" aria-pressed="false">Sulcal wall (tangential)</button>
+          <button class="ghost" id="shuffle">Shuffle</button>
+        </div>
+      </div>
+      <div class="control">
+        <label for="nn">Neurons firing together <span class="val" id="nnv"></span></label>
+        <input type="range" id="nn" min="0" max="100" value="80" step="1">
+      </div>
+      <div class="control">
+        <label for="al">Alignment (same orientation) <span class="val" id="alv"></span></label>
+        <input type="range" id="al" min="0" max="100" value="90" step="1">
+      </div>
+    </div>
+    <div class="readout" id="ro"></div>
+    <div class="why" id="why"></div>
+  </div>
+
+  <section class="prose">
+    <h2>What you are looking at</h2>
+    <p>The picture is a slice through the head. Under the pink scalp and the thick grey skull sits a patch of cortex drawn as a row of pyramidal neurons: a triangular cell body deep in the tissue and a long apical dendrite reaching toward the surface. The EEG is not made of action potentials. Spikes are too brief and too poorly aligned to add up at a distance. What reaches the scalp is the postsynaptic potential. When an excitatory synapse on the apical dendrites opens, positive ions flow into the cell there (a current sink), travel down the dendrite, and leave again near the soma (a current source), returning through the extracellular fluid to close the loop. Seen from outside, the neuron is briefly a tiny battery with a negative end near the surface and a positive end deeper down, a current dipole.</p>
+    <p>One dipole is far too weak to register. The meter on each electrode only moves when thousands of neurons receive the same input at the same moment and point the same way. The alignment slider shows what synchrony alone cannot do. When the dipoles point in random directions their fields cancel (a closed field) and the meter barely moves no matter how many cells are active. Cortex is a layered sheet in which pyramidal cells line up in parallel (an open field), so it dominates the EEG, while deep nuclei with jumbled orientations are nearly silent. The shading shows volume conduction: the potential spreads instantly through the brain, is smeared sideways by the poorly conducting skull, and arrives at the scalp as a broad blur. Any electrode reads a weighted sum of every dipole active anywhere in the head. This is the superposition problem, and it is the main reason localization from the scalp is hard.</p>
+
+    <h2>Try this</h2>
+    <ol>
+      <li>Keep the gyrus geometry and slide the number of neurons from 1 to 100,000. Below a few thousand cells the middle meter stays near zero; near a hundred thousand it reads several microvolts, the size of a real ERP component.</li>
+      <li>Pull alignment down to 20 percent. The neurons rotate into a jumble and the reading collapses even though just as many cells are active.</li>
+      <li>Switch the input from excitatory at the apical dendrites to inhibitory at the same place. The arrows reverse and the scalp goes from negative to positive. Now move the excitatory input to the soma and basal dendrites: same sign flip, different reason.</li>
+      <li>Switch to the sulcal wall. The dipole lies flat, the electrode right above reads almost nothing, and the two electrodes to either side show opposite signs.</li>
+      <li>Watch the ticker. Each burst of synchronized input appears as a deflection in the ongoing EEG, whose background rhythms (alpha around 10 Hz, theta, beta) come from other populations doing the same thing.</li>
+    </ol>
+
+    <h2>Why it matters for the pipeline</h2>
+    <p>Polarity at the scalp depends on four things at once: whether the input is excitatory or inhibitory, where on the cell it lands, how the cortical sheet is oriented under the electrode, and which reference site the voltage is measured against. A negative wave at Cz therefore says very little on its own about what the neurons were doing. The same physics sets the plan for the rest of the pipeline. Because tens of thousands of cells must act together to be seen at all, EEG is a signal of populations, and because it is only a few microvolts, it must be averaged over many trials to stand out from the rest of the brain's activity. When you load a dataset with <code>EEG = pop_loadset('sub-001_N400.set')</code> and scroll through the channels with <code>pop_eegplot(EEG)</code>, the 20 to 100 µV traces you see are the summed field of countless dipoles like these, blurred by the skull and referenced to one site. Buzsáki, Anastassiou, and Koch (2012) give the full account of how synaptic currents, cell geometry and tissue conductivity combine into the recorded field.</p>
+
+    <h2 id="refs">References</h2>
+    <div class="refs">
+      <p>Buzsáki, G., Anastassiou, C. A., &amp; Koch, C. (2012). The origin of extracellular fields and currents: EEG, ECoG, LFP and spikes. <i>Nature Reviews Neuroscience, 13</i>(6), 407–420. https://doi.org/10.1038/nrn3241</p>
+      <p>Luck, S. J. (2014). <i>An introduction to the event-related potential technique</i> (2nd ed.). MIT Press.</p>
+      <p>Delorme, A., &amp; Makeig, S. (2004). EEGLAB: An open source toolbox for analysis of single-trial EEG dynamics including independent component analysis. <i>Journal of Neuroscience Methods, 134</i>(1), 9–21. https://doi.org/10.1016/j.jneumeth.2003.10.009</p>
+    </div>
+  </section>
+</main>
+
+<nav class="pager">
+  <a class="prev" href="erp-01-electricity.html"><small>Previous</small><span>Introduction to electricity</span></a>
+  <a class="next" href="erp-03-what-is-an-erp.html"><small>Next</small><span>What is an ERP?</span></a>
+</nav>
+<footer>Part of the ERP pipeline series for PSYCH 390, St. Olaf College. Built as a standalone page; nothing is sent anywhere.</footer>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const cv=$('cv'),ctx=cv.getContext('2d');let W=1000,H=600;
+const C={ink:'#1d1f24',muted:'#5c6270',rule:'#e2ddd4',teal:'#0f6e74',coral:'#d9573b',violet:'#6b5ca5',gold:'#c8962a',blue:'#3e6aa8',scalp:'#f3d9c6',skull:'#e6e1d6',brain:'#f4ecf1',code:'#f0ece4'};
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const S={input:'exc-apical',geo:'gyrus',nn:80,al:90,paused:false};
+
+// ---------- deterministic randomness ----------
+let seed=11;function rnd(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;}
+function gaussRnd(){return Math.sqrt(-2*Math.log(rnd()+1e-12))*Math.cos(2*Math.PI*rnd());}
+const NCELL=16;let cellRand=[],eegNoise=[],eventTimes=[];
+function makeNoise(){
+  cellRand=[];for(let i=0;i<NCELL;i++)cellRand.push({ang:(rnd()-0.5)*2*Math.PI,order:rnd(),jit:rnd()});
+  // background EEG for the ticker: 4 s at 128 Hz, 1/f-ish plus alpha, ~3 µV rms
+  const n=512;eegNoise=new Float64Array(n);let a=0,b=0;const ph=rnd()*6.28;
+  for(let i=0;i<n;i++){const t=i/128;a=0.96*a+gaussRnd();b=0.7*b+gaussRnd();eegNoise[i]=a*0.25+b*0.6+Math.sin(2*Math.PI*10*t+ph)*(1+Math.sin(2*Math.PI*0.4*t))*0.9;}
+  let s=0;for(const v of eegNoise)s+=v*v;s=Math.sqrt(s/n);for(let i=0;i<n;i++)eegNoise[i]*=3/s;
+  eventTimes=[];let t=0.35+rnd()*0.3;while(t<4){eventTimes.push(t);t+=0.55+rnd()*0.5;}
+}
+makeNoise();
+
+// ---------- physics (qualitative but scaled to honest numbers) ----------
+function neurons(){return Math.round(Math.pow(10,S.nn/100*5));}
+function sign(){return S.input==='exc-apical'?-1:1;}   // sign of the pole nearest the cortical surface
+function effective(){ // net aligned dipole, as a multiple of a single cell's moment
+  const N=neurons(),a=S.al/100;const aligned=N*a;const random=Math.sqrt(Math.max(0,N*(1-a)))*0.5;return aligned+random;
+}
+// dipole geometry in head coordinates (x lateral, y depth below the electrodes' scalp plane, in mm)
+function dipole(){
+  const p=effective()*1.25e-5;  // scaled so 100,000 aligned cells give roughly 10 µV under the electrode
+  const s=sign();
+  if(S.geo==='gyrus')return{x:0,y:16,px:0,py:s,p:p};       // radial: surface-side pole up
+  return{x:0,y:22,px:s,py:0,p:p};                            // tangential on the left wall of a sulcus: surface faces +x... pole toward the sulcus is the surface pole
+}
+// potential at (x,y) from the dipole, with skull smearing above depth ySk
+function pot(x,y,d,blur){const dx=(x-d.x)*(blur?0.55:1),dy=(y-d.y);const r2=dx*dx+dy*dy+9;const r=Math.sqrt(r2);
+  return d.p*(d.px*dx+(-d.py)*dy)/(r2*r)*2600;}  // -py because y increases downward while "up" is toward the scalp
+const EL=[-30,0,30];  // electrode positions, mm
+function readings(){const d=dipole();return EL.map(x=>pot(x,0,d,true));}
+
+// ---------- canvas ----------
+function fit(){const r=cv.getBoundingClientRect();const dpr=window.devicePixelRatio||1;W=r.width;H=W<560?600:Math.max(460,Math.min(620,W*0.6));
+  cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);cv.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);}
+function txt(s,x,y,o={}){ctx.font=(o.w||400)+' '+(o.s||12)+'px "IBM Plex Sans",system-ui,sans-serif';ctx.fillStyle=o.c||C.muted;ctx.textAlign=o.a||'left';ctx.textBaseline=o.b||'alphabetic';ctx.fillText(s,x,y);}
+function line(pts,c,w,dash){ctx.beginPath();ctx.strokeStyle=c;ctx.lineWidth=w||1.2;ctx.setLineDash(dash||[]);pts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.stroke();ctx.setLineDash([]);}
+function dot(x,y,r,c){ctx.beginPath();ctx.arc(x,y,r,0,6.2832);ctx.fillStyle=c;ctx.fill();}
+function arrow(x0,y0,x1,y1,c,w){line([[x0,y0],[x1,y1]],c,w);const a=Math.atan2(y1-y0,x1-x0);line([[x1-6*Math.cos(a-0.5),y1-6*Math.sin(a-0.5)],[x1,y1],[x1-6*Math.cos(a+0.5),y1-6*Math.sin(a+0.5)]],c,w);}
+
+function draw(t){
+  ctx.clearRect(0,0,W,H);
+  const narrow=W<560;
+  // ---- layout: cross-section on top, ticker below
+  const secTop=narrow?96:80,tickH=narrow?110:120,secBot=H-tickH-40;
+  const L=narrow?10:24,R=W-(narrow?10:24);
+  // head coordinates: x in mm maps across, y in mm maps down. scale so that ±60 mm fits the width
+  const mmx=(R-L)/(narrow?92:120),cx=(L+R)/2;
+  const yScalp=secTop+22,mmy=narrow?(secBot-yScalp)/44:Math.min(mmx,(secBot-yScalp)/44);
+  const X=mm=>cx+mm*mmx,Y=mm=>yScalp+mm*mmy;
+  const d=dipole();
+  txt(narrow?'Cross-section of the head':'Cross-section: scalp, skull and a patch of cortex',L,16,{c:C.ink,w:600,s:13});
+  txt('meters read the potential at three scalp electrodes',L,31,{s:11});
+  // tissue bands
+  const ySk0=Y(4),ySk1=Y(11),yBrain=Y(44);
+  ctx.fillStyle=C.scalp;ctx.fillRect(L,yScalp,R-L,ySk0-yScalp);
+  ctx.fillStyle=C.skull;ctx.fillRect(L,ySk0,R-L,ySk1-ySk0);
+  ctx.fillStyle=C.brain;ctx.fillRect(L,ySk1,R-L,yBrain-ySk1);
+  // isopotential shading (grid)
+  const step=narrow?7:6;
+  for(let px=L;px<R;px+=step)for(let py=yScalp;py<yBrain;py+=step){
+    const mx=(px+step/2-cx)/mmx,my=(py+step/2-yScalp)/mmy;const inSkullOrAbove=py<ySk1;
+    const v=pot(mx,my,d,inSkullOrAbove)*(inSkullOrAbove?0.7:1);
+    const a=Math.min(0.5,0.5*Math.sqrt(Math.abs(v)/6));if(a<0.03)continue;
+    ctx.fillStyle=(v>0?'rgba(217,87,59,':'rgba(62,106,168,')+a+')';ctx.fillRect(px,py,step,step);}
+  // band labels
+  txt('scalp',R-6,yScalp+(ySk0-yScalp)/2+4,{a:'right',s:10.5});
+  txt(narrow?'skull: smears the field':'skull: poor conductor, smears the field sideways',R-6,ySk0+(ySk1-ySk0)/2+4,{a:'right',s:10.5});
+  txt(narrow?'brain: a volume conductor':'brain and cerebrospinal fluid: a volume conductor',R-6,yBrain-6,{a:'right',s:10.5});
+  // sulcus
+  if(S.geo==='sulcus'){ctx.fillStyle=C.skull;ctx.beginPath();ctx.moveTo(X(1),ySk1);ctx.lineTo(X(1),Y(30));ctx.lineTo(X(5),Y(30));ctx.lineTo(X(5),ySk1);ctx.closePath();ctx.fillStyle='#d9d2c5';ctx.fill();
+    txt('sulcus',X(7),Y(29),{s:10.5});}
+  // ---- neurons
+  const n=NCELL,cellLen=mmy*9.5;
+  for(let i=0;i<n;i++){const c=cellRand[i];const aligned=c.order<S.al/100;
+    let bx,by,base;
+    if(S.geo==='gyrus'){bx=X(-26+52*(i+0.5)/n);by=Y(22+c.jit*2);base=-Math.PI/2;}       // apical points up
+    else{bx=X(-4-c.jit*1.5);by=Y(13+15*(i+0.5)/n);base=0;}                              // on the left wall, apical points right (toward the sulcus surface)
+    const ang=aligned?base:base+c.ang;
+    const ax=bx+Math.cos(ang)*cellLen,ay=by+Math.sin(ang)*cellLen;  // apical tip
+    const col=aligned?C.ink:'#9aa0ab';
+    line([[bx,by],[ax,ay]],col,1.6);
+    // apical tuft and basal dendrites
+    for(const o of[-0.5,0.5]){line([[ax,ay],[ax+Math.cos(ang+o)*7,ay+Math.sin(ang+o)*7]],col,1.2);line([[bx,by],[bx+Math.cos(ang+Math.PI+o*1.6)*7,by+Math.sin(ang+Math.PI+o*1.6)*7]],col,1.2);}
+    // soma triangle
+    ctx.beginPath();ctx.moveTo(bx+Math.cos(ang)*5,by+Math.sin(ang)*5);ctx.lineTo(bx+Math.cos(ang+2.4)*5,by+Math.sin(ang+2.4)*5);ctx.lineTo(bx+Math.cos(ang-2.4)*5,by+Math.sin(ang-2.4)*5);ctx.closePath();ctx.fillStyle=col;ctx.fill();
+    // current flow: dots inside the cell along the dendrite and arcs outside returning. direction depends on input
+    if(aligned&&S.nn>0){const inward=S.input==='exc-apical';  // current enters at the apical end and leaves at the soma
+      const ph=(t*0.6+c.jit)%1;const k=inward?1-ph:ph;         // k = fraction from soma (0) to apical tip (1)
+      const px=bx+(ax-bx)*k,py=by+(ay-by)*k;dot(px,py,2.2,C.teal);
+      // return path outside: a bulge to the side
+      const side=(i%2?1:-1);const k2=1-k;const nx=-Math.sin(ang)*side*10,ny=Math.cos(ang)*side*10;
+      const qx=bx+(ax-bx)*k2+nx*Math.sin(k2*Math.PI),qy=by+(ay-by)*k2+ny*Math.sin(k2*Math.PI);dot(qx,qy,1.6,'rgba(15,110,116,.6)');}
+  }
+  // sink and source labels and big arrows at the population dipole
+  {const s=sign();const gy=S.geo==='gyrus';
+   const cxp=gy?X(0):X(-2),y1=gy?Y(10.5):Y(13),y2=gy?Y(21):Y(28);
+   const inward=S.input==='exc-apical';
+   const top=gy?[X(30),Y(10)]:[X(-2),Y(11)],bot=gy?[X(30),Y(21)]:[X(-2),Y(29)];
+   if(gy){const lab1=narrow?(inward?'sink':'source'):(inward?'sink: current enters the dendrites':'source: current leaves the dendrites');
+     const lab2=narrow?(inward?'source':'sink'):(inward?'source: current leaves at the soma':'sink: current enters at the soma');
+     txt(lab1,X(32),Y(15),{s:10.5,c:inward?C.blue:C.coral});txt(lab2,X(32),Y(23.5),{s:10.5,c:inward?C.coral:C.blue});
+     if(inward)arrow(X(30),Y(22.5),X(30),Y(13.5),C.teal,1.6);else arrow(X(30),Y(13.5),X(30),Y(22.5),C.teal,1.6);
+     if(!narrow)txt('inside the cells',X(32),Y(19.5),{s:10});}
+   else{txt('dipole lies flat (tangential)',X(22),Y(36),{s:10.5,c:C.ink,a:'center'});
+     if(inward)arrow(X(12),Y(33),X(-2),Y(33),C.teal,1.6);else arrow(X(-2),Y(33),X(12),Y(33),C.teal,1.6);}
+  }
+  // ---- electrodes and meters
+  const rd=readings();const mScale=Math.max(1,Math.ceil(Math.max(...rd.map(Math.abs))*1.2));
+  EL.forEach((mm,i)=>{const ex=X(mm);ctx.fillStyle='#fff';ctx.strokeStyle=C.ink;ctx.lineWidth=1.4;
+    ctx.beginPath();ctx.arc(ex,yScalp-1,narrow?7:9,Math.PI,0);ctx.closePath();ctx.fill();ctx.stroke();
+    line([[ex,yScalp-9],[ex,secTop-6]],C.ink,1.4);
+    // meter box
+    const bw=narrow?54:76,bh=18,bx=ex-bw/2,by=secTop-6-bh;ctx.fillStyle='#fff';ctx.strokeStyle=C.rule;ctx.lineWidth=1;ctx.fillRect(bx,by,bw,bh);ctx.strokeRect(bx,by,bw,bh);
+    const v=rd[i];const half=bw/2;line([[ex,by+2],[ex,by+bh-2]],C.rule,1);
+    ctx.fillStyle=v>0?C.coral:C.blue;const wv=Math.min(half-2,Math.abs(v)/mScale*(half-2));ctx.fillRect(v>0?ex:ex-wv,by+4,wv,bh-8);
+    txt(['E1','E2','E3'][i]+' '+fmt(v),ex,by-4,{a:'center',s:narrow?10:11,c:C.ink,w:500});});
+  txt('meter span ±'+mScale+' µV',R,narrow?46:16,{a:'right',s:10.5});
+  // ---- ticker
+  const ty0=secBot+30,ty1=H-20,tm=(ty0+ty1)/2,th=(ty1-ty0)/2-8;
+  txt('EEG at E2 over the last 4 s',L,ty0-12,{c:C.ink,w:600,s:13});
+  const tx0=L+40,tx1=R;ctx.strokeStyle=C.rule;ctx.strokeRect(tx0,ty0,tx1-tx0,ty1-ty0);line([[tx0,tm],[tx1,tm]],C.rule,1,[3,3]);
+  const amp=rd[1];const scale=Math.max(10,Math.ceil(Math.abs(amp)*1.3/5)*5);
+  txt('+'+scale+' µV',tx0-4,ty0+10,{a:'right',s:10});txt('−'+scale,tx0-4,ty1-2,{a:'right',s:10});
+  for(let s=0;s<=4;s++){const x=tx0+(tx1-tx0)*s/4;line([[x,ty1],[x,ty1+4]],C.muted,1);txt((s-4)+' s',x,ty1+14,{a:s===4?'right':'center',s:10});}
+  const shift=reduced?0:(t*0.5)%4;
+  const pts=[];for(let i=0;i<512;i++){const tt=i/128;let v=eegNoise[(i+Math.round(shift*128))%512];
+    for(const e of eventTimes){const dt=((tt-e-shift)%4+4)%4;if(dt>0&&dt<0.3)v+=amp*Math.sin(Math.PI*dt/0.3)**2;}
+    pts.push([tx0+(tx1-tx0)*tt/4,tm-v/scale*th]);}
+  line(pts,C.teal,1.3);
+  // mark events
+  for(const e of eventTimes){const dt=((e+shift)%4+4)%4;const x=tx0+(tx1-tx0)*dt/4;line([[x,ty0],[x,ty0+6]],C.gold,2);}
+  if(!narrow)txt('gold ticks: bursts of synchronized input',tx1-4,ty0+12,{a:'right',s:10});
+}
+function fmt(v){const a=Math.abs(v);const s=a<0.01?'0.00':a<1?a.toFixed(2):a.toFixed(1);return (v>0.005?'+':v<-0.005?'−':'')+s+' µV';}
+
+// ---------- loop ----------
+let tAcc=0,last=performance.now(),raf=null;
+function frame(now){const dt=Math.min(0.05,(now-last)/1000);last=now;if(!S.paused&&!reduced)tAcc+=dt;draw(tAcc);
+  if(!S.paused&&!reduced&&!document.hidden)raf=requestAnimationFrame(frame);else raf=null;}
+function kick(){if(raf==null){last=performance.now();raf=requestAnimationFrame(frame);}}
+
+// ---------- readouts ----------
+function whyText(rd){
+  const gy=S.geo==='gyrus';const v=rd[1];const s=sign();
+  const cause={'exc-apical':'excitatory input at the apical dendrites pulls positive ions into the cell near the surface, so the surface end of each dipole is negative',
+    'inh-apical':'inhibitory input at the apical dendrites pushes negative charge in near the surface, so the surface end of each dipole is positive',
+    'exc-basal':'excitatory input at the soma pulls positive ions in deep and the current exits through the apical dendrites, so the surface end is positive'}[S.input];
+  if(neurons()<300)return 'Almost nothing at any electrode: a few hundred cells are far too weak to be seen through the skull, whatever their orientation.';
+  if(S.al<35)return 'Weak at every electrode because the dipoles point in different directions and cancel one another (a closed field), even though '+neurons().toLocaleString()+' cells are active.';
+  if(gy)return (v<0?'Negative':'Positive')+' at E2 because '+cause+', and on a gyrus crown that end points straight at the electrode (a radial dipole). E1 and E3 see the same sign, smaller, after the skull spreads it sideways.';
+  return 'Near zero at E2 because the dipole lies flat along the sulcal wall (tangential). Its ends face E1 and E3, which read opposite signs. Here '+cause+'.';
+}
+function update(){
+  const N=neurons();$('nnv').textContent=N.toLocaleString();$('alv').textContent=S.al+' %';
+  const rd=readings();
+  $('ro').innerHTML=`<span>E1 <b>${fmt(rd[0])}</b></span><span>E2 (above the patch) <b>${fmt(rd[1])}</b></span><span>E3 <b>${fmt(rd[2])}</b></span><span>net aligned dipole <b>${Math.round(effective()).toLocaleString()} cell equivalents</b></span>`;
+  $('why').textContent=whyText(rd);
+  draw(tAcc);
+}
+$('nn').addEventListener('input',e=>{S.nn=+e.target.value;update();});
+$('al').addEventListener('input',e=>{S.al=+e.target.value;update();});
+document.querySelectorAll('button[data-in]').forEach(b=>b.addEventListener('click',()=>{S.input=b.dataset.in;document.querySelectorAll('button[data-in]').forEach(x=>x.setAttribute('aria-pressed',x===b));update();}));
+document.querySelectorAll('button[data-geo]').forEach(b=>b.addEventListener('click',()=>{S.geo=b.dataset.geo;document.querySelectorAll('button[data-geo]').forEach(x=>x.setAttribute('aria-pressed',x===b));update();}));
+$('shuffle').addEventListener('click',()=>{makeNoise();update();});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)kick();});
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{fit();draw(tAcc);},80);});
+fit();update();kick();
+})();
+</script>
+</body>
+</html>

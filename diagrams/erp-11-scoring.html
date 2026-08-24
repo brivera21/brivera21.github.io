@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ERP scoring and measurement · ERP pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===== SHARED STYLE: copy verbatim into every page ===== */
+:root{
+  --bg:#f6f3ee; --panel:#ffffff; --ink:#1d1f24; --muted:#5c6270; --rule:#e2ddd4;
+  --accent:#0f6e74; --accent-2:#d9573b; --accent-3:#6b5ca5; --gold:#c8962a;
+  --ok:#2f8f4e; --warn:#c2410c; --code-bg:#f0ece4;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --maxw:1040px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+a:hover{text-decoration-thickness:2px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:var(--maxw);margin:0 auto;padding:14px 20px 0}
+.topbar .series{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.topbar .series:hover{color:var(--accent)}
+.topbar .step{font-family:var(--mono);font-size:13px;color:var(--muted)}
+header.hero{max-width:var(--maxw);margin:0 auto;padding:18px 20px 10px}
+header.hero h1{font-size:clamp(26px,4vw,38px);line-height:1.15;margin:0 0 6px;font-weight:600;letter-spacing:-.01em}
+header.hero p.q{margin:0;font-size:clamp(17px,2.2vw,20px);color:var(--muted);font-style:italic}
+main{max-width:var(--maxw);margin:0 auto;padding:8px 20px 40px}
+.stage{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:16px;box-shadow:0 1px 0 rgba(0,0,0,.02),0 8px 24px -18px rgba(0,0,0,.25)}
+.stage .canvas-wrap{position:relative;width:100%}
+.stage canvas,.stage svg{display:block;width:100%;height:auto}
+.controls{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:flex-end;margin-top:14px;padding-top:14px;border-top:1px solid var(--rule)}
+.control{display:flex;flex-direction:column;gap:4px;min-width:150px;flex:1 1 150px}
+.control label{font-size:13px;color:var(--muted);letter-spacing:.02em}
+.control .val{font-family:var(--mono);font-size:13px;color:var(--ink)}
+.control input[type=range]{width:100%;accent-color:var(--accent)}
+.control select,.control input[type=text],.control textarea{font:inherit;font-size:15px;padding:6px 8px;border:1px solid var(--rule);border-radius:8px;background:#fff;color:var(--ink)}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px}
+button{font:inherit;font-size:14px;font-weight:500;padding:8px 14px;border-radius:999px;border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer}
+button.secondary{background:#fff;color:var(--accent)}
+button.ghost{background:transparent;border-color:var(--rule);color:var(--ink)}
+button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+button:disabled{opacity:.5;cursor:not-allowed}
+.readout{display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:12px;font-family:var(--mono);font-size:13.5px;color:var(--muted)}
+.readout b{color:var(--ink);font-weight:500}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12.5px;font-family:var(--mono);border:1px solid var(--rule);background:var(--code-bg)}
+.pill.ok{color:var(--ok);border-color:var(--ok)}
+.pill.warn{color:var(--warn);border-color:var(--warn)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13.5px;color:var(--muted);margin-top:8px}
+.legend span::before{content:"";display:inline-block;width:18px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle;background:var(--sw)}
+section.prose{max-width:720px;margin:28px auto 0;padding:0}
+section.prose h2{font-size:22px;margin:28px 0 8px;font-weight:600}
+section.prose p{margin:0 0 14px}
+section.prose ol,section.prose ul{margin:0 0 14px 22px;padding:0}
+section.prose li{margin-bottom:6px}
+code,pre{font-family:var(--mono);font-size:.92em}
+code{background:var(--code-bg);padding:1px 5px;border-radius:5px}
+pre{background:var(--code-bg);padding:12px 14px;border-radius:10px;overflow-x:auto;line-height:1.45}
+pre code{background:none;padding:0}
+.refs{font-size:14.5px;color:var(--muted)}
+.refs p{padding-left:1.6em;text-indent:-1.6em}
+nav.pager{display:flex;justify-content:space-between;gap:12px;max-width:var(--maxw);margin:30px auto 0;padding:18px 20px;border-top:1px solid var(--rule)}
+nav.pager a{text-decoration:none;font-size:15px;display:flex;flex-direction:column;gap:2px;max-width:48%}
+nav.pager a small{color:var(--muted);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+nav.pager a.next{text-align:right;margin-left:auto}
+footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;color:var(--muted)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:600px){
+  body{font-size:16px}
+  .stage{padding:12px;border-radius:10px}
+  .control{min-width:120px}
+}
+@media (prefers-reduced-motion: reduce){ .anim-hint{display:none} }
+/* ===== END SHARED STYLE ===== */
+
+.control input[type=number]{font:inherit;font-size:15px;padding:6px 8px;border:1px solid var(--rule);border-radius:8px;background:#fff;color:var(--ink);width:100%}
+.winrow{display:flex;gap:8px;align-items:center}
+.winrow input{flex:1 1 60px;min-width:0}
+.winrow span{font-size:13px;color:var(--muted)}
+.control.wide{flex:2 1 260px}
+.stage canvas{cursor:default;touch-action:pan-y}
+.warnbox{margin-top:10px;font-size:14px;color:var(--warn);display:none}
+.warnbox.show{display:block}
+.refs p{overflow-wrap:anywhere}
+.codeline{margin-top:12px;font-family:var(--mono);font-size:13px;background:var(--code-bg);padding:10px 12px;border-radius:8px;overflow-x:auto;white-space:pre}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="series" href="erp-pipeline.html">ERP pipeline · PSYCH 390</a>
+  <span class="step">step 11 / 12</span>
+</div>
+<header class="hero">
+  <h1>ERP scoring and measurement</h1>
+  <p class="q">How big, and how fast?</p>
+</header>
+
+<main>
+  <div class="stage" id="stage">
+    <div class="canvas-wrap">
+      <canvas id="cv" aria-label="Left: averaged ERP waveforms at Pz for Related and Unrelated words with a shaded measurement window and the chosen measure marked on each. Right: the measured difference across twenty re-draws of the noise, compared with the true difference."></canvas>
+    </div>
+    <div class="legend">
+      <span style="--sw:#0f6e74">Related</span>
+      <span style="--sw:#d9573b">Unrelated</span>
+      <span style="--sw:#c8962a">true difference (no noise)</span>
+      <span style="--sw:#b9bec8">measurement window (drag its edges)</span>
+    </div>
+    <div class="controls">
+      <div class="control">
+        <label for="measure">Measure</label>
+        <select id="measure">
+          <option value="mean">Mean amplitude</option>
+          <option value="peak">Peak amplitude (most negative)</option>
+          <option value="lpeak">Local peak amplitude</option>
+          <option value="plat">Peak latency</option>
+          <option value="falat">50% area latency</option>
+          <option value="narea">Negative area</option>
+        </select>
+      </div>
+      <div class="control">
+        <label for="ntr">Trials averaged per condition <span class="val" id="ntrv"></span></label>
+        <input type="range" id="ntr" min="10" max="200" value="40" step="1">
+      </div>
+      <div class="control">
+        <label for="w0">Window (ms)</label>
+        <div class="winrow"><input type="number" id="w0" min="-200" max="796" step="4" value="300" aria-label="Window start in ms"><span>to</span><input type="number" id="w1" min="-196" max="800" step="4" value="500" aria-label="Window end in ms"></div>
+      </div>
+      <div class="btnrow">
+        <button class="secondary" id="reset">Window 300–500</button>
+        <button class="secondary" id="fish">Pick the window where the difference looks biggest</button>
+        <button class="ghost" id="reseed">New noise</button>
+      </div>
+    </div>
+    <div class="readout">
+      <span>Related <b id="vr"></b></span>
+      <span>Unrelated <b id="vu"></b></span>
+      <span>difference (Unrelated − Related) <b id="vd"></b></span>
+      <span>true difference <b id="vt"></b></span>
+    </div>
+    <div class="readout">
+      <span>across 20 re-draws: mean minus true <b id="bias"></b></span>
+      <span>SD <b id="sd"></b></span>
+      <span id="percond"></span>
+      <span class="pill" id="verdict"></span>
+    </div>
+    <div class="warnbox" id="warn"></div>
+    <div class="codeline" id="code"></div>
+  </div>
+
+  <section class="prose">
+    <h2>What you are looking at</h2>
+    <p>The left panel shows two averaged waveforms from electrode Pz, one for Related word pairs and one for Unrelated pairs. The early P1, N1 and P2 peaks are the same in both; the difference is the N400, a broad negative wave around 300–500 ms that is larger when the word does not fit its context. What remains of the trial-to-trial noise after averaging is drawn into the waveforms, and it shrinks with the square root of the number of trials. The grey band is the measurement window. The measure you choose is marked on each waveform: a horizontal bar for the mean, a dot for a peak, a vertical marker for the 50% area latency, and the readout gives the value for each condition and their difference.</p>
+    <p>The right panel repeats the whole experiment twenty times with fresh noise and plots the twenty measured differences as dots. The gold line is the true difference, the value you would get with no noise at all. A measure is unbiased when the cloud of dots is centred on that line; it is precise when the cloud is narrow.</p>
+
+    <h2>Try this</h2>
+    <ol>
+      <li>Leave the measure on mean amplitude and drag the trial slider from 200 down to 10. The dots spread out but stay centred on the gold line. Averaging fewer trials costs precision, not accuracy.</li>
+      <li>Switch to peak amplitude at 10 trials. Each condition's peak is now far more negative than its true value, because a noisy waveform always has some deep dip somewhere in the window. The flatter Related waveform gains more from this than the Unrelated one, so the difference is pulled towards zero.</li>
+      <li>Choose peak latency. The N400 has no sharp tip, so a small blip anywhere in the window can become the "peak" and the latencies jump by tens of milliseconds. Compare the spread with 50% area latency, which uses the whole shape.</li>
+      <li>Press "Pick the window where the difference looks biggest" a few times with "New noise" in between. The window wanders to wherever the noise happened to fall, and the measured effect is larger than the truth.</li>
+      <li>Drag the window edges by hand to 200–700 ms and watch how each measure reacts to a window that includes neighbouring components.</li>
+    </ol>
+
+    <h2>Why it matters for the pipeline</h2>
+    <p>A component is not a peak. The N400 is the activity of a neural process that lasts a couple of hundred milliseconds, and the most negative sample in that stretch is one sample among many. The mean amplitude over a window is an average of every sample, so noise that pushes some samples up and others down cancels, and the estimate stays centred on the truth however few trials you have. It is also linear, so the mean of the subjects' measurements equals the measurement of the grand average, which keeps group statistics simple. That is why the course scores the N400 as mean amplitude from 300 to 500 ms at centro-parietal sites (CP1, CP2, P3, Pz, P4, or Cz, CPz, Pz), and computes the effect as Unrelated minus Related.</p>
+    <p>Peak amplitude is appropriate for sharp, well defined deflections such as P1, N1 and N170, preferably after low-pass filtering and with the local peak rule so the algorithm does not stop at the window edge. Peak latency suits those same components; for broad ones, 50% area latency gives a more stable estimate of the midpoint. Whatever the measure, the window and electrodes come from prior literature, decided before looking at the data. A window picked because the difference looks largest there will find effects in pure noise. In ERPLAB the measurement tool is <code>pop_geterpvalues</code>; the call shown under the figure follows the selector, with <code>'meanbl'</code> for mean amplitude relative to the prestimulus baseline.</p>
+
+    <h2 id="refs">References</h2>
+    <div class="refs">
+      <p>Luck, S. J. (2014). <i>An introduction to the event-related potential technique</i> (2nd ed.). MIT Press.</p>
+      <p>Lopez-Calderon, J., &amp; Luck, S. J. (2014). ERPLAB: An open-source toolbox for the analysis of event-related potentials. <i>Frontiers in Human Neuroscience, 8</i>, 213. https://doi.org/10.3389/fnhum.2014.00213</p>
+      <p>Kappenman, E. S., Farrens, J. L., Zhang, W., Stewart, A. X., &amp; Luck, S. J. (2021). ERP CORE: An open resource for human event-related potential research. <i>NeuroImage, 225</i>, 117465. https://doi.org/10.1016/j.neuroimage.2020.117465</p>
+    </div>
+  </section>
+</main>
+
+<nav class="pager">
+  <a class="prev" href="erp-10-artifacts.html"><small>Previous</small><span>Artifact detection</span></a>
+  <a class="next" href="erp-12-plotting-scripting.html"><small>Next</small><span>Plotting and scripting</span></a>
+</nav>
+<footer>Part of the ERP pipeline series for PSYCH 390, St. Olaf College. Built as a standalone page; nothing is sent anywhere.</footer>
+
+<script>
+(function(){
+const DT=4, T0=-200, T1=800, NS=(T1-T0)/DT+1;   // 250 Hz, -200..800 ms
+const times=[];for(let i=0;i<NS;i++)times.push(T0+i*DT);
+const SINGLE=12;                                  // single-trial noise, µV rms in the ERP band
+function g(t,mu,sd){return Math.exp(-0.5*((t-mu)/sd)**2);}
+function truth(t,unrel){const n4=unrel?-6.5:-2.5;
+  return 3*g(t,100,18)-4*g(t,170,25)+3*g(t,240,30)+n4*g(t,400,60)+5*g(t,650,110);}
+const TR=times.map(t=>truth(t,false)), TU=times.map(t=>truth(t,true));
+
+// ---------- deterministic noise ----------
+let seed=1;
+function rnd(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;}
+function gr(){return Math.sqrt(-2*Math.log(rnd()+1e-12))*Math.cos(2*Math.PI*rnd());}
+function noise(sd){const x=new Float64Array(NS);let a=0,b=0;
+  for(let i=0;i<NS;i++){a=0.85*a+gr();b=0.5*b+gr();x[i]=a*0.6+b*0.4;}
+  let s=0;for(const v of x)s+=v*v;s=Math.sqrt(s/NS);for(let i=0;i<NS;i++)x[i]=x[i]/s*sd;return x;}
+function wave(tr,N){const nz=noise(SINGLE/Math.sqrt(N));const w=new Float64Array(NS);
+  for(let i=0;i<NS;i++)w[i]=tr[i]+nz[i];
+  let bl=0,nb=0;for(let i=0;i<NS;i++)if(times[i]<0){bl+=w[i];nb++;}bl/=nb;
+  for(let i=0;i<NS;i++)w[i]-=bl;return w;}
+
+// ---------- measures ----------
+function idx(a,b){const o=[];for(let i=0;i<NS;i++)if(times[i]>=a&&times[i]<=b)o.push(i);return o;}
+const M={
+  mean:{name:'Mean amplitude',unit:'µV',code:"'meanbl'",f(w,ii){let s=0;for(const i of ii)s+=w[i];return {v:s/ii.length};}},
+  peak:{name:'Peak amplitude',unit:'µV',code:"'peakampbl', 'Peakpolarity', 'negative'",f(w,ii){let m=Infinity,k=ii[0];for(const i of ii)if(w[i]<m){m=w[i];k=i;}return {v:m,i:k};}},
+  lpeak:{name:'Local peak amplitude',unit:'µV',code:"'peakampbl', 'Peakpolarity', 'negative', 'Neighborhood', 3",f(w,ii){let m=Infinity,k=-1;
+    for(const i of ii){let ok=true;for(let d=1;d<=3;d++){if(i-d>=0&&w[i-d]<w[i])ok=false;if(i+d<NS&&w[i+d]<w[i])ok=false;}
+      if(ok&&w[i]<m){m=w[i];k=i;}}
+    if(k<0)return M.peak.f(w,ii);return {v:m,i:k};}},
+  plat:{name:'Peak latency',unit:'ms',code:"'peaklatbl', 'Peakpolarity', 'negative'",f(w,ii){const p=M.peak.f(w,ii);return {v:times[p.i],i:p.i};}},
+  falat:{name:'50% area latency',unit:'ms',code:"'fareanlat', 'Fracreplace', 'errorbar'",f(w,ii){let tot=0;for(const i of ii)tot+=Math.min(0,w[i]);
+    if(tot===0)return {v:times[ii[Math.floor(ii.length/2)]],i:ii[Math.floor(ii.length/2)]};
+    let c=0;for(const i of ii){c+=Math.min(0,w[i]);if(c<=tot/2)return {v:times[i],i:i};}return {v:times[ii[ii.length-1]],i:ii[ii.length-1]};}},
+  narea:{name:'Negative area',unit:'µV·ms',code:"'arean'  % closest ERPLAB option",f(w,ii){let s=0;for(const i of ii)s+=Math.min(0,w[i])*DT;return {v:s};}}
+};
+
+// ---------- state ----------
+const $=id=>document.getElementById(id);
+const S={measure:'mean',N:40,w0:300,w1:500,seedMain:11,seedStab:1000,fished:false};
+let WR,WU,stab={};
+function build(){
+  seed=S.seedMain;WR=wave(TR,S.N);WU=wave(TU,S.N);
+  const m=M[S.measure],ii=idx(S.w0,S.w1);
+  const diffs=[],ru=[],rr=[];
+  for(let k=0;k<20;k++){seed=S.seedStab+k*7919;const a=wave(TR,S.N),b=wave(TU,S.N);const x=m.f(a,ii).v,y=m.f(b,ii).v;rr.push(x);ru.push(y);diffs.push(y-x);}
+  const mean=diffs.reduce((a,b)=>a+b,0)/20,sd=Math.sqrt(diffs.reduce((a,b)=>a+(b-mean)**2,0)/19);
+  const mu_=ru.reduce((a,b)=>a+b,0)/20;
+  stab={diffs,mean,sd,tru:m.f(TU,ii).v-m.f(TR,ii).v,ru:mu_,rr:rr.reduce((a,b)=>a+b,0)/20,sdU:Math.sqrt(ru.reduce((a,b)=>a+(b-mu_)**2,0)/19)};
+}
+
+// ---------- drawing ----------
+const cv=$('cv'),ctx=cv.getContext('2d');let W=1000,H=440,geo={};
+function fit(){const r=cv.getBoundingClientRect();const dpr=window.devicePixelRatio||1;W=r.width;
+  H=W<700?Math.round(Math.max(240,W*0.62)+230):Math.round(Math.max(360,Math.min(460,W*0.42)));
+  cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);cv.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);}
+const C={r:'#0f6e74',u:'#d9573b',gold:'#c8962a',ink:'#1d1f24',muted:'#5c6270',rule:'#e2ddd4',win:'rgba(140,146,160,.16)',rf:'rgba(15,110,116,.22)',uf:'rgba(217,87,59,.22)'};
+function txt(s,x,y,o={}){ctx.font=(o.w||400)+' '+(o.s||12)+'px "IBM Plex Sans",system-ui,sans-serif';ctx.fillStyle=o.c||C.muted;ctx.textAlign=o.a||'left';ctx.textBaseline=o.b||'alphabetic';ctx.fillText(s,x,y);}
+function line(pts,c,w,dash){ctx.beginPath();ctx.strokeStyle=c;ctx.lineWidth=w||1.2;ctx.setLineDash(dash||[]);pts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.stroke();ctx.setLineDash([]);}
+function fmt(v,u){return (u==='ms'?Math.round(v):u==='µV·ms'?Math.round(v):v.toFixed(2))+' '+u;}
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  const stacked=W<700,narrow=W<560;
+  const L=narrow?34:48;
+  // geometry of the two panels
+  let p1,p2;
+  if(stacked){const h1=Math.max(240,W*0.62)-40;p1={x:L,y:24,w:W-L-12,h:h1-30};p2={x:L,y:h1+50,w:W-L-12,h:H-h1-50-52};}
+  else{const wl=Math.round((W-L-30)*0.62);p1={x:L,y:24,w:wl,h:H-62};p2={x:L+wl+58,y:24,w:W-(L+wl+58)-12,h:H-62};}
+  geo={p1};
+  const m=M[S.measure],ii=idx(S.w0,S.w1);
+  // ---- panel 1: waveforms
+  txt(narrow?'Averaged ERP at Pz, '+S.N+' trials':'Averaged ERP at Pz, '+S.N+' trials per condition',p1.x,p1.y-9,{c:C.ink,w:600,s:13});
+  let mx=0;for(let i=0;i<NS;i++)mx=Math.max(mx,Math.abs(WR[i]),Math.abs(WU[i]));const sc=Math.max(10,Math.ceil(mx/2.5)*2.5), y=v=>p1.y+p1.h/2-(v/sc)*(p1.h/2), x=t=>p1.x+((t-T0)/(T1-T0))*p1.w;
+  ctx.fillStyle=C.win;ctx.fillRect(x(S.w0),p1.y,x(S.w1)-x(S.w0),p1.h);
+  ctx.strokeStyle=C.rule;ctx.lineWidth=1;ctx.strokeRect(p1.x,p1.y,p1.w,p1.h);
+  line([[p1.x,y(0)],[p1.x+p1.w,y(0)]],C.rule,1,[3,3]);
+  line([[x(0),p1.y],[x(0),p1.y+p1.h]],C.muted,1,[2,3]);
+  [-200,0,200,400,600,800].forEach(ms=>{const xx=x(ms);line([[xx,p1.y+p1.h],[xx,p1.y+p1.h+4]],C.muted);txt(ms+(ms===800&&!narrow?' ms':''),xx,p1.y+p1.h+14,{a:ms===800?'right':ms===-200?'left':'center',s:11});});
+  [-sc,-sc/2,0,sc/2,sc].forEach(v=>txt((v>0?'+':'')+v,p1.x-4,y(v)+4,{a:'right',s:10.5}));
+  txt('µV, negative down',p1.x+4,p1.y+12,{s:10.5});
+  // window edges
+  [S.w0,S.w1].forEach((t,k)=>{const xx=x(t);line([[xx,p1.y],[xx,p1.y+p1.h]],C.muted,1.5);
+    ctx.fillStyle='#fff';ctx.strokeStyle=C.muted;ctx.beginPath();ctx.arc(xx,p1.y+p1.h-10,5,0,6.29);ctx.fill();ctx.stroke();
+    txt(t+' ms',xx,p1.y+p1.h-20,{a:k?'left':'right',s:10.5,c:C.ink});});
+  // measure-specific shading
+  const mr=m.f(WR,ii),mu=m.f(WU,ii);
+  function shadeNeg(w,col,from,to){ctx.beginPath();ctx.moveTo(x(times[from]),y(0));for(let i=from;i<=to;i++)ctx.lineTo(x(times[i]),y(Math.min(0,w[i])));ctx.lineTo(x(times[to]),y(0));ctx.closePath();ctx.fillStyle=col;ctx.fill();}
+  const i0=ii[0],i1=ii[ii.length-1];
+  if(S.measure==='narea'){shadeNeg(WU,C.uf,i0,i1);shadeNeg(WR,C.rf,i0,i1);}
+  if(S.measure==='falat'){shadeNeg(WU,C.uf,i0,mu.i);shadeNeg(WR,C.rf,i0,mr.i);}
+  // waveforms
+  const pts=(w)=>{const o=[];for(let i=0;i<NS;i++)o.push([x(times[i]),y(w[i])]);return o;};
+  line(pts(WR),C.r,1.7);line(pts(WU),C.u,1.7);
+  // markers
+  [[mr,C.r,WR],[mu,C.u,WU]].forEach(([res,col,w])=>{
+    if(S.measure==='mean'){line([[x(S.w0),y(res.v)],[x(S.w1),y(res.v)]],col,3);}
+    else if(S.measure==='peak'||S.measure==='lpeak'){const px=x(times[res.i]),py=y(res.v);line([[px,y(0)],[px,py]],col,1,[2,3]);ctx.fillStyle=col;ctx.beginPath();ctx.arc(px,py,4.5,0,6.29);ctx.fill();}
+    else if(S.measure==='plat'){const px=x(res.v),py=y(w[res.i]);line([[px,py],[px,p1.y+p1.h]],col,1,[2,3]);ctx.fillStyle=col;ctx.beginPath();ctx.arc(px,py,4.5,0,6.29);ctx.fill();}
+    else if(S.measure==='falat'){const px=x(res.v);line([[px,p1.y+6],[px,p1.y+p1.h]],col,2);}
+  });
+  
+  // ---- panel 2: stability strip
+  txt(narrow?'Stability across 20 noise re-draws':'Stability across 20 re-draws of the noise',p2.x,p2.y-9,{c:C.ink,w:600,s:13});
+  ctx.strokeStyle=C.rule;ctx.strokeRect(p2.x,p2.y,p2.w,p2.h);
+  const d=stab.diffs;let lo=Math.min(stab.tru,...d),hi=Math.max(stab.tru,...d);
+  if(m.unit==='µV'){lo=Math.min(lo,-1);hi=Math.max(hi,1);}const pad=(hi-lo)*0.12||1;lo-=pad;hi+=pad;
+  if(m.unit==='µV'){lo=Math.min(lo,0);hi=Math.max(hi,0);}
+  const sx=v=>p2.x+10+((v-lo)/(hi-lo))*(p2.w-20);
+  const cy=p2.y+p2.h*0.42;
+  if(lo<0&&hi>0){line([[sx(0),p2.y],[sx(0),p2.y+p2.h]],C.rule,1,[3,3]);txt('0',sx(0),p2.y+p2.h+14,{a:'center',s:11});}
+  // ticks
+  const span=hi-lo,step=span>200?100:span>80?50:span>30?10:span>12?5:span>5?2:span>2?1:0.5;
+  for(let v=Math.ceil(lo/step)*step;v<=hi;v+=step){if(Math.abs(v)<1e-9)continue;const xx=sx(v);line([[xx,p2.y+p2.h],[xx,p2.y+p2.h+4]],C.muted);txt((step<1?v.toFixed(1):Math.round(v))+'',xx,p2.y+p2.h+14,{a:'center',s:11});}
+  txt('difference, Unrelated − Related ('+m.unit+')',p2.x+p2.w/2,p2.y+p2.h+28,{a:'center',s:11});
+  // SD bar and mean
+  const barY=cy+38;
+  line([[sx(stab.mean-stab.sd),barY],[sx(stab.mean+stab.sd),barY]],C.ink,2);
+  line([[sx(stab.mean),barY-9],[sx(stab.mean),barY+9]],C.ink,2.5);
+  txt('mean ± SD of the 20',sx(stab.mean),barY+22,{a:'center',s:10.5,c:C.ink});
+  // dots
+  seed=99;d.forEach((v,k)=>{const jy=cy+(((k*37)%11)-5)*2.6;ctx.fillStyle='rgba(107,92,165,.75)';ctx.beginPath();ctx.arc(sx(v),jy,4,0,6.29);ctx.fill();});
+  // true line
+  line([[sx(stab.tru),p2.y+20],[sx(stab.tru),p2.y+p2.h-6]],C.gold,2.5);
+  txt('true',sx(stab.tru),p2.y+14,{a:'center',s:11,c:C.gold,w:600});
+}
+
+// ---------- readouts ----------
+function update(){
+  build();draw();
+  const m=M[S.measure],ii=idx(S.w0,S.w1),mr=m.f(WR,ii),mu=m.f(WU,ii);
+  $('ntrv').textContent=S.N+' (noise sd '+(SINGLE/Math.sqrt(S.N)).toFixed(1)+' µV)';
+  $('w0').value=S.w0;$('w1').value=S.w1;
+  $('vr').textContent=fmt(mr.v,m.unit);$('vu').textContent=fmt(mu.v,m.unit);
+  $('vd').textContent=fmt(mu.v-mr.v,m.unit);$('vt').textContent=fmt(stab.tru,m.unit);
+  const bias=stab.mean-stab.tru;
+  $('bias').textContent=(bias>0?'+':'')+fmt(bias,m.unit);$('sd').textContent=fmt(stab.sd,m.unit);
+  if(S.measure==='peak'||S.measure==='lpeak'){const tu=m.f(TU,ii).v,tr=m.f(TR,ii).v;
+    $('percond').innerHTML='mean peak of each condition: Unrelated <b>'+tu.toFixed(1)+' → '+stab.ru.toFixed(1)+'</b>, Related <b>'+tr.toFixed(1)+' → '+stab.rr.toFixed(1)+' µV</b> (true → measured)';}
+  else $('percond').textContent='';
+  const rel=Math.abs(bias)/(Math.abs(stab.tru)+1e-9);
+  const v=$('verdict');
+  if(m.unit==='ms'){v.className='pill '+(stab.sd<15?'ok':stab.sd<40?'':'warn');v.textContent=stab.sd<15?'stable latency':stab.sd<40?'latency wobbles':'latency jumps around';}
+  else{const se=stab.sd/Math.sqrt(20);let z=Math.abs(bias)/(se+1e-9),lab='difference';
+    if(S.measure==='peak'||S.measure==='lpeak'){const zu=Math.abs(stab.ru-m.f(TU,ii).v)/(stab.sdU/Math.sqrt(20)+1e-9);if(zu>z){z=zu;lab='each peak';}}
+    v.className='pill '+(z<2?'ok':z<3?'':'warn');v.textContent=z<2?'no bias detectable (within 2 SE)':z<3?'possible bias':lab+' biased';}
+  const wb=$('warn');
+  if(S.fished){wb.className='warnbox show';wb.textContent='Window chosen from the data: this window was placed where the noise happened to make the difference largest, so the measured effect is inflated and a test on it will give far more false positives than 5%. Choose the window before looking, from prior literature (300–500 ms for the N400).';}
+  else wb.className='warnbox';
+  $('code').textContent="[ALLERP, Amp, Lat] = pop_geterpvalues(ERP, ["+S.w0+" "+S.w1+"], 'Measure', "+m.code+", 'Baseline', 'pre',\n    'Binlabel', 'on', 'SendtoWorkspace', 'on');";
+}
+function setWin(a,b){a=Math.round(a/DT)*DT;b=Math.round(b/DT)*DT;a=Math.max(T0,Math.min(T1-DT*3,a));b=Math.max(a+DT*3,Math.min(T1,b));S.w0=a;S.w1=b;}
+$('measure').addEventListener('change',e=>{S.measure=e.target.value;update();});
+$('ntr').addEventListener('input',e=>{S.N=+e.target.value;update();});
+$('w0').addEventListener('change',e=>{setWin(+e.target.value,S.w1);S.fished=false;update();});
+$('w1').addEventListener('change',e=>{setWin(S.w0,+e.target.value);S.fished=false;update();});
+$('reset').addEventListener('click',()=>{setWin(300,500);S.fished=false;update();});
+$('reseed').addEventListener('click',()=>{S.seedMain+=1;S.seedStab+=101;update();});
+$('fish').addEventListener('click',()=>{
+  // scan 200 ms windows from 0 to 800 ms and take the one with the largest observed mean difference
+  let best=0,bw=300;const wl=200;
+  for(let a=0;a+wl<=T1;a+=DT){const ii=idx(a,a+wl);const dd=M.mean.f(WU,ii).v-M.mean.f(WR,ii).v;if(Math.abs(dd)>best){best=Math.abs(dd);bw=a;}}
+  setWin(bw,bw+wl);S.fished=true;update();});
+// drag the window edges
+let drag=null;
+function px(e){const r=cv.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top};}
+function edgeAt(p){const {p1}=geo;if(!p1||p.y<p1.y||p.y>p1.y+p1.h+8)return null;const x=t=>p1.x+((t-T0)/(T1-T0))*p1.w;
+  const d0=Math.abs(p.x-x(S.w0)),d1=Math.abs(p.x-x(S.w1));if(Math.min(d0,d1)>14)return null;return d0<=d1?0:1;}
+cv.addEventListener('pointerdown',e=>{const k=edgeAt(px(e));if(k===null)return;drag=k;cv.setPointerCapture(e.pointerId);e.preventDefault();});
+cv.addEventListener('pointermove',e=>{const p=px(e);
+  if(drag===null){cv.style.cursor=edgeAt(p)===null?'default':'ew-resize';return;}
+  const {p1}=geo;const t=T0+((p.x-p1.x)/p1.w)*(T1-T0);
+  if(drag===0)setWin(t,S.w1);else setWin(S.w0,t);S.fished=false;update();});
+cv.addEventListener('pointerup',()=>{drag=null;});cv.addEventListener('pointercancel',()=>{drag=null;});
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{fit();draw();},80);});
+fit();update();
+})();
+</script>
+</body>
+</html>
