@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Re-referencing · ERP pipeline</title>
+<title>Re-Referencing · ERP pipeline</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -75,9 +75,13 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
 }
 @media (prefers-reduced-motion: reduce){ .anim-hint{display:none} }
 /* ===== END SHARED STYLE ===== */
+.fig-num{margin:14px 0 0;font-size:15px;color:var(--ink)}
+.fig-title{margin:2px 0 10px;font-size:15px;color:var(--ink)}
+.fig-note{font-size:14.5px;color:var(--muted);margin-top:10px;max-width:var(--maxw)}
+.refs p,.refs a{overflow-wrap:anywhere}
 
 /* page-specific */
-.refs p{overflow-wrap:anywhere}
+.refs p,.readout span{overflow-wrap:anywhere}
 .ctlgroup{display:flex;flex-wrap:wrap;gap:14px 22px;flex:1 1 100%}
 .ctlgroup h3{flex:1 1 100%;margin:0;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
 .radios{display:flex;flex-wrap:wrap;gap:6px 14px;flex:1 1 100%}
@@ -97,11 +101,13 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
   <span class="step">step 7 / 12</span>
 </div>
 <header class="hero">
-  <h1>Re-referencing</h1>
+  <h1>Re-Referencing</h1>
   <p class="q">What is a reference and why does it matter?</p>
 </header>
 
 <main>
+  <p class="fig-num"><b>Figure 1</b></p>
+  <p class="fig-title"><i>Scalp Voltage and Waveforms Under Four Reference Choices</i></p>
   <div class="stage" id="stage">
     <div class="canvas-wrap">
       <canvas id="cv" tabindex="0" aria-label="Left: a head seen from above with 19 scalp electrodes and two mastoids, colored by the voltage at the cursor time under the chosen reference, with draggable dipoles inside. Right: waveforms at six sites under that reference, plus the sum of all scalp channels."></canvas>
@@ -164,13 +170,14 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
     </div>
     <div class="why" id="why"></div>
   </div>
+  <p class="fig-note"><b><i>Note.</i></b> Panel A is the head seen from above, colored by the voltage at the time cursor under the chosen reference (coral positive, blue negative, white zero), with the reference site outlined in gold and the dipoles drawn as black dots. Panel B shows the waveforms at six sites, teal under the chosen reference and gray for the true absolute voltage, plus the sum of the 19 scalp sites in violet. The data are simulated from one or two point dipoles in a spherical head with no skull layer. Adapted from Luck (2014), Figures 5.1 and 5.2.</p>
 
   <section class="prose">
-    <h2>What you are looking at</h2>
-    <p>The head on the left is seen from above, nose up. Inside it sit one or two current dipoles, the tiny batteries that a patch of synchronized cortex behaves like. Each dipole produces a voltage field over the whole scalp, warm where the field is positive and cool where it is negative, and each has its own time course: dipole 1 carries an N400-like negativity peaking near 400 ms, dipole 2 an earlier positive wave. The 19 discs are 10/20 electrode sites, and M1 and M2 are the mastoids behind the ears. The waveforms on the right are what six of those sites record from −200 to 800 ms.</p>
+    <h2>What You Are Looking At</h2>
+    <p>The head in Panel A is seen from above, nose up. Inside it sit one or two current dipoles, the tiny batteries that a patch of synchronized cortex behaves like. Each dipole produces a voltage field over the whole scalp, warm where the field is positive and cool where it is negative, and each has its own time course: dipole 1 carries an N400-like negativity peaking near 400 ms, dipole 2 an earlier positive wave. The 19 discs are 10/20 electrode sites, and M1 and M2 are the mastoids behind the ears. The waveforms in Panel B are what six of those sites record from −200 to 800 ms.</p>
     <p>The gray traces show the true voltage at each site relative to a point infinitely far away. Nothing in a real recording can measure that. An amplifier only ever reports a difference between two electrodes, so every channel is the active site minus a reference site, A − R, and the ground electrode cancels out of the subtraction. Pick a reference under Reference and the teal traces show what the same brain activity looks like on the recording. The reference site is drawn in gold, and its own channel is flat by definition, because R − R is zero.</p>
 
-    <h2>Try this</h2>
+    <h2>Try This</h2>
     <ol>
       <li>Start with M1. Drag dipole 1 toward the left ear until M1 sits inside the negative part of its field. Every channel, even far-away Fz and T7, now shows a positive bump at 400 ms that is only the reference going negative.</li>
       <li>Switch to Cz. The Pz waveform shrinks or even flips sign, because Cz is close to the peak of the same field. A midline effect can vanish under a vertex reference.</li>
@@ -179,22 +186,22 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
       <li>Move the time cursor across the epoch and read the Pz value under each reference. They are all correct measurements of the same field.</li>
     </ol>
 
-    <h2>Why it matters for the pipeline</h2>
-    <p>There is no neutral site on the head. Any dipole has a line of zero voltage, but it moves with the dipole, and a site that is quiet for one component is active for another. The choice of reference therefore changes the shape, the size, and sometimes the sign of every waveform, and an amplitude at Pz means nothing until the reference is stated (Luck, 2014). Mastoids are the usual compromise. They are convenient, not lateralized once linked, and used by enough labs that results can be compared. The average reference approximates the absolute voltage only when electrodes cover the whole head densely, and its result depends on which electrodes happened to be recorded, since the zero-sum rule is imposed on whatever set exists.</p>
-    <p>Re-referencing is a subtraction, which is linear, so it can be done at any point and, as long as the old reference channel is kept in the file, undone without loss, and it does not matter whether it comes before or after averaging. Artifact rejection is not linear, so re-reference first if the new reference makes artifacts easier to see, and be aware that changing the reference afterwards will not undo the rejection decisions. In the lab the data arrive with the reference used during recording, and the lab script converts them to the average reference with <code>EEG = pop_reref(EEG, []);</code>, the empty brackets meaning "use all channels". The page's average excludes the mastoids; <code>pop_reref(EEG, [])</code> uses every channel in the file, so exclude EOG channels with the <code>'exclude'</code> option if they are present. The reference used for each ERP CORE experiment is listed in Kappenman et al. (2021). Looking at the same dataset under two references is a quick check that an effect belongs to the brain and not to the electrode it was measured against.</p>
+    <h2>Why It Matters for the Pipeline</h2>
+    <p>There is no neutral site on the head. Any dipole has a line of zero voltage, but it moves with the dipole, and a site that is quiet for one component is active for another. The choice of reference therefore changes the shape, the size, and sometimes the sign of every waveform, and an amplitude at Pz means nothing until the reference is stated (Luck, 2014, Chapter 5). Mastoids are the usual compromise. They are convenient, not lateralized once linked, and used by enough labs that results can be compared. The average reference approximates the absolute voltage only when electrodes cover the whole head densely, and its result depends on which electrodes happened to be recorded, since the zero-sum rule is imposed on whatever set exists.</p>
+    <p>Re-referencing is a subtraction, which is linear, so it can be done at any point and, as long as the old reference channel is kept in the file, undone without loss, and it does not matter whether it comes before or after averaging. Artifact rejection is not linear, so re-reference first if the new reference makes artifacts easier to see, and be aware that changing the reference afterwards will not undo the rejection decisions. In the lab the data arrive with the reference used during recording, and the lab script converts them to the average reference with <code>EEG = pop_reref(EEG, []);</code>, the empty brackets meaning "use all channels" (Delorme &amp; Makeig, 2004). The page's average excludes the mastoids; <code>pop_reref(EEG, [])</code> uses every channel in the file, so exclude EOG channels with the <code>'exclude'</code> option if they are present. The reference used for each ERP CORE experiment is listed in Kappenman et al. (2021). Looking at the same dataset under two references is a quick check that an effect belongs to the brain and not to the electrode it was measured against.</p>
 
     <h2 id="refs">References</h2>
     <div class="refs">
+      <p>Delorme, A., &amp; Makeig, S. (2004). EEGLAB: An open source toolbox for analysis of single-trial EEG dynamics including independent component analysis. <i>Journal of Neuroscience Methods, 134</i>(1), 9–21. <a href="https://doi.org/10.1016/j.jneumeth.2003.10.009">https://doi.org/10.1016/j.jneumeth.2003.10.009</a></p>
+      <p>Kappenman, E. S., Farrens, J. L., Zhang, W., Stewart, A. X., &amp; Luck, S. J. (2021). ERP CORE: An open resource for human event-related potential research. <i>NeuroImage, 225</i>, Article 117465. <a href="https://doi.org/10.1016/j.neuroimage.2020.117465">https://doi.org/10.1016/j.neuroimage.2020.117465</a></p>
       <p>Luck, S. J. (2014). <i>An introduction to the event-related potential technique</i> (2nd ed.). MIT Press.</p>
-      <p>Kappenman, E. S., Farrens, J. L., Zhang, W., Stewart, A. X., &amp; Luck, S. J. (2021). ERP CORE: An open resource for human event-related potential research. <i>NeuroImage, 225</i>, 117465. https://doi.org/10.1016/j.neuroimage.2020.117465</p>
-      <p>Delorme, A., &amp; Makeig, S. (2004). EEGLAB: An open source toolbox for analysis of single-trial EEG dynamics including independent component analysis. <i>Journal of Neuroscience Methods, 134</i>(1), 9–21. https://doi.org/10.1016/j.jneumeth.2003.10.009</p>
     </div>
   </section>
 </main>
 
 <nav class="pager">
   <a class="prev" href="erp-06-filtering.html"><small>Previous</small><span>Filtering</span></a>
-  <a class="next" href="erp-08-bins.html"><small>Next</small><span>Bin assignment and epoching</span></a>
+  <a class="next" href="erp-08-bins.html"><small>Next</small><span>Bin Assignment and Epoching</span></a>
 </nav>
 <footer>Part of the ERP pipeline series for PSYCH 390, St. Olaf College. Built as a standalone page; nothing is sent anywhere.</footer>
 
@@ -257,6 +264,7 @@ const cv=$('cv'),ctx=cv.getContext('2d');let Wd=1000,H=560;
 function fit(){const r=cv.getBoundingClientRect();const dpr=devicePixelRatio||1;Wd=r.width;const narrow=Wd<560;H=narrow?Math.round(Wd*0.9+380):Math.max(440,Math.min(600,Wd*0.56));
   cv.width=Math.round(Wd*dpr);cv.height=Math.round(H*dpr);cv.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);}
 function txt(s,x,y,o={}){ctx.font=(o.w||400)+' '+(o.s||12)+'px "IBM Plex Sans",system-ui,sans-serif';ctx.fillStyle=o.c||'#5c6270';ctx.textAlign=o.a||'left';ctx.textBaseline=o.b||'alphabetic';ctx.fillText(s,x,y);}
+function plab(l,x,y){txt(l,x,y,{c:'#1d1f24',w:700,s:13,b:'top'});return x+16;}
 function col(v,vmax){const a=Math.max(-1,Math.min(1,v/vmax));const t=Math.abs(a);
   const c=a>0?[217,87,59]:[59,111,217];const r=Math.round(255+(c[0]-255)*t),g=Math.round(255+(c[1]-255)*t),b=Math.round(255+(c[2]-255)*t);return `rgb(${r},${g},${b})`;}
 let head={cx:0,cy:0,R:1};
@@ -285,14 +293,14 @@ function drawHead(x0,y0,size){const R=size*0.37,cx=x0+size/2,cy=y0+size/2+22;hea
     if(tang){ctx.beginPath();ctx.moveTo(x-dx*L,y-dy*L);ctx.lineTo(x+dx*L,y+dy*L);ctx.stroke();ctx.beginPath();ctx.arc(x+dx*L,y+dy*L,3,0,6.2832);ctx.fillStyle='#d9573b';ctx.fill();}
     else{ctx.beginPath();ctx.arc(x,y,11,0,6.2832);ctx.strokeStyle=d.o==='out'?'#d9573b':'#3b6fd9';ctx.lineWidth=1.5;ctx.setLineDash([2,3]);ctx.stroke();ctx.setLineDash([]);}
     txt('dipole '+(k+1),x+12,y-8,{s:10.5,c:'#1d1f24',w:500});});
-  txt('Scalp voltage at '+Math.round(S.t*1000)+' ms, ref: '+refLabel(S.ref),x0,y0+2,{c:'#1d1f24',w:600,s:13,b:'top'});
-  txt('color scale ±'+vmax+' µV, white = 0',x0,y0+18,{s:11,b:'top'});
+  txt('Scalp voltage at '+Math.round(S.t*1000)+' ms, ref: '+refLabel(S.ref),plab('A',x0,y0+2),y0+2,{c:'#1d1f24',w:600,s:13,b:'top'});
+  txt('color scale ±'+vmax+' µV, white = 0',x0+16,y0+18,{s:11,b:'top'});
   txt('nose',cx,cy-R*1.16,{a:'center',s:10});}
 function refLabel(r){return {M1:'M1',LM:'linked mastoids',Cz:'Cz',AVG:'average',ABS:'absolute (not measurable)'}[r];}
 const SHOW=['Fz','Cz','Pz','O1','T7','M1'];
-function drawWaves(x0,y0,w,h){const narrow=Wd<560,L=x0+(narrow?50:44),R=x0+w-10,rows=SHOW.length+1,rh=(h-52)/rows,top=y0+34;
+function drawWaves(x0,y0,w,h){const narrow=Wd<560,L=x0+(narrow?50:44),R=x0+w-10,rows=SHOW.length+1,rh=(h-66)/rows,top=y0+34;
   let sc=6;for(const n of SHOW)for(let i=0;i<NT;i++)sc=Math.max(sc,Math.abs(VREF[IDX[n]][i]),Math.abs(VABS[IDX[n]][i]));sc=Math.ceil(sc/2)*2;const SC=sc;
-  txt('Waveforms under this reference',x0,y0+2,{c:'#1d1f24',w:600,s:13,b:'top'});txt('negative plotted down, each row ±'+SC+' µV',R,y0+18,{a:'right',s:11,b:'top'});
+  txt('Waveforms under this reference',plab('B',x0,y0+2),y0+2,{c:'#1d1f24',w:600,s:13,b:'top'});txt('Amplitude (µV): each row ±'+SC+', negative down',R,y0+18,{a:'right',s:11,b:'top'});
   const X=i=>L+(i/(NT-1))*(R-L);const ti=Math.round((S.t-T0)*FS);
   for(let r=0;r<rows;r++){const yc=top+rh*(r+0.5);const half=rh*0.46;const Y=v=>yc-(v/sc)*half;
     ctx.strokeStyle='#e2ddd4';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(L,yc);ctx.lineTo(R,yc);ctx.stroke();
@@ -309,7 +317,7 @@ function drawWaves(x0,y0,w,h){const narrow=Wd<560,L=x0+(narrow?50:44),R=x0+w-10,
       txt(S.ref==='AVG'?(narrow?'zero at every time point':'zero at every time point under the average reference'):'scale ÷ '+div+(mx<0.5?'':', far from zero'),R-4,yc+half-2,{a:'right',s:10.5,c:'#6b5ca5'});}
   }
   // time axis
-  const ya=top+rh*rows+4;(narrow?[-200,0,400,800]:[-200,0,200,400,600,800]).forEach(ms=>{const x=X(Math.min(NT-1,Math.round((ms/1000-T0)*FS)));ctx.strokeStyle='#5c6270';ctx.beginPath();ctx.moveTo(x,ya-4);ctx.lineTo(x,ya);ctx.stroke();txt(narrow&&ms!==800?String(ms):ms+' ms',x,ya+11,{a:ms===800?'right':ms===-200?'left':'center',s:10.5});});
+  const ya=top+rh*rows+4;(narrow?[-200,0,400,800]:[-200,0,200,400,600,800]).forEach(ms=>{const x=X(Math.min(NT-1,Math.round((ms/1000-T0)*FS)));ctx.strokeStyle='#5c6270';ctx.beginPath();ctx.moveTo(x,ya-4);ctx.lineTo(x,ya);ctx.stroke();txt(String(ms),x,ya+11,{a:ms===800?'right':ms===-200?'left':'center',s:10.5});});txt('Time (ms)',(L+R)/2,ya+25,{a:'center',s:11});
   // time cursor
   const xc=X(ti);ctx.strokeStyle='#c8962a';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(xc,top);ctx.lineTo(xc,top+rh*rows);ctx.stroke();}
 function draw(){ctx.clearRect(0,0,Wd,H);const narrow=Wd<560;

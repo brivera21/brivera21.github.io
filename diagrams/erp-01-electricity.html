@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Introduction to electricity · ERP pipeline</title>
+<title>Introduction to Electricity · ERP pipeline</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -75,6 +75,10 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
 }
 @media (prefers-reduced-motion: reduce){ .anim-hint{display:none} }
 /* ===== END SHARED STYLE ===== */
+.fig-num{margin:14px 0 0;font-size:15px;color:var(--ink)}
+.fig-title{margin:2px 0 10px;font-size:15px;color:var(--ink)}
+.fig-note{font-size:14.5px;color:var(--muted);margin-top:10px;max-width:var(--maxw)}
+.refs p,.refs a{overflow-wrap:anywhere}
 
 .worlds{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
 .worlds span{font-size:13px;color:var(--muted);margin-right:4px}
@@ -91,11 +95,13 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
   <span class="step">step 1 / 12</span>
 </div>
 <header class="hero">
-  <h1>Introduction to electricity</h1>
+  <h1>Introduction to Electricity</h1>
   <p class="q">How does electricity work, and how is electrophysiology similar and different?</p>
 </header>
 
 <main>
+  <p class="fig-num"><b>Figure 1</b></p>
+  <p class="fig-title"><i>Ohm's Law in a Wire and in the Head</i></p>
   <div class="stage" id="stage">
     <div class="worlds" role="group" aria-label="Choose which circuit to show">
       <span>World</span>
@@ -132,13 +138,14 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
     </table>
     </div>
   </div>
+  <p class="fig-note"><b><i>Note.</i></b> Panel A shows the circuit, with teal dots for the moving charge carriers, a coral glow for heat in the resistor, and, in the head view, a blue trace for the 60 Hz room wiring and the ions colored coral (Na<sup>+</sup>), violet (K<sup>+</sup>), and teal (Cl<sup>−</sup>). Panel B shows the hose analogy in the wire view and the amplifier output (gold = brain signal alone, teal = what the amplifier reads) in the head view. All values are simulated; the head is reduced to a single loop with one skull resistor on each side and no capacitance in the tissue. Created for this series.</p>
 
   <section class="prose">
-    <h2>What you are looking at</h2>
+    <h2>What You Are Looking At</h2>
     <p>Start with the wire. The battery supplies voltage, a push that makes charge move, and the moving dots are electrons carrying current around the loop. The resistor opposes that flow and turns the energy into heat, so it glows as the power rises. The hose underneath shows the same three quantities as water. Voltage is pressure, current is how much water comes out per second, and resistance is how narrow the hose is. Ohm's law ties the three together, I = V / R, and power is P = V × I.</p>
-    <p>Switch to the head and the same parts are all present, made of different materials. The battery is a small patch of cortex whose synchronized neurons behave like a tiny dipole. Current is carried by ions drifting through salt water rather than electrons in copper, the skull is a large resistor in the path, and the scalp is a thin conductive layer that spreads the current sideways. Each electrode sits on gel and skin, a junction that acts as a resistor and a capacitor in parallel, and the amplifier does not read the active electrode by itself. It reads the difference between the active electrode and a reference electrode, A minus R. Nearby room wiring carries 60 Hz alternating current, and a changing current makes a changing magnetic field, which induces a current in any conductor it crosses. That hum is common to both electrodes and should cancel in A minus R, but the cancellation only works if the two electrodes have similar, low impedance. As impedance rises the mismatch grows, less of the hum cancels, and skin potentials get larger too (Luck, 2014, chapter 5). The blue wire above the circuit carries the hum, and at high impedance it swamps the brain signal in the teal amplifier trace at the bottom.</p>
+    <p>Switch to the head and the same parts are all present, made of different materials. The battery is a small patch of cortex whose synchronized neurons behave like a tiny dipole. Current is carried by ions drifting through salt water rather than electrons in copper, the skull is a large resistor in the path, and the scalp is a thin conductive layer that spreads the current sideways. Each electrode sits on gel and skin, a junction that acts as a resistor and a capacitor in parallel, and the amplifier does not read the active electrode by itself. It reads the difference between the active electrode and a reference electrode, A minus R. Nearby room wiring carries 60 Hz alternating current, and a changing current makes a changing magnetic field, which induces a current in any conductor it crosses. That hum is common to both electrodes and should cancel in A minus R, but the cancellation only works if the two electrodes have similar, low impedance. As impedance rises the mismatch grows, less of the hum cancels, and skin potentials get larger too (Luck, 2014, Chapter 5). The blue wire above the circuit carries the hum, and at high impedance it swamps the brain signal in the teal amplifier trace at the bottom.</p>
 
-    <h2>Try this</h2>
+    <h2>Try This</h2>
     <ol>
       <li>In the wire circuit, raise the voltage with the resistance fixed. The electrons speed up, the hose pressure gauge climbs, and the current readout follows I = V / R.</li>
       <li>Now raise the resistance with the voltage fixed. The hose narrows, less water flows, and the dots slow down. The pressure is still there; it just cannot push as much through.</li>
@@ -147,8 +154,8 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
       <li>Raise the electrode impedance to 50 kΩ. The scalp voltage from the brain barely changes, but the 60 Hz hum grows until the amplifier trace is mostly noise. Bring it back below 5 kΩ and the trace clears.</li>
     </ol>
 
-    <h2>Why it matters for the pipeline</h2>
-    <p>Three facts from this page come back on almost every later one. Electricity follows the path of least resistance, so current from a cortical source spreads through the whole head instead of staying under one electrode, and a single channel never sees a single source. The skull is a poor conductor, so current spreads sideways through the lower-resistance scalp and the pattern reaching the electrodes is blurred. And the amplifier reports A minus R, so the choice of reference changes every waveform. Before a recording starts, the experimenter checks each electrode's impedance and works the gel until the impedance is low and roughly matched across sites, usually below 5 to 10 kΩ. EEGLAB does not store impedances; they are checked on the acquisition computer before recording and written into the lab notes, so keep a record of any electrode that was hard to bring down. A channel that was noisy from the start is the one you will later repair with <code>pop_interp</code>, and a noisy channel that is left in will cause artifact detection to reject far too many trials. Low, matched impedance is the cheapest noise reduction available (Luck, 2014, chapter 5).</p>
+    <h2>Why It Matters for the Pipeline</h2>
+    <p>Three facts from this page come back on almost every later one. Electricity follows the path of least resistance, so current from a cortical source spreads through the whole head instead of staying under one electrode, and a single channel never sees a single source. The skull is a poor conductor, so current spreads sideways through the lower-resistance scalp and the pattern reaching the electrodes is blurred. And the amplifier reports A minus R, so the choice of reference changes every waveform. Before a recording starts, the experimenter checks each electrode's impedance and works the gel until the impedance is low and roughly matched across sites, usually below 5 to 10 kΩ. EEGLAB does not store impedances; they are checked on the acquisition computer before recording and written into the lab notes, so keep a record of any electrode that was hard to bring down. A channel that was noisy from the start is the one you will later repair with <code>pop_interp</code>, and a noisy channel that is left in will cause artifact detection to reject far too many trials. Low, matched impedance is the cheapest noise reduction available (Luck, 2014, Chapter 5).</p>
 
     <h2 id="refs">References</h2>
     <div class="refs">
@@ -159,7 +166,7 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
 
 <nav class="pager">
   <a class="prev" href="erp-pipeline.html"><small>Previous</small><span>Series overview</span></a>
-  <a class="next" href="erp-02-eeg-signal.html"><small>Next</small><span>The EEG signal</span></a>
+  <a class="next" href="erp-02-eeg-signal.html"><small>Next</small><span>The EEG Signal</span></a>
 </nav>
 <footer>Part of the ERP pipeline series for PSYCH 390, St. Olaf College. Built as a standalone page; nothing is sent anywhere.</footer>
 
@@ -183,6 +190,8 @@ function fit(){const r=cv.getBoundingClientRect();const dpr=window.devicePixelRa
 function txt(s,x,y,o={}){ctx.font=(o.w||400)+' '+(o.s||12)+'px "IBM Plex Sans",system-ui,sans-serif';ctx.fillStyle=o.c||C.muted;ctx.textAlign=o.a||'left';ctx.textBaseline=o.b||'alphabetic';ctx.fillText(s,x,y);}
 function line(pts,c,w,dash){ctx.beginPath();ctx.strokeStyle=c;ctx.lineWidth=w||1.2;ctx.setLineDash(dash||[]);pts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.stroke();ctx.setLineDash([]);}
 function dot(x,y,r,c){ctx.beginPath();ctx.arc(x,y,r,0,6.2832);ctx.fillStyle=c;ctx.fill();}
+function plab(l,x,y){txt(l,x,y,{c:C.ink,w:700,s:13});return x+16;}
+function ytitle(s,x,y){ctx.save();ctx.translate(x,y);ctx.rotate(-Math.PI/2);txt(s,0,0,{a:'center',s:11});ctx.restore();}
 
 // A closed loop is a list of corner points; we walk it by arc length.
 function loopLen(P){let L=0;for(let i=0;i<P.length;i++){const a=P[i],b=P[(i+1)%P.length];L+=Math.hypot(b[0]-a[0],b[1]-a[1]);}return L;}
@@ -211,7 +220,7 @@ function drawWire(t){
   const top=narrow?24:28,circH=narrow?H*0.55:H*0.62;
   const x0=narrow?40:100,x1=narrow?W-40:W*0.52,y0=top+16,y1=top+circH-8;
   const loop=[[x0,y1],[x0,y0],[x1,y0],[x1,y1]];
-  txt('A wire circuit',x0,top-6,{c:C.ink,w:600,s:13});
+  txt('A wire circuit',plab('A',x0,top-6),top-6,{c:C.ink,w:600,s:13});
   // wire
   line([...loop,loop[0]],C.ink,2);
   // battery on left side, resistor on right
@@ -237,7 +246,7 @@ function drawWire(t){
     txt('bars are on linear scales; current can be tiny',mx,y0+150,{s:10.5});}
   // ---- hose analogy
   const hy0=top+circH+18,hy1=H-8,hm=(hy0+hy1)/2;
-  txt('The hose analogy',x0,hy0,{c:C.ink,w:600,s:13});
+  txt('The hose analogy',plab('B',x0,hy0),hy0,{c:C.ink,w:600,s:13});
   const px0=x0+8,px1=W-30,pw=(narrow?14:18)*(0.55+0.45*v.V/9)*0.4+10;
   // pressure gauge
   const gx=px0+22,gy=hm+6,gr=narrow?16:20;ctx.beginPath();ctx.arc(gx,gy,gr,0,6.2832);ctx.strokeStyle=C.ink;ctx.lineWidth=1.5;ctx.fillStyle='#fff';ctx.fill();ctx.stroke();
@@ -267,7 +276,7 @@ function drawHead(t){
   const x0=narrow?60:150,x1=narrow?W-60:W*0.50;
   // vertical layout of the loop: amplifier at top, electrodes, scalp, skull, brain with dipole at bottom
   const yAmp=top+50,yEl=top+circH*0.36,yScalp=top+circH*0.47,ySkull0=yScalp+circH*0.07,ySkull1=ySkull0+circH*0.17,yBot=top+circH-34;
-  txt('The head as a circuit',narrow?12:26,top-6,{c:C.ink,w:600,s:13});
+  txt('The head as a circuit',plab('A',narrow?12:26,top-6),top-6,{c:C.ink,w:600,s:13});
   // tissue bands
   const bx0=narrow?12:26,bx1=narrow?W-12:W*0.58;
   ctx.fillStyle='#f3d9c6';ctx.fillRect(bx0,yScalp,bx1-bx0,ySkull0-yScalp);
@@ -318,15 +327,17 @@ function drawHead(t){
     bar(px,yAmp+76,pw,'60 Hz hum leaking in',v.hum,25,'µV','#7aa3d6');
     txt('0.1 µV',px,yAmp+62,{s:10});txt('1',px+pw*0.37,yAmp+62,{s:10});txt('10',px+pw*0.74,yAmp+62,{s:10});txt('50',px+pw,yAmp+62,{s:10,a:'right'});}
   // ---- amplifier output trace (A − R) over 0.5 s: a slow brain deflection plus the hum
-  const ty0=top+circH+22,ty1=H-6,tm=(ty0+ty1)/2+6,th=(ty1-ty0)/2-12;
-  txt(narrow?'What the amplifier reads (0.5 s)':'What the amplifier reads over half a second',narrow?12:26,ty0,{c:C.ink,w:600,s:13});
+  const ty0=top+circH+22,ty1=H-30,tm=(ty0+ty1)/2+6,th=(ty1-ty0)/2-12;
+  txt(narrow?'What the amplifier reads (0.5 s)':'What the amplifier reads over half a second',plab('B',narrow?12:26,ty0),ty0,{c:C.ink,w:600,s:13});
   const tx0=narrow?44:70,tx1=W-14;const scale=Math.max(2,Math.ceil(Math.max(v.uV,v.hum)*1.1/5)*5);
   line([[tx0,tm],[tx1,tm]],C.rule,1,[3,3]);txt('+'+scale+' µV',tx0-4,tm-th+6,{a:'right',s:10});txt('−'+scale,tx0-4,tm+th+4,{a:'right',s:10});
   const pts=[],pts2=[];for(let i=0;i<=300;i++){const s=i/600;const x=tx0+(tx1-tx0)*i/300;
     const brain=v.uV*Math.exp(-0.5*((s-0.25)/0.05)**2)*(s>0.1?1:0)-0.5*v.uV*Math.exp(-0.5*((s-0.38)/0.05)**2);
     const y=tm-(brain+v.hum*Math.sin(2*Math.PI*60*s+(reduced?0:t*3)))/scale*th;pts.push([x,y]);pts2.push([x,tm-brain/scale*th]);}
   line(pts2,C.gold,1.4);line(pts,C.teal,1.3);
-  txt(narrow?'gold: brain only. teal: with '+v.Z.toFixed(0)+' kΩ electrodes':'gold: the brain signal alone. teal: what the amplifier reads with '+v.Z.toFixed(0)+' kΩ electrodes',tx1,ty1-2,{a:'right',s:10.5});
+  line([[tx0,tm+th],[tx1,tm+th]],C.rule,1);[0,0.25,0.5].forEach(sec=>{const x=tx0+(tx1-tx0)*sec/0.5;line([[x,tm+th],[x,tm+th+3]],C.muted,1);txt(sec===0.5?'0.5':String(sec),x,tm+th+12,{a:sec===0.5?'right':sec===0?'left':'center',s:10});});
+  txt('Time (s)',(tx0+tx1)/2,ty1+22,{a:'center',s:11});if(!narrow)ytitle('Amplitude (µV)',16,tm);
+  txt(narrow?'gold: brain only. teal: with '+v.Z.toFixed(0)+' kΩ electrodes':'gold: the brain signal alone. teal: what the amplifier reads with '+v.Z.toFixed(0)+' kΩ electrodes',tx1,ty0+12,{a:'right',s:10.5});
 }
 
 // ---------- loop ----------
@@ -345,7 +356,7 @@ function update(){
   if(wire){const v=wireVals();$('s1v').textContent=v.V.toFixed(1)+' V';$('s2v').textContent=v.R.toFixed(0)+' Ω';
     $('ro').innerHTML=`<span>current I = V / R <b>${fmtA(v.I)}</b></span><span>power P = V × I <b>${v.P.toFixed(v.P<1?2:1)} W</b></span><span>carriers <b>electrons in copper</b></span>`;}
   else{const v=headVals();$('s1v').textContent=v.N.toLocaleString()+' neurons';$('s2v').textContent=v.Z.toFixed(0)+' kΩ';
-    const ok=v.Z<=5?'ok':v.Z<=10?'':'warn';const word=v.Z<=5?'good, below 5 kΩ':v.Z<=10?'acceptable, 5 to 10 kΩ':'too high, hum leaks in';
+    const ok=v.Z<=5?'ok':v.Z<=10?'':'warn';const word=v.Z<=5?'good, below 5 kΩ':v.Z<=10?'acceptable, 5–10 kΩ':'too high, hum leaks in';
     $('ro').innerHTML=`<span>scalp voltage from the brain <b>${v.uV<1?v.uV.toFixed(2):v.uV.toFixed(1)} µV</b></span><span>60 Hz hum <b>${v.hum.toFixed(1)} µV</b> <span class="pill ${ok}">${word}</span></span><span>signal to hum <b>${(v.uV/v.hum).toFixed(2)}</b></span><span>carriers <b>ions in fluid</b></span>`;}
   draw();
 }

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>What is an ERP? · ERP pipeline</title>
+<title>What Is an ERP? · ERP pipeline</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -75,6 +75,10 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
 }
 @media (prefers-reduced-motion: reduce){ .anim-hint{display:none} }
 /* ===== END SHARED STYLE ===== */
+.fig-num{margin:14px 0 0;font-size:15px;color:var(--ink)}
+.fig-title{margin:2px 0 10px;font-size:15px;color:var(--ink)}
+.fig-note{font-size:14.5px;color:var(--muted);margin-top:10px;max-width:var(--maxw)}
+.refs p,.refs a{overflow-wrap:anywhere}
 
 .ctlgroup{display:flex;flex-wrap:wrap;gap:14px 22px;flex:1 1 100%;align-items:flex-end}
 .grp{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
@@ -88,11 +92,13 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
   <span class="step">step 3 / 12</span>
 </div>
 <header class="hero">
-  <h1>What is an ERP?</h1>
+  <h1>What Is an ERP?</h1>
   <p class="q">How does averaging pull a tiny signal out of noise?</p>
 </header>
 
 <main>
+  <p class="fig-num"><b>Figure 1</b></p>
+  <p class="fig-title"><i>Averaging Time-Locked Epochs in an Oddball Task</i></p>
   <div class="stage" id="stage">
     <div class="canvas-wrap">
       <canvas id="cv" aria-label="A live oddball experiment. Top: a stream of standard X and rare oddball O stimuli above one channel of continuous EEG with event markers. Middle: the epochs cut around each stimulus, stacked separately for standards and oddballs. Bottom: the running average of each condition drawn over the true hidden waveform, the oddball minus standard difference wave, and an inset showing residual noise falling as one over the square root of the number of trials."></canvas>
@@ -128,36 +134,37 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
     </div>
     <div class="readout" id="ro"></div>
   </div>
+  <p class="fig-note"><b><i>Note.</i></b> Panel A shows the stimulus stream (X = standard, O = oddball) above one channel of continuous EEG at Pz. Panel B stacks the single-trial epochs (gray) for each condition. Panel C shows the running averages, teal for standards and coral for oddballs, over the true ERP in gold, and the oddball minus standard difference wave in violet. Panel D plots the noise left in the oddball average against the number of trials, with the dashed 1/√<i>N</i> curve. The data are simulated; the same waveform is injected into every trial of a condition, which ignores trial-to-trial variation in the real response. Adapted from Luck (2014), Figure 1.1.</p>
 
   <section class="prose">
-    <h2>What you are looking at</h2>
+    <h2>What You Are Looking At</h2>
     <p>A participant is watching a stream of letters. Most are X, the standard; about one in five is O, the rare oddball, and the task is to count the O's. The top trace is one EEG channel at Pz, 20 to 60 µV of ongoing rhythms with a marker at each stimulus. Every stimulus also evokes a response, a few microvolts of P1, N1, and P2 for the standards and a large P3 near 380 ms for the oddballs, but you cannot see it in the raw trace because it is buried in noise five to ten times its size. That response is the event-related potential, the part of the EEG that is time-locked to an event.</p>
-    <p>The middle row cuts an epoch from −200 to 800 ms around each stimulus and stacks them, and the bottom row averages them. The noise is random with respect to the stimulus, positive on one trial and negative on the next at any given latency, so it cancels as more epochs are added. The response is the same on every trial, so it survives. The gold curve is the true waveform that was injected into every trial, and the teal and coral averages settle onto it. The difference wave in violet, oddball minus standard, removes everything the two conditions share and leaves only what changed, a small N2 and the large P3. The inset plots the noise left in the oddball average against the number of trials; it falls along the 1/√N curve, so doubling the trials improves the signal-to-noise ratio by 41% and quadrupling it doubles the ratio. Every epoch is baseline-corrected first by subtracting its mean prestimulus voltage, so the traces all start at zero.</p>
+    <p>Panel B cuts an epoch from −200 to 800 ms around each stimulus and stacks them, and Panel C averages them. The noise is random with respect to the stimulus, positive on one trial and negative on the next at any given latency, so it cancels as more epochs are added. The response is the same on every trial, so it survives. The gold curve is the true waveform that was injected into every trial, and the teal and coral averages settle onto it. The difference wave in violet, oddball minus standard, removes everything the two conditions share and leaves only what changed, a small N2 and the large P3. Panel D plots the noise left in the oddball average against the number of trials; it falls along the 1/√<i>N</i> curve, so doubling the trials improves the signal-to-noise ratio by 41% and quadrupling it doubles the ratio (Luck, 2014, Chapter 1). Every epoch is baseline-corrected first by subtracting its mean prestimulus voltage, so the traces all start at zero.</p>
 
-    <h2>Try this</h2>
+    <h2>Try This</h2>
     <ol>
       <li>Press Reset and watch the first ten trials arrive at 1×. Each average is still a wobbly line that looks nothing like the gold curve.</li>
       <li>Click Add 100 trials. The standard average, with four times as many trials as the oddball, is already smooth; the oddball average still carries visible noise. Add 100 more and compare the residual noise readouts.</li>
-      <li>Push the background noise slider to its maximum (about ±40 µV) and reset. Read off from the inset how many oddball trials you now need to reach the same noise in the average as before. Twice the noise needs four times the trials.</li>
+      <li>Push the background noise slider to its maximum (about ±40 µV) and reset. Read off from Panel D how many oddball trials you now need to reach the same noise in the average as before. Twice the noise needs four times the trials.</li>
       <li>Click Show true ERP to hide the gold curve, and decide, at 20 oddball trials, whether you would trust the P3 you see. Click it again to check.</li>
       <li>Set the speed to 16× and let it run to the 1000-trial cap. The last few hundred trials barely change the picture; the square-root law gives diminishing returns.</li>
     </ol>
 
-    <h2>Why it matters for the pipeline</h2>
-    <p>Most of the later steps exist to make this average trustworthy. Filtering removes noise that averaging handles badly, artifact rejection throws out trials whose noise is not random, and bins define which events are averaged together. In ERPLAB the average is computed by <code>ERP = pop_averager(EEG, 'Criterion', 'good')</code> after epochs have been cut with <code>pop_epochbin(EEG, [-200 800], 'pre')</code>, and a difference wave is made with <code>pop_binoperator</code>. Components are named by polarity and typical latency (P1, N1, P3, N400) and measured in a window such as 300 to 500 ms. ERPs are very good at timing, at telling which stage of processing changed, and at measuring a process without asking for a response. They are poor at telling where in the brain the activity came from, they are poor at capturing very slow (more than a couple of seconds) or non-time-locked activity, and they need enough trials to average. The ERP CORE resource (Kappenman et al., 2021) supplies standardized paradigms for the P3, N400, and five other components. The task here is a simplified oddball; the ERP CORE P3 task uses five letters with one designated target per block, a 20% target probability, and a button-press response, and the probabilities and timing on this page follow it.</p>
+    <h2>Why It Matters for the Pipeline</h2>
+    <p>Most of the later steps exist to make this average trustworthy. Filtering removes noise that averaging handles badly, artifact rejection throws out trials whose noise is not random, and bins define which events are averaged together. In ERPLAB the average is computed by <code>ERP = pop_averager(EEG, 'Criterion', 'good')</code> after epochs have been cut with <code>pop_epochbin(EEG, [-200 800], 'pre')</code>, and a difference wave is made with <code>pop_binoperator</code> (Lopez-Calderon &amp; Luck, 2014). Components are named by polarity and typical latency (P1, N1, P3, N400) and measured in a window such as 300 to 500 ms. ERPs are very good at timing, at telling which stage of processing changed, and at measuring a process without asking for a response. They are poor at telling where in the brain the activity came from, they are poor at capturing very slow (more than a couple of seconds) or non-time-locked activity, and they need enough trials to average. The ERP CORE resource (Kappenman et al., 2021) supplies standardized paradigms for the P3, N400, and five other components. The task here is a simplified oddball; the ERP CORE P3 task uses five letters with one designated target per block, a 20% target probability, and a button-press response, and the probabilities and timing on this page follow it.</p>
 
     <h2 id="refs">References</h2>
     <div class="refs">
-      <p>Kappenman, E. S., Farrens, J. L., Zhang, W., Stewart, A. X., &amp; Luck, S. J. (2021). ERP CORE: An open resource for human event-related potential research. <i>NeuroImage, 225</i>, 117465. https://doi.org/10.1016/j.neuroimage.2020.117465</p>
-      <p>Lopez-Calderon, J., &amp; Luck, S. J. (2014). ERPLAB: An open-source toolbox for the analysis of event-related potentials. <i>Frontiers in Human Neuroscience, 8</i>, 213. https://doi.org/10.3389/fnhum.2014.00213</p>
+      <p>Kappenman, E. S., Farrens, J. L., Zhang, W., Stewart, A. X., &amp; Luck, S. J. (2021). ERP CORE: An open resource for human event-related potential research. <i>NeuroImage, 225</i>, Article 117465. <a href="https://doi.org/10.1016/j.neuroimage.2020.117465">https://doi.org/10.1016/j.neuroimage.2020.117465</a></p>
+      <p>Lopez-Calderon, J., &amp; Luck, S. J. (2014). ERPLAB: An open-source toolbox for the analysis of event-related potentials. <i>Frontiers in Human Neuroscience, 8</i>, Article 213. <a href="https://doi.org/10.3389/fnhum.2014.00213">https://doi.org/10.3389/fnhum.2014.00213</a></p>
       <p>Luck, S. J. (2014). <i>An introduction to the event-related potential technique</i> (2nd ed.). MIT Press.</p>
     </div>
   </section>
 </main>
 
 <nav class="pager">
-  <a class="prev" href="erp-02-eeg-signal.html"><small>Previous</small><span>The EEG signal</span></a>
-  <a class="next" href="erp-04-eeglab-gui.html"><small>Next</small><span>EEGLAB and data loading</span></a>
+  <a class="prev" href="erp-02-eeg-signal.html"><small>Previous</small><span>The EEG Signal</span></a>
+  <a class="next" href="erp-04-eeglab-gui.html"><small>Next</small><span>EEGLAB and Data Loading</span></a>
 </nav>
 <footer>Part of the ERP pipeline series for PSYCH 390, St. Olaf College. Built as a standalone page; nothing is sent anywhere.</footer>
 
@@ -218,15 +225,17 @@ function advance(dt){const n=Math.round(dt*FS);const k=rmsOf()/UNIT;
 
 // ---------- canvas ----------
 const cv=$('cv'),ctx=cv.getContext('2d');let W=1000,H=620;
-function fit(){const r=cv.getBoundingClientRect();const dpr=window.devicePixelRatio||1;W=r.width;H=W<560?690:590;
+function fit(){const r=cv.getBoundingClientRect();const dpr=window.devicePixelRatio||1;W=r.width;H=W<560?720:610;
   cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);cv.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);}
 function txt(s,x,y,o={}){ctx.font=(o.w||400)+' '+(o.s||12)+'px "IBM Plex Sans",system-ui,sans-serif';ctx.fillStyle=o.c||C.muted;ctx.textAlign=o.a||'left';ctx.textBaseline=o.b||'alphabetic';ctx.fillText(s,x,y);}
 function line(pts,c,w,dash){ctx.beginPath();ctx.strokeStyle=c;ctx.lineWidth=w||1.2;ctx.setLineDash(dash||[]);pts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.stroke();ctx.setLineDash([]);}
 function panelFrame(x,y,w,h){ctx.strokeStyle=C.rule;ctx.lineWidth=1;ctx.strokeRect(x,y,w,h);}
+function plab(l,x,y){txt(l,x,y,{c:C.ink,w:700,s:13});return x+16;}
+function ytitle(s,x,y){ctx.save();ctx.translate(x,y);ctx.rotate(-Math.PI/2);txt(s,0,0,{a:'center',s:11});ctx.restore();}
 function erpAxes(x,y,w,h,sc,narrow){panelFrame(x,y,w,h);const ym=y+h/2;line([[x,ym],[x+w,ym]],C.rule,1,[3,3]);
   const x0=x+w*(-EP0)/(EP1-EP0);line([[x0,y],[x0,y+h]],C.muted,1,[2,3]);
-  [0,400,800].forEach(ms=>{const xx=x+w*((ms/1000)-EP0)/(EP1-EP0);line([[xx,y+h],[xx,y+h+3]],C.muted,1);txt(ms+(ms===800?' ms':''),xx,y+h+13,{a:ms===800?'right':'center',s:10});});
-  txt('+'+sc,x+3,y+11,{s:10});txt('−'+sc,x+3,y+h-3,{s:10});}
+  [0,400,800].forEach(ms=>{const xx=x+w*((ms/1000)-EP0)/(EP1-EP0);line([[xx,y+h],[xx,y+h+3]],C.muted,1);txt(String(ms),xx,y+h+13,{a:ms===800?'right':'center',s:10});});
+  txt('Time (ms)',x+w/2,y+h+25,{a:'center',s:11});txt('+'+sc+' µV',x+3,y+11,{s:10});txt('−'+sc,x+3,y+h-3,{s:10});}
 function plotEp(ep,x,y,w,h,sc,c,lw){const pts=[];for(let i=0;i<NEP;i+=2)pts.push([x+w*i/(NEP-1),y+h/2-ep[i]/sc*h/2]);line(pts,c,lw);}
 
 function draw(){
@@ -234,45 +243,46 @@ function draw(){
   const narrow=W<560,L=narrow?10:24,R=W-(narrow?10:24),gap=narrow?12:16;
   let y=0;
   // ---- row 1: stimulus stream + continuous EEG
-  const h1=narrow?120:140;txt(narrow?'Stimulus stream and EEG at Pz, last 6 s':'Stimulus stream (X = standard, O = oddball) and continuous EEG at Pz, last 6 s',L,y+16,{c:C.ink,w:600,s:13});y+=24;
-  const sy=y+8,ey=y+30,eh=h1-30;const t1=live.t,t0=t1-WIN;const X=t=>L+34+(R-L-34)*(t-t0)/WIN;
-  panelFrame(L+34,ey,R-L-34,eh);
-  const sc1=Math.max(20,Math.ceil(S.noise*0.9/10)*10);txt('+'+sc1+' µV',L+30,ey+10,{a:'right',s:10});txt('−'+sc1,L+30,ey+eh-2,{a:'right',s:10});
-  line([[L+34,ey+eh/2],[R,ey+eh/2]],C.rule,1,[3,3]);
+  const h1=narrow?120:140;txt(narrow?'Stimulus stream and EEG at Pz, last 6 s':'Stimulus stream (X = standard, O = oddball) and continuous EEG at Pz, last 6 s',plab('A',L,y+16),y+16,{c:C.ink,w:600,s:13});y+=24;
+  const sy=y+8,ey=y+30,eh=h1-30;const t1=live.t,t0=t1-WIN;const AX=narrow?34:52;const X=t=>L+AX+(R-L-AX)*(t-t0)/WIN;
+  panelFrame(L+AX,ey,R-L-AX,eh);
+  const sc1=Math.max(20,Math.ceil(S.noise*0.9/10)*10);txt('+'+sc1+' µV',L+AX-4,ey+10,{a:'right',s:10});txt('−'+sc1,L+AX-4,ey+eh-2,{a:'right',s:10});if(!narrow)ytitle('Amplitude (µV)',L+10,ey+eh/2);
+  line([[L+AX,ey+eh/2],[R,ey+eh/2]],C.rule,1,[3,3]);
+  for(let k=0;k<=6;k++){const xx=X(t0+k);line([[xx,ey+eh],[xx,ey+eh+3]],C.muted,1);txt(String(k-6),xx,ey+eh+13,{a:k===6?'right':'center',s:10});}txt('Time (s)',L+AX+(R-L-AX)/2,ey+eh+25,{a:'center',s:11});
   for(const s of live.stims){if(s.t<t0)continue;const x=X(s.t);line([[x,ey],[x,ey+eh]],s.odd?C.coral:C.gray,1,[2,3]);
     txt(s.odd?'O':'X',x,sy+8,{a:'center',s:15,w:600,c:s.odd?C.coral:C.muted});}
   
   {const pts=[];const n=live.buf.length;const i0=Math.max(0,n-Math.round(WIN*FS));
     for(let i=i0;i<n;i+=1){const t=live.t-(n-i)/FS;pts.push([X(t),ey+eh/2-live.buf[i]/sc1*eh/2]);}if(pts.length>1)line(pts,C.teal,1);}
-  y+=h1+gap+6;
+  y+=h1+gap+18;
   // ---- row 2: stacked epochs
   const h2=narrow?110:120;const pw2=(R-L-gap)/2;
-  txt(narrow?'Epochs, −200 to 800 ms':'Epochs cut from the stream, −200 to 800 ms',L,y+14,{c:C.ink,w:600,s:13});y+=22;
+  txt(narrow?'Epochs, −200 to 800 ms':'Epochs cut from the stream, −200 to 800 ms',plab('B',L,y+14),y+14,{c:C.ink,w:600,s:13});y+=22;
   const sc2=Math.max(20,Math.ceil(S.noise*0.9/10)*10);
   [['std','Standards',C.teal],['odd','Oddballs',C.coral]].forEach(([k,name,col],j)=>{const x=L+j*(pw2+gap);
     erpAxes(x,y,pw2,h2,sc2);txt(narrow?name+', '+cond[k].n:name+', last '+Math.min(cond[k].n,40)+' of '+cond[k].n,x+pw2-4,y+11,{a:'right',s:10.5,c:col});
     for(const ep of cond[k].recent)plotEp(ep,x,y,pw2,h2,sc2,'rgba(100,106,118,.22)',0.8);});
-  y+=h2+gap+14;
+  y+=h2+gap+26;
   // ---- row 3: averages, difference, inset
   const h3=narrow?150:160;const a={std:avg('std'),odd:avg('odd')};
   const sc3=12;
-  txt(narrow?'Averages, difference wave, noise vs N':'Averages over the true ERP, the difference wave, and how the noise falls with N',L,y+14,{c:C.ink,w:600,s:13});y+=22;
+  txt(narrow?'Averages, difference wave, noise vs N':'Averages over the true ERP, the difference wave, and how the noise falls with N',plab('C',L,y+14),y+14,{c:C.ink,w:600,s:13});y+=22;
   const cols=narrow?2:4,pw3=(R-L-gap*(cols-1))/cols;
   const panels=[['std','Standard average',C.teal],['odd','Oddball average',C.coral]];
   panels.forEach(([k,name,col],j)=>{const x=L+j*(pw3+gap);erpAxes(x,y,pw3,h3,sc3);
     txt((narrow?name.split(' ')[0]:name)+' (N = '+cond[k].n+')',x+pw3-4,y+11,{a:'right',s:10.5,c:col});
     if(S.truth)plotEp(TRUE[k],x,y,pw3,h3,sc3,C.gold,2);
     if(cond[k].n)plotEp(a[k],x,y,pw3,h3,sc3,col,1.5);});
-  if(narrow)y+=h3+gap+16;
+  if(narrow)y+=h3+gap+28;
   const xd=narrow?L:L+2*(pw3+gap),xi=narrow?L+pw3+gap:L+3*(pw3+gap);
   erpAxes(xd,y,pw3,h3,sc3);txt('Oddball − standard',xd+pw3-4,y+11,{a:'right',s:10.5,c:C.violet});
   if(S.truth){const d=new Float64Array(NEP);for(let i=0;i<NEP;i++)d[i]=TRUE.odd[i]-TRUE.std[i];plotEp(d,xd,y,pw3,h3,sc3,C.gold,2);}
   if(cond.std.n&&cond.odd.n){const d=new Float64Array(NEP);for(let i=0;i<NEP;i++)d[i]=a.odd[i]-a.std[i];plotEp(d,xd,y,pw3,h3,sc3,C.violet,1.5);}
   // inset: residual noise vs N (log-log) with the 1/sqrt(N) curve
-  panelFrame(xi,y,pw3,h3);txt(narrow?'Noise vs N':'Noise in the oddball average vs N',xi+pw3-4,y+11,{a:'right',s:10.5,c:C.ink});
+  panelFrame(xi,y,pw3,h3);plab('D',xi+4,y+12);txt(narrow?'Noise vs N':'Noise in the oddball average vs N',xi+pw3-4,y+11,{a:'right',s:10.5,c:C.ink});
   const s1=cond.odd.n?cond.odd.trialRms/cond.odd.n:rmsOf();
   const lx=n=>xi+8+(pw3-16)*Math.log10(n)/3,ly=v=>y+h3-16-(h3-30)*(Math.log10(Math.max(v,0.1))+1)/(Math.log10(40)+1);
-  [1,10,100,1000].forEach(n=>{line([[lx(n),y+h3-16],[lx(n),y+h3-13]],C.muted);txt(n,lx(n),y+h3-3,{a:'center',s:9.5});});
+  [1,10,100,1000].forEach(n=>{line([[lx(n),y+h3-16],[lx(n),y+h3-13]],C.muted);txt(n,lx(n),y+h3-3,{a:'center',s:9.5});});txt('Trials (N)',xi+pw3/2,y+h3+25,{a:'center',s:11});
   [0.1,1,10].forEach(v=>txt(v+' µV',xi+10,ly(v)-2,{s:9.5}));
   {const pts=[];for(let i=0;i<=60;i++){const n=Math.pow(10,3*i/60);pts.push([lx(n),ly(s1/Math.sqrt(n))]);}line(pts,C.gold,1.4,[4,3]);}
   txt('dashed: single-trial noise / √N',xi+pw3-6,y+24,{a:'right',s:9.5,c:C.gold});

@@ -75,6 +75,10 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
 }
 @media (prefers-reduced-motion: reduce){ .anim-hint{display:none} }
 /* ===== END SHARED STYLE ===== */
+.fig-num{margin:14px 0 0;font-size:15px;color:var(--ink)}
+.fig-title{margin:2px 0 10px;font-size:15px;color:var(--ink)}
+.fig-note{font-size:14.5px;color:var(--muted);margin-top:10px;max-width:var(--maxw)}
+.refs p,.refs a{overflow-wrap:anywhere}
 
 .ctlgroup{display:flex;flex-wrap:wrap;gap:14px 22px;flex:1 1 100%}
 .ctlgroup h3{flex:1 1 100%;margin:0;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
@@ -93,6 +97,8 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
 </header>
 
 <main>
+  <p class="fig-num"><b>Figure 1</b></p>
+  <p class="fig-title"><i>Effect of High-Pass and Low-Pass Filtering on Noise and on the ERP</i></p>
   <div class="stage" id="stage">
     <div class="canvas-wrap">
       <canvas id="cv" aria-label="Three panels: eight seconds of EEG before and after filtering, the frequency spectrum with the filter passband, and the averaged ERP compared with the true waveform"></canvas>
@@ -150,38 +156,39 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
       <span>MATLAB <b id="code"></b></span>
     </div>
   </div>
+  <p class="fig-note"><b><i>Note.</i></b> Panel A shows 8 s of one simulated EEG channel before (gray) and after (teal) the filter, with the true ERP in gold at each of four stimulus onsets. Panel B is the amplitude spectrum of the same recording on log axes, with the filter passband shaded and its gain curve dashed. Panel C applies the filter to the noise-free ERP alone, so the coral area between the gold and teal curves is pure filter distortion. The data are simulated, and the filter is a smooth Butterworth-like response rather than the FIR filter in <code>pop_eegfiltnew</code>. Adapted from Luck (2014), Figure 7.1.</p>
 
   <section class="prose">
-    <h2>What you are looking at</h2>
-    <p>The top panel is eight seconds from one EEG channel. A small event-related potential is buried in it four times, two seconds apart, and it is drawn in gold so you can see where it hides. Everything else in the gray trace is noise: a slow wander from sweat and skin potentials, a 60 Hz hum picked up from the room's wiring, high-frequency crackle from jaw and neck muscles, and the brain's own ongoing rhythms. The teal trace is the same recording after the filter.</p>
-    <p>The middle panel shows the same recording as a spectrum: how much of the signal lives at each frequency. Slow drift piles up at the far left, the line noise is the spike at 60 Hz, and muscle noise spreads across the right. The ERP itself occupies roughly 0.1 to 30 Hz. A filter is a rule for how much of each frequency to keep, and the shaded region is the band this filter lets through.</p>
-    <p>The bottom panel sets the noise aside and shows only what the filter does to the ERP itself. The gold curve is the true waveform, teal is that same waveform after passing through the filter, and whatever coral shows between them is damage the filter did.</p>
+    <h2>What You Are Looking At</h2>
+    <p>Panel A is eight seconds from one EEG channel. A small event-related potential is buried in it four times, two seconds apart, and it is drawn in gold so you can see where it hides. Everything else in the gray trace is noise: a slow wander from sweat and skin potentials, a 60 Hz hum picked up from the room's wiring, high-frequency crackle from jaw and neck muscles, and the brain's own ongoing rhythms. The teal trace is the same recording after the filter.</p>
+    <p>Panel B shows the same recording as a spectrum: how much of the signal lives at each frequency. Slow drift piles up at the far left, the line noise is the spike at 60 Hz, and muscle noise spreads across the right. The ERP itself occupies roughly 0.1 to 30 Hz. A filter is a rule for how much of each frequency to keep, and the shaded region is the band this filter lets through.</p>
+    <p>Panel C sets the noise aside and shows only what the filter does to the ERP itself. The gold curve is the true waveform, teal is that same waveform after passing through the filter, and whatever coral shows between them is damage the filter did.</p>
 
-    <h2>Try this</h2>
+    <h2>Try This</h2>
     <ol>
-      <li>Slide both cutoffs fully left so they read off. The filter does no damage, but the teal recording on top is swamped by drift and hum, and the noise left after filter readout shows how much would have to be averaged away.</li>
-      <li>Apply the lab default, 0.1 Hz high-pass and 30 Hz low-pass. Drift and hum vanish from the top panel, and the bottom panel shows the ERP passing through almost untouched.</li>
-      <li>Push the high-pass up to 1 or 2 Hz. The slow positive wave late in the trial shrinks, and a negative bump appears before it that was never in the data. Tanner, Morgan-Short, and Luck (2015) showed that the high-pass settings used in some language studies produce exactly this spurious N400 in front of a P600.</li>
+      <li>Slide both cutoffs fully left so they read off. The filter does no damage, but the teal recording in Panel A is swamped by drift and hum, and the noise left after filter readout shows how much would have to be averaged away.</li>
+      <li>Apply the lab default, 0.1 Hz high-pass and 30 Hz low-pass. Drift and hum vanish from Panel A, and Panel C shows the ERP passing through almost untouched.</li>
+      <li>Push the high-pass up to 1 or 2 Hz. The slow positive wave late in the trial shrinks, and a negative bump appears before it that was never in the data. Tanner et al. (2015) showed that the high-pass settings used in some language studies produce exactly this spurious N400 in front of a P600.</li>
       <li>Push the low-pass down to 5 Hz. The sharp early peaks smear and shrink, and where two of them blend together the apparent peak moves. A zero-phase filter does not itself shift latency; a causal one would. Sharper filtering in frequency always costs precision in time.</li>
       <li>Raise the muscle and line sliders until the raw trace is unreadable, then watch how much the 30 Hz low-pass recovers.</li>
     </ol>
 
-    <h2>Why it matters for the pipeline</h2>
-    <p>Averaging removes noise that is random from trial to trial, but it needs many trials to beat slow drift, which changes little within an epoch and so barely cancels, and hum that happens to line up with the stimulus rate. Filters remove those by frequency instead, so a 0.1 Hz high-pass and a 30 Hz low-pass are the first cleaning step in the pipeline. In EEGLAB the two calls are <code>EEG = pop_eegfiltnew(EEG, 0.1, []);</code> and <code>EEG = pop_eegfiltnew(EEG, [], 30);</code>, and <code>spectopo</code> draws a spectrum like the one in the middle panel.</p>
-    <p>A filter works by replacing each time point with a weighted average of its neighbors, so it necessarily spreads every feature out in time. A high-pass filter goes further. It subtracts the slow version of the waveform, and that pushes an inverted copy of each component forward and backward in time. That is the source of the artificial negative bump. Luck's rule is to keep the high-pass at or below 0.1 Hz, to apply it only to long stretches of continuous EEG, and to use a low-pass no stronger than plotting or peak measurement needs (Luck, 2014). The lab applies both to the continuous data; because filtering and averaging are linear this gives the same result as filtering after averaging, and mean amplitude in a 200 ms window needs no low-pass at all. The page uses a smooth filter with a similar slope; <code>pop_eegfiltnew</code> defines its cutoff at half amplitude. Recording clean data comes first, because no filter substitutes for that.</p>
+    <h2>Why It Matters for the Pipeline</h2>
+    <p>Averaging removes noise that is random from trial to trial, but it needs many trials to beat slow drift, which changes little within an epoch and so barely cancels, and hum that happens to line up with the stimulus rate. Filters remove those by frequency instead, so a 0.1 Hz high-pass and a 30 Hz low-pass are the first cleaning step in the pipeline. In EEGLAB the two calls are <code>EEG = pop_eegfiltnew(EEG, 0.1, []);</code> and <code>EEG = pop_eegfiltnew(EEG, [], 30);</code>, and <code>spectopo</code> draws a spectrum like the one in Panel B (Delorme &amp; Makeig, 2004).</p>
+    <p>A filter works by replacing each time point with a weighted average of its neighbors, so it necessarily spreads every feature out in time. A high-pass filter goes further. It subtracts the slow version of the waveform, and that pushes an inverted copy of each component forward and backward in time. That is the source of the artificial negative bump. Luck's rule is to keep the high-pass at or below 0.1 Hz, to apply it only to long stretches of continuous EEG, and to use a low-pass no stronger than plotting or peak measurement needs (Luck, 2014, Chapter 7). The lab applies both to the continuous data; because filtering and averaging are linear this gives the same result as filtering after averaging, and mean amplitude in a 200 ms window needs no low-pass at all. The page uses a smooth filter with a similar slope; <code>pop_eegfiltnew</code> defines its cutoff at half amplitude. Recording clean data comes first, because no filter substitutes for that.</p>
 
     <h2 id="refs">References</h2>
     <div class="refs">
+      <p>Delorme, A., &amp; Makeig, S. (2004). EEGLAB: An open source toolbox for analysis of single-trial EEG dynamics including independent component analysis. <i>Journal of Neuroscience Methods, 134</i>(1), 9–21. <a href="https://doi.org/10.1016/j.jneumeth.2003.10.009">https://doi.org/10.1016/j.jneumeth.2003.10.009</a></p>
       <p>Luck, S. J. (2014). <i>An introduction to the event-related potential technique</i> (2nd ed.). MIT Press.</p>
-      <p>Tanner, D., Morgan-Short, K., &amp; Luck, S. J. (2015). How inappropriate high-pass filters can produce artifactual effects and incorrect conclusions in ERP studies of language and cognition. <i>Psychophysiology, 52</i>(8), 997–1009. https://doi.org/10.1111/psyp.12437</p>
-      <p>Delorme, A., &amp; Makeig, S. (2004). EEGLAB: An open source toolbox for analysis of single-trial EEG dynamics including independent component analysis. <i>Journal of Neuroscience Methods, 134</i>(1), 9–21. https://doi.org/10.1016/j.jneumeth.2003.10.009</p>
+      <p>Tanner, D., Morgan-Short, K., &amp; Luck, S. J. (2015). How inappropriate high-pass filters can produce artifactual effects and incorrect conclusions in ERP studies of language and cognition. <i>Psychophysiology, 52</i>(8), 997–1009. <a href="https://doi.org/10.1111/psyp.12437">https://doi.org/10.1111/psyp.12437</a></p>
     </div>
   </section>
 </main>
 
 <nav class="pager">
-  <a class="prev" href="erp-05-matlab-intro.html"><small>Previous</small><span>MATLAB introduction</span></a>
-  <a class="next" href="erp-07-rereferencing.html"><small>Next</small><span>Re-referencing</span></a>
+  <a class="prev" href="erp-05-matlab-intro.html"><small>Previous</small><span>MATLAB Introduction</span></a>
+  <a class="next" href="erp-07-rereferencing.html"><small>Next</small><span>Re-Referencing</span></a>
 </nav>
 <footer>Part of the ERP pipeline series for PSYCH 390, St. Olaf College. Built as a standalone page; nothing is sent anywhere.</footer>
 
@@ -270,25 +277,27 @@ function fit(){const r=cv.getBoundingClientRect();const dpr=window.devicePixelRa
 const C={raw:'#b9bec8',filt:'#0f6e74',truth:'#c8962a',bad:'#d9573b',ink:'#1d1f24',muted:'#5c6270',rule:'#e2ddd4',band:'rgba(15,110,116,.10)'};
 function txt(s,x,y,o={}){ctx.font=(o.w||400)+' '+(o.s||12)+'px "IBM Plex Sans",system-ui,sans-serif';ctx.fillStyle=o.c||C.muted;ctx.textAlign=o.a||'left';ctx.textBaseline=o.b||'alphabetic';ctx.fillText(s,x,y);}
 function line(pts,c,w,dash){ctx.beginPath();ctx.strokeStyle=c;ctx.lineWidth=w||1.2;ctx.setLineDash(dash||[]);pts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.stroke();ctx.setLineDash([]);}
+function plab(l,x,y){txt(l,x,y,{c:C.ink,w:700,s:13});return x+16;}
+function ytitle(s,x,y){ctx.save();ctx.translate(x,y);ctx.rotate(-Math.PI/2);txt(s,0,0,{a:'center',s:11});ctx.restore();}
 function draw(){
   ctx.clearRect(0,0,W,H);
   const narrow=W<560,L=narrow?36:54,R=W-14;
-  const gap=narrow?44:46,bot=26,ph1=Math.round((H-3*gap-bot)*0.36),ph2=Math.round((H-3*gap-bot)*0.30),ph3=(H-3*gap-bot)-ph1-ph2;
+  const gap=narrow?52:54,bot=36,ph1=Math.round((H-3*gap-bot)*0.36),ph2=Math.round((H-3*gap-bot)*0.30),ph3=(H-3*gap-bot)-ph1-ph2;
   const top1=gap,top2=top1+ph1+gap,top3=top2+ph2+gap;
   // ---- panel 1: time domain
-  txt('Continuous EEG, one channel',L,top1-12,{c:C.ink,w:600,s:13});
+  txt('Continuous EEG, one channel',plab('A',L,top1-12),top1-12,{c:C.ink,w:600,s:13});
   const sc1=Math.max(40,Math.ceil(Math.max(...raw.map(Math.abs))/20)*20);
   const y1=v=>top1+ph1/2-(v/sc1)*(ph1/2),x1=i=>L+(i/N)*(R-L);
   ctx.strokeStyle=C.rule;ctx.lineWidth=1;ctx.strokeRect(L,top1,R-L,ph1);
   line([[L,y1(0)],[R,y1(0)]],C.rule,1,[3,3]);
-  for(let s=0;s<=T;s++){const x=x1(s*FS);line([[x,top1+ph1],[x,top1+ph1+4]],C.muted,1);if(s<T)txt(s+' s',x+3,top1+ph1+14,{s:11});}
+  for(let s=0;s<=T;s++){const x=x1(s*FS);line([[x,top1+ph1],[x,top1+ph1+4]],C.muted,1);txt(String(s),x,top1+ph1+14,{a:s===T?'right':s===0?'left':'center',s:11});}txt('Time (s)',(L+R)/2,top1+ph1+28,{a:'center',s:11});ytitle('Amplitude (µV)',11,top1+ph1/2);
   txt('+'+sc1+' µV',L-4,top1+10,{a:'right',s:10.5});txt('−'+sc1,L-4,top1+ph1-2,{a:'right',s:10.5});
   for(const e of EVENTS){const x=x1(e*FS);line([[x,top1],[x,top1+ph1]],C.truth,1,[2,4]);
     const pts=[];for(let i=0;i<=FS;i++)pts.push([x1(e*FS+i),y1(erp(i/FS)*1)]);line(pts,C.truth,1.4);}
   {const pts=[];for(let i=0;i<N;i+=1)pts.push([x1(i),y1(raw[i])]);line(pts,C.raw,1);}
   {const pts=[];for(let i=0;i<N;i+=1)pts.push([x1(i),y1(filt[i])]);line(pts,C.filt,1.3);}
   // ---- panel 2: spectrum (log x)
-  txt('Spectrum: how much signal at each frequency',L,top2-12,{c:C.ink,w:600,s:13});
+  txt('Spectrum: how much signal at each frequency',plab('B',L,top2-12),top2-12,{c:C.ink,w:600,s:13});
   const fmin=0.02,fmax=FS/2,lx=f=>L+(Math.log10(f)-Math.log10(fmin))/(Math.log10(fmax)-Math.log10(fmin))*(R-L);
   const amax=Math.max(1e-6,...specRaw.slice(1));const ly=a=>top2+ph2-(Math.log10(Math.max(a,amax*1e-3))-Math.log10(amax*1e-3))/(3)*ph2;
   ctx.strokeStyle=C.rule;ctx.strokeRect(L,top2,R-L,ph2);
@@ -297,18 +306,17 @@ function draw(){
   ctx.fillStyle=C.band;ctx.fillRect(lx(hpf||fmin),top2,lx(lpf||fmax)-lx(hpf||fmin),ph2);
   // gain curve
   {const pts=[];for(let i=0;i<=200;i++){const f=fmin*Math.pow(fmax/fmin,i/200);pts.push([lx(f),top2+ph2-gain(f,hpf,lpf)*ph2*0.92]);}line(pts,C.filt,1,[4,3]);}
-  [0.1,1,10,60,100].forEach(f=>{const x=lx(f);line([[x,top2+ph2],[x,top2+ph2+4]],C.muted);txt(f+' Hz',x,top2+ph2+14,{a:'center',s:11});});
-  [['drift',0.04],['ERP band 0.1–30',1.8],['EMG',95]].forEach(([s,f])=>txt(s,lx(f),top2+12,{a:'center',s:10.5}));
+  [0.1,1,10,60,100].forEach(f=>{const x=lx(f);line([[x,top2+ph2],[x,top2+ph2+4]],C.muted);txt(String(f),x,top2+ph2+14,{a:'center',s:11});});txt('Frequency (Hz)',(L+R)/2,top2+ph2+28,{a:'center',s:11});ytitle('Amplitude (log)',11,top2+ph2/2);
+  [['drift',0.04],['ERP band 0.1–30 Hz',1.8],['EMG',95]].forEach(([s,f])=>txt(s,lx(f),top2+12,{a:'center',s:10.5}));
   {const pts=[];for(let k=1;k<N/2;k++){const f=k*FS/N;if(f<fmin)continue;pts.push([lx(f),ly(specRaw[k])]);}line(pts,C.raw,1);}
   {const pts=[];for(let k=1;k<N/2;k++){const f=k*FS/N;if(f<fmin)continue;pts.push([lx(f),ly(specFilt[k])]);}line(pts,C.filt,1.3);}
-  txt('amplitude, log scale',L+6,top2+ph2-6,{s:10.5});
   // ---- panel 3: average vs truth
-  txt('What the filter does to the ERP itself (noise set aside)',L,top3-12,{c:C.ink,w:600,s:13});
+  txt('What the filter does to the ERP itself (noise set aside)',plab('C',L,top3-12),top3-12,{c:C.ink,w:600,s:13});
   const n=trueEpoch.length;const sc3=Math.max(8,Math.ceil(Math.max(...avgF.map(Math.abs),...trueEpoch.map(Math.abs))/2)*2);
   const y3=v=>top3+ph3/2-(v/sc3)*(ph3/2),x3=i=>L+(i/(n-1))*(R-L);
   ctx.strokeStyle=C.rule;ctx.strokeRect(L,top3,R-L,ph3);line([[L,y3(0)],[R,y3(0)]],C.rule,1,[3,3]);
   const x0=x3(Math.round(0.2*FS));line([[x0,top3],[x0,top3+ph3]],C.muted,1,[2,3]);txt('stimulus',x0+3,top3+12,{s:10.5});
-  [-200,0,200,400,600,800].forEach(ms=>{const x=x3(Math.round((ms/1000-EPOCH[0])*FS));line([[x,top3+ph3],[x,top3+ph3+4]],C.muted);txt(ms+' ms',x,top3+ph3+14,{a:ms===800?'right':ms===-200?'left':'center',s:11});});
+  [-200,0,200,400,600,800].forEach(ms=>{const x=x3(Math.round((ms/1000-EPOCH[0])*FS));line([[x,top3+ph3],[x,top3+ph3+4]],C.muted);txt(String(ms),x,top3+ph3+14,{a:ms===800?'right':ms===-200?'left':'center',s:11});});txt('Time (ms)',(L+R)/2,top3+ph3+28,{a:'center',s:11});ytitle('Amplitude (µV)',11,top3+ph3/2);
   txt('+'+sc3+' µV',L-4,top3+10,{a:'right',s:10.5});txt('−'+sc3,L-4,top3+ph3-2,{a:'right',s:10.5});
   // distortion fill
   ctx.beginPath();for(let i=0;i<n;i++)ctx.lineTo(x3(i),y3(avgF[i]));for(let i=n-1;i>=0;i--)ctx.lineTo(x3(i),y3(trueEpoch[i]));ctx.closePath();ctx.fillStyle='rgba(217,87,59,.28)';ctx.fill();

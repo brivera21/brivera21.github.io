@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Plotting and scripting · ERP pipeline</title>
+<title>Plotting and Scripting · ERP pipeline</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -75,6 +75,10 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
 }
 @media (prefers-reduced-motion: reduce){ .anim-hint{display:none} }
 /* ===== END SHARED STYLE ===== */
+.fig-num{margin:14px 0 0;font-size:15px;color:var(--ink)}
+.fig-title{margin:2px 0 10px;font-size:15px;color:var(--ink)}
+.fig-note{font-size:14.5px;color:var(--muted);margin-top:10px;max-width:var(--maxw)}
+.refs p,.refs a{overflow-wrap:anywhere}
 
 .refs p{overflow-wrap:anywhere}
 .stage h2{font-size:17px;margin:0 0 10px;font-weight:600}
@@ -109,11 +113,13 @@ pre.script .ln.hl{background:#fbe9c2}
   <span class="step">step 12 / 12</span>
 </div>
 <header class="hero">
-  <h1>Plotting and scripting</h1>
+  <h1>Plotting and Scripting</h1>
   <p class="q">How do you turn ten labs into one script?</p>
 </header>
 
 <main>
+  <p class="fig-num"><b>Figure 1</b></p>
+  <p class="fig-title"><i>The Ten Labs as One Script Looping Over Participants</i></p>
   <div class="stage" id="stage1">
     <h2>The pipeline as a script</h2>
     <div class="split">
@@ -139,7 +145,10 @@ pre.script .ln.hl{background:#fbe9c2}
       </div>
     </div>
   </div>
+  <p class="fig-note"><b><i>Note.</i></b> The chain on the left lists the processing stages in the order the script runs them; the gold bracket is the loop over participants, the colored bars on the right group the stages under the three flags (teal = <code>import_data</code>, violet = <code>process_data</code>, coral = <code>grand_avg</code>), and a gold token marks the stage being run. Stages switched off by a flag are grayed in both the chain and the script. The run is an animation with rough time estimates; no data are processed. Created for this series.</p>
 
+  <p class="fig-num"><b>Figure 2</b></p>
+  <p class="fig-title"><i>Building a Grand-Average N400 Figure Against the Plotting Rules</i></p>
   <div class="stage" id="stage2">
     <h2>The figure</h2>
     <div class="split fig">
@@ -176,38 +185,39 @@ pre.script .ln.hl{background:#fbe9c2}
     </div>
     <div class="codeline" id="plotcode"></div>
   </div>
+  <p class="fig-note"><b><i>Note.</i></b> The figure is a grand-average waveform at one electrode with Related in teal, Unrelated in coral, and their difference in violet (or the line styles chosen under How to draw it); the checklist beside it turns green for each plotting rule the current figure satisfies. The waveforms are simulated as a fixed true ERP plus noise that shrinks with the number of participants; the map inset is a schematic of the N400 distribution rather than a computed topography. Created for this series.</p>
 
   <section class="prose">
-    <h2>What you are looking at</h2>
-    <p>The first panel is the whole lab sequence drawn as one program. Each block is a lab you have already done, in the order the data go through them, and the bracket on the left is a <code>for</code> loop; every block inside it runs once per participant. The three flags at the top of the script switch groups of blocks on and off, so after fixing one participant you can re-run only the grand average instead of importing everything again. The MATLAB skeleton on the right has the real shape of the lab script, and it updates as you add participants or channels to interpolate. One thing differs from the order of the labs: the script interpolates bad channels before the average reference is computed, so that a broken channel is not subtracted from every other one.</p>
-    <p>The second panel builds the final figure of the project, the grand-average N400 at one electrode. The checklist next to it holds the plotting rules from Luck (2014): a reader has to be able to see the prestimulus baseline, find time zero and 0 µV, read the voltage scale and polarity, tell the conditions apart, and see the difference wave, all without leaving the figure.</p>
+    <h2>What You Are Looking At</h2>
+    <p>Figure 1 is the whole lab sequence drawn as one program. Each block is a lab you have already done, in the order the data go through them, and the bracket on the left is a <code>for</code> loop; every block inside it runs once per participant. The three flags at the top of the script switch groups of blocks on and off, so after fixing one participant you can re-run only the grand average instead of importing everything again. The MATLAB skeleton on the right has the real shape of the lab script, and it updates as you add participants or channels to interpolate. One thing differs from the order of the labs: the script interpolates bad channels before the average reference is computed, so that a broken channel is not subtracted from every other one.</p>
+    <p>Figure 2 builds the final figure of the project, the grand-average N400 at one electrode. The checklist next to it holds the plotting rules from Luck (2014, Chapter 1): a reader has to be able to see the prestimulus baseline, find time zero and 0 µV, read the voltage scale and polarity, tell the conditions apart, and see the difference wave, all without leaving the figure.</p>
 
-    <h2>Try this</h2>
+    <h2>Try This</h2>
     <ol>
       <li>Press Run the script with two participants and watch the token loop through the chain twice before the grand average runs once. Add participants up to eight and run again. The code does not change, only the loop count and the time estimate.</li>
       <li>Turn off <code>import_data</code> and <code>process_data</code> and run again. Only the last block lights up. This is the normal way to redo a figure.</li>
       <li>Type <code>P7</code> into the interpolation box of one participant and find the matching cell in <code>chan_interpolate</code>.</li>
-      <li>In the figure panel, set Baseline shown to none and Calibration to none, and note how many rules go red. A waveform with no baseline gives the reader no way to judge whether the effect is real.</li>
+      <li>In Figure 2, set Baseline shown to none and Calibration to none, and note how many rules go red. A waveform with no baseline gives the reader no way to judge whether the effect is real.</li>
       <li>Move the participant slider from 2 to 20. The waveforms smooth out and the N400 separates cleanly; turn on Map inset, 300–500 ms and it follows the same change.</li>
     </ol>
 
-    <h2>Why it matters for the pipeline</h2>
-    <p>A script is the record of an analysis. It runs the same way on every participant, it can be handed to someone else, and every parameter you chose in the earlier labs, the 0.1 Hz cutoff, the ±100 µV threshold, the 300–500 ms window, is written down where a reviewer can see it. The first draft comes from EEGLAB. Every menu action appends its command to <code>EEG.history</code>, so a script is mostly the history of one participant wrapped in a loop. The loop needs a predictable place to find each file, and the BIDS layout gives it one (Gorgolewski et al., 2016; Pernet et al., 2019). The path <code>sub-001/eeg/sub-001_task-N400_eeg.set</code> is built with <code>fullfile</code> so the same script runs on Windows and macOS. A cell array of participant IDs drives the loop, and a matching cell array of channels to interpolate keeps the one thing that differs between participants out of the code.</p>
-    <p>The grand average, <code>pop_gaverager</code>, is the mean of the participants' averaged ERPs. With two participants it shows you whether the pipeline worked; with twenty it shows you the component. The statistics in the previous step are run on each participant's own measurement, and the grand average is the picture of what those numbers describe. <code>pop_ploterps</code> draws it. Luck's rule for the drawing is that a figure without a prestimulus baseline gives the reader no way to tell signal from drift or artifact, which is why the plotting checklist starts with the baseline. The checklist next to the figure spells that rule out.</p>
+    <h2>Why It Matters for the Pipeline</h2>
+    <p>A script is the record of an analysis. It runs the same way on every participant, it can be handed to someone else, and every parameter you chose in the earlier labs, the 0.1 Hz cutoff, the ±100 µV threshold, the 300–500 ms window, is written down where a reviewer can see it. The first draft comes from EEGLAB. Every menu action appends its command to <code>EEG.history</code> (Delorme &amp; Makeig, 2004), so a script is mostly the history of one participant wrapped in a loop. The loop needs a predictable place to find each file, and the BIDS layout gives it one (Gorgolewski et al., 2016; Pernet et al., 2019). The path <code>sub-001/eeg/sub-001_task-N400_eeg.set</code> is built with <code>fullfile</code> so the same script runs on Windows and macOS. A cell array of participant IDs drives the loop, and a matching cell array of channels to interpolate keeps the one thing that differs between participants out of the code.</p>
+    <p>The grand average, <code>pop_gaverager</code>, is the mean of the participants' averaged ERPs. With two participants it shows you whether the pipeline worked; with twenty it shows you the component. The statistics in the previous step are run on each participant's own measurement, and the grand average is the picture of what those numbers describe. <code>pop_ploterps</code> draws it (Lopez-Calderon &amp; Luck, 2014). Luck's rule for the drawing is that a figure without a prestimulus baseline gives the reader no way to tell signal from drift or artifact, which is why the plotting checklist starts with the baseline. The checklist next to the figure spells that rule out.</p>
 
     <h2 id="refs">References</h2>
     <div class="refs">
+      <p>Delorme, A., &amp; Makeig, S. (2004). EEGLAB: An open source toolbox for analysis of single-trial EEG dynamics including independent component analysis. <i>Journal of Neuroscience Methods, 134</i>(1), 9–21. <a href="https://doi.org/10.1016/j.jneumeth.2003.10.009">https://doi.org/10.1016/j.jneumeth.2003.10.009</a></p>
+      <p>Gorgolewski, K. J., Auer, T., Calhoun, V. D., Craddock, R. C., Das, S., Duff, E. P., Flandin, G., Ghosh, S. S., Glatard, T., Halchenko, Y. O., Handwerker, D. A., Hanke, M., Keator, D., Li, X., Michael, Z., Maumet, C., Nichols, B. N., Nichols, T. E., Pellman, J., ... Poldrack, R. A. (2016). The brain imaging data structure, a format for organizing and describing outputs of neuroimaging experiments. <i>Scientific Data, 3</i>, Article 160044. <a href="https://doi.org/10.1038/sdata.2016.44">https://doi.org/10.1038/sdata.2016.44</a></p>
+      <p>Lopez-Calderon, J., &amp; Luck, S. J. (2014). ERPLAB: An open-source toolbox for the analysis of event-related potentials. <i>Frontiers in Human Neuroscience, 8</i>, Article 213. <a href="https://doi.org/10.3389/fnhum.2014.00213">https://doi.org/10.3389/fnhum.2014.00213</a></p>
       <p>Luck, S. J. (2014). <i>An introduction to the event-related potential technique</i> (2nd ed.). MIT Press.</p>
-      <p>Lopez-Calderon, J., &amp; Luck, S. J. (2014). ERPLAB: An open-source toolbox for the analysis of event-related potentials. <i>Frontiers in Human Neuroscience, 8</i>, 213. https://doi.org/10.3389/fnhum.2014.00213</p>
-      <p>Gorgolewski, K. J., Auer, T., Calhoun, V. D., Craddock, R. C., Das, S., Duff, E. P., Flandin, G., Ghosh, S. S., Glatard, T., Halchenko, Y. O., Handwerker, D. A., Hanke, M., Keator, D., Li, X., Michael, Z., Maumet, C., Nichols, B. N., Nichols, T. E., Pellman, J., ... Poldrack, R. A. (2016). The brain imaging data structure, a format for organizing and describing outputs of neuroimaging experiments. <i>Scientific Data, 3</i>, 160044. https://doi.org/10.1038/sdata.2016.44</p>
-      <p>Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., Flandin, G., Phillips, C., Delorme, A., &amp; Oostenveld, R. (2019). EEG-BIDS, an extension to the brain imaging data structure for electroencephalography. <i>Scientific Data, 6</i>, 103. https://doi.org/10.1038/s41597-019-0104-8</p>
-      <p>Delorme, A., &amp; Makeig, S. (2004). EEGLAB: An open source toolbox for analysis of single-trial EEG dynamics including independent component analysis. <i>Journal of Neuroscience Methods, 134</i>(1), 9–21. https://doi.org/10.1016/j.jneumeth.2003.10.009</p>
+      <p>Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., Flandin, G., Phillips, C., Delorme, A., &amp; Oostenveld, R. (2019). EEG-BIDS, an extension to the brain imaging data structure for electroencephalography. <i>Scientific Data, 6</i>, Article 103. <a href="https://doi.org/10.1038/s41597-019-0104-8">https://doi.org/10.1038/s41597-019-0104-8</a></p>
     </div>
   </section>
 </main>
 
 <nav class="pager">
-  <a class="prev" href="erp-11-scoring.html"><small>Previous</small><span>ERP scoring and measurement</span></a>
+  <a class="prev" href="erp-11-scoring.html"><small>Previous</small><span>ERP Scoring and Measurement</span></a>
   <a class="next" href="erp-pipeline.html"><small>Next</small><span>Series overview</span></a>
 </nav>
 <footer>Part of the ERP pipeline series for PSYCH 390, St. Olaf College. Built as a standalone page; nothing is sent anywhere.</footer>

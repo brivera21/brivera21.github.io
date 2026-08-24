@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MATLAB introduction · ERP pipeline</title>
+<title>MATLAB Introduction · ERP pipeline</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -75,6 +75,10 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
 }
 @media (prefers-reduced-motion: reduce){ .anim-hint{display:none} }
 /* ===== END SHARED STYLE ===== */
+.fig-num{margin:14px 0 0;font-size:15px;color:var(--ink)}
+.fig-title{margin:2px 0 10px;font-size:15px;color:var(--ink)}
+.fig-note{font-size:14.5px;color:var(--muted);margin-top:10px;max-width:var(--maxw)}
+.refs p,.refs a{overflow-wrap:anywhere}
 
 /* page-specific */
 .refs p{overflow-wrap:anywhere}
@@ -144,11 +148,13 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
   <span class="step">step 5 / 12</span>
 </div>
 <header class="hero">
-  <h1>MATLAB introduction</h1>
+  <h1>MATLAB Introduction</h1>
   <p class="q">What is a variable, an array, a function, a comment?</p>
 </header>
 
 <main>
+  <p class="fig-num"><b>Figure 1</b></p>
+  <p class="fig-title"><i>A MATLAB Sandbox With Editor, Command Window, Workspace, and Figure</i></p>
   <div class="stage" id="stage">
     <div class="ide" aria-label="A small MATLAB-like sandbox with Editor, Figure, Command Window and Workspace panels">
       <div class="p folder"><h4>Current folder</h4>
@@ -171,14 +177,15 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
       <span>Hover or focus any token in the editor to name it.</span>
     </div>
   </div>
+  <p class="fig-note"><b><i>Note.</i></b> In the editor, variables are underlined in violet, functions are teal, arrays have a pale blue background, comments are green italic, and strings are brown; the line being executed is highlighted in gold. The sandbox is a small interpreter written for this page: it supports the handful of functions used in Lab 1 and a cut-down <code>EEG</code> struct with three simulated channels, not the full MATLAB language. Created for this series.</p>
 
   <section class="prose">
-    <h2>What you are looking at</h2>
+    <h2>What You Are Looking At</h2>
     <p>The sandbox above copies the panels of the MATLAB desktop. The Editor holds a script, a plain text file ending in <code>.m</code> that lists commands in order. The Command Window is where a single command is typed and answered. The Workspace lists every variable that currently exists, with its size and class. The Figure window is where <code>plot</code> draws. The Current folder on the left is where MATLAB looks for files. When a script that runs on one laptop fails on another, the usual cause is that this folder is different.</p>
     <p>A variable is a named box. <code>x = 5</code> creates a box called <code>x</code> and puts 5 in it, and the Workspace shows the box appear. An array is a row of boxes under one name: <code>data = [1, 2, 3, 4, 5]</code> makes five, and <code>data(2)</code> reads the second one, because MATLAB counts from 1. The colon operator builds long arrays without typing them, so <code>t = 0:0.01:2</code> is 201 time points spaced 10 ms apart. A function takes inputs and returns outputs: <code>sin(2*pi*t)</code> hands the whole array to <code>sin</code> and gets a whole array back, and <code>mean</code>, <code>size</code>, and <code>plot</code> work the same way. A comment begins with <code>%</code> and is for the human reading the script; MATLAB skips it.</p>
     <p>Two small rules cause most early errors. A semicolon at the end of a line stops MATLAB from printing the result, so <code>x = 5</code> echoes and <code>x = 5;</code> is silent. Names are case sensitive: <code>Data</code> and <code>data</code> are different boxes, and asking for one that does not exist produces the red "Unrecognized function or variable" message.</p>
 
-    <h2>Try this</h2>
+    <h2>Try This</h2>
     <ol>
       <li>Press Run script and watch the Workspace fill as each line is highlighted: <code>t</code> appears as a 1×201 double, then <code>y</code>, then the figure draws.</li>
       <li>Click the <code>data = [1, 2, 3, 4, 5];</code> chip, then <code>mean(data)</code> and <code>data(2:4)</code>. Then type <code>data(2:6)</code> and read the error.</li>
@@ -187,19 +194,18 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
       <li>Click <code>plot(EEG.data(2,:))</code>, then try <code>plot(EEG.data(1, 1:128))</code> to zoom into the first half second.</li>
     </ol>
 
-    <h2>Why it matters for the pipeline</h2>
+    <h2>Why It Matters for the Pipeline</h2>
     <p>Every step of the ERP pipeline is a function call that takes the <code>EEG</code> variable in and hands a changed one back. <code>EEG = pop_eegfiltnew(EEG, 0.1, [])</code> has the same shape as <code>y = sin(2*pi*t)</code>, with a bigger input and a longer name. The <code>EEG</code> struct is the same kind of variable as <code>data</code>: <code>EEG.srate</code> is a number, <code>EEG.data</code> is an array with one row per channel and one column per sample, and <code>EEG.data(2, 1:5)</code> is the first five samples of channel 2. A script is these calls written down in order. Once ten labs' worth of them are in one file, processing a second participant means changing one filename. The MathWorks documentation (The MathWorks, Inc., 2024) has a page for every function used here. The Lab 1 script in the editor is the one from the course.</p>
 
     <h2 id="refs">References</h2>
     <div class="refs">
-      <p>The MathWorks, Inc. (2024). <i>MATLAB documentation</i>. https://www.mathworks.com/help/matlab/</p>
-      <p>Luck, S. J. (2014). <i>An introduction to the event-related potential technique</i> (2nd ed.). MIT Press.</p>
+      <p>The MathWorks, Inc. (2024). <i>MATLAB documentation</i>. <a href="https://www.mathworks.com/help/matlab/">https://www.mathworks.com/help/matlab/</a></p>
     </div>
   </section>
 </main>
 
 <nav class="pager">
-  <a class="prev" href="erp-04-eeglab-gui.html"><small>Previous</small><span>EEGLAB and data loading</span></a>
+  <a class="prev" href="erp-04-eeglab-gui.html"><small>Previous</small><span>EEGLAB and Data Loading</span></a>
   <a class="next" href="erp-06-filtering.html"><small>Next</small><span>Filtering</span></a>
 </nav>
 <footer>Part of the ERP pipeline series for PSYCH 390, St. Olaf College. Built as a standalone page; nothing is sent anywhere.</footer>

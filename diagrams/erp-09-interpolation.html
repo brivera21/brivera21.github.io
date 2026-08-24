@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Channel interpolation · ERP pipeline</title>
+<title>Channel Interpolation · ERP pipeline</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -75,6 +75,10 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
 }
 @media (prefers-reduced-motion: reduce){ .anim-hint{display:none} }
 /* ===== END SHARED STYLE ===== */
+.fig-num{margin:14px 0 0;font-size:15px;color:var(--ink)}
+.fig-title{margin:2px 0 10px;font-size:15px;color:var(--ink)}
+.fig-note{font-size:14.5px;color:var(--muted);margin-top:10px;max-width:var(--maxw)}
+.refs p,.refs a{overflow-wrap:anywhere}
 
 .pop{position:absolute;z-index:3;background:#fff;border:1px solid var(--rule);border-radius:10px;padding:10px;box-shadow:0 8px 24px -10px rgba(0,0,0,.35);display:none;width:210px}
 .pop h4{margin:0 0 6px;font-size:13px;font-weight:600}
@@ -92,11 +96,13 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
   <span class="step">step 9 / 12</span>
 </div>
 <header class="hero">
-  <h1>Channel interpolation</h1>
+  <h1>Channel Interpolation</h1>
   <p class="q">How do you repair a bad electrode?</p>
 </header>
 
 <main>
+  <p class="fig-num"><b>Figure 1</b></p>
+  <p class="fig-title"><i>Interpolating a Bad Electrode From Its Neighbors</i></p>
   <div class="stage" id="stage">
     <div class="canvas-wrap">
       <canvas id="cv" aria-label="Left: a top-down head with the electrode montage and a color map of scalp voltage at the time cursor; bad electrodes are marked and their neighbors are joined by lines whose thickness shows their weight. Right: the true, corrupted and interpolated waveforms of the selected electrode."></canvas>
@@ -142,13 +148,14 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
     <div class="readout" id="ro"></div>
     <pre style="margin-top:12px;font-size:13px"><code id="code"></code></pre>
   </div>
+  <p class="fig-note"><b><i>Note.</i></b> Panel A is the head seen from above with the scalp voltage at the time cursor (coral positive, teal negative); a bad electrode is crossed in coral, an interpolated one is filled teal, and the lines from the selected electrode to its neighbors are drawn with a thickness proportional to each neighbor's weight. Panel B shows the selected electrode's true waveform in gold, what it recorded in gray, and the interpolated estimate in teal with the truth dashed behind it. The field is simulated from three smooth sources, and the weights are a Gaussian of great-circle distance rather than the spherical spline that <code>pop_interp</code> fits. Created for this series.</p>
 
   <section class="prose">
-    <h2>What you are looking at</h2>
-    <p>The head is seen from above, nose at the top, with a 30-electrode montage similar to the lab's, in standard 10/20 and 10/10 positions. Underneath them the color shows the scalp voltage at the time set by the cursor, built from whatever each electrode is reporting. In the clean recording the map is smooth, because voltage spreads through the skull like a blur and neighboring electrodes always see similar values. On the right are the three versions of the selected electrode's waveform: the true signal in gold, what the electrode actually recorded in gray, and the repair in teal.</p>
+    <h2>What You Are Looking At</h2>
+    <p>The head in Panel A is seen from above, nose at the top, with a 30-electrode montage similar to the lab's, in standard 10/20 and 10/10 positions. Underneath them the color shows the scalp voltage at the time set by the cursor, built from whatever each electrode is reporting. In the clean recording the map is smooth, because voltage spreads through the skull like a blur and neighboring electrodes always see similar values. Panel B shows the three versions of the selected electrode's waveform: the true signal in gold, what the electrode actually recorded in gray, and the repair in teal.</p>
     <p>An electrode goes bad in a few recognizable ways. A lost connection gives a flat line. Poor contact, with high impedance, lets high-frequency noise in. A slowly changing junction between gel and skin produces drift that survives the high-pass filter. In every case the sign is the same. The channel stops resembling its neighbors, which shows in the channel scroll and as a bright spot in an otherwise smooth map. Interpolation replaces the channel with a weighted blend of the good electrodes around it, nearer ones counting more; the line thickness shows each neighbor's weight. The page uses a Gaussian of the great-circle distance, an approximation of the spherical spline that EEGLAB fits (Perrin et al., 1989).</p>
 
-    <h2>Try this</h2>
+    <h2>Try This</h2>
     <ol>
       <li>Click Cz and choose Flat (lost contact). The scalp map collapses to a hole at the vertex, and the gray trace is a line at zero.</li>
       <li>Click Cz again and choose Interpolate this channel. The map is smooth again and the teal trace sits almost on top of the gold one; read the rms error in the readout.</li>
@@ -157,22 +164,22 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
       <li>Break four or more channels in the 30-channel montage and click Interpolate all bad channels. The readout passes 10% and the warning appears, the point at which you would consider excluding the participant.</li>
     </ol>
 
-    <h2>Why it matters for the pipeline</h2>
+    <h2>Why It Matters for the Pipeline</h2>
     <p>The average reference computed in step 7, and the topographic maps and grand averages later on, all assume that every participant has the same electrodes in the same places. Dropping a bad channel would break that. The average reference would be built from a different set of sites for that person, and their scalp maps could not be compared with anyone else's. Interpolating keeps the montage identical. In the lab script the bad channels are listed per participant and repaired with <code>bad_chans = [15 22]; EEG = pop_interp(EEG, bad_chans, 'spherical');</code> (Delorme &amp; Makeig, 2004).</p>
-    <p>The repair comes with two cautions. An interpolated channel carries no information of its own; it is a smooth guess made from its neighbors, so it cannot be counted as an independent measurement, and if the effect you care about lives at that site the estimate is only as good as the surrounding coverage. The order also matters. Interpolate before re-referencing. If a flat or noisy channel goes into the average reference, its problem is subtracted from every other channel on the head. The labs teach re-referencing first because it is simpler to see; the final script on the last page puts interpolation ahead of it, and because re-referencing is linear you can also simply re-run <code>pop_reref(EEG, [])</code> after repairing a channel. The usual rule from the lab is to allow up to about 10% interpolated channels, three in a 30-channel montage, and to consider excluding a participant who needs more (lab guide; ERP CORE excluded rather than interpolated participants with many bad channels, Kappenman et al., 2021).</p>
+    <p>The repair comes with two cautions. An interpolated channel carries no information of its own; it is a smooth guess made from its neighbors, so it cannot be counted as an independent measurement, and if the effect you care about lives at that site the estimate is only as good as the surrounding coverage. The order also matters. Interpolate before re-referencing. If a flat or noisy channel goes into the average reference, its problem is subtracted from every other channel on the head. The labs teach re-referencing first because it is simpler to see; the final script on the last page puts interpolation ahead of it, and because re-referencing is linear you can also simply re-run <code>pop_reref(EEG, [])</code> after repairing a channel. The usual rule from the lab is to allow up to about 10% interpolated channels, three in a 30-channel montage, and to consider excluding a participant who needs more; ERP CORE excluded, rather than interpolated, participants with many bad channels (Kappenman et al., 2021).</p>
 
     <h2 id="refs">References</h2>
     <div class="refs">
-      <p>Delorme, A., &amp; Makeig, S. (2004). EEGLAB: An open source toolbox for analysis of single-trial EEG dynamics including independent component analysis. <i>Journal of Neuroscience Methods, 134</i>(1), 9–21. https://doi.org/10.1016/j.jneumeth.2003.10.009</p>
-      <p>Kappenman, E. S., Farrens, J. L., Zhang, W., Stewart, A. X., &amp; Luck, S. J. (2021). ERP CORE: An open resource for human event-related potential research. <i>NeuroImage, 225</i>, 117465. https://doi.org/10.1016/j.neuroimage.2020.117465</p>
-      <p>Perrin, F., Pernier, J., Bertrand, O., &amp; Echallier, J. F. (1989). Spherical splines for scalp potential and current density mapping. <i>Electroencephalography and Clinical Neurophysiology, 72</i>(2), 184–187. https://doi.org/10.1016/0013-4694(89)90180-6</p>
+      <p>Delorme, A., &amp; Makeig, S. (2004). EEGLAB: An open source toolbox for analysis of single-trial EEG dynamics including independent component analysis. <i>Journal of Neuroscience Methods, 134</i>(1), 9–21. <a href="https://doi.org/10.1016/j.jneumeth.2003.10.009">https://doi.org/10.1016/j.jneumeth.2003.10.009</a></p>
+      <p>Kappenman, E. S., Farrens, J. L., Zhang, W., Stewart, A. X., &amp; Luck, S. J. (2021). ERP CORE: An open resource for human event-related potential research. <i>NeuroImage, 225</i>, Article 117465. <a href="https://doi.org/10.1016/j.neuroimage.2020.117465">https://doi.org/10.1016/j.neuroimage.2020.117465</a></p>
+      <p>Perrin, F., Pernier, J., Bertrand, O., &amp; Echallier, J. F. (1989). Spherical splines for scalp potential and current density mapping. <i>Electroencephalography and Clinical Neurophysiology, 72</i>(2), 184–187. <a href="https://doi.org/10.1016/0013-4694(89)90180-6">https://doi.org/10.1016/0013-4694(89)90180-6</a></p>
     </div>
   </section>
 </main>
 
 <nav class="pager">
-  <a class="prev" href="erp-08-bins.html"><small>Previous</small><span>Bin assignment and epoching</span></a>
-  <a class="next" href="erp-10-artifacts.html"><small>Next</small><span>Artifact detection</span></a>
+  <a class="prev" href="erp-08-bins.html"><small>Previous</small><span>Bin Assignment and Epoching</span></a>
+  <a class="next" href="erp-10-artifacts.html"><small>Next</small><span>Artifact Detection</span></a>
 </nav>
 <footer>Part of the ERP pipeline series for PSYCH 390, St. Olaf College. Built as a standalone page; nothing is sent anywhere.</footer>
 
@@ -236,8 +243,10 @@ const off=document.createElement('canvas'),octx=off.getContext('2d');
 const C={ink:'#1d1f24',muted:'#5c6270',rule:'#e2ddd4',gold:'#c8962a',gray:'#9aa0aa',teal:'#0f6e74',coral:'#d9573b'};
 function txt(s,x,y,o={}){ctx.font=(o.w||400)+' '+(o.s||12)+'px '+(o.m?'"IBM Plex Mono",monospace':'"IBM Plex Sans",system-ui,sans-serif');ctx.fillStyle=o.c||C.muted;ctx.textAlign=o.a||'left';ctx.textBaseline=o.b||'alphabetic';ctx.fillText(s,x,y);}
 function line(p,c,w,dash){ctx.beginPath();ctx.strokeStyle=c;ctx.lineWidth=w||1.2;ctx.setLineDash(dash||[]);p.forEach((q,i)=>i?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1]));ctx.stroke();ctx.setLineDash([]);}
+function plab(l,x,y){txt(l,x,y,{c:C.ink,w:700,s:13});return x+16;}
+function ytitle(s,x,y){ctx.save();ctx.translate(x,y);ctx.rotate(-Math.PI/2);txt(s,0,0,{a:'center',s:11});ctx.restore();}
 function narrow(){return W<620;}
-function fit(){const r=cv.getBoundingClientRect();const dpr=window.devicePixelRatio||1;W=r.width;H=narrow()?W+320:Math.max(400,Math.min(520,W*0.5));
+function fit(){const r=cv.getBoundingClientRect();const dpr=window.devicePixelRatio||1;W=r.width;H=narrow()?W+332:Math.max(400,Math.min(532,W*0.5+12));
   cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);cv.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);}
 function cmap(v,scale){const x=Math.max(-1,Math.min(1,v/scale));
   // teal (negative) .. white .. coral (positive)
@@ -247,7 +256,7 @@ function draw(){
   const nr=narrow();const tcur=+$('tcur').value,kc=Math.round((tcur-T0)/1000*FS);
   // ---- head panel
   const hx=nr?W/2:H/2+10,hy=nr?W/2+14:H/2+12,R=(nr?W/2-58:H/2-44);
-  txt('Scalp voltage at '+tcur+' ms, seen from above',nr?12:16,18,{c:C.ink,w:600,s:13});
+  txt('Scalp voltage at '+tcur+' ms, seen from above',plab('A',nr?12:16,18),18,{c:C.ink,w:600,s:13});
   // color map on an offscreen grid
   const G=64;off.width=G;off.height=G;const img=octx.createImageData(G,G);
   const scale=10;
@@ -279,8 +288,8 @@ function draw(){
   }
   txt(density+' channels · × bad · filled = interpolated',hx,hy+R+30,{a:'center',s:11});
   // ---- traces panel
-  const px0=nr?44:H+70,px1=W-14,py0=nr?W+40:42,py1=H-28;
-  txt((S?S.name:'')+(S&&S.bad?S.interp?': interpolated':': bad, not yet interpolated':': good channel'),px0,py0-14,{c:C.ink,w:600,s:13});
+  const px0=nr?44:H+70,px1=W-14,py0=nr?W+40:42,py1=H-40;
+  txt((S?S.name:'')+(S&&S.bad?S.interp?': interpolated':': bad, not yet interpolated':': good channel'),plab('B',px0,py0-14),py0-14,{c:C.ink,w:600,s:13});
   const rows=[['true',C.gold,S.truth],['recorded',C.gray,S.rec],[S.interp?'interpolated':'preview of interpolation',C.teal,S.est]];
   const rh=(py1-py0)/3,sc0=12;
   const xt=k=>px0+k/(NT-1)*(px1-px0);
@@ -302,7 +311,7 @@ function draw(){
     if(note){ctx.font='400 10.5px "IBM Plex Sans",system-ui,sans-serif';const nw=ctx.measureText(note).width;ctx.fillStyle='rgba(255,255,255,.85)';ctx.fillRect(px0+4,y0+rh-16,nw+6,14);txt(note,px0+7,y0+rh-5,{s:10.5,c:i===1?C.coral:C.muted});}
   });
   line([[xc,py0],[xc,py1]],C.gold,1,[2,3]);
-  [-200,0,200,400,600,800].forEach(ms=>{const x=xt(Math.round((ms-T0)/1000*FS));line([[x,py1],[x,py1+4]],C.muted);txt(ms+(ms===800?' ms':''),x,py1+15,{a:ms===800?'right':'center',s:10.5});});
+  [-200,0,200,400,600,800].forEach(ms=>{const x=xt(Math.round((ms-T0)/1000*FS));line([[x,py1],[x,py1+4]],C.muted);txt(String(ms),x,py1+15,{a:ms===800?'right':'center',s:10.5});});txt('Time (ms)',(px0+px1)/2,py1+29,{a:'center',s:11});if(!nr)ytitle('Amplitude (µV)',px0-44,(py0+py1)/2);
   ctx.strokeStyle=C.rule;ctx.strokeRect(px0,py0,px1-px0,py1-py0);
 }
 

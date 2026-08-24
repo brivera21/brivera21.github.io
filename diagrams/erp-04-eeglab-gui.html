@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>EEGLAB and data loading · ERP pipeline</title>
+<title>EEGLAB and Data Loading · ERP pipeline</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -75,6 +75,10 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
 }
 @media (prefers-reduced-motion: reduce){ .anim-hint{display:none} }
 /* ===== END SHARED STYLE ===== */
+.fig-num{margin:14px 0 0;font-size:15px;color:var(--ink)}
+.fig-title{margin:2px 0 10px;font-size:15px;color:var(--ink)}
+.fig-note{font-size:14.5px;color:var(--muted);margin-top:10px;max-width:var(--maxw)}
+.refs p,.refs a{overflow-wrap:anywhere}
 
 /* page-specific */
 .refs p{overflow-wrap:anywhere}
@@ -153,11 +157,13 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
   <span class="step">step 4 / 12</span>
 </div>
 <header class="hero">
-  <h1>EEGLAB and data loading</h1>
+  <h1>EEGLAB and Data Loading</h1>
   <p class="q">What is a GUI?</p>
 </header>
 
 <main>
+  <p class="fig-num"><b>Figure 1</b></p>
+  <p class="fig-title"><i>A Mock EEGLAB Window and Its Command-Line Equivalent</i></p>
   <div class="stage" id="stage">
     <div class="tabs" role="tablist" aria-label="Two ways to do the same steps">
       <button id="tabGui" role="tab" aria-pressed="true" aria-controls="menubar">Menus and dialogs</button>
@@ -257,13 +263,14 @@ eeglab: adding "ERPLAB" v12 plugin
       <button class="ghost" id="resetBtn" style="padding:3px 10px;font-size:12.5px">Start over</button>
     </div>
   </div>
+  <p class="fig-note"><b><i>Note.</i></b> The window imitates the layout of the EEGLAB main window: the dataset panel on the left, the MATLAB Command Window (commands in teal, errors in coral, confirmations in green) and <code>EEG.history</code> on the right, and a channel scroll plot in which the two eye channels are drawn in violet and scalp channels in teal. Changed fields in the dataset panel turn teal. The dataset and its EEG are simulated; the window runs seven fixed steps and does not process any real data. Created for this series.</p>
 
   <section class="prose">
-    <h2>What you are looking at</h2>
+    <h2>What You Are Looking At</h2>
     <p>A GUI (graphical user interface) is a window with menus, buttons, and dialog boxes. Each menu item stands for one function. Choosing it opens a dialog, the fields you fill in become the function's arguments, and pressing Ok runs it. The window above is a plausible sketch of EEGLAB's main window, not a pixel copy. The panel on the left describes the current dataset, the Command Window on the right shows the command that each click generated, and the pane under it is <code>EEG.history</code>, the record EEGLAB keeps of everything done to the data so far.</p>
     <p>Everything in EEGLAB lives in one MATLAB variable called <code>EEG</code>, a structure with named fields. <code>EEG.data</code> is the voltage, a matrix with one row per channel and one column per sample (or channels × samples × epochs once the data are cut up). <code>EEG.srate</code> is the sampling rate, <code>EEG.nbchan</code> the channel count, <code>EEG.chanlocs</code> the electrode positions, <code>EEG.event</code> the list of event codes and their times. A dataset is saved as a pair of files. By default the <code>.set</code> file holds every field except the voltages, which go in the <code>.fdt</code> file next to it. ERPLAB adds its own menu and its own variable, <code>ERP</code>, once averages have been computed.</p>
 
-    <h2>Try this</h2>
+    <h2>Try This</h2>
     <ol>
       <li>Open File and load the dataset. Read the left panel: 33 channels including HEOG and VEOG, 256 Hz, 76,800 frames (300 s of continuous data), and 412 events. Those four numbers are the first thing to check after any load.</li>
       <li>Work through Tools and ERPLAB in order: filter, re-reference, event list, bins, epochs, average. Watch the dataset name grow a suffix each time and the history pane grow a line.</li>
@@ -272,21 +279,21 @@ eeglab: adding "ERPLAB" v12 plugin
       <li>Switch to Same thing, no GUI, press Start over, and run the same commands. The panel fills in identically, and Copy history as script writes out the script that the next page starts from.</li>
     </ol>
 
-    <h2>Why it matters for the pipeline</h2>
+    <h2>Why It Matters for the Pipeline</h2>
     <p>EEGLAB has both a GUI and a command line, and they call the same functions. The menu is a good way to learn what the options are, and it guarantees that every argument gets recorded, since each dialog writes its <code>pop_</code> call into <code>EEG.history</code>. The command is the better way to do the same thing a second time, and the pipeline for this course needs to do it for every participant. In Lab 2 the first command is <code>EEG = pop_loadset('filename','sub-001_N400.set','filepath',...)</code>. Typing <code>EEG</code> without a semicolon then prints the fields, so you can confirm that the channel count, sampling rate, number of points, and number of events match the recording (Delorme &amp; Makeig, 2004; Lopez-Calderon &amp; Luck, 2014). The ERP CORE data used here were recorded at 1024 Hz and are downsampled to 256 Hz before anything else (Kappenman et al., 2021).</p>
 
     <h2 id="refs">References</h2>
     <div class="refs">
-      <p>Delorme, A., &amp; Makeig, S. (2004). EEGLAB: An open source toolbox for analysis of single-trial EEG dynamics including independent component analysis. <i>Journal of Neuroscience Methods, 134</i>(1), 9–21. https://doi.org/10.1016/j.jneumeth.2003.10.009</p>
-      <p>Kappenman, E. S., Farrens, J. L., Zhang, W., Stewart, A. X., &amp; Luck, S. J. (2021). ERP CORE: An open resource for human event-related potential research. <i>NeuroImage, 225</i>, 117465. https://doi.org/10.1016/j.neuroimage.2020.117465</p>
-      <p>Lopez-Calderon, J., &amp; Luck, S. J. (2014). ERPLAB: An open-source toolbox for the analysis of event-related potentials. <i>Frontiers in Human Neuroscience, 8</i>, 213. https://doi.org/10.3389/fnhum.2014.00213</p>
+      <p>Delorme, A., &amp; Makeig, S. (2004). EEGLAB: An open source toolbox for analysis of single-trial EEG dynamics including independent component analysis. <i>Journal of Neuroscience Methods, 134</i>(1), 9–21. <a href="https://doi.org/10.1016/j.jneumeth.2003.10.009">https://doi.org/10.1016/j.jneumeth.2003.10.009</a></p>
+      <p>Kappenman, E. S., Farrens, J. L., Zhang, W., Stewart, A. X., &amp; Luck, S. J. (2021). ERP CORE: An open resource for human event-related potential research. <i>NeuroImage, 225</i>, Article 117465. <a href="https://doi.org/10.1016/j.neuroimage.2020.117465">https://doi.org/10.1016/j.neuroimage.2020.117465</a></p>
+      <p>Lopez-Calderon, J., &amp; Luck, S. J. (2014). ERPLAB: An open-source toolbox for the analysis of event-related potentials. <i>Frontiers in Human Neuroscience, 8</i>, Article 213. <a href="https://doi.org/10.3389/fnhum.2014.00213">https://doi.org/10.3389/fnhum.2014.00213</a></p>
     </div>
   </section>
 </main>
 
 <nav class="pager">
-  <a class="prev" href="erp-03-what-is-an-erp.html"><small>Previous</small><span>What is an ERP?</span></a>
-  <a class="next" href="erp-05-matlab-intro.html"><small>Next</small><span>MATLAB introduction</span></a>
+  <a class="prev" href="erp-03-what-is-an-erp.html"><small>Previous</small><span>What Is an ERP?</span></a>
+  <a class="next" href="erp-05-matlab-intro.html"><small>Next</small><span>MATLAB Introduction</span></a>
 </nav>
 <footer>Part of the ERP pipeline series for PSYCH 390, St. Olaf College. Built as a standalone page; nothing is sent anywhere.</footer>
 
@@ -408,11 +415,12 @@ const CH=['Fp1','VEOG','F3','Fz','C3','Cz','Pz','O1'],SN=FS*12;const sig=CH.map(
     for(const bl of blinks){const d=(i-bl)/FS;if(d>0&&d<0.3)v+=(c===0?110:c===1?-160:c===2?45:c===3?40:c<6?15:5)*Math.sin(Math.PI*d/0.3);}
     sig[c][i]=v;}}})();
 let scrollOn=false,t0=0,raf=0;const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-function fitScroll(){const r=scv.getBoundingClientRect();const dpr=devicePixelRatio||1;const h=Math.max(150,Math.min(230,r.width*0.32));scv.width=Math.round(r.width*dpr);scv.height=Math.round(h*dpr);scv.style.height=h+'px';sctx.setTransform(dpr,0,0,dpr,0,0);return {w:r.width,h};}
+function fitScroll(){const r=scv.getBoundingClientRect();const dpr=devicePixelRatio||1;const h=Math.max(164,Math.min(244,r.width*0.32+14));scv.width=Math.round(r.width*dpr);scv.height=Math.round(h*dpr);scv.style.height=h+'px';sctx.setTransform(dpr,0,0,dpr,0,0);return {w:r.width,h};}
 function drawScroll(ts){const {w,h}=fitScroll();sctx.clearRect(0,0,w,h);const L=44,R=w-8;const win=5*FS;let off=reduce?FS*2:Math.floor(((ts-t0)/1000*FS))%(SN-win);
-  const rh=(h-18)/CH.length;const sc=rh/80;
+  const pb=h-32;const rh=(pb-2)/CH.length;const sc=rh/80;
   sctx.font='11px "IBM Plex Sans",system-ui,sans-serif';sctx.fillStyle='#5c6270';sctx.textAlign='right';
-  for(let s=0;s<=5;s++){const x=L+(s/5)*(R-L);sctx.strokeStyle='#eee';sctx.beginPath();sctx.moveTo(x,0);sctx.lineTo(x,h-16);sctx.stroke();sctx.textAlign='center';sctx.fillText(Math.floor(off/FS)+s+' s',x,h-4);}
+  for(let s=0;s<=5;s++){const x=L+(s/5)*(R-L);sctx.strokeStyle='#eee';sctx.beginPath();sctx.moveTo(x,0);sctx.lineTo(x,pb);sctx.stroke();sctx.textAlign='center';sctx.fillText(String(Math.floor(off/FS)+s),x,pb+12);}
+  sctx.textAlign='center';sctx.fillText('Time (s)',(L+R)/2,h-3);
   for(let c=0;c<CH.length;c++){const y0=rh*(c+0.5);sctx.textAlign='right';sctx.fillStyle='#333';sctx.fillText(CH[c],L-6,y0+4);
     sctx.beginPath();sctx.strokeStyle=c<2?'#6b5ca5':'#0f6e74';sctx.lineWidth=1;for(let i=0;i<win;i++){const x=L+(i/win)*(R-L),y=y0-sig[c][off+i]*sc;i?sctx.lineTo(x,y):sctx.moveTo(x,y);}sctx.stroke();}
   sctx.textAlign='left';sctx.fillStyle='#5c6270';sctx.fillText('100 µV',L+4,12);sctx.strokeStyle='#5c6270';sctx.beginPath();sctx.moveTo(L+1,4);sctx.lineTo(L+1,4+100*sc);sctx.stroke();

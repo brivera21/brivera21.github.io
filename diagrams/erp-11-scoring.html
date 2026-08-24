@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ERP scoring and measurement · ERP pipeline</title>
+<title>ERP Scoring and Measurement · ERP pipeline</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -75,6 +75,10 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
 }
 @media (prefers-reduced-motion: reduce){ .anim-hint{display:none} }
 /* ===== END SHARED STYLE ===== */
+.fig-num{margin:14px 0 0;font-size:15px;color:var(--ink)}
+.fig-title{margin:2px 0 10px;font-size:15px;color:var(--ink)}
+.fig-note{font-size:14.5px;color:var(--muted);margin-top:10px;max-width:var(--maxw)}
+.refs p,.refs a{overflow-wrap:anywhere}
 
 .control input[type=number]{font:inherit;font-size:15px;padding:6px 8px;border:1px solid var(--rule);border-radius:8px;background:#fff;color:var(--ink);width:100%}
 .winrow{display:flex;gap:8px;align-items:center}
@@ -94,11 +98,13 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
   <span class="step">step 11 / 12</span>
 </div>
 <header class="hero">
-  <h1>ERP scoring and measurement</h1>
+  <h1>ERP Scoring and Measurement</h1>
   <p class="q">How big, and how fast?</p>
 </header>
 
 <main>
+  <p class="fig-num"><b>Figure 1</b></p>
+  <p class="fig-title"><i>Mean Amplitude, Peak, and Latency Measures of the N400 Under Noise</i></p>
   <div class="stage" id="stage">
     <div class="canvas-wrap">
       <canvas id="cv" aria-label="Left: averaged ERP waveforms at Pz for Related and Unrelated words with a shaded measurement window and the chosen measure marked on each. Right: the measured difference across 20 re-draws of the noise, compared with the true difference."></canvas>
@@ -143,20 +149,21 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
     </div>
     <div class="readout">
       <span>mean minus true, across 20 re-draws <b id="bias"></b></span>
-      <span>SD <b id="sd"></b></span>
+      <span><i>SD</i> <b id="sd"></b></span>
       <span id="percond"></span>
       <span class="pill" id="verdict"></span>
     </div>
     <div class="warnbox" id="warn"></div>
     <div class="codeline" id="code"></div>
   </div>
+  <p class="fig-note"><b><i>Note.</i></b> Panel A shows the averaged waveforms at Pz, teal for Related and coral for Unrelated, with the measurement window shaded gray and the chosen measure marked on each waveform (a bar for the mean, a dot for a peak, a vertical line for 50% area latency). Panel B plots the measured difference from 20 re-draws of the noise as violet dots, with their mean ± <i>SD</i> below and the true difference as a gold line. The waveforms are simulated as a fixed true ERP plus filtered noise scaled by 1/√<i>N</i>; the noise has no trial-to-trial latency variation. Adapted from Luck (2014), Figure 9.1.</p>
 
   <section class="prose">
-    <h2>What you are looking at</h2>
-    <p>The left panel shows two averaged waveforms from electrode Pz, one for Related word pairs and one for Unrelated pairs. The early P1, N1, and P2 peaks are the same in both; the difference is the N400, a broad negative wave around 300 to 500 ms that is larger when the word does not fit its context. What remains of the trial-to-trial noise after averaging is drawn into the waveforms, and it shrinks with the square root of the number of trials. The gray band is the measurement window. The measure you choose is marked on each waveform, a horizontal bar for the mean, a dot for a peak, and a vertical marker for the 50% area latency. The readout gives the value for each condition and their difference.</p>
-    <p>The right panel repeats the whole experiment 20 times with fresh noise and plots the 20 measured differences as dots. The gold line is the true difference, the value you would get with no noise at all. A measure is unbiased when the cloud of dots is centered on that line; it is precise when the cloud is narrow.</p>
+    <h2>What You Are Looking At</h2>
+    <p>Panel A shows two averaged waveforms from electrode Pz, one for Related word pairs and one for Unrelated pairs. The early P1, N1, and P2 peaks are the same in both; the difference is the N400, a broad negative wave around 300 to 500 ms that is larger when the word does not fit its context. What remains of the trial-to-trial noise after averaging is drawn into the waveforms, and it shrinks with the square root of the number of trials. The gray band is the measurement window. The measure you choose is marked on each waveform, a horizontal bar for the mean, a dot for a peak, and a vertical marker for the 50% area latency. The readout gives the value for each condition and their difference.</p>
+    <p>Panel B repeats the whole experiment 20 times with fresh noise and plots the 20 measured differences as dots. The gold line is the true difference, the value you would get with no noise at all. A measure is unbiased when the cloud of dots is centered on that line; it is precise when the cloud is narrow.</p>
 
-    <h2>Try this</h2>
+    <h2>Try This</h2>
     <ol>
       <li>Leave the measure on mean amplitude and drag the trial slider from 200 down to 10. The dots spread out but stay centered on the gold line. Averaging fewer trials costs precision, not accuracy.</li>
       <li>Switch to peak amplitude at 10 trials. Each condition's peak is now far more negative than its true value, because a noisy waveform always has some deep dip somewhere in the window. The flatter Related waveform gains more from this than the Unrelated one, so the difference is pulled toward zero.</li>
@@ -165,22 +172,22 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
       <li>Drag the window edges by hand to 200 to 700 ms and compare the difference readout with the true difference for each measure; the window now includes neighboring components.</li>
     </ol>
 
-    <h2>Why it matters for the pipeline</h2>
-    <p>A component is not a peak. The N400 is the activity of a neural process that lasts a couple of hundred milliseconds, and the most negative sample in that stretch is one sample among many. The mean amplitude over a window is an average of every sample, so noise that pushes some samples up and others down cancels, and the estimate stays centered on the truth however few trials you have. It is also linear, so the mean of the participants' measurements equals the measurement of the grand average, which keeps group statistics simple. For these reasons the course scores the N400 as mean amplitude from 300 to 500 ms at centro-parietal sites such as Cz, CPz, and Pz, and computes the effect as Unrelated minus Related.</p>
-    <p>Peak amplitude is appropriate for sharp, well-defined deflections such as P1, N1, and N170, preferably after low-pass filtering and with the local peak rule so the algorithm does not stop at the window edge. Peak latency suits those same components; for broad ones, 50% area latency gives a more stable estimate of the midpoint. Whatever the measure, the window and electrodes come from prior literature, decided before looking at the data. A window picked because the difference looks largest there will find effects in pure noise. In ERPLAB the measurement tool is <code>pop_geterpvalues</code>; the call shown under the figure follows the selector, with <code>'meanbl'</code> for mean amplitude relative to the prestimulus baseline. The two positional arguments after the window are the bins and the channels to measure, so <code>chan_idx</code> is looked up by label first.</p>
+    <h2>Why It Matters for the Pipeline</h2>
+    <p>A component is not a peak (Luck, 2014, Chapter 9). The N400 is the activity of a neural process that lasts a couple of hundred milliseconds, and the most negative sample in that stretch is one sample among many. The mean amplitude over a window is an average of every sample, so noise that pushes some samples up and others down cancels, and the estimate stays centered on the truth however few trials you have. It is also linear, so the mean of the participants' measurements equals the measurement of the grand average, which keeps group statistics simple. For these reasons the course scores the N400 as mean amplitude from 300 to 500 ms at centro-parietal sites such as Cz, CPz, and Pz, and computes the effect as Unrelated minus Related, following the ERP CORE scoring (Kappenman et al., 2021).</p>
+    <p>Peak amplitude is appropriate for sharp, well-defined deflections such as P1, N1, and N170, preferably after low-pass filtering and with the local peak rule so the algorithm does not stop at the window edge. Peak latency suits those same components; for broad ones, 50% area latency gives a more stable estimate of the midpoint. Whatever the measure, the window and electrodes come from prior literature, decided before looking at the data. A window picked because the difference looks largest there will find effects in pure noise. In ERPLAB the measurement tool is <code>pop_geterpvalues</code> (Lopez-Calderon &amp; Luck, 2014); the call shown under the figure follows the selector, with <code>'meanbl'</code> for mean amplitude relative to the prestimulus baseline. The two positional arguments after the window are the bins and the channels to measure, so <code>chan_idx</code> is looked up by label first.</p>
 
     <h2 id="refs">References</h2>
     <div class="refs">
+      <p>Kappenman, E. S., Farrens, J. L., Zhang, W., Stewart, A. X., &amp; Luck, S. J. (2021). ERP CORE: An open resource for human event-related potential research. <i>NeuroImage, 225</i>, Article 117465. <a href="https://doi.org/10.1016/j.neuroimage.2020.117465">https://doi.org/10.1016/j.neuroimage.2020.117465</a></p>
+      <p>Lopez-Calderon, J., &amp; Luck, S. J. (2014). ERPLAB: An open-source toolbox for the analysis of event-related potentials. <i>Frontiers in Human Neuroscience, 8</i>, Article 213. <a href="https://doi.org/10.3389/fnhum.2014.00213">https://doi.org/10.3389/fnhum.2014.00213</a></p>
       <p>Luck, S. J. (2014). <i>An introduction to the event-related potential technique</i> (2nd ed.). MIT Press.</p>
-      <p>Lopez-Calderon, J., &amp; Luck, S. J. (2014). ERPLAB: An open-source toolbox for the analysis of event-related potentials. <i>Frontiers in Human Neuroscience, 8</i>, 213. https://doi.org/10.3389/fnhum.2014.00213</p>
-      <p>Kappenman, E. S., Farrens, J. L., Zhang, W., Stewart, A. X., &amp; Luck, S. J. (2021). ERP CORE: An open resource for human event-related potential research. <i>NeuroImage, 225</i>, 117465. https://doi.org/10.1016/j.neuroimage.2020.117465</p>
     </div>
   </section>
 </main>
 
 <nav class="pager">
-  <a class="prev" href="erp-10-artifacts.html"><small>Previous</small><span>Artifact detection</span></a>
-  <a class="next" href="erp-12-plotting-scripting.html"><small>Next</small><span>Plotting and scripting</span></a>
+  <a class="prev" href="erp-10-artifacts.html"><small>Previous</small><span>Artifact Detection</span></a>
+  <a class="next" href="erp-12-plotting-scripting.html"><small>Next</small><span>Plotting and Scripting</span></a>
 </nav>
 <footer>Part of the ERP pipeline series for PSYCH 390, St. Olaf College. Built as a standalone page; nothing is sent anywhere.</footer>
 
@@ -239,11 +246,13 @@ function build(){
 // ---------- drawing ----------
 const cv=$('cv'),ctx=cv.getContext('2d');let W=1000,H=440,geo={};
 function fit(){const r=cv.getBoundingClientRect();const dpr=window.devicePixelRatio||1;W=r.width;
-  H=W<700?Math.round(Math.max(240,W*0.62)+230):Math.round(Math.max(360,Math.min(460,W*0.42)));
+  H=W<700?Math.round(Math.max(240,W*0.62)+244):Math.round(Math.max(372,Math.min(472,W*0.42+12)));
   cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);cv.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);}
 const C={r:'#0f6e74',u:'#d9573b',gold:'#c8962a',ink:'#1d1f24',muted:'#5c6270',rule:'#e2ddd4',win:'rgba(140,146,160,.16)',rf:'rgba(15,110,116,.22)',uf:'rgba(217,87,59,.22)'};
 function txt(s,x,y,o={}){ctx.font=(o.w||400)+' '+(o.s||12)+'px "IBM Plex Sans",system-ui,sans-serif';ctx.fillStyle=o.c||C.muted;ctx.textAlign=o.a||'left';ctx.textBaseline=o.b||'alphabetic';ctx.fillText(s,x,y);}
 function line(pts,c,w,dash){ctx.beginPath();ctx.strokeStyle=c;ctx.lineWidth=w||1.2;ctx.setLineDash(dash||[]);pts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.stroke();ctx.setLineDash([]);}
+function plab(l,x,y){txt(l,x,y,{c:C.ink,w:700,s:13});return x+16;}
+function ytitle(s,x,y){ctx.save();ctx.translate(x,y);ctx.rotate(-Math.PI/2);txt(s,0,0,{a:'center',s:11});ctx.restore();}
 function fmt(v,u){return (u==='ms'?Math.round(v):u==='µV·ms'?Math.round(v):v.toFixed(2))+' '+u;}
 function draw(){
   ctx.clearRect(0,0,W,H);
@@ -251,20 +260,20 @@ function draw(){
   const L=narrow?34:48;
   // geometry of the two panels
   let p1,p2;
-  if(stacked){const h1=Math.max(240,W*0.62)-40;p1={x:L,y:24,w:W-L-12,h:h1-30};p2={x:L,y:h1+50,w:W-L-12,h:H-h1-50-52};}
-  else{const wl=Math.round((W-L-30)*0.62);p1={x:L,y:24,w:wl,h:H-62};p2={x:L+wl+58,y:24,w:W-(L+wl+58)-12,h:H-62};}
+  if(stacked){const h1=Math.max(240,W*0.62)-40;p1={x:L,y:24,w:W-L-12,h:h1-30};p2={x:L,y:h1+64,w:W-L-12,h:H-h1-64-52};}
+  else{const wl=Math.round((W-L-30)*0.62);p1={x:L,y:24,w:wl,h:H-74};p2={x:L+wl+58,y:24,w:W-(L+wl+58)-12,h:H-74};}
   geo={p1};
   const m=M[S.measure],ii=idx(S.w0,S.w1);
   // ---- panel 1: waveforms
-  txt(narrow?'Averaged ERP at Pz, '+S.N+' trials':'Averaged ERP at Pz, '+S.N+' trials per condition',p1.x,p1.y-9,{c:C.ink,w:600,s:13});
+  txt(narrow?'Averaged ERP at Pz, '+S.N+' trials':'Averaged ERP at Pz, '+S.N+' trials per condition',plab('A',p1.x,p1.y-9),p1.y-9,{c:C.ink,w:600,s:13});
   let mx=0;for(let i=0;i<NS;i++)mx=Math.max(mx,Math.abs(WR[i]),Math.abs(WU[i]));const sc=Math.max(10,Math.ceil(mx/2.5)*2.5), y=v=>p1.y+p1.h/2-(v/sc)*(p1.h/2), x=t=>p1.x+((t-T0)/(T1-T0))*p1.w;
   ctx.fillStyle=C.win;ctx.fillRect(x(S.w0),p1.y,x(S.w1)-x(S.w0),p1.h);
   ctx.strokeStyle=C.rule;ctx.lineWidth=1;ctx.strokeRect(p1.x,p1.y,p1.w,p1.h);
   line([[p1.x,y(0)],[p1.x+p1.w,y(0)]],C.rule,1,[3,3]);
   line([[x(0),p1.y],[x(0),p1.y+p1.h]],C.muted,1,[2,3]);
-  [-200,0,200,400,600,800].forEach(ms=>{const xx=x(ms);line([[xx,p1.y+p1.h],[xx,p1.y+p1.h+4]],C.muted);txt(ms+(ms===800&&!narrow?' ms':''),xx,p1.y+p1.h+14,{a:ms===800?'right':ms===-200?'left':'center',s:11});});
+  [-200,0,200,400,600,800].forEach(ms=>{const xx=x(ms);line([[xx,p1.y+p1.h],[xx,p1.y+p1.h+4]],C.muted);txt(String(ms),xx,p1.y+p1.h+14,{a:ms===800?'right':ms===-200?'left':'center',s:11});});txt('Time (ms)',p1.x+p1.w/2,p1.y+p1.h+28,{a:'center',s:11});
   [-sc,-sc/2,0,sc/2,sc].forEach(v=>txt((v>0?'+':'')+v,p1.x-4,y(v)+4,{a:'right',s:10.5}));
-  txt('µV, negative down',p1.x+4,p1.y+12,{s:10.5});
+  if(narrow)txt('Amplitude (µV), negative down',p1.x+4,p1.y+12,{s:10.5});else{ytitle('Amplitude (µV)',12,p1.y+p1.h/2);txt('negative down',p1.x+4,p1.y+12,{s:10.5});}
   // window edges
   [S.w0,S.w1].forEach((t,k)=>{const xx=x(t);line([[xx,p1.y],[xx,p1.y+p1.h]],C.muted,1.5);
     ctx.fillStyle='#fff';ctx.strokeStyle=C.muted;ctx.beginPath();ctx.arc(xx,p1.y+p1.h-10,5,0,6.29);ctx.fill();ctx.stroke();
@@ -287,7 +296,7 @@ function draw(){
   });
   
   // ---- panel 2: stability strip
-  txt(narrow?'Stability across 20 noise re-draws':'Stability across 20 re-draws of the noise',p2.x,p2.y-9,{c:C.ink,w:600,s:13});
+  txt('Stability across 20 noise re-draws',plab('B',p2.x,p2.y-9),p2.y-9,{c:C.ink,w:600,s:13});
   ctx.strokeStyle=C.rule;ctx.strokeRect(p2.x,p2.y,p2.w,p2.h);
   const d=stab.diffs;let lo=Math.min(stab.tru,...d),hi=Math.max(stab.tru,...d);
   if(m.unit==='µV'){lo=Math.min(lo,-1);hi=Math.max(hi,1);}const pad=(hi-lo)*0.12||1;lo-=pad;hi+=pad;
@@ -298,7 +307,7 @@ function draw(){
   // ticks
   const span=hi-lo,step=span>200?100:span>80?50:span>30?10:span>12?5:span>5?2:span>2?1:0.5;
   for(let v=Math.ceil(lo/step)*step;v<=hi;v+=step){if(Math.abs(v)<1e-9)continue;const xx=sx(v);line([[xx,p2.y+p2.h],[xx,p2.y+p2.h+4]],C.muted);txt((step<1?v.toFixed(1):Math.round(v))+'',xx,p2.y+p2.h+14,{a:'center',s:11});}
-  txt('difference, Unrelated − Related ('+m.unit+')',p2.x+p2.w/2,p2.y+p2.h+28,{a:'center',s:11});
+  txt('Difference, Unrelated − Related ('+m.unit+')',p2.x+p2.w/2,p2.y+p2.h+28,{a:'center',s:11});
   // SD bar and mean
   const barY=cy+38;
   line([[sx(stab.mean-stab.sd),barY],[sx(stab.mean+stab.sd),barY]],C.ink,2);
@@ -329,7 +338,7 @@ function update(){
   if(m.unit==='ms'){v.className='pill '+(stab.sd<15?'ok':stab.sd<40?'':'warn');v.textContent=stab.sd<15?'stable latency':stab.sd<40?'latency wobbles':'latency jumps around';}
   else{const se=stab.sd/Math.sqrt(20);let z=Math.abs(bias)/(se+1e-9),lab='difference';
     if(S.measure==='peak'||S.measure==='lpeak'){const zu=Math.abs(stab.ru-m.f(TU,ii).v)/(stab.sdU/Math.sqrt(20)+1e-9);if(zu>z){z=zu;lab='each peak';}}
-    v.className='pill '+(z<2?'ok':z<3?'':'warn');v.textContent=z<2?'no bias detectable (within 2 SE)':z<3?'possible bias':lab+' biased';}
+    v.className='pill '+(z<2?'ok':z<3?'':'warn');v.innerHTML=z<2?'no bias detectable (within 2 <i>SE</i>)':z<3?'possible bias':lab+' biased';}
   const wb=$('warn');
   if(S.fished){wb.className='warnbox show';wb.textContent='This window was chosen from the data. It sits where the noise happened to make the difference largest, so the measured effect is inflated and a test on it will give far more false positives than 5%. Choose the window before looking, from prior literature (300–500 ms for the N400).';}
   else wb.className='warnbox';

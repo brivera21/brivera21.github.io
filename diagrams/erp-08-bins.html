@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Bin assignment and epoching · ERP pipeline</title>
+<title>Bin Assignment and Epoching · ERP pipeline</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -75,6 +75,10 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
 }
 @media (prefers-reduced-motion: reduce){ .anim-hint{display:none} }
 /* ===== END SHARED STYLE ===== */
+.fig-num{margin:14px 0 0;font-size:15px;color:var(--ink)}
+.fig-title{margin:2px 0 10px;font-size:15px;color:var(--ink)}
+.fig-note{font-size:14.5px;color:var(--muted);margin-top:10px;max-width:var(--maxw)}
+.refs p,.refs a{overflow-wrap:anywhere}
 
 .top{display:grid;grid-template-columns:minmax(220px,300px) 1fr;gap:16px;margin-bottom:12px}
 .top .control textarea{font-family:var(--mono);font-size:13.5px;line-height:1.45;min-height:190px;resize:vertical;white-space:pre}
@@ -102,11 +106,13 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
   <span class="step">step 8 / 12</span>
 </div>
 <header class="hero">
-  <h1>Bin assignment and epoching</h1>
+  <h1>Bin Assignment and Epoching</h1>
   <p class="q">How do you make good bins?</p>
 </header>
 
 <main>
+  <p class="fig-num"><b>Figure 1</b></p>
+  <p class="fig-title"><i>Bin Assignment With BINLISTER and Epoch Extraction</i></p>
   <div class="stage" id="stage">
     <div class="top">
       <div class="control">
@@ -155,13 +161,14 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
     <div class="readout" id="ro"></div>
     <pre class="codebox"><code id="code"></code></pre>
   </div>
+  <p class="fig-note"><b><i>Note.</i></b> Panel A shows a stretch of continuous EEG at Cz with the event codes stamped above it; codes that fit a bin are filled with that bin's color (teal = bin 1, coral = bin 2, violet = bin 3, gold = bin 4) and their epoch windows are shaded, while unassigned codes stay gray. Panel B shows the epochs cut out for each bin as thin lines with the bin average as a heavy line, and the averages overlaid with the 300–500 ms N400 window shaded. The recording and event list are simulated; the parser implements only the subset of the bin descriptor syntax used in this course. Created for this series.</p>
 
   <section class="prose">
-    <h2>What you are looking at</h2>
-    <p>Every time a word appeared on the screen or the participant pressed a button, the stimulus computer stamped a number into the EEG file. These event codes are the experiment's bookkeeping. In the N400 task the target word carries a three-digit code: 111 for a related target with a correct response, 112 related but wrong, 121 unrelated correct, 122 unrelated wrong. The small 11 and 12 flags are prime words, 201 and 202 are the button presses, and "boundary" marks a place where the recording was paused. The gray trace is one channel of the continuous EEG, which by itself tells you nothing about conditions.</p>
-    <p>A bin is a condition defined by a sequence of codes. The text box on the left is a bin descriptor file: each bin has a number, a label, and a descriptor line that lists the codes in braces, separated by semicolons. The dot marks the time-locking event, the moment that becomes time zero of every epoch. BINLISTER walks through the event list, and every event that fits a bin is colored with that bin's color and given an epoch window, here −200 to 800 ms. Events that fit nothing stay gray; hover one to see why. Below the timeline, the epochs are cut out, baseline-corrected on the prestimulus part, stacked as thin lines, and averaged into the heavy line, so you can see the unrelated bin come out more negative between 300 and 500 ms.</p>
+    <h2>What You Are Looking At</h2>
+    <p>Every time a word appeared on the screen or the participant pressed a button, the stimulus computer stamped a number into the EEG file. These event codes are the experiment's bookkeeping. In the N400 task the target word carries a three-digit code: 111 for a related target with a correct response, 112 related but wrong, 121 unrelated correct, 122 unrelated wrong. The small 11 and 12 flags are prime words, 201 and 202 are the button presses, and "boundary" marks a place where the recording was paused. The gray trace in Panel A is one channel of the continuous EEG, which by itself tells you nothing about conditions.</p>
+    <p>A bin is a condition defined by a sequence of codes. The text box on the left is a bin descriptor file: each bin has a number, a label, and a descriptor line that lists the codes in braces, separated by semicolons. The dot marks the time-locking event, the moment that becomes time zero of every epoch. BINLISTER walks through the event list, and every event that fits a bin is colored with that bin's color and given an epoch window, here −200 to 800 ms. Events that fit nothing stay gray; hover one to see why. In Panel B, the epochs are cut out, baseline-corrected on the prestimulus part, stacked as thin lines, and averaged into the heavy line, so you can see the unrelated bin come out more negative between 300 and 500 ms.</p>
 
-    <h2>Try this</h2>
+    <h2>Try This</h2>
     <ol>
       <li>Start from the lab default. Both bins collect 60 trials, and the checklist is all green.</li>
       <li>Click Correct trials only via response window. The descriptor <code>.{111}{t&lt;200-1000&gt;201}</code> now requires a correct button press between 200 and 1000 ms after the target. Hover the gray targets to find responses that were too fast to be real decisions or too slow to be trusted.</li>
@@ -170,22 +177,22 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
       <li>Delete the blank line between the two bins (or click Missing blank line) and read the error message. Then widen the epoch to −500 to 1200 ms and watch a few epochs near a boundary get dropped.</li>
     </ol>
 
-    <h2>Why it matters for the pipeline</h2>
+    <h2>Why It Matters for the Pipeline</h2>
     <p>Bin assignment is where the experimental design meets the data. <code>EEG = pop_binlister(EEG, 'BDF', 'N400_bins.txt', 'IndexEL', 1, 'SendEL2', 'EEG', 'Voutput', 'EEG');</code> reads the descriptor file and stores the result in <code>EEG.EVENTLIST</code>; <code>EEG = pop_epochbin(EEG, [-200 800], 'pre');</code> then cuts a fixed window around each time-locking event and subtracts the mean of the prestimulus baseline from every epoch, so slow drift and DC offsets do not carry into the average. Always look at <code>EEG.EVENTLIST.trialsperbin</code> afterwards. Somewhere between 50 and 200 trials per bin is typical; fewer than about 30 leaves a noisy average, and zero means a code mismatch.</p>
     <p>A time-conditioned list such as <code>{t&lt;200-1000&gt;201}</code> keeps only trials with a proper response. Responses faster than 200 ms are guesses that started before the word was read, and responses slower than a second usually mean a lapse of attention. Whether to drop error trials at all depends on why errors happen. In a simple task an error is usually a lapse, so dropping them cleans the data. In a hard memory task errors are genuine outcomes, and throwing them away changes the question. Good bins are numbered consecutively from 1, carry a label that says what they contain, differ from each other only in the thing you care about, and end up with similar trial counts (Luck, 2014; Lopez-Calderon &amp; Luck, 2014). The codes follow the convention used in the lab guide for the ERP CORE N400 data (Kappenman et al., 2021).</p>
 
     <h2 id="refs">References</h2>
     <div class="refs">
-      <p>Kappenman, E. S., Farrens, J. L., Zhang, W., Stewart, A. X., &amp; Luck, S. J. (2021). ERP CORE: An open resource for human event-related potential research. <i>NeuroImage, 225</i>, 117465. https://doi.org/10.1016/j.neuroimage.2020.117465</p>
-      <p>Lopez-Calderon, J., &amp; Luck, S. J. (2014). ERPLAB: An open-source toolbox for the analysis of event-related potentials. <i>Frontiers in Human Neuroscience, 8</i>, 213. https://doi.org/10.3389/fnhum.2014.00213</p>
+      <p>Kappenman, E. S., Farrens, J. L., Zhang, W., Stewart, A. X., &amp; Luck, S. J. (2021). ERP CORE: An open resource for human event-related potential research. <i>NeuroImage, 225</i>, Article 117465. <a href="https://doi.org/10.1016/j.neuroimage.2020.117465">https://doi.org/10.1016/j.neuroimage.2020.117465</a></p>
+      <p>Lopez-Calderon, J., &amp; Luck, S. J. (2014). ERPLAB: An open-source toolbox for the analysis of event-related potentials. <i>Frontiers in Human Neuroscience, 8</i>, Article 213. <a href="https://doi.org/10.3389/fnhum.2014.00213">https://doi.org/10.3389/fnhum.2014.00213</a></p>
       <p>Luck, S. J. (2014). <i>An introduction to the event-related potential technique</i> (2nd ed.). MIT Press.</p>
     </div>
   </section>
 </main>
 
 <nav class="pager">
-  <a class="prev" href="erp-07-rereferencing.html"><small>Previous</small><span>Re-referencing</span></a>
-  <a class="next" href="erp-09-interpolation.html"><small>Next</small><span>Channel interpolation</span></a>
+  <a class="prev" href="erp-07-rereferencing.html"><small>Previous</small><span>Re-Referencing</span></a>
+  <a class="next" href="erp-09-interpolation.html"><small>Next</small><span>Channel Interpolation</span></a>
 </nav>
 <footer>Part of the ERP pipeline series for PSYCH 390, St. Olaf College. Built as a standalone page; nothing is sent anywhere.</footer>
 
@@ -382,9 +389,11 @@ const cv=$('cv'),ctx=cv.getContext('2d');let W=1000,H=600,hits=[];
 const C={ink:'#1d1f24',muted:'#5c6270',rule:'#e2ddd4'};
 function txt(s,x,y,o={}){ctx.font=(o.w||400)+' '+(o.s||12)+'px '+(o.m?'"IBM Plex Mono",monospace':'"IBM Plex Sans",system-ui,sans-serif');ctx.fillStyle=o.c||C.muted;ctx.textAlign=o.a||'left';ctx.textBaseline=o.b||'alphabetic';ctx.fillText(s,x,y);}
 function line(pts,c,w,dash){ctx.beginPath();ctx.strokeStyle=c;ctx.lineWidth=w||1.2;ctx.setLineDash(dash||[]);pts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.stroke();ctx.setLineDash([]);}
+function plab(l,x,y){txt(l,x,y,{c:C.ink,w:700,s:13});return x+16;}
+function ytitle(s,x,y){ctx.save();ctx.translate(x,y);ctx.rotate(-Math.PI/2);txt(s,0,0,{a:'center',s:11});ctx.restore();}
 function layout(){const narrow=W<560;const nb=Math.max(1,bins.length);const cols=narrow?2:Math.min(5,nb+1);const rows=Math.ceil((nb+1)/cols);
   return {narrow,cols,rows,th:narrow?200:220,eh:narrow?150:170};}
-function fit(){const r=cv.getBoundingClientRect();const dpr=window.devicePixelRatio||1;W=r.width;const L=layout();H=L.th+L.rows*(L.eh+40)+30;
+function fit(){const r=cv.getBoundingClientRect();const dpr=window.devicePixelRatio||1;W=r.width;const L=layout();H=L.th+L.rows*(L.eh+40)+44;
   cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);cv.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);}
 function binColor(num){const i=bins.findIndex(b=>b.num===num);return BINC[i%BINC.length];}
 function draw(){
@@ -394,13 +403,13 @@ function draw(){
   const pre=+$('pre').value/1000,post=+$('post').value/1000;
   // ---- timeline
   const top=36,flagH=54,trTop=top+flagH,trH=Ly.th-flagH-40;
-  txt((narrow?'EEG (Cz) + event codes, ':'Continuous EEG (Cz) with event codes, ')+t0+'–'+t1+' s',L,top-14,{c:C.ink,w:600,s:13});
+  txt((narrow?'EEG (Cz) + event codes, ':'Continuous EEG (Cz) with event codes, ')+t0+'–'+t1+' s',plab('A',L,top-14),top-14,{c:C.ink,w:600,s:13});
   const x=t=>L+(t-t0)/span*(R-L);
   ctx.strokeStyle=C.rule;ctx.lineWidth=1;ctx.strokeRect(L,trTop,R-L,trH);
   const sc=60,y=v=>trTop+trH/2-(v/sc)*(trH/2);
   line([[L,y(0)],[R,y(0)]],C.rule,1,[3,3]);
   txt('+'+sc+' µV',L-4,trTop+10,{a:'right',s:10.5});txt('−'+sc,L-4,trTop+trH-2,{a:'right',s:10.5});
-  for(let s=Math.ceil(t0);s<=t1;s+=narrow?5:5){const xx=x(s);line([[xx,trTop+trH],[xx,trTop+trH+4]],C.muted,1);txt(s+' s',xx,trTop+trH+15,{a:'center',s:11});}
+  for(let s=Math.ceil(t0);s<=t1;s+=5){const xx=x(s);line([[xx,trTop+trH],[xx,trTop+trH+4]],C.muted,1);txt(String(s),xx,trTop+trH+15,{a:'center',s:11});}txt('Time (s)',(L+R)/2,trTop+trH+28,{a:'center',s:11});if(!narrow)ytitle('Amplitude (µV)',12,trTop+trH/2);
   // epoch windows
   events.forEach((e,i)=>{const a=assign[i];if(!a.bin||e.t+post<t0||e.t+pre>t1)return;
     ctx.fillStyle=binColor(a.bin)+'22';ctx.fillRect(x(e.t+pre),trTop,x(e.t+post)-x(e.t+pre),trH);});
@@ -422,7 +431,7 @@ function draw(){
     hits.push({x:xx-tw/2-4,y:fy-10,w:tw+8,h:15,txt:a.bin?`code ${e.code} → bin ${a.bin} (${bins.find(b=>b.num===a.bin).label})`:a.why});
   });
   // ---- epochs per bin
-  const eTop=Ly.th+34;const cw=(R-L)/Ly.cols,eh=Ly.eh;
+  const eTop=Ly.th+48;const cw=(R-L)/Ly.cols,eh=Ly.eh;
   const n=epochs.length?epochs[0].length&&epochs[0][0].length||Math.round((post-pre)*FS):Math.round((post-pre)*FS);
   const cells=[];bins.forEach((b,i)=>cells.push({kind:'bin',i}));cells.push({kind:'avg'});
   const sc2=20;
@@ -432,10 +441,10 @@ function draw(){
     ctx.strokeStyle=C.rule;ctx.strokeRect(cx0,cy0,cx1-cx0,eh);line([[cx0,ye(0)],[cx1,ye(0)]],C.rule,1,[3,3]);
     const xz=xe(Math.round(-pre*FS));line([[xz,cy0],[xz,cy1]],C.muted,1,[2,3]);
     const ms0=Math.round(pre*1000),ms1=Math.round(post*1000);
-    (narrow?[[ms0,'left'],[ms1,'right']]:[[ms0,'left'],[0,'center'],[ms1,'right']]).forEach(([ms,al])=>{const xx=xe(Math.round((ms/1000-pre)*FS));txt(ms+(ms===ms1?' ms':''),xx,cy1+13,{a:al,s:10.5});});
+    (narrow?[[ms0,'left'],[ms1,'right']]:[[ms0,'left'],[0,'center'],[ms1,'right']]).forEach(([ms,al])=>{const xx=xe(Math.round((ms/1000-pre)*FS));txt(String(ms),xx,cy1+13,{a:al,s:10.5});});txt('Time (ms)',(cx0+cx1)/2,cy1+26,{a:'center',s:11});
     if(col===0){txt('+'+sc2+' µV',cx0-3,cy0+9,{a:'right',s:10});txt('−'+sc2,cx0-3,cy1-2,{a:'right',s:10});}
     if(cell.kind==='bin'){const b=bins[cell.i],c=BINC[cell.i%BINC.length],eps=epochs[cell.i];
-      txt(narrow?`bin ${b.num}`:`bin ${b.num}: ${b.label}`,cx0,cy0-6,{c:c,w:600,s:12});
+      txt(narrow?`bin ${b.num}`:`bin ${b.num}: ${b.label}`,ci===0?plab('B',cx0,cy0-6):cx0,cy0-6,{c:c,w:600,s:12});
       txt(narrow?`${eps.length} ep.`:`${eps.length} epoch${eps.length===1?'':'s'}`,cx1,cy0-6,{a:'right',s:11});
       ctx.save();ctx.beginPath();ctx.rect(cx0,cy0,cx1-cx0,eh);ctx.clip();
       ctx.globalAlpha=Math.max(0.05,Math.min(0.25,3/Math.max(1,eps.length)));
@@ -450,7 +459,7 @@ function draw(){
       const step=Math.max(1,Math.floor(n/(cx1-cx0)));
       // N400 window
       const xa=xe(Math.round((0.3-pre)*FS)),xb=xe(Math.round((0.5-pre)*FS));
-      if(post>=0.3){ctx.fillStyle='rgba(200,150,42,.12)';ctx.fillRect(xa,cy0,Math.min(xb,cx1)-xa,eh);txt('300–500',(xa+Math.min(xb,cx1))/2,cy0+11,{a:'center',s:10});}
+      if(post>=0.3){ctx.fillStyle='rgba(200,150,42,.12)';ctx.fillRect(xa,cy0,Math.min(xb,cx1)-xa,eh);txt('300–500 ms',(xa+Math.min(xb,cx1))/2,cy0+11,{a:'center',s:10});}
       bins.forEach((b,i)=>{if(!epochs[i].length)return;const av=avg(epochs[i]);const pts=[];for(let k=0;k<n;k+=step)pts.push([xe(k),ye(av[k])]);line(pts,BINC[i%BINC.length],2);});
       if(!bins.length)txt('no bins',(cx0+cx1)/2,cy0+eh/2+4,{a:'center',s:12});
       txt('negative down',cx1-3,cy1-4,{a:'right',s:10});
