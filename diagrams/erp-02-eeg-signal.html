@@ -96,7 +96,7 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
 <main>
   <div class="stage" id="stage">
     <div class="canvas-wrap">
-      <canvas id="cv" aria-label="Cross-section of scalp, skull and a patch of cortex with pyramidal neurons. Synaptic input creates a current dipole whose field spreads through the head and is read by three scalp electrodes with voltage meters. A ticker below shows the EEG at the middle electrode over the last four seconds."></canvas>
+      <canvas id="cv" aria-label="Cross-section of scalp, skull, and a patch of cortex with pyramidal neurons. Synaptic input creates a current dipole whose field spreads through the head and is read by three scalp electrodes with voltage meters. A ticker below shows the EEG at the middle electrode over the last four seconds."></canvas>
     </div>
     <div class="legend">
       <span style="--sw:#d9573b">positive potential</span>
@@ -134,20 +134,20 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
 
   <section class="prose">
     <h2>What you are looking at</h2>
-    <p>The picture is a slice through the head. Under the pink scalp and the thick grey skull sits a patch of cortex drawn as a row of pyramidal neurons: a triangular cell body deep in the tissue and a long apical dendrite reaching toward the surface. The EEG is not made of action potentials. Spikes are too brief and too poorly aligned to add up at a distance. What reaches the scalp is the postsynaptic potential. When an excitatory synapse on the apical dendrites opens, positive ions flow into the cell there (a current sink), travel down the dendrite, and leave again near the soma (a current source), returning through the extracellular fluid to close the loop. Seen from outside, the neuron is briefly a tiny battery with a negative end near the surface and a positive end deeper down, a current dipole.</p>
+    <p>The picture is a slice through the head. Under the pink scalp and the thick gray skull sits a patch of cortex drawn as a row of pyramidal neurons: a triangular cell body deep in the tissue and a long apical dendrite reaching toward the surface. The EEG is not made of action potentials. Spikes are brief, biphasic, and not synchronized within microseconds across neurons, so their currents cancel before they reach the scalp. What reaches the scalp is the postsynaptic potential. When an excitatory synapse on the apical dendrites opens, positive ions flow into the cell there (a current sink), travel down the dendrite, and leave again near the soma (a current source). The current returns through the extracellular fluid to close the loop. Seen from outside, the neuron is briefly a tiny battery with a negative end near the surface and a positive end deeper down, a current dipole.</p>
     <p>One dipole is far too weak to register. The meter on each electrode only moves when thousands of neurons receive the same input at the same moment and point the same way. The alignment slider shows what synchrony alone cannot do. When the dipoles point in random directions their fields cancel (a closed field) and the meter barely moves no matter how many cells are active. Cortex is a layered sheet in which pyramidal cells line up in parallel (an open field), so it dominates the EEG, while deep nuclei with jumbled orientations are nearly silent. The shading shows volume conduction: the potential spreads instantly through the brain, is smeared sideways by the poorly conducting skull, and arrives at the scalp as a broad blur. Any electrode reads a weighted sum of every dipole active anywhere in the head. This is the superposition problem, and it is the main reason localization from the scalp is hard.</p>
 
     <h2>Try this</h2>
     <ol>
       <li>Keep the gyrus geometry and slide the number of neurons from 1 to 100,000. Below a few thousand cells the middle meter stays near zero; near a hundred thousand it reads several microvolts, the size of a real ERP component.</li>
-      <li>Pull alignment down to 20 percent. The neurons rotate into a jumble and the reading collapses even though just as many cells are active.</li>
-      <li>Switch the input from excitatory at the apical dendrites to inhibitory at the same place. The arrows reverse and the scalp goes from negative to positive. Now move the excitatory input to the soma and basal dendrites: same sign flip, different reason.</li>
+      <li>Pull alignment down to 20%. The neurons rotate into a jumble and the reading collapses even though just as many cells are active.</li>
+      <li>Switch the input from excitatory at the apical dendrites to inhibitory at the same place. The arrows reverse and the scalp goes from negative to positive. Now move the excitatory input to the soma and basal dendrites. The sign flips again, for a different reason, and the box under the readout explains which.</li>
       <li>Switch to the sulcal wall. The dipole lies flat, the electrode right above reads almost nothing, and the two electrodes to either side show opposite signs.</li>
       <li>Watch the ticker. Each burst of synchronized input appears as a deflection in the ongoing EEG, whose background rhythms (alpha around 10 Hz, theta, beta) come from other populations doing the same thing.</li>
     </ol>
 
     <h2>Why it matters for the pipeline</h2>
-    <p>Polarity at the scalp depends on four things at once: whether the input is excitatory or inhibitory, where on the cell it lands, how the cortical sheet is oriented under the electrode, and which reference site the voltage is measured against. A negative wave at Cz therefore says very little on its own about what the neurons were doing. The same physics sets the plan for the rest of the pipeline. Because tens of thousands of cells must act together to be seen at all, EEG is a signal of populations, and because it is only a few microvolts, it must be averaged over many trials to stand out from the rest of the brain's activity. When you load a dataset with <code>EEG = pop_loadset('sub-001_N400.set')</code> and scroll through the channels with <code>pop_eegplot(EEG)</code>, the 20 to 100 µV traces you see are the summed field of countless dipoles like these, blurred by the skull and referenced to one site. Buzsáki, Anastassiou, and Koch (2012) give the full account of how synaptic currents, cell geometry and tissue conductivity combine into the recorded field.</p>
+    <p>Polarity at the scalp depends on four things at once: whether the input is excitatory or inhibitory, where on the cell it lands, how the cortical sheet is oriented under the electrode, and which reference site the voltage is measured against. A negative wave at Cz therefore says very little on its own about what the neurons were doing. The same physics sets the plan for the rest of the pipeline. Because tens of thousands of cells must act together to be seen at all, EEG is a signal of populations. Because it is only a few microvolts, it must be averaged over many trials to stand out from the rest of the brain's activity. When you load a dataset with <code>EEG = pop_loadset('sub-001_N400.set')</code> and scroll through the channels with <code>pop_eegplot(EEG, 1, 1, 1)</code>, the 20 to 100 µV traces you see are the summed field of countless dipoles like these, blurred by the skull and referenced to one site. Buzsáki, Anastassiou, and Koch (2012) give the full account of how synaptic currents, cell geometry, and tissue conductivity combine into the recorded field.</p>
 
     <h2 id="refs">References</h2>
     <div class="refs">
@@ -224,7 +224,7 @@ function draw(t){
   const yScalp=secTop+22,mmy=narrow?(secBot-yScalp)/44:Math.min(mmx,(secBot-yScalp)/44);
   const X=mm=>cx+mm*mmx,Y=mm=>yScalp+mm*mmy;
   const d=dipole();
-  txt(narrow?'Cross-section of the head':'Cross-section: scalp, skull and a patch of cortex',L,16,{c:C.ink,w:600,s:13});
+  txt(narrow?'Cross-section of the head':'Cross-section of scalp, skull, and a patch of cortex',L,16,{c:C.ink,w:600,s:13});
   txt('meters read the potential at three scalp electrodes',L,31,{s:11});
   // tissue bands
   const ySk0=Y(4),ySk1=Y(11),yBrain=Y(44);
@@ -321,13 +321,13 @@ function whyText(rd){
   const cause={'exc-apical':'excitatory input at the apical dendrites pulls positive ions into the cell near the surface, so the surface end of each dipole is negative',
     'inh-apical':'inhibitory input at the apical dendrites pushes negative charge in near the surface, so the surface end of each dipole is positive',
     'exc-basal':'excitatory input at the soma pulls positive ions in deep and the current exits through the apical dendrites, so the surface end is positive'}[S.input];
-  if(neurons()<300)return 'Almost nothing at any electrode: a few hundred cells are far too weak to be seen through the skull, whatever their orientation.';
+  if(neurons()<300)return 'Almost nothing at any electrode. A few hundred cells are far too weak to be seen through the skull, whatever their orientation.';
   if(S.al<35)return 'Weak at every electrode because the dipoles point in different directions and cancel one another (a closed field), even though '+neurons().toLocaleString()+' cells are active.';
   if(gy)return (v<0?'Negative':'Positive')+' at E2 because '+cause+', and on a gyrus crown that end points straight at the electrode (a radial dipole). E1 and E3 see the same sign, smaller, after the skull spreads it sideways.';
   return 'Near zero at E2 because the dipole lies flat along the sulcal wall (tangential). Its ends face E1 and E3, which read opposite signs. Here '+cause+'.';
 }
 function update(){
-  const N=neurons();$('nnv').textContent=N.toLocaleString();$('alv').textContent=S.al+' %';
+  const N=neurons();$('nnv').textContent=N.toLocaleString();$('alv').textContent=S.al+'%';
   const rd=readings();
   $('ro').innerHTML=`<span>E1 <b>${fmt(rd[0])}</b></span><span>E2 (above the patch) <b>${fmt(rd[1])}</b></span><span>E3 <b>${fmt(rd[2])}</b></span><span>net aligned dipole <b>${Math.round(effective()).toLocaleString()} cell equivalents</b></span>`;
   $('why').textContent=whyText(rd);

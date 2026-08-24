@@ -135,20 +135,20 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
 
   <section class="prose">
     <h2>What you are looking at</h2>
-    <p>Start with the wire. The battery supplies voltage, a push that makes charge move, and the moving dots are electrons carrying current around the loop. The resistor opposes that flow and turns the energy into heat, so it glows as the power rises. The hose underneath says the same thing in water. Voltage is pressure, current is how much water comes out per second, and resistance is how narrow the hose is. Ohm's law ties the three together, I = V / R, and power is P = V × I.</p>
-    <p>Switch to the head and the same parts are all present, made of different materials. The battery is a small patch of cortex whose synchronized neurons behave like a tiny dipole. Current is carried by ions drifting through salt water rather than electrons in copper, the skull is a large resistor in the path, and the scalp is a thin conductive layer that spreads the current sideways. Each electrode sits on gel and skin, a junction that acts as a resistor and a capacitor in parallel, and the amplifier does not read the active electrode by itself. It reads the difference between the active electrode and a reference electrode, A minus R. Nearby room wiring carries 60 Hz alternating current, and a changing current makes a changing magnetic field, which induces a current in any conductor it crosses. That induced hum grows as electrode impedance rises. It is drawn as the wavy blue trace, and at high impedance it swamps the brain signal.</p>
+    <p>Start with the wire. The battery supplies voltage, a push that makes charge move, and the moving dots are electrons carrying current around the loop. The resistor opposes that flow and turns the energy into heat, so it glows as the power rises. The hose underneath shows the same three quantities as water. Voltage is pressure, current is how much water comes out per second, and resistance is how narrow the hose is. Ohm's law ties the three together, I = V / R, and power is P = V × I.</p>
+    <p>Switch to the head and the same parts are all present, made of different materials. The battery is a small patch of cortex whose synchronized neurons behave like a tiny dipole. Current is carried by ions drifting through salt water rather than electrons in copper, the skull is a large resistor in the path, and the scalp is a thin conductive layer that spreads the current sideways. Each electrode sits on gel and skin, a junction that acts as a resistor and a capacitor in parallel, and the amplifier does not read the active electrode by itself. It reads the difference between the active electrode and a reference electrode, A minus R. Nearby room wiring carries 60 Hz alternating current, and a changing current makes a changing magnetic field, which induces a current in any conductor it crosses. That hum is common to both electrodes and should cancel in A minus R, but the cancellation only works if the two electrodes have similar, low impedance. As impedance rises the mismatch grows, less of the hum cancels, and skin potentials get larger too (Luck, 2014, chapter 5). The blue wire above the circuit carries the hum, and at high impedance it swamps the brain signal in the teal amplifier trace at the bottom.</p>
 
     <h2>Try this</h2>
     <ol>
       <li>In the wire circuit, raise the voltage with the resistance fixed. The electrons speed up, the hose pressure gauge climbs, and the current readout follows I = V / R.</li>
       <li>Now raise the resistance with the voltage fixed. The hose narrows, less water flows, and the dots slow down. The pressure is still there; it just cannot push as much through.</li>
-      <li>Now hold the current constant instead and constrict the hose. The pressure has to rise. That is why a constant neural current through a higher resistance produces a larger voltage.</li>
-      <li>Switch to the head. Slide the source strength from a few hundred neurons to a hundred thousand and watch the scalp voltage climb from a tenth of a microvolt to tens of microvolts.</li>
+      <li>Think of the same hose with the flow held fixed and the constriction tightened. The pressure would have to rise. A constant neural current pushed through a higher resistance produces a larger voltage in the same way.</li>
+      <li>Switch to the head. Slide the source strength from about 200 neurons to 100,000 and watch the scalp voltage climb from a tenth of a microvolt to tens of microvolts.</li>
       <li>Raise the electrode impedance to 50 kΩ. The scalp voltage from the brain barely changes, but the 60 Hz hum grows until the amplifier trace is mostly noise. Bring it back below 5 kΩ and the trace clears.</li>
     </ol>
 
     <h2>Why it matters for the pipeline</h2>
-    <p>Three facts from this page come back on almost every later one. Electricity follows the path of least resistance, so current from a cortical source spreads through the whole head instead of staying under one electrode, and a single channel never sees a single source. Resistances in series add, so the skull costs a great deal of signal. And the amplifier reports A minus R, so the choice of reference changes every waveform. Before a recording starts, the experimenter checks each electrode's impedance and works the gel until it is low and roughly matched across sites, usually below 5 to 10 kΩ. In EEGLAB the recorded values often arrive in the dataset's channel information (<code>EEG.chanlocs</code>), and a channel that was noisy from the start is the one you will later repair with <code>pop_interp</code> or remove during artifact detection. Low, matched impedance is the cheapest noise reduction available (Luck, 2014, chapter 5).</p>
+    <p>Three facts from this page come back on almost every later one. Electricity follows the path of least resistance, so current from a cortical source spreads through the whole head instead of staying under one electrode, and a single channel never sees a single source. The skull is a poor conductor, so current spreads sideways through the lower-resistance scalp and the pattern reaching the electrodes is blurred. And the amplifier reports A minus R, so the choice of reference changes every waveform. Before a recording starts, the experimenter checks each electrode's impedance and works the gel until the impedance is low and roughly matched across sites, usually below 5 to 10 kΩ. EEGLAB does not store impedances; they are checked on the acquisition computer before recording and written into the lab notes, so keep a record of any electrode that was hard to bring down. A channel that was noisy from the start is the one you will later repair with <code>pop_interp</code>, and a noisy channel that is left in will cause artifact detection to reject far too many trials. Low, matched impedance is the cheapest noise reduction available (Luck, 2014, chapter 5).</p>
 
     <h2 id="refs">References</h2>
     <div class="refs">
@@ -174,7 +174,7 @@ const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const S={mode:'wire',wire:{a:50,b:30},head:{a:50,b:30},paused:false};
 function wireVals(){const v=0.5+S.wire.a/100*8.5,r=1+S.wire.b/100*99;return{V:v,R:r,I:v/r,P:v*v/r};}
 function headVals(){const n=Math.round(Math.pow(10,2.3+S.head.a/100*2.7)),z=1+S.head.b/100*99;
-  // 0.5 µV per thousand synchronized cells, order-of-magnitude honest; hum leak modelled as 0.25 µV per kΩ
+  // 0.5 µV per thousand synchronized cells, order-of-magnitude honest; hum leak modeled as 0.25 µV per kΩ
   const uV=n*0.0005,hum=0.25*z;return{N:n,Z:z,uV:uV,hum:hum};}
 
 // ---------- canvas ----------
@@ -282,7 +282,7 @@ function drawHead(t){
   // dipole (battery) at bottom center
   const mx=(x0+x1)/2;ctx.fillStyle='#f0e4ec';ctx.fillRect(mx-18,yBot-16,36,32);battery(mx,yBot,false);
   txt('+',mx-16,yBot-12,{c:C.ink,s:12,w:600,a:'center'});txt('−',mx+16,yBot-12,{c:C.ink,s:12,w:600,a:'center'});
-  txt(narrow?'cortical patch: a tiny dipole':'cortical patch: a dipole of tens of nanoamps',mx,yBot+17,{a:'center',s:10.5,c:C.ink});
+  txt(narrow?'cortical patch: a tiny dipole':'cortical patch: a dipole of about ten nanoampere-meters',mx,yBot+17,{a:'center',s:10.5,c:C.ink});
   // skull resistors on both verticals
   const ys=(ySkull0+ySkull1)/2;ctx.fillStyle='#e6e1d6';ctx.fillRect(x0-10,ys-20,20,40);ctx.fillRect(x1-10,ys-20,20,40);
   resistor(x0,ys,true,36);resistor(x1,ys,true,36);txt('skull R',x0-14,ys+4,{a:'right',s:10.5});
@@ -345,7 +345,7 @@ function update(){
   if(wire){const v=wireVals();$('s1v').textContent=v.V.toFixed(1)+' V';$('s2v').textContent=v.R.toFixed(0)+' Ω';
     $('ro').innerHTML=`<span>current I = V / R <b>${fmtA(v.I)}</b></span><span>power P = V × I <b>${v.P.toFixed(v.P<1?2:1)} W</b></span><span>carriers <b>electrons in copper</b></span>`;}
   else{const v=headVals();$('s1v').textContent=v.N.toLocaleString()+' neurons';$('s2v').textContent=v.Z.toFixed(0)+' kΩ';
-    const ok=v.Z<=5?'ok':v.Z<=10?'':'warn';const word=v.Z<=5?'good, below 5 kΩ':v.Z<=10?'acceptable':'too high, hum leaks in';
+    const ok=v.Z<=5?'ok':v.Z<=10?'':'warn';const word=v.Z<=5?'good, below 5 kΩ':v.Z<=10?'acceptable, 5 to 10 kΩ':'too high, hum leaks in';
     $('ro').innerHTML=`<span>scalp voltage from the brain <b>${v.uV<1?v.uV.toFixed(2):v.uV.toFixed(1)} µV</b></span><span>60 Hz hum <b>${v.hum.toFixed(1)} µV</b> <span class="pill ${ok}">${word}</span></span><span>signal to hum <b>${(v.uV/v.hum).toFixed(2)}</b></span><span>carriers <b>ions in fluid</b></span>`;}
   draw();
 }

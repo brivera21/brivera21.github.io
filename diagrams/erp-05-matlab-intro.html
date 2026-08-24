@@ -174,21 +174,21 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
 
   <section class="prose">
     <h2>What you are looking at</h2>
-    <p>The four panels of the MATLAB desktop. The Editor holds a script, a plain text file ending in <code>.m</code> that lists commands in order. The Command Window is where a single command is typed and answered. The Workspace lists every variable that currently exists, with its size and class. The Figure window is where <code>plot</code> draws. The Current folder on the left is where MATLAB looks for files. When a script that runs on one laptop fails on another, the usual cause is that this folder is different.</p>
-    <p>A variable is a named box. <code>x = 5</code> creates a box called <code>x</code> and puts 5 in it, and the Workspace shows the box appear. An array is a row of boxes under one name: <code>data = [1, 2, 3, 4, 5]</code> makes five, and <code>data(2)</code> reads the second one, because MATLAB counts from 1. The colon operator builds long arrays without typing them, so <code>t = 0:0.01:2</code> is 201 time points spaced 10 ms apart. A function takes inputs and returns outputs: <code>sin(2*pi*t)</code> hands the whole array to <code>sin</code> and gets a whole array back, and <code>mean</code>, <code>size</code> and <code>plot</code> work the same way. A comment begins with <code>%</code> and is for the human reading the script; MATLAB skips it.</p>
-    <p>Two small rules cause most early errors. A semicolon at the end of a line stops MATLAB from printing the result, so <code>x = 5</code> echoes and <code>x = 5;</code> is silent. Names are case sensitive: <code>Data</code> and <code>data</code> are different boxes, and asking for one that does not exist produces the red "Undefined function or variable" message.</p>
+    <p>The sandbox above copies the panels of the MATLAB desktop. The Editor holds a script, a plain text file ending in <code>.m</code> that lists commands in order. The Command Window is where a single command is typed and answered. The Workspace lists every variable that currently exists, with its size and class. The Figure window is where <code>plot</code> draws. The Current folder on the left is where MATLAB looks for files. When a script that runs on one laptop fails on another, the usual cause is that this folder is different.</p>
+    <p>A variable is a named box. <code>x = 5</code> creates a box called <code>x</code> and puts 5 in it, and the Workspace shows the box appear. An array is a row of boxes under one name: <code>data = [1, 2, 3, 4, 5]</code> makes five, and <code>data(2)</code> reads the second one, because MATLAB counts from 1. The colon operator builds long arrays without typing them, so <code>t = 0:0.01:2</code> is 201 time points spaced 10 ms apart. A function takes inputs and returns outputs: <code>sin(2*pi*t)</code> hands the whole array to <code>sin</code> and gets a whole array back, and <code>mean</code>, <code>size</code>, and <code>plot</code> work the same way. A comment begins with <code>%</code> and is for the human reading the script; MATLAB skips it.</p>
+    <p>Two small rules cause most early errors. A semicolon at the end of a line stops MATLAB from printing the result, so <code>x = 5</code> echoes and <code>x = 5;</code> is silent. Names are case sensitive: <code>Data</code> and <code>data</code> are different boxes, and asking for one that does not exist produces the red "Unrecognized function or variable" message.</p>
 
     <h2>Try this</h2>
     <ol>
-      <li>Press Run script and watch the Workspace fill as each line is highlighted: <code>t</code> appears as a 1 × 201 double, then <code>y</code>, then the figure draws.</li>
-      <li>Click the <code>data = [1, 2, 3, 4, 5];</code> chip, then <code>mean(data)</code> and <code>data(2:4)</code>. Change the 4 to 6 and read the error.</li>
+      <li>Press Run script and watch the Workspace fill as each line is highlighted: <code>t</code> appears as a 1×201 double, then <code>y</code>, then the figure draws.</li>
+      <li>Click the <code>data = [1, 2, 3, 4, 5];</code> chip, then <code>mean(data)</code> and <code>data(2:4)</code>. Then type <code>data(2:6)</code> and read the error.</li>
       <li>Type <code>x = 5</code> with and without a semicolon.</li>
-      <li>Click <code>EEG.srate</code> and <code>size(EEG.data)</code>. The EEG variable is a struct: one box that holds named sub-boxes, and the 3 × 512 array inside it is three channels of voltage.</li>
+      <li>Click <code>EEG.srate</code> and <code>size(EEG.data)</code>. The EEG variable is a struct: one box that holds named sub-boxes. The sandbox keeps a cut-down struct with three channels, so the 3×512 array inside it is three channels of voltage.</li>
       <li>Click <code>plot(EEG.data(2,:))</code>, then try <code>plot(EEG.data(1, 1:128))</code> to zoom into the first half second.</li>
     </ol>
 
     <h2>Why it matters for the pipeline</h2>
-    <p>Every step of the ERP pipeline is a function call that takes the <code>EEG</code> variable in and hands a changed one back. <code>EEG = pop_eegfiltnew(EEG, 0.1, [])</code> has the same shape as <code>y = sin(2*pi*t)</code>, with a bigger input and a longer name. The <code>EEG</code> struct is the same kind of variable as <code>data</code>: <code>EEG.srate</code> is a number, <code>EEG.data</code> is an array with one row per channel and one column per sample, and <code>EEG.data(2, 1:5)</code> is the first five samples of channel 2. A script is these calls written down in order. Once ten labs' worth of them are in one file, processing a second participant means changing one filename. The MathWorks documentation (The MathWorks, Inc., 2024) has a page for every function used here; the Lab 1 script in the editor is the one from the course.</p>
+    <p>Every step of the ERP pipeline is a function call that takes the <code>EEG</code> variable in and hands a changed one back. <code>EEG = pop_eegfiltnew(EEG, 0.1, [])</code> has the same shape as <code>y = sin(2*pi*t)</code>, with a bigger input and a longer name. The <code>EEG</code> struct is the same kind of variable as <code>data</code>: <code>EEG.srate</code> is a number, <code>EEG.data</code> is an array with one row per channel and one column per sample, and <code>EEG.data(2, 1:5)</code> is the first five samples of channel 2. A script is these calls written down in order. Once ten labs' worth of them are in one file, processing a second participant means changing one filename. The MathWorks documentation (The MathWorks, Inc., 2024) has a page for every function used here. The Lab 1 script in the editor is the one from the course.</p>
 
     <h2 id="refs">References</h2>
     <div class="refs">
@@ -208,7 +208,7 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
 (function(){
 const $=id=>document.getElementById(id);
 const SCRIPT=[
-"% Lab 1: draw one second-long sine wave",
+"% Lab 1: draw two seconds of a 1 Hz sine wave",
 "t = 0:0.01:2;            % time axis, 10 ms steps",
 "y = sin(2*pi*t);         % one cycle per second",
 "plot(t, y)",
@@ -249,7 +249,7 @@ function display(name,x){
 let seed=5;function rnd(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;}
 function gr(){return Math.sqrt(-2*Math.log(rnd()+1e-12))*Math.cos(6.2832*rnd());}
 function makeEEG(){seed=5;const rows=[];for(let c=0;c<3;c++){let a=0,b=0;const row=[];for(let i=0;i<512;i++){const t=i/256;a=0.95*a+gr();b=0.6*b+gr();row.push(Math.round((a*2+b*4+8*Math.sin(6.2832*10*t+c)*(0.5+0.5*Math.sin(6.2832*0.5*t)))*100)/100);}rows.push(row);}
-  return {t:'struct',v:{srate:scalar(256),nbchan:scalar(33),pnts:scalar(512),data:num(rows),setname:{t:'str',v:'sub-001_N400'}}};}
+  return {t:'struct',v:{srate:scalar(256),nbchan:scalar(3),pnts:scalar(512),data:num(rows),setname:{t:'str',v:'sub-001_N400'}}};}
 
 // ---------- tokenizer ----------
 function tokenize(src){const toks=[];let i=0;
@@ -324,7 +324,7 @@ Parser.prototype={
     if(name==='zeros'||name==='ones'||name==='linspace'){const a=this.args().map(v=>v.v[0][0]);if(name==='linspace'){const n=a[2]||100;return num([Array.from({length:n},(_,i)=>a[0]+(a[1]-a[0])*i/(n-1))]);}
       const r=a[0],c=a.length>1?a[1]:a[0];return num(Array.from({length:r},()=>Array(c).fill(name==='ones'?1:0)));}
     if(PLOTFN.includes(name)){const a=this.is('lp')?this.args():[];return this.ctx.call(name,a);}
-    throw new Error(`Undefined function or variable '${name}'.`);},
+    throw new Error(`Unrecognized function or variable '${name}'.`);},
   doIndex(v,idx,name){
     if(v.t!=='num')throw new Error(`Indexing a ${classOf(v)} with ( ) is not supported here.`);
     const chk=(i,n,what)=>{if(!Number.isInteger(i)||i<1)throw new Error('Array indices must be positive integers.');if(i>n)throw new Error(`Index exceeds the number of array elements. Index must not exceed ${n}.`);return i-1;};
@@ -346,7 +346,7 @@ function evalLine(src,ctx){
   if(body[0].t==='id'&&body[1]&&body[1].t==='op'&&body[1].v==='='){target=body[0];rest=body.slice(2);if(!rest.length)throw new Error('Expected an expression after =.');}
   // install struct path lookup
   const P=new Parser(rest,ctx);const origIdent=P.ident;
-  P.ident=function(name){const k=this.toks[this.i-1];if(k.path){let v=W[k.path[0]];if(v===undefined)throw new Error(`Undefined function or variable '${k.path[0]}'.`);
+  P.ident=function(name){const k=this.toks[this.i-1];if(k.path){let v=W[k.path[0]];if(v===undefined)throw new Error(`Unrecognized function or variable '${k.path[0]}'.`);
       for(let p=1;p<k.path.length;p++){if(v.t!=='struct')throw new Error(`Dot indexing is not supported for variables of this type.`);if(!(k.path[p] in v.v))throw new Error(`Unrecognized field name "${k.path[p]}".`);v=v.v[k.path[p]];}
       while(this.is('lp'))v=this.doIndex(v,this.index(v),name);return v;}
     return origIdent.call(this,name);};

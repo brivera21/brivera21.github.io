@@ -101,7 +101,7 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
 <main>
   <div class="stage" id="stage">
     <div class="canvas-wrap">
-      <canvas id="cv" aria-label="Left: averaged ERP waveforms at Pz for Related and Unrelated words with a shaded measurement window and the chosen measure marked on each. Right: the measured difference across twenty re-draws of the noise, compared with the true difference."></canvas>
+      <canvas id="cv" aria-label="Left: averaged ERP waveforms at Pz for Related and Unrelated words with a shaded measurement window and the chosen measure marked on each. Right: the measured difference across 20 re-draws of the noise, compared with the true difference."></canvas>
     </div>
     <div class="legend">
       <span style="--sw:#0f6e74">Related</span>
@@ -130,7 +130,7 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
         <div class="winrow"><input type="number" id="w0" min="-200" max="796" step="4" value="300" aria-label="Window start in ms"><span>to</span><input type="number" id="w1" min="-196" max="800" step="4" value="500" aria-label="Window end in ms"></div>
       </div>
       <div class="btnrow">
-        <button class="secondary" id="reset">Window 300–500</button>
+        <button class="secondary" id="reset">Reset window to 300–500 ms</button>
         <button class="secondary" id="fish">Pick the window where the difference looks biggest</button>
         <button class="ghost" id="reseed">New noise</button>
       </div>
@@ -142,7 +142,7 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
       <span>true difference <b id="vt"></b></span>
     </div>
     <div class="readout">
-      <span>across 20 re-draws: mean minus true <b id="bias"></b></span>
+      <span>mean minus true, across 20 re-draws <b id="bias"></b></span>
       <span>SD <b id="sd"></b></span>
       <span id="percond"></span>
       <span class="pill" id="verdict"></span>
@@ -153,21 +153,21 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
 
   <section class="prose">
     <h2>What you are looking at</h2>
-    <p>The left panel shows two averaged waveforms from electrode Pz, one for Related word pairs and one for Unrelated pairs. The early P1, N1 and P2 peaks are the same in both; the difference is the N400, a broad negative wave around 300–500 ms that is larger when the word does not fit its context. What remains of the trial-to-trial noise after averaging is drawn into the waveforms, and it shrinks with the square root of the number of trials. The grey band is the measurement window. The measure you choose is marked on each waveform: a horizontal bar for the mean, a dot for a peak, a vertical marker for the 50% area latency, and the readout gives the value for each condition and their difference.</p>
-    <p>The right panel repeats the whole experiment twenty times with fresh noise and plots the twenty measured differences as dots. The gold line is the true difference, the value you would get with no noise at all. A measure is unbiased when the cloud of dots is centred on that line; it is precise when the cloud is narrow.</p>
+    <p>The left panel shows two averaged waveforms from electrode Pz, one for Related word pairs and one for Unrelated pairs. The early P1, N1, and P2 peaks are the same in both; the difference is the N400, a broad negative wave around 300 to 500 ms that is larger when the word does not fit its context. What remains of the trial-to-trial noise after averaging is drawn into the waveforms, and it shrinks with the square root of the number of trials. The gray band is the measurement window. The measure you choose is marked on each waveform, a horizontal bar for the mean, a dot for a peak, and a vertical marker for the 50% area latency. The readout gives the value for each condition and their difference.</p>
+    <p>The right panel repeats the whole experiment 20 times with fresh noise and plots the 20 measured differences as dots. The gold line is the true difference, the value you would get with no noise at all. A measure is unbiased when the cloud of dots is centered on that line; it is precise when the cloud is narrow.</p>
 
     <h2>Try this</h2>
     <ol>
-      <li>Leave the measure on mean amplitude and drag the trial slider from 200 down to 10. The dots spread out but stay centred on the gold line. Averaging fewer trials costs precision, not accuracy.</li>
-      <li>Switch to peak amplitude at 10 trials. Each condition's peak is now far more negative than its true value, because a noisy waveform always has some deep dip somewhere in the window. The flatter Related waveform gains more from this than the Unrelated one, so the difference is pulled towards zero.</li>
+      <li>Leave the measure on mean amplitude and drag the trial slider from 200 down to 10. The dots spread out but stay centered on the gold line. Averaging fewer trials costs precision, not accuracy.</li>
+      <li>Switch to peak amplitude at 10 trials. Each condition's peak is now far more negative than its true value, because a noisy waveform always has some deep dip somewhere in the window. The flatter Related waveform gains more from this than the Unrelated one, so the difference is pulled toward zero.</li>
       <li>Choose peak latency. The N400 has no sharp tip, so a small blip anywhere in the window can become the "peak" and the latencies jump by tens of milliseconds. Compare the spread with 50% area latency, which uses the whole shape.</li>
-      <li>Press "Pick the window where the difference looks biggest" a few times with "New noise" in between. The window wanders to wherever the noise happened to fall, and the measured effect is larger than the truth.</li>
-      <li>Drag the window edges by hand to 200–700 ms and watch how each measure reacts to a window that includes neighbouring components.</li>
+      <li>Press Pick the window where the difference looks biggest a few times with New noise in between. The window wanders to wherever the noise happened to fall, and the measured effect is larger than the truth.</li>
+      <li>Drag the window edges by hand to 200 to 700 ms and compare the difference readout with the true difference for each measure; the window now includes neighboring components.</li>
     </ol>
 
     <h2>Why it matters for the pipeline</h2>
-    <p>A component is not a peak. The N400 is the activity of a neural process that lasts a couple of hundred milliseconds, and the most negative sample in that stretch is one sample among many. The mean amplitude over a window is an average of every sample, so noise that pushes some samples up and others down cancels, and the estimate stays centred on the truth however few trials you have. It is also linear, so the mean of the subjects' measurements equals the measurement of the grand average, which keeps group statistics simple. That is why the course scores the N400 as mean amplitude from 300 to 500 ms at centro-parietal sites (CP1, CP2, P3, Pz, P4, or Cz, CPz, Pz), and computes the effect as Unrelated minus Related.</p>
-    <p>Peak amplitude is appropriate for sharp, well defined deflections such as P1, N1 and N170, preferably after low-pass filtering and with the local peak rule so the algorithm does not stop at the window edge. Peak latency suits those same components; for broad ones, 50% area latency gives a more stable estimate of the midpoint. Whatever the measure, the window and electrodes come from prior literature, decided before looking at the data. A window picked because the difference looks largest there will find effects in pure noise. In ERPLAB the measurement tool is <code>pop_geterpvalues</code>; the call shown under the figure follows the selector, with <code>'meanbl'</code> for mean amplitude relative to the prestimulus baseline.</p>
+    <p>A component is not a peak. The N400 is the activity of a neural process that lasts a couple of hundred milliseconds, and the most negative sample in that stretch is one sample among many. The mean amplitude over a window is an average of every sample, so noise that pushes some samples up and others down cancels, and the estimate stays centered on the truth however few trials you have. It is also linear, so the mean of the participants' measurements equals the measurement of the grand average, which keeps group statistics simple. For these reasons the course scores the N400 as mean amplitude from 300 to 500 ms at centro-parietal sites such as Cz, CPz, and Pz, and computes the effect as Unrelated minus Related.</p>
+    <p>Peak amplitude is appropriate for sharp, well-defined deflections such as P1, N1, and N170, preferably after low-pass filtering and with the local peak rule so the algorithm does not stop at the window edge. Peak latency suits those same components; for broad ones, 50% area latency gives a more stable estimate of the midpoint. Whatever the measure, the window and electrodes come from prior literature, decided before looking at the data. A window picked because the difference looks largest there will find effects in pure noise. In ERPLAB the measurement tool is <code>pop_geterpvalues</code>; the call shown under the figure follows the selector, with <code>'meanbl'</code> for mean amplitude relative to the prestimulus baseline. The two positional arguments after the window are the bins and the channels to measure, so <code>chan_idx</code> is looked up by label first.</p>
 
     <h2 id="refs">References</h2>
     <div class="refs">
@@ -331,9 +331,9 @@ function update(){
     if(S.measure==='peak'||S.measure==='lpeak'){const zu=Math.abs(stab.ru-m.f(TU,ii).v)/(stab.sdU/Math.sqrt(20)+1e-9);if(zu>z){z=zu;lab='each peak';}}
     v.className='pill '+(z<2?'ok':z<3?'':'warn');v.textContent=z<2?'no bias detectable (within 2 SE)':z<3?'possible bias':lab+' biased';}
   const wb=$('warn');
-  if(S.fished){wb.className='warnbox show';wb.textContent='Window chosen from the data: this window was placed where the noise happened to make the difference largest, so the measured effect is inflated and a test on it will give far more false positives than 5%. Choose the window before looking, from prior literature (300–500 ms for the N400).';}
+  if(S.fished){wb.className='warnbox show';wb.textContent='This window was chosen from the data. It sits where the noise happened to make the difference largest, so the measured effect is inflated and a test on it will give far more false positives than 5%. Choose the window before looking, from prior literature (300–500 ms for the N400).';}
   else wb.className='warnbox';
-  $('code').textContent="[ALLERP, Amp, Lat] = pop_geterpvalues(ERP, ["+S.w0+" "+S.w1+"], 'Measure', "+m.code+", 'Baseline', 'pre',\n    'Binlabel', 'on', 'SendtoWorkspace', 'on');";
+  $('code').textContent="chan_idx = find(strcmpi({ERP.chanlocs.labels}, 'Pz'));\n[ALLERP, Amp, Lat] = pop_geterpvalues(ERP, ["+S.w0+" "+S.w1+"], 1:2, chan_idx, 'Measure', "+m.code+",\n    'Baseline', 'pre', 'Binlabel', 'on', 'SendtoWorkspace', 'on');";
 }
 function setWin(a,b){a=Math.round(a/DT)*DT;b=Math.round(b/DT)*DT;a=Math.max(T0,Math.min(T1-DT*3,a));b=Math.max(a+DT*3,Math.min(T1,b));S.w0=a;S.w1=b;}
 $('measure').addEventListener('change',e=>{S.measure=e.target.value;update();});

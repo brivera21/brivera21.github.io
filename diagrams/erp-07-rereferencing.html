@@ -98,13 +98,13 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
 </div>
 <header class="hero">
   <h1>Re-referencing</h1>
-  <p class="q">What is a reference, and why does it matter?</p>
+  <p class="q">What is a reference and why does it matter?</p>
 </header>
 
 <main>
   <div class="stage" id="stage">
     <div class="canvas-wrap">
-      <canvas id="cv" tabindex="0" aria-label="Left: a head seen from above with 19 scalp electrodes and two mastoids, coloured by the voltage at the cursor time under the chosen reference, with draggable dipoles inside. Right: waveforms at six sites under that reference, plus the sum of all scalp channels."></canvas>
+      <canvas id="cv" tabindex="0" aria-label="Left: a head seen from above with 19 scalp electrodes and two mastoids, colored by the voltage at the cursor time under the chosen reference, with draggable dipoles inside. Right: waveforms at six sites under that reference, plus the sum of all scalp channels."></canvas>
     </div>
     <div class="legend">
       <span style="--sw:#d9573b">positive</span>
@@ -157,9 +157,9 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
     <div class="readout">
       <span>Pz at cursor: absolute <b id="pzAbs"></b></span>
       <span>vs M1 <b id="pzM1"></b></span>
-      <span>linked <b id="pzLM"></b></span>
+      <span>vs linked mastoids <b id="pzLM"></b></span>
       <span>vs Cz <b id="pzCz"></b></span>
-      <span>average <b id="pzAVG"></b></span>
+      <span>vs average <b id="pzAVG"></b></span>
       <span>MATLAB <b id="code">EEG = pop_reref(EEG, []);</b></span>
     </div>
     <div class="why" id="why"></div>
@@ -168,20 +168,20 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
   <section class="prose">
     <h2>What you are looking at</h2>
     <p>The head on the left is seen from above, nose up. Inside it sit one or two current dipoles, the tiny batteries that a patch of synchronized cortex behaves like. Each dipole produces a voltage field over the whole scalp, warm where the field is positive and cool where it is negative, and each has its own time course: dipole 1 carries an N400-like negativity peaking near 400 ms, dipole 2 an earlier positive wave. The 19 discs are 10/20 electrode sites, and M1 and M2 are the mastoids behind the ears. The waveforms on the right are what six of those sites record from −200 to 800 ms.</p>
-    <p>The grey traces show the true voltage at each site relative to a point infinitely far away. Nothing in a real recording can measure that. An amplifier only ever reports a difference between two electrodes, so every channel is the active site minus a reference site, A − R, and the ground electrode cancels out of the subtraction. Pick a reference with the buttons and the teal traces show what the same brain activity looks like on the recording. The reference site is drawn in gold, and its own channel is flat by definition, because R − R is zero.</p>
+    <p>The gray traces show the true voltage at each site relative to a point infinitely far away. Nothing in a real recording can measure that. An amplifier only ever reports a difference between two electrodes, so every channel is the active site minus a reference site, A − R, and the ground electrode cancels out of the subtraction. Pick a reference under Reference and the teal traces show what the same brain activity looks like on the recording. The reference site is drawn in gold, and its own channel is flat by definition, because R − R is zero.</p>
 
     <h2>Try this</h2>
     <ol>
-      <li>Start with M1. Drag dipole 1 toward the left ear until M1 sits inside the negative part of its field. Every channel, even far-away Fp2, now shows a positive bump at 400 ms that is only the reference going negative.</li>
+      <li>Start with M1. Drag dipole 1 toward the left ear until M1 sits inside the negative part of its field. Every channel, even far-away Fz and T7, now shows a positive bump at 400 ms that is only the reference going negative.</li>
       <li>Switch to Cz. The Pz waveform shrinks or even flips sign, because Cz is close to the peak of the same field. A midline effect can vanish under a vertex reference.</li>
-      <li>Choose the average reference and watch the bottom trace: the sum of all 19 channels sits on zero at every time point. Somewhere on the head the N400 must now appear positive, whether or not any source is positive there.</li>
+      <li>Choose the average reference and watch the bottom trace. The sum of all 19 sites sits on zero at every time point. Somewhere on the head the N400 must now appear positive, whether or not any source is positive there.</li>
       <li>Turn on the noisy reference. Under M1 the 60 Hz hum and drift appear in every channel at once; under the linked or average reference they shrink, because they are shared out or excluded.</li>
       <li>Move the time cursor across the epoch and read the Pz value under each reference. They are all correct measurements of the same field.</li>
     </ol>
 
     <h2>Why it matters for the pipeline</h2>
-    <p>There is no neutral site on the head. Any dipole has a line of zero voltage, but it moves with the dipole, so a site that is quiet for one component is active for another. So the choice of reference changes the shape, the size and sometimes the sign of every waveform, and an amplitude at Pz means nothing until the reference is stated (Luck, 2014). Mastoids are the usual compromise. They are convenient, not lateralized once linked, and used by enough labs that results can be compared. The average reference approximates the absolute voltage only when electrodes cover the whole head densely, and its result depends on which electrodes happened to be recorded, since the zero-sum rule is imposed on whatever set exists.</p>
-    <p>Re-referencing is a subtraction, which is linear, so it can be done at any point and undone without loss, and it does not matter whether it comes before or after averaging. Artifact rejection is not linear, so the reference should be settled before trials are thrown out. In the lab the data arrive with the reference used during recording, and the course converts them to the average reference with <code>EEG = pop_reref(EEG, []);</code>, the empty brackets meaning "use all channels". Looking at the same dataset under two references is a quick check that an effect belongs to the brain and not to the electrode it was measured against.</p>
+    <p>There is no neutral site on the head. Any dipole has a line of zero voltage, but it moves with the dipole, and a site that is quiet for one component is active for another. The choice of reference therefore changes the shape, the size, and sometimes the sign of every waveform, and an amplitude at Pz means nothing until the reference is stated (Luck, 2014). Mastoids are the usual compromise. They are convenient, not lateralized once linked, and used by enough labs that results can be compared. The average reference approximates the absolute voltage only when electrodes cover the whole head densely, and its result depends on which electrodes happened to be recorded, since the zero-sum rule is imposed on whatever set exists.</p>
+    <p>Re-referencing is a subtraction, which is linear, so it can be done at any point and, as long as the old reference channel is kept in the file, undone without loss, and it does not matter whether it comes before or after averaging. Artifact rejection is not linear, so re-reference first if the new reference makes artifacts easier to see, and be aware that changing the reference afterwards will not undo the rejection decisions. In the lab the data arrive with the reference used during recording, and the lab script converts them to the average reference with <code>EEG = pop_reref(EEG, []);</code>, the empty brackets meaning "use all channels". The page's average excludes the mastoids; <code>pop_reref(EEG, [])</code> uses every channel in the file, so exclude EOG channels with the <code>'exclude'</code> option if they are present. The reference used for each ERP CORE experiment is listed in Kappenman et al. (2021). Looking at the same dataset under two references is a quick check that an effect belongs to the brain and not to the electrode it was measured against.</p>
 
     <h2 id="refs">References</h2>
     <div class="refs">
@@ -286,9 +286,9 @@ function drawHead(x0,y0,size){const R=size*0.37,cx=x0+size/2,cy=y0+size/2+22;hea
     else{ctx.beginPath();ctx.arc(x,y,11,0,6.2832);ctx.strokeStyle=d.o==='out'?'#d9573b':'#3b6fd9';ctx.lineWidth=1.5;ctx.setLineDash([2,3]);ctx.stroke();ctx.setLineDash([]);}
     txt('dipole '+(k+1),x+12,y-8,{s:10.5,c:'#1d1f24',w:500});});
   txt('Scalp voltage at '+Math.round(S.t*1000)+' ms, ref: '+refLabel(S.ref),x0,y0+2,{c:'#1d1f24',w:600,s:13,b:'top'});
-  txt('colour scale ±'+vmax+' µV, white = 0',x0,y0+18,{s:11,b:'top'});
+  txt('color scale ±'+vmax+' µV, white = 0',x0,y0+18,{s:11,b:'top'});
   txt('nose',cx,cy-R*1.16,{a:'center',s:10});}
-function refLabel(r){return {M1:'M1',LM:'linked mastoids',Cz:'Cz',AVG:'average',ABS:'absolute (unmeasurable)'}[r];}
+function refLabel(r){return {M1:'M1',LM:'linked mastoids',Cz:'Cz',AVG:'average',ABS:'absolute (not measurable)'}[r];}
 const SHOW=['Fz','Cz','Pz','O1','T7','M1'];
 function drawWaves(x0,y0,w,h){const narrow=Wd<560,L=x0+(narrow?50:44),R=x0+w-10,rows=SHOW.length+1,rh=(h-52)/rows,top=y0+34;
   let sc=6;for(const n of SHOW)for(let i=0;i<NT;i++)sc=Math.max(sc,Math.abs(VREF[IDX[n]][i]),Math.abs(VABS[IDX[n]][i]));sc=Math.ceil(sc/2)*2;const SC=sc;
@@ -321,7 +321,7 @@ function readouts(){const ti=Math.round((S.t-T0)*FS),pz=IDX.Pz;
   const at=ref=>(VABS[pz][ti]-refSignal(ref)[ti]);
   $('pzAbs').textContent=VABS[pz][ti].toFixed(1)+' µV';$('pzM1').textContent=at('M1').toFixed(1);$('pzLM').textContent=at('LM').toFixed(1);$('pzCz').textContent=at('Cz').toFixed(1);$('pzAVG').textContent=at('AVG').toFixed(1);
   $('tv').textContent=Math.round(S.t*1000)+' ms';$('noisev').textContent=S.noise+' µV';
-  $('code').textContent={M1:"EEG = pop_reref(EEG, 'M1');",LM:"EEG = pop_reref(EEG, {'M1','M2'});",Cz:"EEG = pop_reref(EEG, 'Cz');",AVG:'EEG = pop_reref(EEG, []);',ABS:'(no command; not measurable)'}[S.ref];
+  $('code').textContent={M1:"EEG = pop_reref(EEG, find(strcmp({EEG.chanlocs.labels},'M1')));",LM:"EEG = pop_reref(EEG, find(ismember({EEG.chanlocs.labels},{'M1','M2'})));",Cz:"EEG = pop_reref(EEG, find(strcmp({EEG.chanlocs.labels},'Cz')));",AVG:'EEG = pop_reref(EEG, []);',ABS:'(no command; not measurable)'}[S.ref];
   const rs=refSignal(S.ref)[ti];const sgn=v=>v>0.3?'positive':v<-0.3?'negative':'near zero';
   const why={M1:`Every channel is site minus M1. At ${Math.round(S.t*1000)} ms the field at M1 is ${sgn(rs)} (${rs.toFixed(1)} µV), so ${rs.toFixed(1)} µV is subtracted from every site at once${S.noisy?', and so is the hum and drift picked up at M1':''}.`,
     LM:`Every channel is site minus the mean of M1 and M2 (${rs.toFixed(1)} µV now). Noise unique to one mastoid is halved, and a source near one ear no longer tilts the whole map.`,

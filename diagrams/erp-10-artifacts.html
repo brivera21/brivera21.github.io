@@ -117,7 +117,7 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
         </div>
         <div class="control">
           <label for="thr">Threshold <span class="val" id="thrv"></span></label>
-          <input type="range" id="thr" min="20" max="300" value="100" step="5">
+          <input type="range" id="thr" min="20" max="300" value="80" step="5">
         </div>
         <div class="control">
           <label for="win">Window size <span class="val" id="winv"></span></label>
@@ -158,21 +158,21 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
 
   <section class="prose">
     <h2>What you are looking at</h2>
-    <p>Each small tile is one trial, the epoch from −200 to 800 ms at Fp1, the electrode just above the left eye. Every trial contains the same true ERP plus ordinary background EEG, and about a quarter of them also contain something that should not be averaged: a blink, which at Fp1 is a positive bump of a few hundred microvolts lasting about 200 ms; a saccade, which shifts the voltage in a step; or a burst of muscle activity. Two trials have a large constant offset. It looks alarming but is not an artifact; baseline correction removes it completely. The page generated these trials, so it knows which ones are contaminated and can grade the detector the way a signal-detection task is graded. A coral tile is one the detector flagged; the small mark in the corner says whether that was a hit, a miss or a false alarm.</p>
-    <p>Below the grid, the teal waveform is the average of the trials that survived, drawn over the true ERP in gold and the average with no rejection at all in grey. On the right, the dot plot tracks hits against false alarms as the threshold is moved, and the little head shows why a blink is easy to find at the front: its field is positive above the eye, negative below it, and fades toward the back of the head.</p>
+    <p>Each small tile is one trial, the epoch from −200 to 800 ms at Fp1, the electrode just above the left eye. Every trial contains the same true ERP plus ordinary background EEG, and about a quarter of them also contain something that should not be averaged: a blink, which at Fp1 is a positive bump of roughly 50 to 150 µV lasting 200 to 400 ms; a saccade, which shifts the voltage in a step; or a burst of muscle activity. Two trials have a large constant offset. It looks alarming but is not an artifact; baseline correction removes it completely. The page generated these trials, so it knows which ones are contaminated and can grade the detector the way a signal-detection task is graded. A coral tile is one the detector flagged; the small mark in the corner says whether that was a hit, a miss, or a false alarm.</p>
+    <p>Below the grid, the teal waveform is the average of the trials that survived, drawn over the true ERP in gold and the average with no rejection at all in gray. On the right, the dot plot tracks hits against false alarms as the threshold is moved, and the little head shows why a blink is easy to find at the front. Its field is positive above the eye, negative below it, and fades toward the back of the head.</p>
 
     <h2>Try this</h2>
     <ol>
-      <li>Start with the moving-window peak-to-peak detector at 100 µV. Almost every blink is caught, the innocent offset trials are left alone, and the surviving average sits close to the true ERP.</li>
+      <li>Start with the moving-window peak-to-peak detector at 80 µV. Almost every blink is caught, one smaller blink slips through, the two offset trials are left alone, and the surviving average sits close to the true ERP.</li>
       <li>Drag the threshold up to 250 µV. Blinks slip through as misses and the teal average bends upward late in the epoch, where the blinks tend to fall.</li>
       <li>Drag it down to 30 µV. Now ordinary EEG trips the detector, a third of the trials are false alarms, and the average gets noisier without getting more accurate.</li>
-      <li>Switch to the simple voltage threshold and turn off "Baseline-correct first". The two offset trials are rejected for no good reason. Turn baseline correction back on and they survive.</li>
-      <li>Choose the step function with a threshold of 20 to 30 µV. The three saccades that peak-to-peak missed at 100 µV are caught, because a saccade shifts the mean voltage in a step even though its size is modest. In practice you run more than one detector, each tuned to one kind of artifact.</li>
+      <li>Switch to the simple voltage threshold and turn off Baseline-correct first. The two offset trials are rejected for no good reason. Turn baseline correction back on and they survive.</li>
+      <li>Choose the step function with a threshold of 20 to 30 µV. The three saccades that peak-to-peak missed at 80 µV are caught, because a saccade shifts the mean voltage in a step even though its size is modest. In practice you run more than one detector, each tuned to one kind of artifact.</li>
     </ol>
 
     <h2>Why it matters for the pipeline</h2>
     <p>There are three reasons to throw a trial away. Artifacts are large, so a few of them add more noise to an average than dozens of clean trials remove. Blinks and eye movements also change what reached the retina, so the brain's response on those trials is not the response you designed. And if one condition provokes more blinks than another, the difference between the averages will contain blink voltage rather than brain voltage. Rejection is a signal-detection problem. Pick a measure that is large when the artifact is present, set a threshold, and accept the trade-off between misses and false alarms (Luck, 2014).</p>
-    <p>The simple voltage threshold tests every sample against a limit, so it needs baseline correction first and is thrown off by drift. The moving-window peak-to-peak measure looks at the largest swing inside a sliding window of about 200 ms, so a blink is caught wherever the baseline happens to be. The step function compares the mean before and after each point and picks up the sudden shift of a saccade. In ERPLAB the calls are <code>EEG = pop_artextval(EEG, 'Channel', 1:31, 'Threshold', [-100 100], 'Twindow', [-200 800]);</code> and <code>EEG = pop_artmwppth(EEG, 'Channel', 1:31, 'Threshold', 100, 'Windowsize', 200, 'Windowstep', 50);</code>, and <code>pop_summary_AR_eeg_detection(EEG, 'Report')</code> prints the percentage rejected per bin (Lopez-Calderon &amp; Luck, 2014). Tune the parameters for each participant by scrolling through single trials, never by watching which setting makes the conditions differ. Rejecting 10 to 25% of trials is normal; above 50% points to a recording problem, and below 5% often means the threshold is too lenient. Independent component analysis is the alternative that subtracts the blink instead of dropping the trial, useful when participants blink on most trials.</p>
+    <p>The simple voltage threshold tests every sample against a limit, so it needs baseline correction first and is thrown off by drift. The moving-window peak-to-peak measure looks at the largest swing inside a sliding window of about 200 ms, so a blink is caught wherever the baseline happens to be. The step function compares the mean before and after each point and picks up the sudden shift of a saccade. In ERPLAB the calls are <code>EEG = pop_artextval(EEG, 'Channel', 1:33, 'Threshold', [-100 100], 'Twindow', [-200 800]);</code> and <code>EEG = pop_artmwppth(EEG, 'Channel', 1:33, 'Threshold', 100, 'Windowsize', 200, 'Windowstep', 50);</code>. Afterwards <code>pop_summary_AR_eeg_detection(EEG, 'Report')</code> prints the percentage rejected per bin (Lopez-Calderon &amp; Luck, 2014). Tune the parameters for each participant by scrolling through single trials, never by watching which setting makes the conditions differ. Rejecting 10 to 25% of trials is normal; above 50% points to a recording problem, and below 5% often means the threshold is too lenient. Luck (2014) recommends deciding in advance the percentage at which a participant is excluded, typically 25%. Independent component analysis is the alternative that subtracts the blink instead of dropping the trial, useful when participants blink on most trials.</p>
 
     <h2 id="refs">References</h2>
     <div class="refs">
@@ -217,7 +217,7 @@ function makeTrials(){
       const alpha=Math.sin(2*Math.PI*10*t/1000+ph)*3;
       fp1[k]=TRUE[k]+a*1.0+b*3.2+alpha*0.4;veog[k]=-0.3*TRUE[k]+a*0.8+d*2.2;pz[k]=-1.2*TRUE[k]+c*1.0+d*2.2+alpha*0.6;}
     const kind=plan[i];
-    if(kind==='blink'){const amp=150+rnd()*150,mu=-100+rnd()*800,sd=45+rnd()*25;
+    if(kind==='blink'){const amp=70+rnd()*130,mu=-100+rnd()*800,sd=45+rnd()*25;
       for(let k=0;k<NT;k++){const g=gauss(tms(k),mu,sd);fp1[k]+=amp*g;veog[k]-=amp*0.6*g;pz[k]+=amp*0.06*g;}}
     else if(kind==='saccade'){const amp=(rnd()<0.5?-1:1)*(30+rnd()*20),at=rnd()*600;
       for(let k=0;k<NT;k++){const s=1/(1+Math.exp(-(tms(k)-at)/6));fp1[k]+=amp*s*0.6;veog[k]+=amp*s*0.5;pz[k]+=amp*s*0.1;}}
@@ -241,7 +241,7 @@ function measure(x,P){ // returns the detector's statistic for one channel, rest
   for(let s=k0;s+2*w<=k1;s+=st){let m1=0,m2=0;for(let k=0;k<w;k++){m1+=x[s+k];m2+=x[s+w+k];}best=Math.max(best,Math.abs(m2-m1)/w);}
   return best;
 }
-let P={method:'mw',thr:100,win:200,stp:50,chans:'fp1veog',t0:-200,t1:800,bl:true};
+let P={method:'mw',thr:80,win:200,stp:50,chans:'fp1veog',t0:-200,t1:800,bl:true};
 let flags=[],stats={},avgKeep,avgAll,roc=[];
 function runDetector(p){
   const chans=p.chans==='fp1'?['fp1']:p.chans==='fp1veog'?['fp1','veog']:['fp1','veog','pz'];
@@ -262,7 +262,7 @@ function compute(){
 
 // ---------- drawing ----------
 const cv=$('cv'),ctx=cv.getContext('2d');let W=1000,H=700,tiles=[];
-const C={ink:'#1d1f24',muted:'#5c6270',rule:'#e2ddd4',gold:'#c8962a',grey:'#9aa0aa',teal:'#0f6e74',coral:'#d9573b',violet:'#6b5ca5'};
+const C={ink:'#1d1f24',muted:'#5c6270',rule:'#e2ddd4',gold:'#c8962a',gray:'#9aa0aa',teal:'#0f6e74',coral:'#d9573b',violet:'#6b5ca5'};
 function txt(s,x,y,o={}){ctx.font=(o.w||400)+' '+(o.s||12)+'px '+(o.m?'"IBM Plex Mono",monospace':'"IBM Plex Sans",system-ui,sans-serif');ctx.fillStyle=o.c||C.muted;ctx.textAlign=o.a||'left';ctx.textBaseline=o.b||'alphabetic';ctx.fillText(s,x,y);}
 function line(p,c,w,dash){ctx.beginPath();ctx.strokeStyle=c;ctx.lineWidth=w||1.2;ctx.setLineDash(dash||[]);p.forEach((q,i)=>i?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1]));ctx.stroke();ctx.setLineDash([]);}
 function layout(){const nr=W<560;const cols=nr?6:12,rows=NTR/cols;const L=nr?10:16,R=W-12;const tw=(R-L)/cols,th=nr?tw*0.9:tw*0.95;
@@ -298,7 +298,7 @@ function draw(){
   // ---- bottom left: averages
   const bt=Ly.bottomTop,bh=Ly.bh;
   const ax0=nr?L+36:L+40,ax1=nr?R:L+(R-L)*0.58,ay0=bt,ay1=bt+bh;
-  txt('Average at Fp1: survivors vs the truth',ax0,ay0-10,{c:C.ink,w:600,s:13});
+  txt('Average at Fp1, survivors vs the true ERP',ax0,ay0-10,{c:C.ink,w:600,s:13});
   const asc=Math.max(8,Math.ceil(Math.max(...avgAll.map(Math.abs),...avgKeep.map(Math.abs),4)/2)*2);
   const xa=k=>ax0+k/(NT-1)*(ax1-ax0),ya=v=>ay0+bh/2-(v/asc)*(bh/2)*0.9;
   ctx.strokeStyle=C.rule;ctx.strokeRect(ax0,ay0,ax1-ax0,ay1-ay0);line([[ax0,ya(0)],[ax1,ya(0)]],C.rule,1,[3,3]);
@@ -306,7 +306,7 @@ function draw(){
   [-200,0,200,400,600,800].forEach(ms=>{const x=xa(Math.round((ms-T0)/1000*FS));line([[x,ay1],[x,ay1+4]],C.muted);txt(ms+(ms===800?' ms':''),x,ay1+15,{a:ms===800?'right':'center',s:10.5});});
   txt('+'+asc+' µV',ax0-4,ya(asc)+9,{a:'right',s:10});txt('0',ax0-4,ya(0)+4,{a:'right',s:10});txt('−'+asc,ax0-4,ya(-asc),{a:'right',s:10});
   ctx.save();ctx.beginPath();ctx.rect(ax0,ay0,ax1-ax0,ay1-ay0);ctx.clip();
-  {const p=[];for(let k=0;k<NT;k++)p.push([xa(k),ya(avgAll[k])]);line(p,C.grey,1.4);}
+  {const p=[];for(let k=0;k<NT;k++)p.push([xa(k),ya(avgAll[k])]);line(p,C.gray,1.4);}
   {const p=[];for(let k=0;k<NT;k++)p.push([xa(k),ya(TRUE[k])]);line(p,C.gold,2.2);}
   {const p=[];for(let k=0;k<NT;k++)p.push([xa(k),ya(avgKeep[k])]);line(p,C.teal,1.8);}
   ctx.restore();
@@ -356,10 +356,10 @@ cv.addEventListener('mouseleave',()=>tip.style.display='none');
 // ---------- readouts ----------
 function readouts(){
   const pct=stats.rej/NTR*100;
-  const pill=pct>50?['warn','over 50%: a recording problem']:pct<5?['warn','under 5%: probably too lenient']:pct>25?['','above the usual 10–25%']:['ok','within the usual 10–25%'];
+  const pill=pct>50?['warn','over 50%, a recording problem']:pct<5?['warn','under 5%, probably too lenient']:pct>25?['','above the usual 10–25%']:['ok','within the usual 10–25%'];
   $('ro').innerHTML=`<span>rejected <b>${stats.rej} of ${NTR}</b> (${pct.toFixed(0)}%) <span class="pill ${pill[0]}">${pill[1]}</span></span>`+
     `<span>hits <b>${stats.hits}</b> of ${stats.nart} artifacts</span><span>misses <b>${stats.miss}</b></span><span>false alarms <b>${stats.fa}</b></span>`;
-  const ch=P.chans==='fp1'?'1':P.chans==='fp1veog'?'[1 32]':'1:31';
+  const ch=P.chans==='fp1'?'1':P.chans==='fp1veog'?'[1 32]':'1:33';
   let code=P.method==='thr'?`EEG = pop_artextval(EEG, 'Channel', ${ch}, 'Threshold', [-${P.thr} ${P.thr}], 'Twindow', [${P.t0} ${P.t1}]);`:
     P.method==='mw'?`EEG = pop_artmwppth(EEG, 'Channel', ${ch}, 'Threshold', ${P.thr}, 'Windowsize', ${P.win}, 'Windowstep', ${P.stp}, 'Twindow', [${P.t0} ${P.t1}]);`:
     `EEG = pop_artstep(EEG, 'Channel', ${ch}, 'Threshold', ${P.thr}, 'Windowsize', ${P.win}, 'Windowstep', ${P.stp}, 'Twindow', [${P.t0} ${P.t1}]);`;

@@ -127,7 +127,7 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
       </div>
     </div>
     <div class="canvas-wrap">
-      <canvas id="cv" aria-label="Top: a stretch of continuous EEG with event codes stamped above it, matched events coloured by bin with their epoch windows shaded. Bottom: the epochs cut out per bin, stacked, with the averaged waveform for each bin."></canvas>
+      <canvas id="cv" aria-label="Top: a stretch of continuous EEG with event codes stamped above it, matched events colored by bin with their epoch windows shaded. Bottom: the epochs cut out per bin, stacked, with the averaged waveform for each bin."></canvas>
       <div class="tip" id="tip"></div>
     </div>
     <div class="legend">
@@ -158,21 +158,21 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
 
   <section class="prose">
     <h2>What you are looking at</h2>
-    <p>Every time a word appeared on the screen or the participant pressed a button, the stimulus computer stamped a number into the EEG file. These event codes are the experiment's bookkeeping. In the N400 task the target word carries a three-digit code: 111 for a related target with a correct response, 112 related but wrong, 121 unrelated correct, 122 unrelated wrong. The small 11 and 12 flags are prime words, 201 and 202 are the button presses, and "boundary" marks a place where the recording was paused. The grey trace is one channel of the continuous EEG, which by itself tells you nothing about conditions.</p>
-    <p>A bin is a condition defined by a sequence of codes. The text box on the left is a bin descriptor file: each bin has a number, a label, and a descriptor line that lists the codes in braces, separated by semicolons. The dot marks the time-locking event, the moment that becomes time zero of every epoch. BINLISTER walks through the event list, and every event that fits a bin is coloured with that bin's colour and given an epoch window, here −200 to 800 ms. Events that fit nothing stay grey; hover one to see why. Below the timeline, the epochs are cut out, baseline-corrected on the prestimulus part, stacked as thin lines, and averaged into the heavy line, so you can see the unrelated bin come out more negative between 300 and 500 ms.</p>
+    <p>Every time a word appeared on the screen or the participant pressed a button, the stimulus computer stamped a number into the EEG file. These event codes are the experiment's bookkeeping. In the N400 task the target word carries a three-digit code: 111 for a related target with a correct response, 112 related but wrong, 121 unrelated correct, 122 unrelated wrong. The small 11 and 12 flags are prime words, 201 and 202 are the button presses, and "boundary" marks a place where the recording was paused. The gray trace is one channel of the continuous EEG, which by itself tells you nothing about conditions.</p>
+    <p>A bin is a condition defined by a sequence of codes. The text box on the left is a bin descriptor file: each bin has a number, a label, and a descriptor line that lists the codes in braces, separated by semicolons. The dot marks the time-locking event, the moment that becomes time zero of every epoch. BINLISTER walks through the event list, and every event that fits a bin is colored with that bin's color and given an epoch window, here −200 to 800 ms. Events that fit nothing stay gray; hover one to see why. Below the timeline, the epochs are cut out, baseline-corrected on the prestimulus part, stacked as thin lines, and averaged into the heavy line, so you can see the unrelated bin come out more negative between 300 and 500 ms.</p>
 
     <h2>Try this</h2>
     <ol>
-      <li>Start from the lab default. Both bins collect a little over fifty trials, and the checklist is all green.</li>
-      <li>Click "Correct trials only via response window". The descriptor <code>.{111}{t&lt;200-1000&gt;201}</code> now requires a correct button press between 200 and 1000 ms after the target. Hover the grey targets to find responses that were too fast to be real decisions or too slow to be trusted.</li>
-      <li>Split by accuracy into four bins. The error bins have far too few trials to average, which is exactly why the lab collapses across accuracy in the default file.</li>
+      <li>Start from the lab default. Both bins collect 60 trials, and the checklist is all green.</li>
+      <li>Click Correct trials only via response window. The descriptor <code>.{111}{t&lt;200-1000&gt;201}</code> now requires a correct button press between 200 and 1000 ms after the target. Hover the gray targets to find responses that were too fast to be real decisions or too slow to be trusted.</li>
+      <li>Split by accuracy into four bins. The error bins have far too few trials to average, and that is the reason the lab default collapses across accuracy.</li>
       <li>Try the typo preset. Code 131 exists nowhere in the recording, so the bin stays empty and <code>trialsperbin</code> reports zero. A zero here almost always means the file and the recording disagree about a code.</li>
-      <li>Delete the blank line between the two bins (or use the preset) and read the error message. Then widen the epoch to −500 to 1200 ms and watch a few epochs near a boundary get dropped.</li>
+      <li>Delete the blank line between the two bins (or click Missing blank line) and read the error message. Then widen the epoch to −500 to 1200 ms and watch a few epochs near a boundary get dropped.</li>
     </ol>
 
     <h2>Why it matters for the pipeline</h2>
-    <p>Bin assignment is where the experimental design meets the data. <code>EEG = pop_binlister(EEG, 'BDF', 'N400_bins.txt', 'IndexEL', 1, 'UpdateEEG', 'on');</code> reads the descriptor file and stores the result in <code>EEG.EVENTLIST</code>; <code>EEG = pop_epochbin(EEG, [-200 800], 'pre');</code> then cuts a fixed window around each time-locking event and subtracts the mean of the prestimulus baseline from every epoch, so slow drift and DC offsets do not carry into the average. Always look at <code>EEG.EVENTLIST.trialsperbin</code> afterwards. Somewhere between 50 and 200 trials per bin is typical; fewer than about 30 leaves a noisy average, and zero means a code mismatch.</p>
-    <p>A time-conditioned list such as <code>{t&lt;200-1000&gt;201}</code> keeps only trials with a proper response. Responses faster than 200 ms are guesses that started before the word was read, and responses slower than a second usually mean a lapse of attention. Whether to drop error trials at all depends on why errors happen: in a simple task an error is usually a lapse, so dropping them cleans the data, but in a hard memory task errors are genuine outcomes and throwing them away changes the question. Good bins are numbered consecutively from 1, carry a label that says what they contain, differ from each other only in the thing you care about, and end up with similar trial counts (Luck, 2014; Lopez-Calderon &amp; Luck, 2014). The codes themselves follow the ERP CORE convention (Kappenman et al., 2021).</p>
+    <p>Bin assignment is where the experimental design meets the data. <code>EEG = pop_binlister(EEG, 'BDF', 'N400_bins.txt', 'IndexEL', 1, 'SendEL2', 'EEG', 'Voutput', 'EEG');</code> reads the descriptor file and stores the result in <code>EEG.EVENTLIST</code>; <code>EEG = pop_epochbin(EEG, [-200 800], 'pre');</code> then cuts a fixed window around each time-locking event and subtracts the mean of the prestimulus baseline from every epoch, so slow drift and DC offsets do not carry into the average. Always look at <code>EEG.EVENTLIST.trialsperbin</code> afterwards. Somewhere between 50 and 200 trials per bin is typical; fewer than about 30 leaves a noisy average, and zero means a code mismatch.</p>
+    <p>A time-conditioned list such as <code>{t&lt;200-1000&gt;201}</code> keeps only trials with a proper response. Responses faster than 200 ms are guesses that started before the word was read, and responses slower than a second usually mean a lapse of attention. Whether to drop error trials at all depends on why errors happen. In a simple task an error is usually a lapse, so dropping them cleans the data. In a hard memory task errors are genuine outcomes, and throwing them away changes the question. Good bins are numbered consecutively from 1, carry a label that says what they contain, differ from each other only in the thing you care about, and end up with similar trial counts (Luck, 2014; Lopez-Calderon &amp; Luck, 2014). The codes follow the convention used in the lab guide for the ERP CORE N400 data (Kappenman et al., 2021).</p>
 
     <h2 id="refs">References</h2>
     <div class="refs">
@@ -194,7 +194,7 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
 const $=id=>document.getElementById(id);
 const FS=256, DUR=360, N=DUR*FS;      // six minutes at 256 Hz
 const BINC=['#0f6e74','#d9573b','#6b5ca5','#c8962a','#2f8f4e','#c2410c'];
-const GREY='#b9bec8';
+const GRAY='#b9bec8';
 
 // ---------- presets ----------
 const P={
@@ -225,7 +225,7 @@ function makeEvents(){
     let rt;const u=rnd();
     if(u<0.06)rt=0.12+rnd()*0.07; else if(u<0.12)rt=1.05+rnd()*0.4; else rt=0.5+rnd()*0.4;
     events.push({t:tt+rt,code:correct?201:202,kind:'resp'});
-    if(k===39||k===79)events.push({t:tt+0.45,code:'boundary',kind:'boundary'});
+    if(k===39||k===79)events.push({t:tt+1.0,code:'boundary',kind:'boundary'});
     t+=2.6+rnd()*0.6;
   }
   events.sort((a,b)=>a.t-b.t);
@@ -256,7 +256,7 @@ function parseBDF(text){
     while(i<lines.length&&lines[i]!==''){block.push(lines[i]);i++;}
     if(block.length>3){const extra=block[3];
       throw new Error(`Line ${start+4}: found "${extra}" where a blank line was expected. Each bin is three lines (bin number, label, descriptor) followed by a blank line.`);}
-    if(block.length<3)throw new Error(`Line ${start+1}: the bin starting here has only ${block.length} line${block.length===1?'':'s'}; a bin needs a number, a label and a descriptor.`);
+    if(block.length<3)throw new Error(`Line ${start+1}: the bin starting here has only ${block.length} line${block.length===1?'':'s'}; a bin needs a number, a label, and a descriptor.`);
     const m=/^bin\s+(\d+)$/i.exec(block[0]);
     if(!m)throw new Error(`Line ${start+1}: expected "bin <number>", found "${block[0]}".`);
     const bin={num:+m[1],label:block[1],desc:block[2],lists:[],line:start+1};
@@ -354,10 +354,10 @@ function checklist(){
   add(lab?'ok':'warn',lab?'Every bin has a meaningful label':'Give every bin a label that says what it contains');
   add('ok','Each bin marks its time-locking event with "."');
   const c=stats.perBin,min=Math.min(...c),max=Math.max(...c);
-  if(min===0)add('warn',`A bin has zero trials (${c.join(', ')}): a code in the file does not exist in the recording`);
+  if(min===0)add('warn',`A bin has zero trials (${c.join(', ')}), so a code in the file does not exist in the recording`);
   else if(min<30)add('warn',`Too few trials in a bin (${c.join(', ')}); aim for 50–200 per bin`);
   else add('ok',`Enough trials per bin (${c.join(', ')})`);
-  if(min>0){const bal=max/min<=1.5;add(bal?'ok':'warn',bal?'Trial counts are similar across bins':`Unbalanced counts (${c.join(', ')}): the noisier bin will drive any difference`);}
+  if(min>0){const bal=max/min<=1.5;add(bal?'ok':'warn',bal?'Trial counts are similar across bins':`Unbalanced counts (${c.join(', ')}), so the noisier bin will drive any difference`);}
   const same=bins.every(b=>JSON.stringify(b.lists.map((L,k)=>k===b.lockIdx?'lock':[L.win,L.codes]))===JSON.stringify(bins[0].lists.map((L,k)=>k===bins[0].lockIdx?'lock':[L.win,L.codes])));
   add(same?'ok':'warn',same?'Bins differ only in the time-locking code, so any difference is about the condition':'Bins use different response rules; they now differ in more than the condition');
 }
@@ -374,7 +374,7 @@ function readouts(){
   ro.innerHTML=h;
 }
 function codeBox(){
-  $('code').textContent=`EEG = pop_binlister(EEG, 'BDF', 'N400_bins.txt', 'IndexEL', 1, 'UpdateEEG', 'on');\nEEG = pop_epochbin(EEG, [${$('pre').value} ${$('post').value}], 'pre');   % epoch and baseline-correct on the prestimulus part`;
+  $('code').textContent=`EEG = pop_binlister(EEG, 'BDF', 'N400_bins.txt', 'IndexEL', 1, 'SendEL2', 'EEG', 'Voutput', 'EEG');\nEEG = pop_epochbin(EEG, [${$('pre').value} ${$('post').value}], 'pre');   % epoch and baseline-correct on the prestimulus part`;
 }
 
 // ---------- drawing ----------
@@ -412,7 +412,7 @@ function draw(){
     if(e.code==='boundary'){line([[xx,trTop],[xx,trTop+trH]],C.ink,1.2,[4,3]);txt('boundary',xx+3,trTop+trH-6,{s:10.5,c:C.ink,w:500});
       hits.push({x:xx-6,y:trTop,w:12,h:trH,txt:a.why});return;}
     const row=e.kind==='target'?0:e.kind==='resp'?1:2;const fy=top+8+row*15;
-    const col=a.bin?binColor(a.bin):e.code==='boundary'?C.ink:GREY;
+    const col=a.bin?binColor(a.bin):e.code==='boundary'?C.ink:GRAY;
     line([[xx,fy+4],[xx,trTop]],col,a.bin?1.4:1,a.bin?[]:[2,2]);
     if(e.kind==='target'&&a.bin)line([[xx,trTop],[xx,trTop+trH]],col,1.2);
     const lab=e.code==='boundary'?'boundary':String(e.code);

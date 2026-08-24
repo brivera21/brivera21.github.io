@@ -214,7 +214,7 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
       </nav>
 
       <div class="cli" id="cli" hidden>
-        <p>The same seven steps as typed commands. Click Run on each; the dataset panel below changes exactly as it did from the menu.</p>
+        <p>The same seven steps, plus the scroll plot, as typed commands. Click Run on each; the dataset panel below changes exactly as it did from the menu.</p>
         <div id="clirows"></div>
       </div>
 
@@ -260,20 +260,20 @@ eeglab: adding "ERPLAB" v12 plugin
 
   <section class="prose">
     <h2>What you are looking at</h2>
-    <p>A GUI (graphical user interface) is a window with menus, buttons and dialog boxes. Each menu item stands for one function. Choosing it opens a dialog, the fields you fill in become the function's arguments, and pressing Ok runs it. The window above is a plausible sketch of EEGLAB's main window, not a pixel copy. The panel on the left describes the current dataset, the Command Window on the right shows the command that each click generated, and the pane under it is <code>EEG.history</code>, the record EEGLAB keeps of everything done to the data so far.</p>
-    <p>Everything in EEGLAB lives in one MATLAB variable called <code>EEG</code>, a structure with named fields. <code>EEG.data</code> is the voltage, a matrix with one row per channel and one column per sample (or channels × samples × epochs once the data are cut up). <code>EEG.srate</code> is the sampling rate, <code>EEG.nbchan</code> the channel count, <code>EEG.chanlocs</code> the electrode positions, <code>EEG.event</code> the list of event codes and their times. A dataset is saved as a pair of files: the <code>.set</code> file holds every field except the voltages, which go in the large <code>.fdt</code> file next to it. ERPLAB adds its own menu and its own variable, <code>ERP</code>, once averages have been computed.</p>
+    <p>A GUI (graphical user interface) is a window with menus, buttons, and dialog boxes. Each menu item stands for one function. Choosing it opens a dialog, the fields you fill in become the function's arguments, and pressing Ok runs it. The window above is a plausible sketch of EEGLAB's main window, not a pixel copy. The panel on the left describes the current dataset, the Command Window on the right shows the command that each click generated, and the pane under it is <code>EEG.history</code>, the record EEGLAB keeps of everything done to the data so far.</p>
+    <p>Everything in EEGLAB lives in one MATLAB variable called <code>EEG</code>, a structure with named fields. <code>EEG.data</code> is the voltage, a matrix with one row per channel and one column per sample (or channels × samples × epochs once the data are cut up). <code>EEG.srate</code> is the sampling rate, <code>EEG.nbchan</code> the channel count, <code>EEG.chanlocs</code> the electrode positions, <code>EEG.event</code> the list of event codes and their times. A dataset is saved as a pair of files. By default the <code>.set</code> file holds every field except the voltages, which go in the <code>.fdt</code> file next to it. ERPLAB adds its own menu and its own variable, <code>ERP</code>, once averages have been computed.</p>
 
     <h2>Try this</h2>
     <ol>
-      <li>Open File and load the dataset. Read the left panel: 33 channels including HEOG and VEOG, 256 Hz, about 300 s of continuous data and roughly 400 events. Those four numbers are the first thing to check after any load.</li>
+      <li>Open File and load the dataset. Read the left panel: 33 channels including HEOG and VEOG, 256 Hz, 76,800 frames (300 s of continuous data), and 412 events. Those four numbers are the first thing to check after any load.</li>
       <li>Work through Tools and ERPLAB in order: filter, re-reference, event list, bins, epochs, average. Watch the dataset name grow a suffix each time and the history pane grow a line.</li>
-      <li>After extracting epochs, look at Frames per epoch and Epochs. The continuous 76 800 samples have become about 200 epochs of 256 samples each, from −0.2 to 0.796 s.</li>
+      <li>After extracting epochs, look at Frames per epoch and Epochs. The continuous 76,800 samples have become 120 epochs of 256 samples each, from −0.2 to 0.796 s.</li>
       <li>Open Plot and scroll the channel data. The blinks on Fp1 and VEOG are what artifact detection will hunt later.</li>
-      <li>Switch to "Same thing, no GUI", press Start over, and run the same commands. The panel fills in identically, and "Copy history as script" hands you the bridge to the next page.</li>
+      <li>Switch to Same thing, no GUI, press Start over, and run the same commands. The panel fills in identically, and Copy history as script writes out the script that the next page starts from.</li>
     </ol>
 
     <h2>Why it matters for the pipeline</h2>
-    <p>EEGLAB has both a GUI and a command line, and they call the same functions. The menu is a good way to learn what the options are, and it guarantees that every argument gets recorded, since each dialog writes its <code>pop_</code> call into <code>EEG.history</code>. The command is the better way to do the same thing a second time, and the pipeline for this course needs to do it for every participant. In Lab 2 the first command is <code>EEG = pop_loadset('filename','sub-001_N400.set','filepath',...)</code>, followed by typing <code>EEG</code> without a semicolon to print the fields and confirm the channel count, sampling rate, number of points and events match the recording (Delorme &amp; Makeig, 2004; Lopez-Calderon &amp; Luck, 2014). The ERP CORE data used here were recorded at 1024 Hz and are downsampled to 256 Hz before anything else (Kappenman et al., 2021).</p>
+    <p>EEGLAB has both a GUI and a command line, and they call the same functions. The menu is a good way to learn what the options are, and it guarantees that every argument gets recorded, since each dialog writes its <code>pop_</code> call into <code>EEG.history</code>. The command is the better way to do the same thing a second time, and the pipeline for this course needs to do it for every participant. In Lab 2 the first command is <code>EEG = pop_loadset('filename','sub-001_N400.set','filepath',...)</code>. Typing <code>EEG</code> without a semicolon then prints the fields, so you can confirm that the channel count, sampling rate, number of points, and number of events match the recording (Delorme &amp; Makeig, 2004; Lopez-Calderon &amp; Luck, 2014). The ERP CORE data used here were recorded at 1024 Hz and are downsampled to 256 Hz before anything else (Kappenman et al., 2021).</p>
 
     <h2 id="refs">References</h2>
     <div class="refs">
@@ -342,15 +342,15 @@ const ACT={
     go:(f)=>{if(needData())return;D.elist=true;D.name+='_elist';run(`EEG = pop_creabasiceventlist(EEG, 'Eventlist','', 'BoundaryNumeric',{${f[1]||-99}}, 'BoundaryString',{'${f[0]||'boundary'}'});`,['Creating a basic EventList...',`${D.events} events found.`,'EEG.EVENTLIST created.']);}},
   bins:{title:'Assign bins (BINLISTER) -- pop_binlister()',fields:[['Bin descriptor file','N400_bins.txt']],note:'bin 1 Related target .{111;112}   bin 2 Unrelated target .{121;122}',
     go:(f)=>{if(needData())return;if(!D.elist){say([{t:'Error: BINLISTER needs an EventList. Run Create EEG EventList first.',c:'err'}]);return;}
-      D.bins=true;D.name+='_bins';run(`EEG = pop_binlister(EEG, 'BDF','${f[0]||'N400_bins.txt'}', 'IndexEL',1, 'SendEL2','EEG', 'Voutput','EEG');`,['BINLISTER: reading bin descriptor file...','bin 1: Related target      101 trials','bin 2: Unrelated target    102 trials','Total bins: 2']);}},
+      D.bins=true;D.name+='_bins';run(`EEG = pop_binlister(EEG, 'BDF','${f[0]||'N400_bins.txt'}', 'IndexEL',1, 'SendEL2','EEG', 'Voutput','EEG');`,['BINLISTER: reading bin descriptor file...','bin 1: Related target       60 trials','bin 2: Unrelated target     60 trials','Total bins: 2']);}},
   epoch:{title:'Extract bin-based epochs -- pop_epochbin()',fields:[['Time window (ms)','-200 800'],['Baseline correction','pre']],
     go:(f)=>{if(needData())return;if(!D.bins){say([{t:'Error: no bins assigned yet. Run BINLISTER first.',c:'err'}]);return;}
       const w=(f[0]||'-200 800').trim().split(/[\s,]+/).map(Number);const a=isNaN(w[0])?-200:w[0],b=isNaN(w[1])?800:w[1];
-      D.trials=203;D.pnts=Math.round((b-a)/1000*FS);D.xmin=a/1000;D.xmax=a/1000+(D.pnts-1)/FS;D.events=406;D.name+='_be';
-      run(`EEG = pop_epochbin(EEG, [${a} ${b}], '${f[1]||'pre'}');`,[`pop_epochbin(): ${D.trials} epochs extracted, ${D.pnts} samples each.`,`Baseline corrected using the pre-stimulus interval [${a} 0] ms.`]);}},
+      D.trials=120;D.pnts=Math.round((b-a)/1000*FS);D.xmin=a/1000;D.xmax=a/1000+(D.pnts-1)/FS;D.events=240;D.name+='_be';
+      run(`EEG = pop_epochbin(EEG, [${a} ${b}], '${f[1]||'pre'}');`,[`pop_epochbin(): ${D.trials} epochs extracted, ${D.pnts} samples each.`,`Baseline corrected using the prestimulus interval [${a} 0] ms.`]);}},
   avg:{title:'Compute averaged ERPs -- pop_averager()',fields:[['Artifact criterion','good'],['Include ERPsets','current dataset']],
     go:()=>{if(needData())return;if(D.trials<2){say([{t:'Error: the dataset is not epoched. Extract bin-based epochs first.',c:'err'}]);return;}
-      erp=true;run(`ERP = pop_averager(ALLEEG, 'Criterion','good', 'DSindex',1, 'ExcludeBoundary','on', 'SEM','on');`,['Averaging bin 1 (Related target): 101 trials, 0 rejected','Averaging bin 2 (Unrelated target): 102 trials, 0 rejected',{t:'ERP set created: 2 bins × 33 channels × 256 samples',c:'ok'}]);}},
+      erp=true;run(`ERP = pop_averager(ALLEEG, 'Criterion','good', 'DSindex',1, 'ExcludeBoundary','on', 'SEM','on');`,['Averaging bin 1 (Related target): 60 trials, 0 rejected','Averaging bin 2 (Unrelated target): 60 trials, 0 rejected',{t:'ERP set created: 2 bins × 33 channels × 256 samples',c:'ok'}]);}},
   scroll:{go:()=>{if(needData())return;openScroll();run('pop_eegplot(EEG, 1, 1, 1);',['eegplot(): scrolling '+D.nch+' channels.']);}}
 };
 const ORDER=['load','filt','reref','elist','bins','epoch','avg','scroll'];

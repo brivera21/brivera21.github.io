@@ -89,7 +89,7 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
 </div>
 <header class="hero">
   <h1>Filtering</h1>
-  <p class="q">What is a filter, and why do we need one?</p>
+  <p class="q">What is a filter and why is it needed?</p>
 </header>
 
 <main>
@@ -153,22 +153,22 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;co
 
   <section class="prose">
     <h2>What you are looking at</h2>
-    <p>The top panel is eight seconds from one EEG channel. A small event-related potential is buried in it four times, once per second-long trial, and it is drawn in gold so you can see where it hides. Everything else in the grey trace is noise: a slow wander from sweat and skin potentials, a 60 Hz hum picked up from the room's wiring, high-frequency crackle from jaw and neck muscles, and the brain's own ongoing rhythms. The teal trace is the same recording after the filter.</p>
+    <p>The top panel is eight seconds from one EEG channel. A small event-related potential is buried in it four times, two seconds apart, and it is drawn in gold so you can see where it hides. Everything else in the gray trace is noise: a slow wander from sweat and skin potentials, a 60 Hz hum picked up from the room's wiring, high-frequency crackle from jaw and neck muscles, and the brain's own ongoing rhythms. The teal trace is the same recording after the filter.</p>
     <p>The middle panel shows the same recording as a spectrum: how much of the signal lives at each frequency. Slow drift piles up at the far left, the line noise is the spike at 60 Hz, and muscle noise spreads across the right. The ERP itself occupies roughly 0.1 to 30 Hz. A filter is a rule for how much of each frequency to keep, and the shaded region is the band this filter lets through.</p>
     <p>The bottom panel sets the noise aside and shows only what the filter does to the ERP itself. The gold curve is the true waveform, teal is that same waveform after passing through the filter, and whatever coral shows between them is damage the filter did.</p>
 
     <h2>Try this</h2>
     <ol>
-      <li>Set both cutoffs to "off" (slide them fully left). The filter does no damage, but the teal recording on top is swamped by drift and hum, and the "noise left" readout shows how much would have to be averaged away.</li>
+      <li>Slide both cutoffs fully left so they read off. The filter does no damage, but the teal recording on top is swamped by drift and hum, and the noise left after filter readout shows how much would have to be averaged away.</li>
       <li>Apply the lab default, 0.1 Hz high-pass and 30 Hz low-pass. Drift and hum vanish from the top panel, and the bottom panel shows the ERP passing through almost untouched.</li>
-      <li>Push the high-pass up to 1 or 2 Hz. The slow positive wave late in the trial shrinks, and a negative bump appears before it that was never in the data. Tanner, Morgan-Short, and Luck (2015) showed this same artifact turning a P600 into a spurious N400 in published language studies.</li>
-      <li>Push the low-pass down to 5 Hz. The sharp early peaks smear and shrink, and their timing shifts. Sharper filtering in frequency always costs precision in time.</li>
+      <li>Push the high-pass up to 1 or 2 Hz. The slow positive wave late in the trial shrinks, and a negative bump appears before it that was never in the data. Tanner, Morgan-Short, and Luck (2015) showed that the high-pass settings used in some language studies produce exactly this spurious N400 in front of a P600.</li>
+      <li>Push the low-pass down to 5 Hz. The sharp early peaks smear and shrink, and where two of them blend together the apparent peak moves. A zero-phase filter does not itself shift latency; a causal one would. Sharper filtering in frequency always costs precision in time.</li>
       <li>Raise the muscle and line sliders until the raw trace is unreadable, then watch how much the 30 Hz low-pass recovers.</li>
     </ol>
 
-    <h2>Why filters are needed, and why they are dangerous</h2>
-    <p>Averaging removes noise that is random from trial to trial, but it needs many trials to beat drift that lasts seconds and hum that is present on every trial. Filters remove those by frequency instead, which is why a 0.1 Hz high-pass and a 30 Hz low-pass are the first cleaning step in the pipeline. In EEGLAB the two calls are <code>EEG = pop_eegfiltnew(EEG, 0.1, []);</code> and <code>EEG = pop_eegfiltnew(EEG, [], 30);</code>, and <code>spectopo</code> draws the before-and-after spectrum you see in the middle panel.</p>
-    <p>A filter works by replacing each time point with a weighted average of its neighbours, so it necessarily spreads every feature out in time. A high-pass filter goes further: it subtracts the slow version of the waveform, which pushes an inverted copy of each component forward and backward in time. That is the source of the artificial negative bump. Luck (2014) draws the practical rules from this: keep the high-pass at or below 0.1 Hz, apply the low-pass late (after averaging) and only as strongly as plotting or peak measurement needs, and record clean data in the first place, because no filter substitutes for that.</p>
+    <h2>Why it matters for the pipeline</h2>
+    <p>Averaging removes noise that is random from trial to trial, but it needs many trials to beat slow drift, which changes little within an epoch and so barely cancels, and hum that happens to line up with the stimulus rate. Filters remove those by frequency instead, so a 0.1 Hz high-pass and a 30 Hz low-pass are the first cleaning step in the pipeline. In EEGLAB the two calls are <code>EEG = pop_eegfiltnew(EEG, 0.1, []);</code> and <code>EEG = pop_eegfiltnew(EEG, [], 30);</code>, and <code>spectopo</code> draws a spectrum like the one in the middle panel.</p>
+    <p>A filter works by replacing each time point with a weighted average of its neighbors, so it necessarily spreads every feature out in time. A high-pass filter goes further. It subtracts the slow version of the waveform, and that pushes an inverted copy of each component forward and backward in time. That is the source of the artificial negative bump. Luck's rule is to keep the high-pass at or below 0.1 Hz, to apply it only to long stretches of continuous EEG, and to use a low-pass no stronger than plotting or peak measurement needs (Luck, 2014). The lab applies both to the continuous data; because filtering and averaging are linear this gives the same result as filtering after averaging, and mean amplitude in a 200 ms window needs no low-pass at all. The page uses a smooth filter with a similar slope; <code>pop_eegfiltnew</code> defines its cutoff at half amplitude. Recording clean data comes first, because no filter substitutes for that.</p>
 
     <h2 id="refs">References</h2>
     <div class="refs">
@@ -323,7 +323,7 @@ function update(){
   const hp=HP[S.hp],lp=LP[S.lp];
   $('driftv').textContent=S.drift+' µV';$('linev').textContent=S.line+' µV';$('emgv').textContent=S.emg+' µV';$('eegv').textContent=S.eeg+' µV';
   $('hpv').textContent=hp?hp+' Hz':'off';$('lpv').textContent=lp?lp+' Hz':'off';
-  $('band').textContent=(hp?hp:'0')+' – '+(lp?lp:'128')+' Hz';
+  $('band').textContent=(hp?hp:'0')+'–'+(lp?lp:'128')+' Hz';
   // residual noise: RMS of filtered signal minus the embedded ERPs
   let s=0;for(let i=0;i<N;i++){const t=i/FS;let e=0;for(const ev of EVENTS)e+=erp(t-ev);s+=(filt[i]-e)**2;}
   $('resid').textContent=Math.sqrt(s/N).toFixed(1)+' µV rms';

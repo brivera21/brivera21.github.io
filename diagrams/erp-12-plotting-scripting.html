@@ -118,7 +118,7 @@ pre.script .ln.hl{background:#fbe9c2}
     <h2>The pipeline as a script</h2>
     <div class="split">
       <div>
-        <div class="canvas-wrap"><canvas id="flow" aria-label="Ten processing stages drawn as a vertical chain of blocks inside a loop over subjects; a token walks down the chain once per subject when the script runs"></canvas></div>
+        <div class="canvas-wrap"><canvas id="flow" aria-label="Eleven processing stages drawn as a vertical chain of blocks inside a loop over participants; a token walks down the chain once per participant when the script runs"></canvas></div>
         <div class="readout"><span>run <b id="prog">not started</b></span><span>estimated time <b id="est"></b></span></div>
       </div>
       <pre class="script" id="script" aria-label="MATLAB script skeleton"></pre>
@@ -134,7 +134,7 @@ pre.script .ln.hl{background:#fbe9c2}
         </div>
       </div>
       <div class="ctlgroup">
-        <h3>Subjects and channels to interpolate (one cell per subject)</h3>
+        <h3>Participants and channels to interpolate (one cell per participant)</h3>
         <div class="chips" id="chips"></div>
       </div>
     </div>
@@ -144,7 +144,7 @@ pre.script .ln.hl{background:#fbe9c2}
     <h2>The figure</h2>
     <div class="split fig">
       <div>
-        <div class="canvas-wrap"><canvas id="fig" aria-label="A publication-style grand-average ERP figure built from the chosen options: waveforms for Related, Unrelated and their difference at one electrode, with optional baseline, axes, legend and a topographic map"></canvas></div>
+        <div class="canvas-wrap"><canvas id="fig" aria-label="A publication-style grand-average ERP figure built from the chosen options: waveforms for Related, Unrelated, and their difference at one electrode, with optional baseline, axes, legend, and a topographic map"></canvas></div>
         <div class="btnrow" style="margin-top:10px"><button class="secondary" id="dl">Download PNG</button><span class="readout" style="margin:0;align-self:center"><span>rules satisfied <b id="score"></b></span></span></div>
       </div>
       <div>
@@ -155,14 +155,14 @@ pre.script .ln.hl{background:#fbe9c2}
       <div class="ctlgroup">
         <h3>What to plot</h3>
         <div class="control"><label for="chan">Channel</label><select id="chan"><option>Pz</option><option>CPz</option><option>Cz</option><option>Fz</option></select></div>
-        <div class="control"><label for="nsub">Subjects in the grand average <span class="val" id="nsubv"></span></label><input type="range" id="nsub" min="2" max="20" value="2"></div>
+        <div class="control"><label for="nsub">Participants in the grand average <span class="val" id="nsubv"></span></label><input type="range" id="nsub" min="2" max="20" value="2"></div>
         <div class="control check"><input type="checkbox" id="b_rel" checked><label for="b_rel">Related</label></div>
         <div class="control check"><input type="checkbox" id="b_unr" checked><label for="b_unr">Unrelated</label></div>
         <div class="control check"><input type="checkbox" id="b_dif"><label for="b_dif">Difference (Unrelated − Related)</label></div>
       </div>
       <div class="ctlgroup">
         <h3>How to draw it</h3>
-        <div class="control"><label for="style">Line styles</label><select id="style"><option value="color">Colours (teal, coral, violet)</option><option value="kr">Black and red ('k-','r-','b-')</option><option value="dash">Black solid, dashed, dotted</option><option value="same">All black solid</option></select></div>
+        <div class="control"><label for="style">Line styles</label><select id="style"><option value="color">Colors (teal, coral, violet)</option><option value="kr">Black and red ('k-','r-','b-')</option><option value="dash">Black solid, dashed, dotted</option><option value="same">All black solid</option></select></div>
         <div class="control"><label for="base">Baseline shown</label><select id="base"><option value="200">200 ms</option><option value="100">100 ms</option><option value="0">none (start at 0 ms)</option></select></div>
         <div class="control"><label for="pol">Polarity</label><select id="pol"><option value="down">negative down</option><option value="up">negative up</option></select></div>
         <div class="control"><label for="cal">Calibration</label><select id="cal"><option value="axis">y axis in µV</option><option value="bar">calibration bar</option><option value="none">none</option></select></div>
@@ -179,21 +179,21 @@ pre.script .ln.hl{background:#fbe9c2}
 
   <section class="prose">
     <h2>What you are looking at</h2>
-    <p>The first panel is the whole lab sequence drawn as one program. Each block is a lab you have already done, in the order the data go through them, and the bracket on the left is a <code>for</code> loop; every block inside it runs once per subject. The three flags at the top of the script switch groups of blocks on and off, so after fixing one subject you can re-run only the grand average instead of importing everything again. The MATLAB skeleton on the right has the real shape of the lab script, and it updates as you add subjects or channels to interpolate.</p>
-    <p>The second panel builds the final figure of the project, the grand-average N400 at one electrode. The checklist beside it holds the plotting rules from Luck (2014): a reader has to be able to see the prestimulus baseline, find time zero and 0 µV, read the voltage scale and polarity, tell the conditions apart, and see the difference wave, all without leaving the figure.</p>
+    <p>The first panel is the whole lab sequence drawn as one program. Each block is a lab you have already done, in the order the data go through them, and the bracket on the left is a <code>for</code> loop; every block inside it runs once per participant. The three flags at the top of the script switch groups of blocks on and off, so after fixing one participant you can re-run only the grand average instead of importing everything again. The MATLAB skeleton on the right has the real shape of the lab script, and it updates as you add participants or channels to interpolate. One thing differs from the order of the labs: the script interpolates bad channels before the average reference is computed, so that a broken channel is not subtracted from every other one.</p>
+    <p>The second panel builds the final figure of the project, the grand-average N400 at one electrode. The checklist next to it holds the plotting rules from Luck (2014): a reader has to be able to see the prestimulus baseline, find time zero and 0 µV, read the voltage scale and polarity, tell the conditions apart, and see the difference wave, all without leaving the figure.</p>
 
     <h2>Try this</h2>
     <ol>
-      <li>Press "Run the script" with two subjects and watch the token loop through the chain twice before the grand average runs once. Add subjects up to eight and run again: the code does not change, only the loop count and the time estimate.</li>
+      <li>Press Run the script with two participants and watch the token loop through the chain twice before the grand average runs once. Add participants up to eight and run again. The code does not change, only the loop count and the time estimate.</li>
       <li>Turn off <code>import_data</code> and <code>process_data</code> and run again. Only the last block lights up. This is the normal way to redo a figure.</li>
-      <li>Type <code>P7</code> into the interpolation box of one subject and find the matching cell in <code>chan_interpolate</code>.</li>
-      <li>In the figure panel, set the baseline to "none" and the calibration to "none", and note how many rules go red. A waveform with no baseline gives the reader no way to judge whether the effect is real.</li>
-      <li>Move the subject slider from 2 to 20. The waveforms smooth out and the N400 separates cleanly; the map inset follows the same change.</li>
+      <li>Type <code>P7</code> into the interpolation box of one participant and find the matching cell in <code>chan_interpolate</code>.</li>
+      <li>In the figure panel, set Baseline shown to none and Calibration to none, and note how many rules go red. A waveform with no baseline gives the reader no way to judge whether the effect is real.</li>
+      <li>Move the participant slider from 2 to 20. The waveforms smooth out and the N400 separates cleanly; turn on Map inset, 300–500 ms and it follows the same change.</li>
     </ol>
 
     <h2>Why it matters for the pipeline</h2>
-    <p>A script is the record of an analysis. It runs the same way on every subject, it can be handed to someone else, and every parameter you chose in the earlier labs, the 0.1 Hz cutoff, the ±100 µV threshold, the 300–500 ms window, is written down where a reviewer can see it. The first draft comes from EEGLAB. Every menu action appends its command to <code>EEG.history</code>, so a script is mostly the history of one subject wrapped in a loop. The loop needs a predictable place to find each file, which is what the BIDS layout gives you (Gorgolewski et al., 2016; Pernet et al., 2019): <code>sub-001/eeg/sub-001_task-N400_eeg.set</code>, built with <code>fullfile</code> so the same script runs on Windows and macOS. A cell array of subject IDs drives the loop, and a matching cell array of channels to interpolate keeps the one thing that differs between subjects out of the code.</p>
-    <p>The grand average, <code>pop_gaverager</code>, is the mean of the subjects' averaged ERPs. With two subjects it shows you whether the pipeline worked; with twenty it shows you the component, and it is what the statistics in the previous step are about. <code>pop_ploterps</code> draws it. Luck's rule for the drawing is that a figure without a prestimulus baseline gives the reader no way to tell signal from drift, and he labels such studies C.R.A.P., a Carelessly Reviewed Awful Publication. The checklist under the figure spells that rule out.</p>
+    <p>A script is the record of an analysis. It runs the same way on every participant, it can be handed to someone else, and every parameter you chose in the earlier labs, the 0.1 Hz cutoff, the ±100 µV threshold, the 300–500 ms window, is written down where a reviewer can see it. The first draft comes from EEGLAB. Every menu action appends its command to <code>EEG.history</code>, so a script is mostly the history of one participant wrapped in a loop. The loop needs a predictable place to find each file, and the BIDS layout gives it one (Gorgolewski et al., 2016; Pernet et al., 2019). The path <code>sub-001/eeg/sub-001_task-N400_eeg.set</code> is built with <code>fullfile</code> so the same script runs on Windows and macOS. A cell array of participant IDs drives the loop, and a matching cell array of channels to interpolate keeps the one thing that differs between participants out of the code.</p>
+    <p>The grand average, <code>pop_gaverager</code>, is the mean of the participants' averaged ERPs. With two participants it shows you whether the pipeline worked; with twenty it shows you the component. The statistics in the previous step are run on each participant's own measurement, and the grand average is the picture of what those numbers describe. <code>pop_ploterps</code> draws it. Luck's rule for the drawing is that a figure without a prestimulus baseline gives the reader no way to tell signal from drift or artifact, which is why the plotting checklist starts with the baseline. The checklist next to the figure spells that rule out.</p>
 
     <h2 id="refs">References</h2>
     <div class="refs">
@@ -220,8 +220,9 @@ const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const STAGES=[
   {k:'load',label:'Load .set',flag:'import',sec:3},
   {k:'down',label:'Downsample to 256 Hz',flag:'import',sec:4},
+  {k:'interp',label:'Interpolate bad channels',flag:'process',sec:1},
   {k:'reref',label:'Re-reference (average)',flag:'process',sec:1},
-  {k:'filt',label:'Filter 0.1–30 Hz, interpolate',flag:'process',sec:9},
+  {k:'filt',label:'Filter 0.1–30 Hz',flag:'process',sec:8},
   {k:'evl',label:'Event list',flag:'process',sec:2},
   {k:'bins',label:'Bins (BINLISTER)',flag:'process',sec:1},
   {k:'epoch',label:'Epoch −200 to 800 ms',flag:'process',sec:2},
@@ -229,6 +230,7 @@ const STAGES=[
   {k:'avg',label:'Average per bin, save .erp',flag:'process',sec:2},
   {k:'grand',label:'Grand average and plot',flag:'grand',sec:4}
 ];
+const GI=STAGES.length-1;   // index of the grand-average stage
 const S1={import:true,process:true,grand:true,subs:[{id:'sub-001',interp:''},{id:'sub-002',interp:''}],sel:0};
 let anim=null;   // {sub, stage, t}
 function cellStr(v){const items=v.split(/[\s,;]+/).filter(Boolean);return '{'+items.map(x=>"'"+x+"'").join(', ')+'}';}
@@ -250,16 +252,16 @@ function scriptLines(){
   add('down',"        EEG = pop_resample(EEG, 256);");
   add('import',"    end");
   add('process',"    if process_data");
+  add('interp',"        if ~isempty(chan_interpolate{s})");
+  add('interp',"            EEG = pop_interp(EEG, chan_interpolate{s}, 'spherical');");
+  add('interp',"        end");
   add('reref',"        EEG = pop_reref(EEG, []);");
   add('filt',"        EEG = pop_eegfiltnew(EEG, 0.1, []);");
   add('filt',"        EEG = pop_eegfiltnew(EEG, [], 30);");
-  add('filt',"        if ~isempty(chan_interpolate{s})");
-  add('filt',"            EEG = pop_interp(EEG, chan_interpolate{s}, 'spherical');");
-  add('filt',"        end");
   add('evl',"        EEG = pop_creabasiceventlist(EEG, 'Eventlist', '');");
-  add('bins',"        EEG = pop_binlister(EEG, 'BDF', fullfile(home_path, 'bins_N400.txt'));");
+  add('bins',"        EEG = pop_binlister(EEG, 'BDF', fullfile(home_path, 'N400_bins.txt'), 'IndexEL', 1, 'SendEL2', 'EEG', 'Voutput', 'EEG');");
   add('epoch',"        EEG = pop_epochbin(EEG, [-200 800], 'pre');");
-  add('art',"        EEG = pop_artmwppth(EEG, 'Channel', 1:31, 'Threshold', 100, 'Windowsize', 200, 'Windowstep', 50);");
+  add('art',"        EEG = pop_artmwppth(EEG, 'Channel', 1:33, 'Threshold', 100, 'Windowsize', 200, 'Windowstep', 50);");
   add('avg',"        ERP = pop_averager(EEG, 'Criterion', 'good');");
   add('avg',"        pop_savemyerp(ERP, 'erpname', sub, 'filename', [sub '_N400.erp']);");
   add('process',"    end");
@@ -267,7 +269,8 @@ function scriptLines(){
   add('',"");
   add('grand_if',"if grand_avg");
   add('grand',"    ERP = pop_gaverager(fullfile(home_path, 'erp_list.txt'), 'Criterion', 100);");
-  add('grand',"    pop_ploterps(ERP, [1 2], 13, 'Style', 'Classic', 'Blc', 'pre', 'Linespec', {'k-', 'r-'});");
+  add('grand',"    pz_idx = find(strcmpi({ERP.chanlocs.labels}, 'Pz'));");
+  add('grand',"    pop_ploterps(ERP, [1 2], pz_idx, 'Style', 'Classic', 'Blc', 'pre', 'Linespec', {'k-', 'r-'});");
   add('grand',"    saveas(gcf, fullfile(home_path, 'N400_Pz.png'));");
   add('grand_if',"end");
   return L;
@@ -289,11 +292,11 @@ function renderChips(){
     const rm=document.createElement('button');rm.type='button';rm.textContent='×';rm.setAttribute('aria-label','Remove '+s.id);rm.disabled=S1.subs.length<=1;
     rm.addEventListener('click',()=>{S1.subs.splice(i,1);refresh1();});
     c.append(lab,inp,rm);box.appendChild(c);});
-  if(S1.subs.length<8){const b=document.createElement('button');b.className='ghost';b.textContent='+ add subject';b.type='button';
+  if(S1.subs.length<8){const b=document.createElement('button');b.className='ghost';b.textContent='+ add participant';b.type='button';
     b.addEventListener('click',()=>{const n=S1.subs.length+1;S1.subs.push({id:'sub-'+String(n).padStart(3,'0'),interp:''});refresh1();});box.appendChild(b);}
 }
 function estimate(){let per=0;for(const st of STAGES)if(st.k!=='grand'&&S1[st.flag])per+=st.sec;
-  return per*S1.subs.length+(S1.grand?STAGES[9].sec:0);}
+  return per*S1.subs.length+(S1.grand?STAGES[GI].sec:0);}
 // ---- flow canvas
 const fc=$('flow'),fx=fc.getContext('2d');let FW=400,FH=480;
 function fitFlow(){const r=fc.getBoundingClientRect();const dpr=window.devicePixelRatio||1;FW=r.width;FH=Math.max(400,Math.min(520,FW*1.15));
@@ -302,15 +305,15 @@ function ftxt(s,x,y,o={}){fx.font=(o.w||400)+' '+(o.s||12)+'px "IBM Plex Sans",s
 function drawFlow(){
   fx.clearRect(0,0,FW,FH);
   const top=34,bot=14,left=64,right=FW-46,n=STAGES.length,gap=8,bh=(FH-top-bot-gap*(n-1))/n;
-  // subjects row
-  ftxt('subjects:',10,16,{s:11});
-  S1.subs.forEach((s,i)=>{const x=72+i*38;const act=anim&&anim.sub===i&&anim.stage<9;
+  // participants row
+  ftxt('participants:',10,16,{s:11});
+  S1.subs.forEach((s,i)=>{const x=72+i*38;const act=anim&&anim.sub===i&&anim.stage<GI;
     fx.fillStyle=act?'#c8962a':'#f0ece4';fx.strokeStyle=act?'#c8962a':'#e2ddd4';fx.beginPath();fx.roundRect(x,5,34,16,8);fx.fill();fx.stroke();
     ftxt(s.id.slice(4),x+17,17,{a:'center',s:10.5,c:act?'#fff':'#5c6270',w:500});});
-  // loop bracket around stages 0..8
-  const y0=top,y1=top+9*bh+8*gap;
+  // loop bracket around every stage except the grand average
+  const y0=top,y1=top+GI*bh+(GI-1)*gap;
   fx.strokeStyle='#c8962a';fx.lineWidth=1.5;fx.setLineDash([]);fx.beginPath();fx.moveTo(left-10,y0);fx.lineTo(left-22,y0);fx.lineTo(left-22,y1);fx.lineTo(left-10,y1);fx.stroke();
-  fx.save();fx.translate(left-30,(y0+y1)/2);fx.rotate(-Math.PI/2);ftxt('for each subject',0,0,{a:'center',s:11,c:'#c8962a',w:600});fx.restore();
+  fx.save();fx.translate(left-30,(y0+y1)/2);fx.rotate(-Math.PI/2);ftxt('for each participant',0,0,{a:'center',s:11,c:'#c8962a',w:600});fx.restore();
   STAGES.forEach((st,i)=>{const y=top+i*(bh+gap);const on=S1[st.flag];const act=anim&&anim.stage===i;
     fx.fillStyle=act?'#fbe9c2':on?'#fff':'#f0ece4';fx.strokeStyle=act?'#c8962a':on?(st.flag==='import'?'#0f6e74':st.flag==='process'?'#6b5ca5':'#d9573b'):'#e2ddd4';fx.lineWidth=act?2:1.2;
     fx.beginPath();fx.roundRect(left,y,right-left,bh,7);fx.fill();fx.stroke();
@@ -320,16 +323,16 @@ function drawFlow(){
     if(act){fx.fillStyle='#c8962a';fx.beginPath();fx.arc(right-14,y+bh/2,6,0,6.29);fx.fill();}
   });
   // flag labels on the right edge
-  const fl=[['import_data',0,1,'#0f6e74'],['process_data',2,8,'#6b5ca5'],['grand_avg',9,9,'#d9573b']];
+  const fl=[['import_data',0,1,'#0f6e74'],['process_data',2,GI-1,'#6b5ca5'],['grand_avg',GI,GI,'#d9573b']];
   fl.forEach(([name,a,b,c])=>{const ya=top+a*(bh+gap),yb=top+b*(bh+gap)+bh;fx.strokeStyle=c;fx.lineWidth=2;fx.beginPath();fx.moveTo(right+4,ya);fx.lineTo(right+4,yb);fx.stroke();});
   fl.forEach(([name,a,b,c])=>{const ya=top+a*(bh+gap),yb=top+b*(bh+gap)+bh;fx.save();fx.translate(right+18,(ya+yb)/2);fx.rotate(Math.PI/2);ftxt(name,0,0,{a:'center',s:10.5,c,w:600});fx.restore();});
 }
-function refresh1(){renderChips();renderScript();drawFlow();$('est').textContent='about '+estimate()+' s ('+S1.subs.length+' subject'+(S1.subs.length>1?'s':'')+')';}
+function refresh1(){renderChips();renderScript();drawFlow();$('est').textContent='about '+estimate()+' s ('+S1.subs.length+' participant'+(S1.subs.length>1?'s':'')+')';}
 ['import','process','grand'].forEach(f=>{$('f_'+f).addEventListener('click',e=>{S1[f]=!S1[f];e.currentTarget.setAttribute('aria-pressed',S1[f]);refresh1();});});
 $('run').addEventListener('click',()=>{if(anim)return;
-  const steps=[];S1.subs.forEach((s,i)=>{STAGES.forEach((st,j)=>{if(j<9&&S1[st.flag])steps.push({sub:i,stage:j});});});
-  if(S1.grand)steps.push({sub:-1,stage:9});
-  if(!steps.length){$('prog').textContent='nothing to run: all flags are 0';return;}
+  const steps=[];S1.subs.forEach((s,i)=>{STAGES.forEach((st,j)=>{if(j<GI&&S1[st.flag])steps.push({sub:i,stage:j});});});
+  if(S1.grand)steps.push({sub:-1,stage:GI});
+  if(!steps.length){$('prog').textContent='nothing to run, all flags are 0';return;}
   let k=0;const per=reduced?120:260;$('run').disabled=true;
   const tick=()=>{if(k>=steps.length){anim=null;$('run').disabled=false;$('prog').textContent='done, '+(S1.grand?'figure saved':'no figure (grand_avg = 0)');refresh1();return;}
     anim=steps[k];const st=STAGES[anim.stage];
@@ -391,7 +394,7 @@ function drawFig(){
   if(S2.leg&&waves.length){const lx=L+(narrow?8:12),ly=B-14-waves.length*15;waves.forEach(([i,w,name],k)=>{const st=styleFor(i);cx.strokeStyle=st.c;cx.lineWidth=2;cx.setLineDash(st.d);cx.beginPath();cx.moveTo(lx,ly+k*15);cx.lineTo(lx+22,ly+k*15);cx.stroke();cx.setLineDash([]);ctxt(name,lx+28,ly+k*15+4,{s:11});});}
   // topographic inset
   if(S2.topo){const r=narrow?30:40,cxh=R+insetW/2+2,cyh=T+r+14;
-    // N400 effect per site (Unrelated minus Related mean 300-500) drives the colour
+    // N400 effect per site (Unrelated minus Related mean 300-500) drives the color
     const sites=[['Fz',0,-.62],['Cz',0,-.05],['CPz',0,.28],['Pz',0,.6],['C3',-.5,-.05],['C4',.5,-.05],['P3',-.45,.55],['P4',.45,.55],['F3',-.4,-.6],['F4',.4,-.6]];
     const wgt={Fz:.45,Cz:.8,CPz:1,Pz:1,C3:.65,C4:.65,P3:.85,P4:.85,F3:.4,F4:.4};
     const a=grand(S2.chan,false,S2.N),b=grand(S2.chan,true,S2.N);let m=0,c=0;for(let k=0;k<NS;k++)if(times[k]>=300&&times[k]<=500){m+=b[k]-a[k];c++;}m=m/c/CH[S2.chan].n4;  // effect scaled to unit weight
@@ -404,14 +407,14 @@ function drawFig(){
     ctxt('300–500 ms',cxh,cyh+r+11,{a:'center',s:9.5,c:'#5c6270'});ctxt((m*CH[S2.chan].n4).toFixed(1)+' µV at '+S2.chan,cxh,cyh+r+21,{a:'center',s:9.5,c:'#5c6270'});}
 }
 const RULES=[
-  ['Electrode site labelled',()=>S2.site],
+  ['Electrode site labeled',()=>S2.site],
   ['Prestimulus baseline shown, at least 100 ms (200 is better)',()=>S2.base>=100],
   ['Time zero marked',()=>S2.zero&&S2.base>0],
   ['0 µV line drawn',()=>S2.uv],
   ['Voltage calibration given (axis or bar)',()=>S2.cal!=='none'],
   ['Polarity stated (negative up or down)',()=>S2.polst],
   ['Compared conditions overlaid on one axis',()=>S2.rel&&S2.unr],
-  ['Conditions distinguishable by colour or line style',()=>S2.style!=='same'],
+  ['Conditions distinguishable by color or line style',()=>S2.style!=='same'],
   ['Legend present',()=>S2.leg&&(S2.rel||S2.unr||S2.dif)],
   ['Difference wave shown',()=>S2.dif],
   ['Only a handful of sites, plus a map for the rest',()=>S2.topo]
@@ -419,9 +422,9 @@ const RULES=[
 function plotCode(){const bins=[];if(S2.rel)bins.push(1);if(S2.unr)bins.push(2);if(S2.dif)bins.push(3);
   const spec={color:["'-'"],kr:["'k-'","'r-'","'b-'"],dash:["'k-'","'k--'","'k:'"],same:["'k-'","'k-'","'k-'"]}[S2.style];
   const ls=S2.style==='color'?'':", 'Linespec', {"+bins.map((b,i)=>spec[i]).join(', ')+"}";
-  const chidx={Pz:13,CPz:12,Cz:11,Fz:10}[S2.chan];
+  const chidx=S2.chan.toLowerCase()+'_idx';
   const pre=S2.dif?"ERP = pop_binoperator(ERP, {'bin3 = bin2 - bin1 label Unrelated minus Related'});\n":'';
-  return pre+"pop_ploterps(ERP, ["+bins.join(' ')+"], "+chidx+", 'Style', 'Classic', 'Blc', "+(S2.base>0?"'pre'":"'none'")+", 'xscale', ["+(-S2.base)+" 800 "+(-S2.base)+":200:800],\n    'yscale', [-10 10 -10:5:10], 'YDir', '"+(S2.pol==='up'?'reverse':'normal')+"', 'Box', [1 1]"+ls+(S2.leg?", 'LegPos', 'bottom'":", 'LegPos', 'none'")+");"+(S2.topo?"\npop_scalplot(ERP, 3, [300 500], 'Value', 'insta', 'Maplimit', 'maxmin');   % map of the difference, 300–500 ms":'');}
+  return chidx+" = find(strcmpi({ERP.chanlocs.labels}, '"+S2.chan+"'));\n"+pre+"pop_ploterps(ERP, ["+bins.join(' ')+"], "+chidx+", 'Style', 'Classic', 'Blc', "+(S2.base>0?"'pre'":"'none'")+", 'xscale', ["+(-S2.base)+" 800 "+(-S2.base)+":200:800],\n    'yscale', [-10 10 -10:5:10], 'YDir', '"+(S2.pol==='up'?'reverse':'normal')+"', 'Box', [1 1]"+ls+(S2.leg?", 'LegPos', 'bottom'":", 'LegPos', 'none'")+");"+(S2.topo?"\npop_scalplot(ERP, 3, [300 500], 'Value', 'mean', 'Maplimit', 'maxmin');   % map of the difference, 300–500 ms":'');}
 function refresh2(){drawFig();const ul=$('checks');ul.innerHTML='';let n=0;RULES.forEach(([t,f])=>{const li=document.createElement('li');const ok=f();if(ok)n++;li.className=ok?'ok':'';li.textContent=t;ul.appendChild(li);});
   $('score').textContent=n+' of '+RULES.length;$('nsubv').textContent=S2.N;$('plotcode').textContent=plotCode();}
 $('chan').addEventListener('change',e=>{S2.chan=e.target.value;refresh2();});
