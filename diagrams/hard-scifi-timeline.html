@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hard Science Fiction Timeline · Digital Concepts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#121212;--panel:#1a1a1a;--panel2:#202020;--text:#e6e6e6;--muted:#9a9a9a;--line:#2b2b2b;--gold:#e4a01b;
+--teal:#3fb6ad;--coral:#e0684b;--violet:#9b8cf0;--green:#7cc97a;--blue:#5aa9e6;
+--sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+--mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace}
+*{box-sizing:border-box}
+html{border-top:4px solid var(--gold)}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.6;margin:0}
+a{color:var(--gold)}
+.wrap{max-width:1100px;margin:0 auto;padding:10px 16px 40px}
+.back{font-size:13px;color:var(--muted);text-decoration:none;letter-spacing:.04em}
+.back:hover{color:var(--gold)}
+h1{font-size:28px;line-height:1.2;margin:8px 0 2px;font-weight:600}
+p.q{margin:0 0 12px;color:var(--muted);font-style:italic}
+figure{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px}
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:12px}
+@media (max-width:820px){.stage{grid-template-columns:minmax(0,1fr)}}
+.tl{position:relative;min-width:0}
+svg{display:block;width:100%;height:auto;background:var(--panel2);border-radius:8px;touch-action:none;cursor:grab;user-select:none}
+svg:active{cursor:grabbing}
+svg:focus{outline:2px solid var(--gold);outline-offset:1px}
+.mk{cursor:pointer}
+.mk:focus{outline:none}
+.mk:focus circle,.mk:focus polygon{stroke:#fff;stroke-width:2.5}
+.mk.sel circle,.mk.sel polygon{stroke:#fff;stroke-width:2.5}
+.lbl{font-family:var(--sans);font-size:11px;fill:var(--text);pointer-events:none}
+.tick{font-family:var(--mono);font-size:11px;fill:var(--muted)}
+.mlbl{font-family:var(--sans);font-size:10.5px;fill:var(--muted);pointer-events:none}
+.bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px}
+.bar .grow{flex:1 1 auto}
+button{font:inherit;font-size:13px;padding:5px 11px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--text);cursor:pointer}
+button:hover{border-color:var(--gold)}
+button[aria-pressed="true"],button.on{background:var(--gold);color:#121212;border-color:var(--gold)}
+.hint{font-size:12px;color:var(--muted)}
+.card{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:12px 14px;min-height:120px;font-size:14px}
+.card h2{font-size:17px;margin:0 0 2px;font-weight:600;font-style:italic;line-height:1.3}
+.card .meta{font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:6px}
+.card .tags{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 8px}
+.tag{font-size:11.5px;padding:1px 8px;border-radius:999px;border:1px solid var(--c);color:var(--c)}
+.card p{margin:0 0 6px}
+.card .conn{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:6px;margin-top:6px}
+.filters{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line);align-items:flex-end}
+.filters fieldset{border:0;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px 10px}
+.filters legend,.filters label.t{font-size:12px;color:var(--muted);display:block;margin-bottom:2px}
+.filters label.d{font-size:13px;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.filters input[type=checkbox]{accent-color:var(--gold)}
+.filters select,.filters input[type=search]{font:inherit;font-size:14px;padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--text)}
+.sw{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--c)}
+.decades{display:grid;grid-template-columns:repeat(17,minmax(0,1fr));gap:3px;margin-top:10px}
+.decades button{padding:0;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:58px;font-size:11px;font-family:var(--mono);background:var(--panel2);overflow:hidden}
+.decades .b{width:70%;background:var(--gold);opacity:.55;border-radius:2px 2px 0 0}
+.decades .n{line-height:1.1;padding:2px 0 1px}
+.decades .y{color:var(--muted);line-height:1.1;padding-bottom:3px}
+.decades button[aria-pressed="true"] .y{color:#121212}
+@media (max-width:520px){.decades{grid-template-columns:repeat(9,minmax(0,1fr))}.decades button{height:52px}}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:10px;line-height:1.5}
+.prose{max-width:760px;margin:26px 0 0}
+.prose h2{font-size:20px;margin:22px 0 6px;font-weight:600}
+.prose p{margin:0 0 12px}
+.refs p{padding-left:2em;text-indent:-2em;font-size:14.5px;margin:0 0 8px}
+footer{max-width:760px;margin:30px 0 0;font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="index.html">← Digital Concepts</a>
+<h1>Hard Science Fiction Timeline</h1>
+<p class="q">Which stories tried hardest to get the science right, and when?</p>
+
+<figure>
+<div class="stage">
+  <div class="tl">
+    <svg id="svg" viewBox="0 0 800 330" tabindex="0" role="application" aria-label="Timeline of hard science fiction works from 1860 to 2025. Use plus and minus to zoom, arrow keys to pan, Tab to move between markers, Enter to open a work."></svg>
+    <div class="bar">
+      <button type="button" id="zin" aria-label="Zoom in">+</button>
+      <button type="button" id="zout" aria-label="Zoom out">−</button>
+      <button type="button" id="pl" aria-label="Pan earlier">◀</button>
+      <button type="button" id="pr" aria-label="Pan later">▶</button>
+      <button type="button" id="reset">Reset view</button>
+      <span class="hint grow" id="hint">Drag or pinch to move. Scroll to zoom. Tab to a marker, Enter to open.</span>
+    </div>
+  </div>
+  <aside class="card" id="card" aria-live="polite">
+    <h2>Pick a marker</h2>
+    <div class="meta">40 works, 1865–2021</div>
+    <p>Circles are works of fiction, colored by the science they lean on. Diamonds under the axis are real milestones. Click or tab to any of them.</p>
+  </aside>
+</div>
+
+<div class="decades" id="decades" role="group" aria-label="Works per decade; press a decade to zoom to it"></div>
+
+<div class="filters">
+  <fieldset id="doms"><legend>Domains</legend></fieldset>
+  <div><label class="t" for="medium">Medium</label>
+    <select id="medium"><option value="">All</option><option value="novel">Novel</option><option value="short story">Short story</option><option value="film">Film</option></select></div>
+  <div><label class="t" for="q">Search</label><input type="search" id="q" placeholder="title or author" size="18"></div>
+  <div class="hint" id="count"></div>
+</div>
+
+<figcaption><b><i>Note.</i></b> Circle fill is the first listed science domain of a work: gold for orbital mechanics and spaceflight, teal for physics and relativity, coral for planetary science, green for biology and genetics, violet for computing and AI, blue for engineering megastructures; a ring of a second color marks a second domain. Diamonds below the axis are real events. Works are placed at the year of first book or theatrical release; serials, translations and fix-ups are dated in the card. Rows are only used to keep markers from overlapping and carry no meaning. The list is a curated starting set, not a ranking of "hardness."</figcaption>
+</figure>
+
+<section class="prose">
+<h2>What "hard" means</h2>
+<p>The phrase "hard science fiction" first appeared in print in a February 1957 book review by P. Schuyler Miller in <i>Astounding Science Fiction</i> (Miller, 1957). It has meant roughly the same thing ever since: fiction that takes known science as a constraint and lets the story grow out of the physical facts rather than around them. Hal Clement described it as a game between writer and reader. The writer tries to break as few laws of nature as possible, and the reader tries to catch the slips. His essay "Whirligig world" showed the working behind <i>Mission of Gravity</i>, down to the calculation of how gravity varies across a fast-spinning oblate planet (Clement, 1953).</p>
+<p>Fans later borrowed the idea of a hardness scale from mineralogy. The "Mohs scale of science fiction hardness" is a heuristic, not a measurement, but it captures the useful point that hardness is a spectrum: one invented exception (a wormhole, a faster-than-light drive) followed rigorously is different from a story where anything goes. Westfahl (1996) and the <i>Encyclopedia of Science Fiction</i> entry by Nicholls and Langford (2023) both stress that the label describes an attitude toward science more than any fixed set of topics.</p>
+
+<h2>How the timeline follows real science</h2>
+<p>The fiction clusters around real advances. Verne wrote before rocketry existed and reached for a cannon. Tsiolkovsky derived the rocket equation in 1903 and then wrote a novel to show what it implied. Once Goddard flew a liquid-fuel rocket in 1926, and especially after Sputnik in 1957 and Apollo 11 in 1969, spaceflight stories could draw on engineering that existed. O'Neill's 1974 habitat proposal and the 1978 Project Daedalus report fed a wave of megastructure and starship fiction, from <i>Rendezvous with Rama</i> to <i>Eon</i>. The discovery of 51 Pegasi b in 1995 gave later interstellar stories real targets, and <i>Aurora</i> and <i>Project Hail Mary</i> both aim at Tau Ceti. Computing and neuroscience open a third thread in the 1990s and 2000s, with Egan's uploaded minds and Watts's argument about consciousness.</p>
+<p>Several of these works connect to the other two pages in this set. Spin gravity in <i>2001</i>, <i>Rama</i>, <i>Ringworld</i> and <i>Interstellar</i> is the physics on the O'Neill ring page. <i>Orphans of the Sky</i>, <i>Non-Stop</i>, <i>Aurora</i> and the slower-than-light ships of Vinge and Reynolds are the subject of the generation starship page.</p>
+
+<h2>A spectrum, not a canon</h2>
+<p>The forty works here were chosen because each takes at least one area of science seriously, and because together they show how the field moved. Many equally careful works are missing, and some entries include a deliberate exception (Weir's opening dust storm, Sagan's wormhole) that the author acknowledged. Treat the list as a place to start reading, and treat the domain colors as the main thing each work leans on rather than the only thing it gets right.</p>
+
+<h2>References</h2>
+<div class="refs">
+<p>Clement, H. (1953, June). Whirligig world. <i>Astounding Science Fiction, 51</i>(4), 102–114.</p>
+<p>Miller, P. S. (1957, February). [Review]. <i>Astounding Science Fiction</i>.</p>
+<p>Nicholls, P., &amp; Langford, D. (2023). Hard SF. In <i>The Encyclopedia of Science Fiction</i>. <a href="https://sf-encyclopedia.com/entry/hard_sf">https://sf-encyclopedia.com/entry/hard_sf</a></p>
+<p>Westfahl, G. (1996). <i>Cosmic engineers: A study of hard science fiction</i>. Greenwood Press.</p>
+</div>
+</section>
+
+<footer>Part of Digital Concepts. Corrections to rivera21@stolaf.edu.</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+const DOM={space:["Orbital mechanics and spaceflight","#e4a01b"],phys:["Physics and relativity","#3fb6ad"],planet:["Planetary science","#e0684b"],bio:["Biology and genetics","#7cc97a"],comp:["Computing and AI","#9b8cf0"],eng:["Engineering megastructures","#5aa9e6"]};
+const ONEILL='<a href="oneill-ring.html">O\'Neill Ring</a>', GEN='<a href="generation-starship.html">Generation Starship</a>';
+const WORKS=[
+{year:1865,title:"From the Earth to the Moon",author:"Jules Verne",medium:"novel",domains:["space"],note:"A Baltimore gun club fires a crewed projectile at the Moon from a giant cannon in Florida. Verne worked out a launch speed and chose a low-latitude launch site, though the cannon's acceleration would have killed the passengers.",connects:""},
+{year:1911,title:"Ralph 124C 41+",author:"Hugo Gernsback",medium:"novel",domains:["eng","comp"],note:"Serialized in Modern Electrics in 1911–12 and published as a book in 1925. Thin as a story, it is a catalogue of extrapolated technology, including a device that reflects radio waves off distant objects, often cited as an early description of radar.",connects:""},
+{year:1920,title:"Beyond the Planet Earth",author:"Konstantin Tsiolkovsky",medium:"novel",domains:["space","eng"],note:"The rocket pioneer's own fiction, begun in the 1890s and published in 1920. A crew launches into orbit and experiences weightlessness, spacewalks and space greenhouses, all described from Tsiolkovsky's calculations.",connects:ONEILL},
+{year:1947,title:"Rocket Ship Galileo",author:"Robert A. Heinlein",medium:"novel",domains:["space"],note:"The first of Heinlein's juveniles: a scientist and three teenagers convert a rocket to nuclear thermal propulsion and fly to the Moon. It was the starting point for the film Destination Moon (1950).",connects:""},
+{year:1954,title:"Mission of Gravity",author:"Hal Clement",medium:"novel",domains:["planet","phys"],note:"Serialized in Astounding in 1953. Mesklin is a fast-spinning, strongly oblate planet where surface gravity rises from about 3 g at the equator to several hundred g at the poles, and its centipede-like natives fear heights for good reason. Clement showed his calculations in \"Whirligig world.\"",connects:""},
+{year:1957,title:"The Black Cloud",author:"Fred Hoyle",medium:"novel",domains:["phys","bio"],note:"An interstellar cloud of gas approaches the Sun and turns out to be alive. Hoyle, an astrophysicist, fills the book with plausible observatory work and with the physics of how the cloud would cool the Earth.",connects:""},
+{year:1958,title:"Non-Stop",author:"Brian Aldiss",medium:"novel",domains:["bio","space"],note:"Published in the US as Starship. A tribe living in overgrown corridors slowly learns that its world is a generation ship whose society collapsed long ago. Aldiss treats the closed ecology and the loss of knowledge as the real hazards of the voyage.",connects:GEN},
+{year:1961,title:"A Fall of Moondust",author:"Arthur C. Clarke",medium:"novel",domains:["planet","eng"],note:"A tourist craft sinks into a sea of fine lunar dust and the rescue is worked as an engineering problem. The premise reflected a pre-Apollo worry about deep dust seas; the landings later showed the surface to be firm.",connects:""},
+{year:1963,title:"Orphans of the Sky",author:"Robert A. Heinlein",medium:"novel",domains:["space","bio"],note:"A fix-up of two 1941 Astounding stories, \"Universe\" and \"Common Sense.\" Aboard a generation ship whose crew has forgotten the mission, a young man rediscovers what the Ship is. It is the model for most later lost-mission generation-ship stories.",connects:GEN},
+{year:1966,title:"The Moon Is a Harsh Mistress",author:"Robert A. Heinlein",medium:"novel",domains:["space","comp"],note:"A lunar penal colony revolts against Earth. The story takes the Moon's shallow gravity well seriously, throws cargo to Earth with an electromagnetic catapult, and gives the colony a self-aware computer, Mike, as its co-conspirator.",connects:ONEILL},
+{year:1968,title:"2001: A Space Odyssey",author:"Arthur C. Clarke; Stanley Kubrick (dir.)",medium:"novel / film",domains:["space","comp"],note:"Novel and film were developed together. Discovery has a rotating centrifuge for gravity, space is silent, and orbital travel takes months. HAL 9000 remains the reference point for fictional AI.",connects:ONEILL},
+{year:1970,title:"Ringworld",author:"Larry Niven",medium:"novel",domains:["eng","phys"],note:"A ribbon a million miles wide circles a star at roughly the Earth's orbital distance, spun to give gravity, with a habitable inner surface millions of times the area of Earth. Readers pointed out that the ring is unstable, and Niven addressed it in the sequel.",connects:ONEILL},
+{year:1970,title:"Tau Zero",author:"Poul Anderson",medium:"novel",domains:["phys","space"],note:"Expanded from the 1967 novella \"To Outlive Eternity.\" A Bussard ramjet ship loses its ability to decelerate and keeps accelerating toward the speed of light, so time dilation grows without limit and the crew watches cosmic time run away from them.",connects:GEN},
+{year:1972,title:"The Gods Themselves",author:"Isaac Asimov",medium:"novel",domains:["phys"],note:"A device exchanges matter with a parallel universe where the strong nuclear force differs, yielding free energy. The middle section imagines the aliens on the other side, and the plot turns on what the exchange does to physical constants in our own Sun.",connects:""},
+{year:1973,title:"Rendezvous with Rama",author:"Arthur C. Clarke",medium:"novel",domains:["eng","space"],note:"A 50 km cylinder enters the Solar System and a crew explores its rotating interior, complete with a circular sea and Coriolis effects on anything that moves. The spin-gravity habitat is the same physics as an O'Neill cylinder.",connects:ONEILL},
+{year:1974,title:"The Forever War",author:"Joe Haldeman",medium:"novel",domains:["phys"],note:"Serialized in Analog in 1972–74. Soldiers travel through collapsars at relativistic speeds, and each campaign returns them to an Earth that has aged decades or centuries. Time dilation is the engine of the book.",connects:GEN},
+{year:1977,title:"Gateway",author:"Frederik Pohl",medium:"novel",domains:["space","phys"],note:"Prospectors on an asteroid base ride abandoned alien ships whose destinations are preset and unknown. The emotional weight of the book depends on the time dilation near a black hole.",connects:""},
+{year:1977,title:"Inherit the Stars",author:"James P. Hogan",medium:"novel",domains:["planet","bio"],note:"A human corpse in a spacesuit is found on the Moon and dated at about 50,000 years old. The mystery is worked as a scientific investigation, with physicists, biologists and linguists arguing over the evidence.",connects:""},
+{year:1979,title:"The Fountains of Paradise",author:"Arthur C. Clarke",medium:"novel",domains:["eng"],note:"An engineer builds a space elevator from an equatorial mountain on Taprobane, a fictionalized Sri Lanka moved to the equator. Clarke lays out the geostationary orbit, the cable material problem and the politics of a structure that size.",connects:""},
+{year:1980,title:"Dragon's Egg",author:"Robert L. Forward",medium:"novel",domains:["phys","bio"],note:"Life evolves on the surface of a neutron star, where nuclear chemistry runs about a million times faster than ours, so a civilization rises during a single human visit. Forward was a physicist who worked on gravitational-wave detectors.",connects:""},
+{year:1980,title:"Timescape",author:"Gregory Benford",medium:"novel",domains:["phys"],note:"Scientists in a failing 1998 send tachyon messages back to a laboratory in 1962. Benford, a physicist, gives the daily life of research, funding and equipment as much attention as the physics of the signal.",connects:""},
+{year:1985,title:"Eon",author:"Greg Bear",medium:"novel",domains:["eng","phys"],note:"A hollowed asteroid arrives in Earth orbit. Its chambers are habitats, and the last one opens onto a corridor that is longer than the asteroid itself. The hollowed-asteroid habitat is one of the standard spin-gravity designs.",connects:ONEILL},
+{year:1985,title:"Contact",author:"Carl Sagan",medium:"novel",domains:["phys","comp"],note:"Radio astronomers receive a signal from Vega that encodes the plans for a machine. Sagan drew on real SETI practice, and he asked Kip Thorne for a defensible way to cross interstellar distances; Thorne's work on traversable wormholes grew out of that request.",connects:""},
+{year:1992,title:"Red Mars",author:"Kim Stanley Robinson",medium:"novel",domains:["planet","eng"],note:"The first hundred colonists land on Mars and argue about whether to terraform it. Robinson works through the geology, the water, the engineering of habitats and a space elevator, and the politics that follow from all of them.",connects:""},
+{year:1994,title:"Permutation City",author:"Greg Egan",medium:"novel",domains:["comp"],note:"Uploaded minds run as software, at whatever speed their owners can afford, and one of them tests what it means for a computation to be conscious. The book includes a cellular-automaton universe with its own chemistry.",connects:""},
+{year:1996,title:"Voyage",author:"Stephen Baxter",medium:"novel",domains:["space"],note:"An alternate history in which NASA follows Apollo with a crewed Mars landing in 1986, using hardware derived from the Saturn V and Apollo program. Baxter traces the engineering, the budgets and the human cost with documentary care.",connects:""},
+{year:1997,title:"Diaspora",author:"Greg Egan",medium:"novel",domains:["comp","phys"],note:"In the year 2975 most of humanity exists as software. A gamma-ray burst from a nearby neutron star merger forces the survivors outward, and the later chapters build imagined physics on top of real cosmology and geometry.",connects:""},
+{year:1998,title:"Story of Your Life",author:"Ted Chiang",medium:"short story",domains:["phys"],note:"A linguist learns an alien language whose grammar reflects a different way of experiencing time. The physics at the center is Fermat's principle of least time and the variational view of physical law. It was filmed as Arrival (2016).",connects:""},
+{year:1999,title:"A Deepness in the Sky",author:"Vernor Vinge",medium:"novel",domains:["space","phys"],note:"Two slower-than-light fleets meet at a star that switches on and off. Trade across light-years runs on ramscoop ships, cold sleep and the discipline of centuries-long schedules, with no faster-than-light travel.",connects:GEN},
+{year:2000,title:"Revelation Space",author:"Alastair Reynolds",medium:"novel",domains:["space","phys"],note:"Reynolds, an astrophysicist who worked at ESA, allows no faster-than-light travel. Starships crawl between systems at just under light speed, crews age out of step with their homes, and the Fermi paradox is the central mystery.",connects:GEN},
+{year:2006,title:"Blindsight",author:"Peter Watts",medium:"novel",domains:["bio","comp"],note:"A crew of modified humans meets an alien object at the edge of the Solar System. Watts, a marine biologist, uses the encounter to argue that intelligence and consciousness may be separable, and closes the book with endnotes and citations.",connects:""},
+{year:2008,title:"The Three-Body Problem",author:"Liu Cixin",medium:"novel",domains:["phys","comp"],note:"Serialized in 2006, published as a book in China in 2008, and translated into English by Ken Liu in 2014. A civilization orbiting three stars faces chaotic orbits, and the book includes a memorable sequence in which a computer is built from soldiers.",connects:""},
+{year:2011,title:"The Martian",author:"Andy Weir",medium:"novel",domains:["space","planet"],note:"Posted in serial form in 2011 and published by Crown in 2014. An astronaut stranded on Mars survives by chemistry, botany and orbital mechanics; Weir computed the trajectories with his own software. The opening dust storm is the one exception he acknowledges.",connects:""},
+{year:2011,title:"Leviathan Wakes",author:"James S. A. Corey",medium:"novel",domains:["space","bio"],note:"First of The Expanse. Ships accelerate under constant thrust, so gravity comes from the drive and every journey has a flip-and-burn in the middle; people raised in the Belt have bodies shaped by low gravity, and hollowed asteroids are spun for gravity.",connects:ONEILL},
+{year:2013,title:"Gravity",author:"Alfonso Cuarón (dir.)",medium:"film",domains:["space"],note:"A debris cascade of the kind Kessler described in 1978 destroys the shuttle and leaves two astronauts adrift. The film's handling of microgravity was widely praised; its orbital geography, which puts several stations within easy reach of each other, is simplified.",connects:""},
+{year:2014,title:"Interstellar",author:"Christopher Nolan (dir.)",medium:"film",domains:["phys","space"],note:"Kip Thorne was executive producer and science adviser. The black hole Gargantua was rendered from the equations of general relativity, and the visual-effects work was later published in a physics journal. The final habitat, Cooper Station, is an O'Neill cylinder.",connects:ONEILL},
+{year:2015,title:"Aurora",author:"Kim Stanley Robinson",medium:"novel",domains:["bio","space"],note:"A generation ship approaches Tau Ceti after 160 years. Robinson treats the closed ecology as the real problem, with island biogeography, soil chemistry and genetic drift all pushing against the mission.",connects:GEN},
+{year:2015,title:"Seveneves",author:"Neal Stephenson",medium:"novel",domains:["space","eng"],note:"The Moon breaks apart and humanity has two years to move into orbit before the fragments rain down. The first two thirds are about orbital mechanics, delta-v and improvised space engineering; the last third follows genetics across five thousand years.",connects:""},
+{year:2021,title:"Project Hail Mary",author:"Andy Weir",medium:"novel",domains:["phys","bio"],note:"A lone astronaut wakes on an interstellar ship bound for Tau Ceti with no memory of why. He recovers the mission by running experiments, and the book's central invention, a microbe that stores energy as light, is followed through its physics with care.",connects:GEN}
+];
+const MILESTONES=[
+{year:1865,label:"Verne",note:"Jules Verne publishes From the Earth to the Moon, the first widely read fiction to treat a lunar voyage as an engineering problem."},
+{year:1903,label:"Rocket equation",note:"Konstantin Tsiolkovsky publishes the rocket equation relating a rocket's change in velocity to its exhaust speed and mass ratio."},
+{year:1926,label:"Goddard",note:"Robert Goddard launches the first liquid-fuel rocket, in Auburn, Massachusetts."},
+{year:1957,label:"Sputnik",note:"The Soviet Union places Sputnik 1 in orbit, the first artificial satellite."},
+{year:1969,label:"Apollo 11",note:"Neil Armstrong and Buzz Aldrin land on the Moon."},
+{year:1974,label:"O'Neill",note:"Gerard K. O'Neill's \"The colonization of space\" in Physics Today proposes large rotating habitats built from lunar material."},
+{year:1978,label:"Daedalus",note:"The British Interplanetary Society publishes the Project Daedalus report, a design study for an uncrewed fusion-powered probe to Barnard's Star."},
+{year:1995,label:"51 Pegasi b",note:"Michel Mayor and Didier Queloz announce 51 Pegasi b, the first exoplanet found orbiting a Sun-like star."},
+{year:2015,label:"Gravitational waves",note:"LIGO detects gravitational waves from a black hole merger on 14 September 2015; the result is announced in February 2016."},
+{year:2016,label:"Starshot",note:"Breakthrough Starshot is announced: a plan for gram-scale light-sail probes to Alpha Centauri, for instruments rather than people."}
+];
+
+const Y0=1860,Y1=2025,W=800,H=330,PAD=14,AXIS=236;
+const svg=document.getElementById('svg'),card=document.getElementById('card');
+let view={a:Y0,b:Y1},sel=null,selType=null;
+const filt={dom:new Set(Object.keys(DOM)),medium:"",q:""};
+
+const domsEl=document.getElementById('doms');
+for(const k in DOM){const l=document.createElement('label');l.className='d';l.style.setProperty('--c',DOM[k][1]);
+ l.innerHTML='<input type="checkbox" checked value="'+k+'"><span class="sw"></span>'+DOM[k][0];domsEl.appendChild(l);
+ l.querySelector('input').addEventListener('change',e=>{e.target.checked?filt.dom.add(k):filt.dom.delete(k);render();});}
+document.getElementById('medium').addEventListener('change',e=>{filt.medium=e.target.value;render();});
+document.getElementById('q').addEventListener('input',e=>{filt.q=e.target.value.trim().toLowerCase();render();});
+
+function visible(w){if(!w.domains.some(d=>filt.dom.has(d)))return false;
+ if(filt.medium&&!w.medium.includes(filt.medium))return false;
+ if(filt.q&&!(w.title.toLowerCase().includes(filt.q)||w.author.toLowerCase().includes(filt.q)))return false;return true;}
+const x=y=>PAD+(y-view.a)/(view.b-view.a)*(W-2*PAD);
+const textW=s=>s.length*5.9+8;
+
+function svgEl(n,at){const e=document.createElementNS('http://www.w3.org/2000/svg',n);for(const k in at)e.setAttribute(k,at[k]);return e;}
+
+function render(){
+ const span=view.b-view.a,ppy=(W-2*PAD)/span;
+ while(svg.firstChild)svg.removeChild(svg.firstChild);
+ const g=svgEl('g',{});svg.appendChild(g);
+ g.appendChild(svgEl('line',{x1:0,x2:W,y1:AXIS,y2:AXIS,stroke:'#555','stroke-width':1.2}));
+ const step=span>120?20:span>50?10:span>20?5:1;
+ for(let y=Math.ceil(view.a/step)*step;y<=view.b;y+=step){const xx=x(y);
+  g.appendChild(svgEl('line',{x1:xx,x2:xx,y1:AXIS,y2:AXIS+5,stroke:'#666'}));
+  const t=svgEl('text',{x:xx,y:AXIS+16,'text-anchor':'middle',class:'tick'});t.textContent=y;g.appendChild(t);}
+ for(let y=Math.ceil(view.a/10)*10;y<=view.b;y+=10){g.appendChild(svgEl('line',{x1:x(y),x2:x(y),y1:22,y2:AXIS,stroke:'#2b2b2b'}));}
+ // works, lanes
+ const showAll=ppy>=22;
+ const list=WORKS.filter(visible).map((w,i)=>({w,i:WORKS.indexOf(w),x:x(w.year)})).filter(o=>o.x>=-20&&o.x<=W+20).sort((a,b)=>a.x-b.x);
+ const lanesEnd=[];
+ for(const o of list){const label=showAll||sel===o.w;const need=label?textW(o.w.title):0;
+  let L=0;while(L<lanesEnd.length&&lanesEnd[L]>o.x-8)L++;
+  lanesEnd[L]=o.x+Math.max(8,need);o.lane=L;o.label=label;}
+ for(const o of list){const y=AXIS-18-o.lane*23,w=o.w;const c1=DOM[w.domains[0]][1],c2=w.domains[1]?DOM[w.domains[1]][1]:c1;
+  const gm=svgEl('g',{class:'mk'+(sel===w?' sel':''),tabindex:0,role:'button','data-w':o.i,'aria-label':w.title+', '+w.author+', '+w.year});
+  gm.appendChild(svgEl('circle',{cx:o.x,cy:y,r:7,fill:c1,stroke:c2,'stroke-width':2.5}));
+  const tt=svgEl('title',{});tt.textContent=w.title+' ('+w.year+')';gm.appendChild(tt);
+  if(o.label){const t=svgEl('text',{x:o.x+11,y:y+4,class:'lbl'});t.textContent=w.title;gm.appendChild(t);}
+  g.appendChild(gm);}
+ // milestones
+ let lastLbl=-1e9;
+ for(const m of MILESTONES){const xx=x(m.year);if(xx<-10||xx>W+10)continue;const y=AXIS+34;
+  const gm=svgEl('g',{class:'mk'+(sel===m?' sel':''),tabindex:0,role:'button','data-m':MILESTONES.indexOf(m),'aria-label':'Milestone '+m.year+', '+m.label});
+  gm.appendChild(svgEl('polygon',{points:(xx)+','+(y-6)+' '+(xx+6)+','+y+' '+xx+','+(y+6)+' '+(xx-6)+','+y,fill:'#e6e6e6',stroke:'#e6e6e6','stroke-width':1}));
+  gm.appendChild(svgEl('line',{x1:xx,x2:xx,y1:AXIS,y2:y-6,stroke:'#777'}));
+  const tt=svgEl('title',{});tt.textContent=m.year+' '+m.label;gm.appendChild(tt);
+  const lw=m.label.length*5.6+6;
+  if(xx-lw/2>lastLbl+4){const t=svgEl('text',{x:xx,y:y+20,'text-anchor':'middle',class:'mlbl'});t.textContent=m.label;gm.appendChild(t);lastLbl=xx+lw/2;}
+  g.appendChild(gm);}
+ const t=svgEl('text',{x:W-PAD,y:AXIS+70,'text-anchor':'end',class:'tick'});t.textContent='fiction above the axis, real milestones below';g.appendChild(t);
+ const t2=svgEl('text',{x:PAD,y:14,class:'tick'});t2.textContent=Math.round(view.a)+'–'+Math.round(view.b)+'  ('+list.length+' shown)';g.appendChild(t2);
+ renderDecades();
+ document.getElementById('count').textContent=WORKS.filter(visible).length+' of '+WORKS.length+' works match';
+}
+
+function renderDecades(){const el=document.getElementById('decades');el.innerHTML='';const counts={};
+ WORKS.filter(visible).forEach(w=>{const d=Math.floor(w.year/10)*10;counts[d]=(counts[d]||0)+1;});
+ const max=Math.max(1,...Object.values(counts));
+ for(let d=1860;d<=2020;d+=10){const b=document.createElement('button');b.type='button';const n=counts[d]||0;
+  const inView=d+10>view.a&&d<view.b&&(view.b-view.a)<=12;b.setAttribute('aria-pressed',inView?'true':'false');
+  b.setAttribute('aria-label',d+'s, '+n+' works');b.title=d+'s: '+n+' works';
+  b.innerHTML='<span class="b" style="height:'+(n/max*24)+'px"></span><span class="n">'+n+'</span><span class="y">'+String(d).slice(2)+'s</span>';
+  b.addEventListener('click',()=>{view={a:d-1,b:d+11};render();});el.appendChild(b);}}
+
+function showWork(w){sel=w;selType='w';const tags=w.domains.map(d=>'<span class="tag" style="--c:'+DOM[d][1]+'">'+DOM[d][0]+'</span>').join('');
+ card.innerHTML='<h2>'+w.title+'</h2><div class="meta">'+w.author+' · '+w.year+' · '+w.medium+'</div><div class="tags">'+tags+'</div><p>'+w.note+'</p>'+(w.connects?'<div class="conn">Connects to: '+w.connects+'</div>':'');
+ render();}
+function showMilestone(m){sel=m;selType='m';card.innerHTML='<h2>'+m.year+': '+m.label+'</h2><div class="meta">real milestone</div><p>'+m.note+'</p>';render();}
+
+function focusMarker(sel){const e=svg.querySelector(sel);if(e)e.focus();}
+svg.addEventListener('click',e=>{const m=e.target.closest('.mk');if(!m||dragMoved)return;
+ if(m.dataset.w!==undefined){showWork(WORKS[+m.dataset.w]);focusMarker('[data-w="'+m.dataset.w+'"]');}
+ else{showMilestone(MILESTONES[+m.dataset.m]);focusMarker('[data-m="'+m.dataset.m+'"]');}});
+svg.addEventListener('keydown',e=>{const m=e.target.closest&&e.target.closest('.mk');
+ if(m&&(e.key==='Enter'||e.key===' ')){e.preventDefault();m.dispatchEvent(new MouseEvent('click',{bubbles:true}));return;}
+ if(m&&(e.key==='ArrowRight'||e.key==='ArrowLeft')){e.preventDefault();const all=[...svg.querySelectorAll('.mk[data-w]')].sort((a,b)=>+a.dataset.w-+b.dataset.w);
+  const i=all.indexOf(m.dataset.w!==undefined?m:all[0]);const n=all[Math.min(all.length-1,Math.max(0,i+(e.key==='ArrowRight'?1:-1)))];if(n)n.focus();return;}
+ if(e.target===svg){const s=(view.b-view.a)*0.1;
+  if(e.key==='ArrowRight'){pan(s);e.preventDefault();}else if(e.key==='ArrowLeft'){pan(-s);e.preventDefault();}
+  else if(e.key==='+'||e.key==='='){zoom(0.7,(view.a+view.b)/2);e.preventDefault();}else if(e.key==='-'){zoom(1/0.7,(view.a+view.b)/2);e.preventDefault();}
+  else if(e.key==='Home'){view={a:Y0,b:Y1};render();}}});
+
+function clamp(){const s=Math.min(Y1-Y0,Math.max(6,view.b-view.a));let a=view.a;if(a<Y0)a=Y0;if(a+s>Y1)a=Y1-s;view={a,b:a+s};}
+function pan(dy){view.a+=dy;view.b+=dy;clamp();render();}
+function zoom(f,cy){view={a:cy-(cy-view.a)*f,b:cy+(view.b-cy)*f};clamp();render();}
+const yearAt=px=>{const r=svg.getBoundingClientRect();return view.a+((px-r.left)/r.width*W-PAD)/(W-2*PAD)*(view.b-view.a);};
+document.getElementById('zin').onclick=()=>zoom(0.7,(view.a+view.b)/2);
+document.getElementById('zout').onclick=()=>zoom(1/0.7,(view.a+view.b)/2);
+document.getElementById('pl').onclick=()=>pan(-(view.b-view.a)*0.2);
+document.getElementById('pr').onclick=()=>pan((view.b-view.a)*0.2);
+document.getElementById('reset').onclick=()=>{view={a:Y0,b:Y1};render();};
+svg.addEventListener('wheel',e=>{e.preventDefault();zoom(e.deltaY>0?1.15:1/1.15,yearAt(e.clientX));},{passive:false});
+
+// pointer drag and pinch
+const pts=new Map();let dragMoved=false,start=null,pinch=null;
+svg.addEventListener('pointerdown',e=>{pts.set(e.pointerId,{x:e.clientX,y:e.clientY});svg.setPointerCapture(e.pointerId);dragMoved=false;
+ if(pts.size===1)start={x:e.clientX,a:view.a,b:view.b};
+ else if(pts.size===2){const p=[...pts.values()];pinch={d:Math.abs(p[0].x-p[1].x),a:view.a,b:view.b,cy:yearAt((p[0].x+p[1].x)/2)};start=null;}});
+svg.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+ const r=svg.getBoundingClientRect(),ppx=(W-2*PAD)/r.width;
+ if(pts.size===2&&pinch){const p=[...pts.values()];const d=Math.max(10,Math.abs(p[0].x-p[1].x));const f=pinch.d/d;
+  view={a:pinch.cy-(pinch.cy-pinch.a)*f,b:pinch.cy+(pinch.b-pinch.cy)*f};clamp();render();dragMoved=true;}
+ else if(start){const dx=e.clientX-start.x;if(Math.abs(dx)>3)dragMoved=true;const dy=-dx*ppx/(W-2*PAD)*(start.b-start.a);
+  view={a:start.a+dy,b:start.b+dy};clamp();render();}});
+const up=e=>{pts.delete(e.pointerId);if(pts.size<2)pinch=null;if(pts.size===0)start=null;else if(pts.size===1){const p=[...pts.values()][0];start={x:p.x,a:view.a,b:view.b};}};
+svg.addEventListener('pointerup',up);svg.addEventListener('pointercancel',up);
+
+render();
+})();
+</script>
+</body>
+</html>
