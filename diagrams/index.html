@@ -195,13 +195,13 @@ const DIAGRAMS = [
     category:'Neuroscience',
     title:"The Nervous System's Family Tree",
     file:'nervous-system-tree.html',
-    thumb:'Nervous_System_Family_Tree/tree.svg',
+    thumb:'tree.svg',
     tags:['evolution','neuroanatomy','teaching'],
     label:'SCROLLABLE',
     blurb:'From LUCA to Homo sapiens, with every relative that branched off along the way. Each carries its neuron count, shared DNA and a life-history bar.',
     extras:[
-      {label:'Print PDF (A3) ↗', href:'Nervous_System_Family_Tree/nervous-system-tree.pdf'},
-      {label:'tree.svg ↗', href:'Nervous_System_Family_Tree/tree.svg'}
+      {label:'Print PDF (A3) ↗', href:'nervous-system-tree.pdf'},
+      {label:'tree.svg ↗', href:'tree.svg'}
     ],
     connects:'Complements the Animals, Primate and Hominins evolution lectures; the dates, innovations and life-history values are pulled from those decks.',
     caveats:[
@@ -219,12 +219,12 @@ const DIAGRAMS = [
     category:'Neuroscience',
     title:'Energy use across ontogeny',
     file:'ontogeny-energy.html',
-    thumb:'Ontogeny_Energy_Budget/energy-curve.svg',
+    thumb:'energy-curve.svg',
     tags:['physiology','metabolism','development','teaching'],
     label:'BROKEN AXIS',
     blurb:'Metabolic rate from conception to death, with gestation, puberty and pregnancy each given their own zoom.',
     extras:[
-      {label:'energy-curve.svg ↗', href:'Ontogeny_Energy_Budget/energy-curve.svg'}
+      {label:'energy-curve.svg ↗', href:'energy-curve.svg'}
     ],
     connects:'For lectures on ontogeny, energetics and life-history trade-offs.',
     caveats:[
@@ -238,16 +238,35 @@ const DIAGRAMS = [
     mine:''
   },
   {
+    id:'developmental-timelines',
+    category:'Development',
+    title:'Developmental Timelines',
+    file:'developmental-timelines.html',
+    thumbLive:true,
+    tags:['development','methods','teaching','reference','interactive'],
+    label:'RANGES',
+    blurb:'Milestones from birth to puberty as early-to-late ranges: WHO windows and clinical ranges as bars, the CDC\'s 2022 checklist ages as diamonds, with speech, walking, reading and puberty on one compressed age axis.',
+    extras:[],
+    connects:'For lectures on development and on why surveillance checklists are not norms: the CDC\'s 2022 ages mark where 75% or more of children have passed a milestone, not the average.',
+    caveats:[
+      'CDC checklist ages are deliberately late-typical (the ≥75% criterion of Zubler et al. 2022); a diamond is not a mean.',
+      'Crawling has no CDC diamond: the 2022 revision removed it because some healthy children never crawl.',
+      'Gross motor bars are WHO windows of achievement (1st to 99th percentile); language bars are CHOP clinical ranges; reading and puberty rows are not CDC data (Reading Rockets; NICHD/AAFP).',
+      'Ranges describe populations, not individual children.'
+    ],
+    mine:''
+  },
+  {
     id:'scale-of-a-neuron',
     category:'Neuroscience',
     title:'The Neuron',
     file:'scale-of-a-neuron.html',
-    thumb:'Scale_Of_A_Neuron/scale-of-a-neuron.svg',
+    thumb:'scale-of-a-neuron.svg',
     tags:['neuroanatomy','morphology','scale','teaching'],
     label:'INTERACTIVE',
     blurb:'A corticospinal pyramidal neuron at true scale: the whole cell body and dendrites shrink to a speck beside a one meter axon. Hover any part to light it up across body, tract and cell, and blow the soma up to everyday objects.',
     extras:[
-      {label:'scale-of-a-neuron.svg ↗', href:'Scale_Of_A_Neuron/scale-of-a-neuron.svg'}
+      {label:'scale-of-a-neuron.svg ↗', href:'scale-of-a-neuron.svg'}
     ],
     connects:'For lectures on neuron structure, scale and the corticospinal pathway. Pairs with the action potential and brain composition diagrams.',
     caveats:[
