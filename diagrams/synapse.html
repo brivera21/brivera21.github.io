@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Synapse</title>
+<style>
+  :root{
+    --bg:#0b1120; --panel:#111a2e; --panel2:#0e1626; --stroke:#243149;
+    --ink:#e8eef8; --muted:#94a3b8; --faint:#5b6b86;
+    --pre:#fb923c; --ves:#fdba74; --tx:#f0abfc; --ca:#4ade80;
+    --iono:#38bdf8; --metab:#a78bfa; --trans:#2dd4bf; --enz:#f87171; --auto:#fbbf24;
+    --post:#94a3b8; --epsp:#34d399; --ipsp:#f87171; --drug:#facc15;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  .wrap{max-width:1120px;margin:0 auto;padding:22px 20px 40px;}
+  header h1{font-size:23px;margin:0 0 5px;font-weight:650;letter-spacing:.2px;}
+  header p{margin:0 0 4px;color:var(--muted);font-size:13.5px;max-width:900px;line-height:1.55;}
+
+  h2.sec{font-size:17px;font-weight:650;margin:26px 0 2px;letter-spacing:.2px;}
+  p.sub{margin:0 0 10px;color:var(--muted);font-size:13px;line-height:1.55;max-width:900px;}
+
+  .controls{margin:16px 0 0;display:flex;flex-wrap:wrap;gap:10px 12px;align-items:center;
+    background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--stroke);
+    border-radius:12px;padding:12px 14px;}
+  button{font:inherit;color:var(--ink);background:#1b2740;border:1px solid var(--stroke);
+    border-radius:9px;padding:8px 14px;cursor:pointer;font-size:13.5px;transition:.15s;}
+  button:hover{background:#243350;border-color:#375073;}
+  button.primary{background:#1f6feb;border-color:#1f6feb;color:#fff;font-weight:600;}
+  button.primary:hover{background:#3b82f6;}
+  button.on{border-color:var(--drug);color:var(--drug);}
+  .ctl-note{font-size:12.5px;color:var(--faint);}
+  .spacer{margin-left:auto;}
+  .seg{display:inline-flex;border:1px solid var(--stroke);border-radius:9px;overflow:hidden;}
+  .seg button{border:0;border-radius:0;padding:8px 13px;background:#141d30;}
+  .seg button.on{background:#1d2942;color:#fff;font-weight:600;box-shadow:inset 0 -2px 0 currentColor;}
+  .seg button.on.ex{color:var(--epsp);} .seg button.on.in{color:var(--ipsp);}
+
+  .stage{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--stroke);
+    border-radius:14px;margin-top:14px;padding:6px 6px 2px;overflow:hidden;}
+  .scroller{overflow-x:auto;overflow-y:hidden;}
+  svg.fig{display:block;width:100%;height:auto;}
+  svg#fig{min-width:900px;}
+
+  .part{cursor:pointer;}
+  .part:focus{outline:none;}
+  .part:focus-visible .hit{stroke:#fff;stroke-width:2;stroke-dasharray:4 3;}
+  svg.sel .part{opacity:.22;transition:opacity .18s;}
+  svg.sel .part.on{opacity:1;filter:drop-shadow(0 0 7px currentColor);}
+  .hit{fill:transparent;stroke:none;}
+  .lbl{font:600 13px -apple-system,"Segoe UI",sans-serif;pointer-events:none;
+    paint-order:stroke;stroke:#0b1120;stroke-width:4px;stroke-linejoin:round;}
+  .lbl.sm{font-size:11.5px;stroke-width:3.4px;}
+  .caps{font:700 11px -apple-system,"Segoe UI",sans-serif;letter-spacing:1.1px;pointer-events:none;
+    paint-order:stroke;stroke:#0b1120;stroke-width:3px;stroke-linejoin:round;}
+  #drugLayer{opacity:0;transition:opacity .2s;pointer-events:none;}
+  #drugLayer.on{opacity:1;}
+  .dnum{font:700 11.5px -apple-system,sans-serif;fill:#1a1200;}
+
+  .below{display:grid;grid-template-columns:250px 1fr;gap:14px;margin-top:12px;align-items:start;}
+  .chips{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--stroke);
+    border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:6px;}
+  .chips .grouphead{font:700 10.5px -apple-system,sans-serif;letter-spacing:1.1px;text-transform:uppercase;
+    color:var(--faint);padding:6px 4px 2px;}
+  .chip{display:flex;align-items:center;gap:9px;background:#141d30;border:1px solid var(--stroke);
+    border-radius:9px;padding:8px 11px;cursor:pointer;font-size:13px;color:#cdd7e6;transition:.14s;text-align:left;}
+  .chip:hover{background:#1d2942;border-color:#375073;}
+  .chip.on{background:#1d2942;border-color:currentColor;color:#fff;font-weight:600;}
+  .chip .dot{width:10px;height:10px;border-radius:50%;flex:none;background:currentColor;
+    box-shadow:0 0 8px currentColor;}
+  .chip .num{width:18px;height:18px;border-radius:50%;flex:none;border:1.5px solid currentColor;
+    font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;}
+  .chip .nm{color:#cdd7e6;}
+  .chip.on .nm{color:#fff;}
+
+  .info{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--stroke);
+    border-left-width:4px;border-radius:14px;padding:14px 18px 16px;min-height:250px;}
+  .info .kicker{font:700 11px -apple-system,"Segoe UI",sans-serif;letter-spacing:1.1px;text-transform:uppercase;}
+  .info h3{margin:4px 0 2px;font-size:19px;font-weight:650;}
+  .info .tag{margin:0 0 9px;font-size:13.5px;color:var(--muted);}
+  .info p{margin:0 0 9px;font-size:14px;line-height:1.62;color:#cdd7e6;}
+  .info b{color:var(--ink);}
+  .info .facts{margin:10px 0 0;padding:9px 0 0;border-top:1px solid var(--stroke);
+    display:flex;flex-wrap:wrap;gap:7px 20px;font-size:12.5px;color:var(--faint);}
+  .info .facts span b{color:var(--muted);font-weight:600;}
+
+  .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--stroke);
+    border-radius:14px;margin-top:14px;padding:12px 16px 14px;}
+  .card h3{margin:0 0 4px;font-size:14px;font-weight:650;}
+  .card p{margin:0 0 8px;font-size:13px;color:#cdd7e6;line-height:1.6;}
+  .card p.note{color:var(--muted);font-size:12.5px;}
+  .card b{color:var(--ink);}
+
+  table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  td,th{padding:6px 10px 6px 0;border-top:1px solid var(--stroke);color:#cdd7e6;vertical-align:top;text-align:left;}
+  tr:first-child td{border-top:none;}
+  td.k{color:var(--muted);width:210px;}
+  th{color:var(--faint);font-weight:600;font-size:11.5px;letter-spacing:.6px;text-transform:uppercase;border-top:none;}
+
+  .druglist{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:9px 20px;margin-top:8px;}
+  .drugitem{display:flex;gap:9px;font-size:12.5px;line-height:1.5;color:#9fb0c6;}
+  .drugitem .n{flex:none;width:19px;height:19px;border-radius:50%;background:var(--drug);color:#1a1200;
+    font-weight:800;font-size:11.5px;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+  .drugitem b{color:var(--ink);font-weight:650;}
+
+  .sources{margin-top:20px;font-size:11.5px;color:var(--faint);line-height:1.7;
+    border-top:1px solid var(--stroke);padding-top:12px;}
+  .sources b{color:var(--muted);display:block;margin-bottom:4px;font-size:12px;}
+  .sources a{color:#6ea8fe;text-decoration:none;}
+  .sources a:hover{text-decoration:underline;}
+  .sources ol{margin:0;padding-left:18px;}
+
+  @media (max-width:760px){
+    .below{grid-template-columns:1fr;}
+    .chips{flex-direction:row;flex-wrap:wrap;}
+    .chips .grouphead{width:100%;}
+    .chip{flex:1 1 160px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>The Synapse</h1>
+    <p>A neuron passes its signal to the next cell by releasing a chemical. Press play to watch the sequence, or click a step or a structure to read what happens there. The same figure can also show where drugs act, since almost every drug that changes behavior does it by interfering with one of these steps.</p>
+  </header>
+
+  <div class="controls">
+    <button id="play" class="primary">▶ Play</button>
+    <button id="step">Step ▸</button>
+    <span class="seg" role="group" aria-label="Synapse type">
+      <button id="btnEx" class="ex on">Excitatory</button>
+      <button id="btnIn" class="in">Inhibitory</button>
+    </span>
+    <button id="drugs">Show where drugs act</button>
+    <span class="ctl-note spacer" id="hint">The cleft is drawn wide enough to see. It is really 20 to 40 nm across.</span>
+  </div>
+
+  <div class="stage">
+    <div class="scroller">
+      <svg class="fig" id="fig" viewBox="0 0 1000 604" role="img" aria-label="Interactive diagram of a chemical synapse">
+        <defs>
+          <linearGradient id="gTerm" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#7c3a12"/><stop offset="1" stop-color="#b4521a"/>
+          </linearGradient>
+          <linearGradient id="gPost" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#3b4a63"/><stop offset="1" stop-color="#2a3548"/>
+          </linearGradient>
+          <linearGradient id="gMye" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#e8c07f"/><stop offset=".5" stop-color="#b98c47"/>
+            <stop offset="1" stop-color="#8d6a33"/>
+          </linearGradient>
+          <marker id="arw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,1 L9,5 L0,9 z" fill="#94a3b8"/>
+          </marker>
+        </defs>
+
+        <!-- ============ AXON + TERMINAL ============ -->
+        <g class="part" id="p-terminal" tabindex="0" role="button" aria-label="Axon terminal" style="color:var(--pre)">
+          <path d="M10,64 H196" stroke="#34d399" stroke-width="16" fill="none" stroke-linecap="round"/>
+          <rect x="30" y="46" width="86" height="36" rx="15" fill="url(#gMye)" stroke="#e8c07f" stroke-width="1.4"/>
+          <path d="M196,44 H846 C884,44 906,68 906,104 L906,246 C906,262 894,272 872,272 L204,272
+                   C182,272 170,260 170,240 L170,92 C170,64 180,44 196,44 Z"
+                fill="url(#gTerm)" stroke="#fb923c" stroke-width="2.4"/>
+          <text class="caps" x="212" y="74" fill="#fed7aa">PRESYNAPTIC TERMINAL</text>
+          <text class="lbl sm" x="24" y="36" fill="#34d399">axon</text>
+          <text class="lbl sm" x="73" y="100" text-anchor="middle" fill="#d6a75f">myelin</text>
+          <rect class="hit" x="196" y="44" width="300" height="30"/>
+        </g>
+
+        <!-- presynaptic membrane -->
+        <path d="M176,272 H900" stroke="#fb923c" stroke-width="5" fill="none" stroke-linecap="round" opacity=".85"/>
+
+        <!-- ============ VESICLES ============ -->
+        <g class="part" id="p-vesicle" tabindex="0" role="button" aria-label="Synaptic vesicles" style="color:var(--ves)">
+          <g id="vesGroup" fill="#2b1406" stroke="#fdba74" stroke-width="2"></g>
+          <text class="lbl sm" x="330" y="96" text-anchor="middle" fill="#fdba74">synaptic vesicles</text>
+          <rect class="hit" x="206" y="100" width="330" height="126"/>
+        </g>
+
+        <!-- ============ CALCIUM CHANNELS ============ -->
+        <g class="part" id="p-ca" tabindex="0" role="button" aria-label="Voltage-gated calcium channels" style="color:var(--ca)">
+          <g id="caCh"></g>
+          <text class="lbl sm" x="430" y="252" text-anchor="middle" fill="#4ade80">voltage-gated Ca²⁺ channels</text>
+          <path d="M370,256 C356,260 350,262 346,264 M490,256 C504,260 510,262 514,264"
+                stroke="#166534" stroke-width="1.4" fill="none"/>
+          <rect class="hit" x="322" y="248" width="216" height="36"/>
+        </g>
+
+        <!-- ============ AUTORECEPTOR ============ -->
+        <g class="part" id="p-auto" tabindex="0" role="button" aria-label="Autoreceptor" style="color:var(--auto)">
+          <path d="M212,272 l8,-16 h18 l8,16 z" fill="#3b2a06" stroke="#fbbf24" stroke-width="2"/>
+          <text class="lbl sm" x="238" y="216" text-anchor="middle" fill="#fbbf24">autoreceptor</text>
+          <path d="M238,222 V250" stroke="#a16207" stroke-width="1.4" fill="none"/>
+          <rect class="hit" x="206" y="250" width="60" height="28"/>
+        </g>
+
+        <!-- ============ TRANSPORTER ============ -->
+        <g class="part" id="p-transporter" tabindex="0" role="button" aria-label="Transporter" style="color:var(--trans)">
+          <rect x="722" y="252" width="34" height="40" rx="9" fill="#0f3f3a" stroke="#2dd4bf" stroke-width="2.2"/>
+          <path d="M739,258 V286" stroke="#2dd4bf" stroke-width="2" fill="none" opacity=".6"/>
+          <text class="lbl sm" x="739" y="228" text-anchor="middle" fill="#2dd4bf">transporter</text>
+          <text class="lbl sm" x="739" y="243" text-anchor="middle" fill="#0f766e">reuptake</text>
+          <rect class="hit" x="714" y="248" width="52" height="48"/>
+        </g>
+
+        <!-- ============ DEGRADING ENZYME ============ -->
+        <g class="part" id="p-enzyme" tabindex="0" role="button" aria-label="Degrading enzyme" style="color:var(--enz)">
+          <path d="M838,326 a24,24 0 1,1 14,-43 l-12,20 20,4 a24,24 0 0,1 -22,19 z"
+                fill="#3f1414" stroke="#f87171" stroke-width="2"/>
+          <text class="lbl sm" x="852" y="236" text-anchor="middle" fill="#f87171">degrading enzyme</text>
+          <path d="M852,242 C848,258 844,272 840,282" stroke="#7f1d1d" stroke-width="1.4" fill="none"/>
+          <rect class="hit" x="806" y="276" width="60" height="54"/>
+        </g>
+
+        <!-- ============ CLEFT ============ -->
+        <g class="part" id="p-cleft" tabindex="0" role="button" aria-label="Synaptic cleft" style="color:var(--tx)">
+          <path d="M160,276 V346" stroke="#f0abfc" stroke-width="2" fill="none"
+                marker-start="url(#arw)" marker-end="url(#arw)"/>
+          <text class="lbl" x="150" y="304" text-anchor="end" fill="#f0abfc">synaptic cleft</text>
+          <text class="lbl sm" x="150" y="320" text-anchor="end" fill="#c084fc">20 to 40 nm</text>
+          <rect class="hit" x="60" y="272" width="110" height="78"/>
+        </g>
+
+        <!-- ============ POSTSYNAPTIC CELL ============ -->
+        <g class="part" id="p-post" tabindex="0" role="button" aria-label="Postsynaptic cell" style="color:var(--post)">
+          <path d="M170,350 H906 L906,538 C906,552 894,562 876,562 L200,562
+                   C182,562 170,552 170,538 Z" fill="url(#gPost)" stroke="#94a3b8" stroke-width="2.2"/>
+          <text class="caps" x="890" y="378" text-anchor="end" fill="#cbd5e1">POSTSYNAPTIC CELL</text>
+          <rect class="hit" x="700" y="362" width="196" height="26"/>
+        </g>
+        <path d="M176,350 H900" stroke="#cbd5e1" stroke-width="4" fill="none" stroke-linecap="round" opacity=".8"/>
+
+        <!-- ============ IONOTROPIC RECEPTOR ============ -->
+        <g class="part" id="p-iono" tabindex="0" role="button" aria-label="Ionotropic receptor" style="color:var(--iono)">
+          <g id="ionoCh"></g>
+          <text class="lbl sm" x="330" y="428" text-anchor="middle" fill="#38bdf8">ionotropic receptor</text>
+          <text class="lbl sm" x="330" y="443" text-anchor="middle" fill="#0e7490">the transmitter opens it directly</text>
+          <path d="M330,416 V404" stroke="#0e7490" stroke-width="1.4" fill="none"/>
+          <rect class="hit" x="296" y="316" width="70" height="88"/>
+        </g>
+
+        <!-- ============ METABOTROPIC RECEPTOR ============ -->
+        <g class="part" id="p-metab" tabindex="0" role="button" aria-label="Metabotropic receptor" style="color:var(--metab)">
+          <g id="metabCh"></g>
+          <text class="lbl sm" x="556" y="470" text-anchor="middle" fill="#a78bfa">metabotropic receptor</text>
+          <text class="lbl sm" x="556" y="485" text-anchor="middle" fill="#6d5bb5">works through a G protein</text>
+          <rect class="hit" x="516" y="316" width="86" height="140"/>
+          <rect class="hit" x="640" y="320" width="52" height="60"/>
+        </g>
+
+        <!-- ============ particles ============ -->
+        <g id="fx"></g>
+
+        <!-- ============ trace inset ============ -->
+        <g id="trace">
+          <rect x="722" y="404" width="228" height="140" rx="10" fill="#0b1424" stroke="#243149" stroke-width="1.6"/>
+          <text class="lbl sm" x="736" y="426" fill="#94a3b8">membrane potential here</text>
+          <path id="traceBase" d="" stroke="#334155" stroke-width="1.2" fill="none" stroke-dasharray="4 4"/>
+          <path id="traceLine" d="" stroke="#34d399" stroke-width="2.4" fill="none" stroke-linejoin="round"/>
+          <circle id="traceDot" cx="0" cy="0" r="4" fill="#34d399"/>
+          <text class="lbl sm" id="traceLbl" x="938" y="534" text-anchor="end" fill="#34d399">EPSP</text>
+          <text class="lbl sm" x="736" y="534" fill="#5b6b86">rest &minus;65 mV</text>
+        </g>
+
+        <!-- ============ drug sites ============ -->
+        <g id="drugLayer"></g>
+      </svg>
+    </div>
+  </div>
+
+  <div class="below">
+    <div class="chips" id="chips"></div>
+    <div class="info" id="info"></div>
+  </div>
+
+  <div class="card" id="drugCard">
+    <h3>Where drugs act</h3>
+    <p>A <b>ligand</b> is any substance that binds a receptor. A drug that mimics or strengthens a transmitter is an <b>agonist</b>; one that blocks or weakens it is an <b>antagonist</b>. Press the button above the figure to number these sites on the synapse itself.</p>
+    <div class="druglist" id="druglist"></div>
+  </div>
+
+  <div class="card">
+    <h3>Families of neurotransmitters</h3>
+    <p class="note">A chemical counts as a classical transmitter if the presynaptic neuron can make it and store it in the terminal, if it is released when action potentials arrive, if specific receptors on the postsynaptic membrane recognize it, if it changes the postsynaptic cell, and if blocking its release stops the presynaptic cell from having its effect. The gas transmitters break several of those rules.</p>
+    <table>
+      <tr><th>Family</th><th>Members</th></tr>
+      <tr><td class="k">Amino acids</td><td>GABA, glutamate, glycine, histamine</td></tr>
+      <tr><td class="k">Amines: quaternary</td><td>Acetylcholine (ACh)</td></tr>
+      <tr><td class="k">Amines: catecholamines</td><td>Norepinephrine (NE), epinephrine, dopamine (DA)</td></tr>
+      <tr><td class="k">Amines: indoleamines</td><td>Serotonin (5-HT), melatonin</td></tr>
+      <tr><td class="k">Neuropeptides: opioids</td><td>Enkephalins, endorphins, dynorphins</td></tr>
+      <tr><td class="k">Neuropeptides: other</td><td>Oxytocin, substance P, CCK, vasopressin, neuropeptide Y</td></tr>
+      <tr><td class="k">Gases</td><td>Nitric oxide, carbon monoxide</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px;">Most synapses in the brain run on amino acids. <b>Glutamate</b> is the most widespread excitatory transmitter and <b>GABA</b> the most widespread inhibitory one. Glutamate's ionotropic AMPA receptors are the most plentiful receptors in the brain; its NMDA receptors matter for memory; its mGluRs are metabotropic and slower. GABA<sub>A</sub> receptors are ionotropic and let Cl&minus; in, which is why drugs that boost them, such as the benzodiazepines, calm the whole system down. GABA<sub>B</sub> receptors are metabotropic.</p>
+  </div>
+
+  <div class="card">
+    <h3>How anyone found this out</h3>
+    <p>Early in the twentieth century the field split into two camps. The <b>sparks</b> held that electricity jumped across the synapse; the <b>soups</b> held that neurons released a chemical. Otto Loewi dreamed the deciding experiment twice. The first night he scribbled notes he could not read the next morning; the second night he went straight to the lab.</p>
+    <p>He stimulated the vagus nerve of a frog heart, which slowed it, then collected the fluid around that heart and applied it to a second heart. The second heart slowed too. Electricity could not have been carried over in the fluid, so the vagus had to be releasing a chemical. That chemical was later identified as <b>acetylcholine</b>, the first known neurotransmitter, and Loewi got the 1936 Nobel Prize.</p>
+  </div>
+
+  <div class="sources">
+    <b>Sources</b>
+    <ol>
+      <li>Watson, N. V., &amp; Breedlove, S. M. <i>The Mind&rsquo;s Machine: Foundations of Brain and Behavior</i> (4th ed.), Ch. 3, The Chemistry of Behavior. The sequence, the terms, and the drug examples on this page follow this chapter, including its Figures 3.1, 3.2 and 3.7.</li>
+      <li>Kandel, E. R., Koester, J. D., Mack, S. H., &amp; Siegelbaum, S. A. (2021). <i>Principles of Neural Science</i> (6th ed.), Chs. 12 to 16.</li>
+      <li>Purves, D., et al. (Eds.). <a href="https://www.ncbi.nlm.nih.gov/books/NBK10799/" target="_blank" rel="noopener"><i>Neuroscience</i> (2nd ed.), NCBI Bookshelf</a>, Chs. 5 to 8.</li>
+      <li>S&uuml;dhof, T. C. (2013). Neurotransmitter release: the last millisecond in the life of a synaptic vesicle. <i>Neuron, 80</i>(3), 675 to 690.</li>
+    </ol>
+  </div>
+</div>
+
+<script>
+"use strict";
+const NS = "http://www.w3.org/2000/svg";
+const el = (tag, attrs, parent) => {
+  const e = document.createElementNS(NS, tag);
+  for(const k in attrs) e.setAttribute(k, attrs[k]);
+  if(parent) parent.appendChild(e);
+  return e;
+};
+
+/* ---------------------------------------------------------------------------
+   Geometry
+   --------------------------------------------------------------------------- */
+const MEM_PRE = 272, MEM_POST = 350;      // the two membranes
+const RELEASE = {x:430, y:MEM_PRE};       // active zone
+const CA_X = [346, 514];
+const IONO_X = 330, METAB_X = 556, DOWN_X = 666;
+const TRANSP = {x:739, y:MEM_PRE}, ENZ = {x:838, y:302};
+
+/* vesicles: a resident pool plus the one that fuses */
+const VES = [[254,152],[320,128],[386,154],[302,190],[456,132],[368,198],[506,168],[222,116]];
+(function(){
+  const g = document.getElementById("vesGroup");
+  VES.forEach(([x,y])=>{
+    el("circle",{cx:x, cy:y, r:19}, g);
+    el("circle",{cx:x-5, cy:y-4, r:2.6, fill:"#fdba74", stroke:"none", opacity:".8"}, g);
+    el("circle",{cx:x+5, cy:y+3, r:2.6, fill:"#fdba74", stroke:"none", opacity:".8"}, g);
+  });
+})();
+
+/* calcium channels: two walls with a gate that swings open */
+function buildCa(){
+  const g = document.getElementById("caCh");
+  CA_X.forEach((x,i)=>{
+    el("rect",{x:x-17, y:MEM_PRE-20, width:12, height:40, rx:5, fill:"#14532d", stroke:"#4ade80","stroke-width":2}, g);
+    el("rect",{x:x+5, y:MEM_PRE-20, width:12, height:40, rx:5, fill:"#14532d", stroke:"#4ade80","stroke-width":2}, g);
+    el("path",{class:"caGate", id:"caGate"+i, d:"", stroke:"#86efac","stroke-width":3.4, fill:"none","stroke-linecap":"round"}, g);
+  });
+}
+buildCa();
+
+/* ionotropic receptor: two pore-lining walls, a binding pocket on top */
+function buildIono(){
+  const g = document.getElementById("ionoCh");
+  el("rect",{x:IONO_X-24, y:MEM_POST-22, width:14, height:52, rx:6, fill:"#0c4a6e", stroke:"#38bdf8","stroke-width":2.2}, g);
+  el("rect",{x:IONO_X+10, y:MEM_POST-22, width:14, height:52, rx:6, fill:"#0c4a6e", stroke:"#38bdf8","stroke-width":2.2}, g);
+  el("path",{id:"ionoPocket", d:`M${IONO_X-16},${MEM_POST-22} l4,-12 h24 l4,12`, fill:"none", stroke:"#38bdf8","stroke-width":2.2,"stroke-linejoin":"round"}, g);
+  el("rect",{id:"ionoLumen", x:IONO_X-6, y:MEM_POST-20, width:12, height:48, rx:4, fill:"#38bdf8", opacity:"0"}, g);
+  el("path",{id:"ionoGate", d:"", stroke:"#7dd3fc","stroke-width":3.4, fill:"none","stroke-linecap":"round"}, g);
+}
+buildIono();
+
+/* metabotropic receptor: a barrel, a G protein under it, and a channel it opens */
+function buildMetab(){
+  const g = document.getElementById("metabCh");
+  el("rect",{x:METAB_X-20, y:MEM_POST-24, width:40, height:56, rx:12, fill:"#2e1f4f", stroke:"#a78bfa","stroke-width":2.2}, g);
+  for(const dx of [-10,0,10]) el("path",{d:`M${METAB_X+dx},${MEM_POST-18} V${MEM_POST+26}`, stroke:"#6d5bb5","stroke-width":2, fill:"none", opacity:".8"}, g);
+  el("path",{d:`M${METAB_X-14},${MEM_POST-24} l5,-12 h18 l5,12`, fill:"none", stroke:"#a78bfa","stroke-width":2.2,"stroke-linejoin":"round"}, g);
+  el("ellipse",{id:"gprot", cx:METAB_X+6, cy:MEM_POST+48, rx:34, ry:16, fill:"#3b2a66", stroke:"#a78bfa","stroke-width":2}, g);
+  el("text",{x:METAB_X+6, y:MEM_POST+52, "text-anchor":"middle", class:"lbl sm", fill:"#c4b5fd", stroke:"none"}, g).textContent = "G protein";
+  // the channel that the second messengers open
+  el("rect",{x:DOWN_X-22, y:MEM_POST-20, width:13, height:48, rx:6, fill:"#0c4a6e", stroke:"#7dd3fc","stroke-width":2}, g);
+  el("rect",{x:DOWN_X+9, y:MEM_POST-20, width:13, height:48, rx:6, fill:"#0c4a6e", stroke:"#7dd3fc","stroke-width":2}, g);
+  el("rect",{id:"downLumen", x:DOWN_X-6, y:MEM_POST-18, width:12, height:44, rx:4, fill:"#7dd3fc", opacity:"0"}, g);
+  const t = el("text",{x:DOWN_X+4, y:MEM_POST+46, "text-anchor":"middle", class:"lbl sm", fill:"#7dd3fc", stroke:"none"}, g);
+  t.textContent = "a channel it opens";
+}
+buildMetab();
+
+/* ---------------------------------------------------------------------------
+   Particles. Every position is a pure function of loop time, so stepping and
+   scrubbing stay in sync with the drawing.
+   --------------------------------------------------------------------------- */
+const T = { ap:[0,1.1], ca:[1.1,1.9], fuse:[1.9,2.9], bind:[2.9,4.4], clear:[4.4,6.3], rest:[6.3,6.9] };
+const LOOP = T.rest[1];
+const STEPS = ["ap","ca","fuse","bind","clear"];
+
+const lerp = (a,b,t)=>a+(b-a)*t;
+const ease = t => t*t*(3-2*t);
+const clamp01 = t => t<0?0:t>1?1:t;
+
+/* transmitter molecules, each with a destination */
+const TX = [];
+(function(){
+  const dests = [
+    ...Array(4).fill(0).map((_,i)=>({kind:"iono", x:IONO_X-8+i*6, y:MEM_POST-30})),
+    ...Array(3).fill(0).map((_,i)=>({kind:"metab", x:METAB_X-8+i*8, y:MEM_POST-32})),
+    ...Array(4).fill(0).map((_,i)=>({kind:"transp", x:TRANSP.x-12+i*8, y:MEM_PRE+16})),
+    ...Array(3).fill(0).map((_,i)=>({kind:"enz", x:ENZ.x-14+i*10, y:ENZ.y-4}))
+  ];
+  dests.forEach((d,i)=>{
+    TX.push({...d, rel: T.fuse[0]+0.42+i*0.035, mid:{x:lerp(RELEASE.x,d.x,.45)+(Math.random()*60-30), y:300+Math.random()*16},
+             gone: d.kind==="enz" ? T.clear[0]+0.5+Math.random()*0.5 : null,
+             back: d.kind==="transp" ? T.clear[0]+0.2+Math.random()*0.4 : T.clear[0]+0.55+Math.random()*0.5});
+  });
+})();
+
+const fx = document.getElementById("fx");
+const txNodes = TX.map(()=>el("circle",{r:6, fill:"#f0abfc"}, fx));
+const caNodes = Array.from({length:8},(_,i)=>el("circle",{r:6.5, fill:"#4ade80"}, fx));
+const ionNodes = Array.from({length:10},(_,i)=>el("circle",{r:6, fill:"#60a5fa"}, fx));
+const smNodes = Array.from({length:6},(_,i)=>el("circle",{r:4.5, fill:"#c4b5fd"}, fx));
+const pulse = el("circle",{r:13, fill:"#86efac", opacity:"0"}, fx);
+const fuseShape = el("path",{d:"", fill:"#2b1406", stroke:"#fdba74", "stroke-width":2, opacity:"0"}, fx);
+const movingVes = el("circle",{r:19, fill:"#2b1406", stroke:"#fdba74", "stroke-width":2, opacity:"0"}, fx);
+
+let excitatory = true, playing = true, t = 0, last = null, manualStep = null;
+
+function place(node, x, y, op){
+  node.setAttribute("cx", x); node.setAttribute("cy", y);
+  node.setAttribute("opacity", op);
+}
+
+function frame(ts){
+  if(last == null) last = ts;
+  let dt = (ts - last)/1000; last = ts;
+  if(dt > 0.05) dt = 0.05;
+  if(playing) t = (t + dt) % LOOP;
+  draw();
+  requestAnimationFrame(frame);
+}
+
+function draw(){
+  /* 1. the action potential sweeping in */
+  const apP = clamp01((t - T.ap[0]) / (T.ap[1] - T.ap[0]));
+  if(t < T.ap[1]){
+    place(pulse, lerp(10, 300, ease(apP)), lerp(64, 120, ease(apP)), 0.85);
+    pulse.setAttribute("r", 13 + 10*Math.sin(Math.PI*apP));
+  } else place(pulse, 0, 0, 0);
+
+  /* 2. calcium gates swing open, Ca2+ flows in */
+  const caOpen = clamp01((t - T.ca[0]) / 0.45) * (t > T.clear[1] ? 0 : 1);
+  CA_X.forEach((x,i)=>{
+    const phi = caOpen * Math.PI/2, L = 11;
+    const g = document.getElementById("caGate"+i);
+    g.setAttribute("d", `M${x-11},${MEM_PRE-18} l${L*Math.cos(phi)},${L*Math.sin(phi)}
+                         M${x+11},${MEM_PRE-18} l${-L*Math.cos(phi)},${L*Math.sin(phi)}`);
+  });
+  caNodes.forEach((n,i)=>{
+    const x0 = CA_X[i%2], d = (t - T.ca[0] - i*0.07) / 1.15;
+    if(d < 0 || d > 1.6){ n.setAttribute("opacity", 0); return; }
+    const p = clamp01(d);
+    place(n, x0 + Math.sin(i*2.1 + p*3)*7, lerp(MEM_PRE+26, MEM_PRE-52, ease(p)), d > 1 ? Math.max(0, 1.6-d)/0.6 : 1);
+  });
+
+  /* 3. one vesicle moves to the membrane, fuses and empties */
+  const fP = clamp01((t - T.fuse[0]) / (T.fuse[1] - T.fuse[0] - 0.35));
+  if(t > T.fuse[0] && t < T.clear[1]){
+    if(fP < 0.62){
+      const e = ease(fP/0.62);
+      place(movingVes, lerp(420, RELEASE.x, e), lerp(196, MEM_PRE-22, e), 1);
+      movingVes.setAttribute("r", 19);
+      fuseShape.setAttribute("opacity", 0);
+    } else {
+      movingVes.setAttribute("opacity", 0);
+      const o = clamp01((fP-0.62)/0.38);
+      const w = lerp(15, 26, o), h = lerp(19, 8, o);
+      fuseShape.setAttribute("d", `M${RELEASE.x-w},${MEM_PRE} a${w},${h} 0 0,1 ${2*w},0 z`);
+      fuseShape.setAttribute("opacity", 1);
+    }
+  } else { movingVes.setAttribute("opacity", 0); fuseShape.setAttribute("opacity", 0); }
+
+  /* 4. transmitter crosses the cleft, binds, then is cleared */
+  TX.forEach((m,i)=>{
+    const n = txNodes[i];
+    if(t < m.rel || (m.gone && t > m.gone + 0.45)){ n.setAttribute("opacity", 0); return; }
+    const cross = clamp01((t - m.rel) / 0.85);
+    let x, y, op = 1;
+    if(cross < 1){
+      const e = ease(cross);
+      if(e < 0.5){ const q = e/0.5; x = lerp(RELEASE.x, m.mid.x, q); y = lerp(MEM_PRE+6, m.mid.y, q); }
+      else { const q = (e-0.5)/0.5; x = lerp(m.mid.x, m.x, q); y = lerp(m.mid.y, m.y, q); }
+    } else if(t < m.back){
+      x = m.x; y = m.y;
+      if(m.kind === "enz" && m.gone && t > m.gone){ op = clamp01((m.gone + 0.45 - t)/0.45); }
+    } else {
+      const q = ease(clamp01((t - m.back)/0.9));
+      const tx = m.kind === "iono" || m.kind === "metab" ? TRANSP.x : m.x;
+      const ty = m.kind === "iono" || m.kind === "metab" ? MEM_PRE+14 : m.y;
+      x = lerp(m.x, tx, q); y = lerp(m.y, ty, q);
+      op = 1 - 0.85*q;
+    }
+    place(n, x, y, op);
+  });
+
+  /* receptors respond while transmitter sits on them */
+  const bound = t > T.bind[0] && t < T.clear[0] + 0.8;
+  const openAmt = bound ? clamp01((t - T.bind[0])/0.35) * clamp01((T.clear[0] + 0.8 - t)/0.5) : 0;
+  document.getElementById("ionoLumen").setAttribute("opacity", 0.45*openAmt);
+  document.getElementById("ionoGate").setAttribute("d",
+    `M${IONO_X-10},${MEM_POST+28} l${9*Math.cos(openAmt*Math.PI/2)},${-9*Math.sin(openAmt*Math.PI/2)}
+     M${IONO_X+10},${MEM_POST+28} l${-9*Math.cos(openAmt*Math.PI/2)},${-9*Math.sin(openAmt*Math.PI/2)}`);
+
+  /* ions crossing the postsynaptic membrane */
+  const ionCol = excitatory ? "#60a5fa" : "#a3e635";
+  ionNodes.forEach((n,i)=>{
+    const chX = i < 6 ? IONO_X : DOWN_X;
+    const d = (t - T.bind[0] - 0.25 - i*0.13) / 1.0;
+    if(d < 0 || d > 1.5 || openAmt < 0.2){ n.setAttribute("opacity", 0); return; }
+    n.setAttribute("fill", ionCol);
+    const p = clamp01(d);
+    place(n, chX + Math.sin(i*1.7 + p*3)*8, lerp(MEM_POST-34, MEM_POST+70, ease(p)), d > 1 ? Math.max(0,1.5-d)/0.5 : 1);
+  });
+
+  /* second messengers spreading from the G protein */
+  const smOn = t > T.bind[0] + 0.4 && t < T.clear[1];
+  document.getElementById("downLumen").setAttribute("opacity", smOn ? 0.4 : 0);
+  smNodes.forEach((n,i)=>{
+    const d = (t - T.bind[0] - 0.5 - i*0.12) / 1.4;
+    if(d < 0 || d > 1.3){ n.setAttribute("opacity", 0); return; }
+    const p = clamp01(d);
+    place(n, lerp(METAB_X+22, DOWN_X-10, ease(p)), lerp(MEM_POST+48, MEM_POST+18, ease(p)) + Math.sin(i*2+p*5)*7,
+          d > 1 ? Math.max(0,1.3-d)/0.3 : 0.95);
+  });
+
+  drawTrace();
+  syncChips();
+}
+
+/* the postsynaptic potential, drawn across the whole loop with a cursor on it */
+function vAt(x){                       // x in seconds of loop time
+  const d = x - (T.bind[0] + 0.15);
+  if(d < 0) return 0;
+  const amp = excitatory ? 1 : -1;
+  return amp * Math.exp(-d/0.85) * (1 - Math.exp(-d/0.09));
+}
+function drawTrace(){
+  const x0 = 738, x1 = 936, y0 = 484, h = 40;
+  let d = "";
+  for(let i=0;i<=110;i++){
+    const s = i/110, x = lerp(x0, x1, s), y = y0 - vAt(s*LOOP)*h;
+    d += (i ? " L" : "M") + x.toFixed(1) + "," + y.toFixed(1);
+  }
+  document.getElementById("traceLine").setAttribute("d", d);
+  document.getElementById("traceBase").setAttribute("d", `M${x0},${y0} H${x1}`);
+  const col = excitatory ? "#34d399" : "#f87171";
+  document.getElementById("traceLine").setAttribute("stroke", col);
+  const dot = document.getElementById("traceDot");
+  dot.setAttribute("cx", lerp(x0, x1, t/LOOP));
+  dot.setAttribute("cy", y0 - vAt(t)*h);
+  dot.setAttribute("fill", col);
+  const lbl = document.getElementById("traceLbl");
+  lbl.textContent = excitatory ? "EPSP, closer to firing" : "IPSP, further from firing";
+  lbl.setAttribute("fill", col);
+}
+
+/* ---------------------------------------------------------------------------
+   Content
+   --------------------------------------------------------------------------- */
+const STEP_INFO = {
+  ap:{ n:1, name:"The action potential arrives", color:"var(--epsp)", tag:"step 1",
+    body:["The spike sweeps down the axon and reaches the terminal, where it spreads over the membrane and depolarizes it strongly. Up to this point the signal has been electrical and confined to one cell.",
+          "Everything that follows is the cell converting that electrical event into a chemical one, which is the only way it can reach the next neuron across the gap."]},
+  ca:{ n:2, name:"Calcium channels open", color:"var(--ca)", tag:"step 2",
+    body:["The depolarization opens <b>voltage-gated calcium channels</b> in the terminal membrane, and Ca²⁺ flows in. Calcium is far more concentrated outside the cell than inside, so it rushes in as soon as a path exists.",
+          "This is the step that couples the electrical signal to release. No calcium entry, no transmitter, which is why calcium channel blockers reduce synaptic transmission."]},
+  fuse:{ n:3, name:"Vesicles fuse and release", color:"var(--ves)", tag:"step 3",
+    body:["The calcium that entered drives <b>synaptic vesicles</b> to the presynaptic membrane. Proteins on the vesicle wall and matching proteins on the membrane interact, the two membranes fuse, and the vesicle empties its transmitter into the cleft. The process is called <b>exocytosis</b>.",
+          "A terminal holds many vesicles at once, so it can release again quickly, and it reloads them with recycled transmitter between releases."]},
+  bind:{ n:4, name:"Transmitter binds receptors", color:"var(--tx)", tag:"step 4",
+    body:["Transmitter diffuses across the cleft and briefly binds <b>neurotransmitter receptors</b>, proteins in the postsynaptic membrane that recognize that particular transmitter. The fit is usually described as a key in a lock.",
+          "An <b>ionotropic receptor</b> is a channel: binding opens it, ions flow, and the postsynaptic membrane potential changes at once. A <b>metabotropic receptor</b> passes the message inward through a <b>G protein</b> and <b>second messengers</b> instead, which is slower but can reach much further into the cell.",
+          "If the change brings the cell closer to threshold it is an <b>excitatory</b> synapse and the change is an EPSP. If it pushes the cell away from threshold it is <b>inhibitory</b> and the change is an IPSP. Use the toggle above the figure to switch between them."]},
+  clear:{ n:5, name:"The signal is cleared", color:"var(--trans)", tag:"step 5",
+    body:["Transmitter action is reversed quickly, in two ways. <b>Transporters</b> in the presynaptic membrane bind the molecules and carry them back inside, a process called <b>reuptake</b>, after which they can be recycled. <b>Enzymes</b> break down the rest into inactive pieces.",
+          "Clearing matters as much as releasing. Until the cleft is empty, the next release cannot say anything new, and transmitter left sitting on receptors keeps acting."]}
+};
+
+const PART_INFO = {
+  vesicle:{ name:"Synaptic vesicle", color:"var(--ves)", tag:"the package",
+    body:["A small hollow sphere in the axon terminal, filled with molecules of neurotransmitter. Vesicles wait near the membrane until calcium arrives, then fuse with it and empty into the cleft.",
+          "Some drugs work here. Reserpine blocks the packaging of transmitter into vesicles, leaving it in the terminal to be broken down."]},
+  ca:{ name:"Voltage-gated calcium channel", color:"var(--ca)", tag:"the trigger for release",
+    body:["A channel in the terminal membrane that opens when the membrane depolarizes. The Ca²⁺ that enters is what drives vesicles to the membrane and makes them fuse.",
+          "Calcium channel blockers such as verapamil reduce that influx and so reduce how much transmitter is released."]},
+  cleft:{ name:"Synaptic cleft", color:"var(--tx)", tag:"the gap",
+    body:["The space between the presynaptic and postsynaptic membranes, about <b>20 to 40 nm</b> across. It is drawn far wider here so that everything in it can be seen.",
+          "The gap is small enough that transmitter crosses it in well under a millisecond, and large enough that the two cells stay separate, which is the whole point of a chemical synapse."]},
+  iono:{ name:"Ionotropic receptor", color:"var(--iono)", tag:"a receptor that is also a channel",
+    body:["Also called a <b>ligand-gated ion channel</b>. When a transmitter molecule binds it, the receptor changes shape and its channel opens or closes, letting more or fewer of its favored ions cross. The membrane potential changes immediately.",
+          "This is the fast route, used where timing matters. Glutamate's AMPA receptors are the most plentiful receptors in the brain and work this way, and so do GABA<sub>A</sub> receptors, which let Cl&minus; in and inhibit the cell."]},
+  metab:{ name:"Metabotropic receptor", color:"var(--metab)", tag:"a receptor that starts a chain reaction",
+    body:["This kind passes nothing through the membrane itself. Binding activates a <b>G protein</b> inside the cell, which switches on <b>second messengers</b>, which can then open other channels, change the cell's excitability, or reach all the way to gene expression.",
+          "Two steps instead of one makes it slower, but it can produce larger and longer-lasting changes, including remodeling the cell's connections or building more receptors. Hundreds of G protein-coupled receptors are encoded in the genome."]},
+  transporter:{ name:"Transporter", color:"var(--trans)", tag:"takes the transmitter back",
+    body:["A protein in the presynaptic membrane that binds transmitter molecules in the cleft and carries them back into the terminal, where they can be recycled. This is <b>reuptake</b>.",
+          "Blocking it leaves transmitter in the cleft longer, which strengthens the signal. Cocaine and amphetamine do this, and so do the antidepressants that inhibit serotonin or norepinephrine reuptake."]},
+  enzyme:{ name:"Degrading enzyme", color:"var(--enz)", tag:"breaks the transmitter apart",
+    body:["Enzymes in the cleft and in the terminal break transmitter molecules into inactive pieces, which is the other way the signal is ended. Acetylcholinesterase does this to acetylcholine in the cleft; monoamine oxidase does it inside the terminal.",
+          "Drugs that inhibit those enzymes, such as MAO inhibitors, let transmitter accumulate and act on the postsynaptic cell for longer."]},
+  auto:{ name:"Autoreceptor", color:"var(--auto)", tag:"the terminal listening to itself",
+    body:["A receptor on the presynaptic membrane that tells the terminal how much transmitter it has released. It is a feedback signal: more transmitter detected, less released next time.",
+          "Caffeine works here. It blocks adenosine receptors on the presynaptic membrane, which normally act to reduce further release, so blocking them means more transmitter goes out. That is the alertness."]},
+  terminal:{ name:"Axon terminal", color:"var(--pre)", tag:"the presynaptic side",
+    body:["The swelling at the end of the axon, holding vesicles of transmitter, the machinery to release them, and the transporters to take them back. Everything on this side of the gap is called <b>presynaptic</b>.",
+          "One terminal can face a dendrite, a spine, a cell body, a muscle fiber, or a gland cell. The sequence is the same."]},
+  post:{ name:"Postsynaptic cell", color:"var(--post)", tag:"the receiving side",
+    body:["The cell on the far side of the cleft. What the transmitter does here depends entirely on which receptors this cell happens to have, not on the signal that arrived.",
+          "The same transmitter can excite one cell and inhibit another, because each cell answers with its own <b>receptor subtypes</b>. That is a large part of how a few dozen transmitters can run a whole nervous system."]}
+};
+
+const DRUGS = [
+  {n:1, at:[268,150], name:"Transmitter synthesis", text:"Drugs can block an enzyme the neuron needs to build its transmitter. PCPA blocks the synthesis of serotonin."},
+  {n:2, at:[73,64], name:"Axonal transport", text:"Colchicine blocks transport along the axon, so raw materials never reach the terminal."},
+  {n:3, at:[382,160], name:"Vesicle storage", text:"Reserpine stops transmitter from being packed into vesicles, so it is broken down in the terminal instead."},
+  {n:4, at:[150,64], name:"Sodium channels", text:"Tetrodotoxin, the puffer fish toxin, blocks voltage-gated Na⁺ channels, so no action potential ever arrives."},
+  {n:5, at:[CA_X[0],MEM_PRE], name:"Calcium channels", text:"Verapamil and other calcium channel blockers cut the influx that drives release."},
+  {n:6, at:[238,MEM_PRE], name:"Autoreceptors", text:"Caffeine blocks presynaptic adenosine receptors, removing a brake on release. Drugs that stimulate autoreceptors instead trick the cell into releasing less."},
+  {n:7, at:[RELEASE.x,MEM_PRE], name:"Release itself", text:"Botulinum toxin disrupts the proteins that let vesicles release ACh, which paralyzes the muscle. Amphetamine does the opposite and stimulates release of dopamine and norepinephrine."},
+  {n:8, at:[TRANSP.x,MEM_PRE], name:"Reuptake", text:"Cocaine, amphetamine and reuptake-inhibiting antidepressants block transporters, so transmitter stays in the cleft and keeps acting."},
+  {n:9, at:[ENZ.x,ENZ.y], name:"Breakdown", text:"MAO inhibitors block the enzymes that destroy transmitter, again leaving more of it active."},
+  {n:10, at:[IONO_X,MEM_POST], name:"Postsynaptic receptors", text:"An agonist binds the receptor and mimics the transmitter. An antagonist binds it and blocks the transmitter without activating it."}
+];
+(function buildDrugs(){
+  const layer = document.getElementById("drugLayer");
+  const list = document.getElementById("druglist");
+  DRUGS.forEach(d=>{
+    const g = el("g",{}, layer);
+    el("circle",{cx:d.at[0], cy:d.at[1], r:13, fill:"#facc15", stroke:"#1a1200", "stroke-width":1.5}, g);
+    const tx = el("text",{x:d.at[0], y:d.at[1]+4, "text-anchor":"middle", class:"dnum"}, g);
+    tx.textContent = d.n;
+    const item = document.createElement("div");
+    item.className = "drugitem";
+    item.innerHTML = `<span class="n">${d.n}</span><span><b>${d.name}.</b> ${d.text}</span>`;
+    list.appendChild(item);
+  });
+})();
+
+/* ---------------------------------------------------------------------------
+   Chips, info panel, controls
+   --------------------------------------------------------------------------- */
+const chips = document.getElementById("chips");
+const info = document.getElementById("info");
+const fig = document.getElementById("fig");
+let sel = null;
+
+function addHead(text){
+  const h = document.createElement("div");
+  h.className = "grouphead"; h.textContent = text;
+  chips.appendChild(h);
+}
+addHead("The five steps");
+STEPS.forEach(k=>{
+  const s = STEP_INFO[k];
+  const b = document.createElement("button");
+  b.className = "chip"; b.style.color = s.color; b.dataset.step = k;
+  b.innerHTML = `<span class="num">${s.n}</span><span class="nm">${s.name}</span>`;
+  b.onclick = ()=>{ jumpTo(k); select("step:"+k); };
+  chips.appendChild(b);
+});
+addHead("Parts of the synapse");
+["terminal","vesicle","ca","auto","cleft","transporter","enzyme","post","iono","metab"].forEach(k=>{
+  const p = PART_INFO[k];
+  const b = document.createElement("button");
+  b.className = "chip"; b.style.color = p.color; b.dataset.part = k;
+  b.innerHTML = `<span class="dot"></span><span class="nm">${p.name}</span>`;
+  b.onclick = ()=> select(sel === "part:"+k ? null : "part:"+k);
+  chips.appendChild(b);
+});
+
+const PART_GROUP = {terminal:"p-terminal", vesicle:"p-vesicle", ca:"p-ca", auto:"p-auto", cleft:"p-cleft",
+                    transporter:"p-transporter", enzyme:"p-enzyme", post:"p-post", iono:"p-iono", metab:"p-metab"};
+for(const k in PART_GROUP){
+  const g = document.getElementById(PART_GROUP[k]);
+  if(!g) continue;
+  g.addEventListener("click", ()=> select(sel === "part:"+k ? null : "part:"+k));
+  g.addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); select("part:"+k); } });
+}
+
+function render(item, kicker){
+  info.style.borderLeftColor = item.color;
+  info.innerHTML = `<div class="kicker" style="color:${item.color}">${kicker}</div>` +
+    `<h3>${item.name}</h3><p class="tag">${item.tag}</p>` +
+    item.body.map(p=>`<p>${p}</p>`).join("");
+}
+
+function select(key){
+  sel = key;
+  const isPart = key && key.startsWith("part:");
+  fig.classList.toggle("sel", !!isPart);
+  for(const k in PART_GROUP){
+    const g = document.getElementById(PART_GROUP[k]);
+    if(g) g.classList.toggle("on", key === "part:"+k);
+  }
+  chips.querySelectorAll(".chip").forEach(c=>{
+    c.classList.toggle("on", (c.dataset.part && key === "part:"+c.dataset.part) ||
+                             (c.dataset.step && key === "step:"+c.dataset.step));
+  });
+  if(!key){ render(OVERVIEW, "Overview"); return; }
+  if(isPart) render(PART_INFO[key.slice(5)], "Structure");
+  else { const s = STEP_INFO[key.slice(5)]; render(s, "Step " + s.n + " of 5"); }
+}
+
+const OVERVIEW = { name:"One signal, five steps", color:"var(--muted)", tag:"press play, or pick a step",
+  body:["An action potential reaches the terminal, calcium enters, vesicles fuse and release transmitter into the cleft, the transmitter binds receptors on the other side and changes that cell, and then the cleft is cleared by reuptake and by enzymes.",
+        "The whole sequence runs in a couple of milliseconds, and a single neuron does it at thousands of synapses at once. Click any step or any structure to read what happens there."]};
+
+/* while playing, the chip for the current step lights up on its own */
+function syncChips(){
+  if(sel && sel.startsWith("part:")) return;
+  const cur = STEPS.find(k => t >= T[k][0] && t < T[k][1]);
+  chips.querySelectorAll(".chip").forEach(c=>{
+    if(c.dataset.step) c.classList.toggle("on", c.dataset.step === cur);
+  });
+  if(playing && cur && sel !== "step:"+cur){
+    sel = "step:"+cur;
+    const s = STEP_INFO[cur];
+    render(s, "Step " + s.n + " of 5");
+  }
+}
+
+function jumpTo(k){ t = T[k][0] + 0.02; playing = false; setPlay(); }
+function setPlay(){
+  const b = document.getElementById("play");
+  b.textContent = playing ? "❚❚ Pause" : "▶ Play";
+  b.classList.toggle("primary", !playing);
+}
+document.getElementById("play").onclick = ()=>{ playing = !playing; setPlay(); };
+document.getElementById("step").onclick = ()=>{
+  const i = STEPS.findIndex(k => t >= T[k][0] && t < T[k][1]);
+  const next = STEPS[(i + 1 + STEPS.length) % STEPS.length];
+  jumpTo(next); select("step:"+next);
+};
+document.getElementById("btnEx").onclick = ()=>{ excitatory = true; syncType(); };
+document.getElementById("btnIn").onclick = ()=>{ excitatory = false; syncType(); };
+function syncType(){
+  document.getElementById("btnEx").classList.toggle("on", excitatory);
+  document.getElementById("btnIn").classList.toggle("on", !excitatory);
+  document.getElementById("hint").textContent = excitatory
+    ? "Excitatory: the channel lets Na⁺ in, the cell depolarizes, and it moves closer to threshold."
+    : "Inhibitory: the channel lets Cl⁻ in, the cell hyperpolarizes, and it moves away from threshold.";
+}
+const drugBtn = document.getElementById("drugs");
+drugBtn.onclick = ()=>{
+  const on = document.getElementById("drugLayer").classList.toggle("on");
+  drugBtn.classList.toggle("on", on);
+  drugBtn.textContent = on ? "Hide drug sites" : "Show where drugs act";
+};
+
+select(null);
+setPlay();
+syncType();
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
