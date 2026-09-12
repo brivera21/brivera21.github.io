@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Types of Neurons and Glia</title>
+<title>Types of Neurons</title>
 <style>
   :root{
     --bg:#0b1120; --panel:#111a2e; --panel2:#0e1626; --stroke:#243149;
@@ -85,8 +85,8 @@
 <body>
 <div class="wrap">
   <header>
-    <h1>Types of Neurons and Glia</h1>
-    <p>Neurons come in hundreds of shapes and sizes, and they are sorted two ways: by what they look like and by what they do. The nervous system also runs on a second population of cells, the glia, which outnumber neurons and come in four main kinds.</p>
+    <h1>Types of Neurons</h1>
+    <p>Neurons come in hundreds of shapes and sizes, and they are sorted two ways: by what they look like and by what they do.</p>
   </header>
 
   <h2 class="sec">Sorted by shape</h2>
@@ -299,111 +299,6 @@
     <div class="info" id="infoJobs"></div>
   </div>
 
-  <h2 class="sec">Glial cells</h2>
-  <p class="sub">Hundreds of types of neuron have been identified, but only four main kinds of glial cell. Two of them wrap axons in myelin. The other two keep the tissue supplied and clean.</p>
-  <div class="stage">
-    <div class="scroller">
-      <svg class="fig" id="figGlia" viewBox="0 0 1120 330" style="min-width:900px" role="img" aria-label="Oligodendrocyte, Schwann cell, astrocyte and microglia">
-        <defs>
-          <linearGradient id="gMye" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#e8c07f"/><stop offset=".5" stop-color="#b98c47"/>
-            <stop offset="1" stop-color="#8d6a33"/>
-          </linearGradient>
-        </defs>
-
-        <!-- OLIGODENDROCYTE -->
-        <g class="part" id="p-oligodendrocyte" tabindex="0" role="button" aria-label="Oligodendrocyte" style="color:var(--oligo)">
-          <path d="M34,196 H276" stroke="#34d399" stroke-width="9" stroke-linecap="round" fill="none"/>
-          <path d="M34,262 H276" stroke="#34d399" stroke-width="9" stroke-linecap="round" fill="none"/>
-          <g stroke="#b98c47" stroke-width="7" fill="none" stroke-linecap="round">
-            <path d="M130,140 C112,160 102,174 98,186"/><path d="M178,140 C196,160 206,174 210,186"/>
-            <path d="M138,146 C124,192 126,226 134,252"/><path d="M172,146 C188,196 192,228 202,252"/>
-          </g>
-          <g fill="url(#gMye)" stroke="#e8c07f" stroke-width="1.4">
-            <rect x="62" y="180" width="72" height="32" rx="14"/><rect x="174" y="180" width="72" height="32" rx="14"/>
-            <rect x="98" y="246" width="72" height="32" rx="14"/><rect x="206" y="246" width="64" height="32" rx="14"/>
-          </g>
-          <ellipse cx="155" cy="124" rx="28" ry="21" fill="#6b4f24" stroke="#e8c07f" stroke-width="2"/>
-          <circle cx="155" cy="124" r="9" fill="#e8c07f" opacity=".5"/>
-          <rect class="hit" x="24" y="96" width="264" height="200"/>
-          <text class="lbl" x="155" y="46" text-anchor="middle" fill="#d6a75f">oligodendrocyte</text>
-          <text class="lbl sm" x="155" y="62" text-anchor="middle" fill="#94a3b8">myelin in the brain and spinal cord</text>
-          <text class="lbl sm" x="34" y="306" fill="#34d399">two different axons</text>
-        </g>
-
-        <!-- SCHWANN CELL -->
-        <g class="part" id="p-schwann" tabindex="0" role="button" aria-label="Schwann cell" style="color:var(--schwann)">
-          <path d="M332,222 H576" stroke="#34d399" stroke-width="9" stroke-linecap="round" fill="none"/>
-          <g fill="url(#gMye)" stroke="#e8c07f" stroke-width="1.4">
-            <rect x="338" y="204" width="68" height="36" rx="15"/>
-            <rect x="418" y="204" width="82" height="36" rx="15"/>
-            <rect x="512" y="204" width="66" height="36" rx="15"/>
-          </g>
-          <g stroke="#8d6a33" stroke-width="1.2" opacity=".6" fill="none">
-            <path d="M428,212 H490"/><path d="M428,222 H490"/><path d="M428,232 H490"/>
-          </g>
-          <ellipse cx="459" cy="198" rx="16" ry="8" fill="#6b4f24" stroke="#e8c07f" stroke-width="1.4"/>
-          <g stroke="#f87171" stroke-width="3.4" stroke-linecap="round" fill="none">
-            <path d="M406,200 H418"/><path d="M406,244 H418"/><path d="M500,200 H512"/><path d="M500,244 H512"/>
-          </g>
-          <rect class="hit" x="330" y="180" width="252" height="86"/>
-          <text class="lbl" x="459" y="46" text-anchor="middle" fill="#fbbf24">Schwann cell</text>
-          <text class="lbl sm" x="459" y="62" text-anchor="middle" fill="#94a3b8">myelin everywhere else in the body</text>
-          <text class="lbl sm" x="459" y="180" text-anchor="middle" fill="#d6a75f">one cell makes one bead</text>
-          <text class="lbl sm" x="412" y="276" text-anchor="middle" fill="#f87171">node of Ranvier</text>
-          <path d="M412,264 V250" stroke="#9f3d3d" stroke-width="1.4" fill="none"/>
-        </g>
-
-        <!-- ASTROCYTE -->
-        <g class="part" id="p-astrocyte" tabindex="0" role="button" aria-label="Astrocyte" style="color:var(--astro)">
-          <rect x="816" y="96" width="36" height="196" rx="18" fill="#5b2230" stroke="#f87171" stroke-width="1.6" opacity=".85"/>
-          <g fill="#fca5a5" opacity=".7">
-            <circle cx="834" cy="132" r="7"/><circle cx="834" cy="176" r="7"/><circle cx="834" cy="224" r="7"/><circle cx="834" cy="266" r="7"/>
-          </g>
-          <circle cx="644" cy="138" r="18" fill="url(#gSoma)" stroke="#a78bfa" stroke-width="1.8"/>
-          <g stroke="#38bdf8" stroke-width="5.5" fill="none" stroke-linecap="round">
-            <path d="M714,192 C690,174 670,156 658,148"/><path d="M718,182 C724,156 726,136 724,116"/>
-            <path d="M740,184 C758,164 772,152 788,142"/><path d="M746,204 C772,204 794,202 810,196"/>
-            <path d="M738,216 C754,238 766,254 776,268"/><path d="M718,218 C710,242 704,258 698,274"/>
-            <path d="M706,204 C684,212 668,220 654,228"/>
-          </g>
-          <circle cx="728" cy="200" r="19" fill="#0c4a6e" stroke="#38bdf8" stroke-width="2"/>
-          <ellipse cx="814" cy="194" rx="10" ry="13" fill="#38bdf8" opacity=".85"/>
-          <rect class="hit" x="640" y="100" width="200" height="192"/>
-          <text class="lbl" x="728" y="46" text-anchor="middle" fill="#7dd3fc">astrocyte</text>
-          <text class="lbl sm" x="728" y="62" text-anchor="middle" fill="#94a3b8">blood flow, structure, synapses</text>
-          <text class="lbl sm" x="644" y="112" text-anchor="middle" fill="#a78bfa">neuron</text>
-          <text class="lbl sm" x="806" y="236" text-anchor="end" fill="#38bdf8">endfoot</text>
-          <text class="lbl sm" x="834" y="310" text-anchor="middle" fill="#f87171">capillary</text>
-        </g>
-
-        <!-- MICROGLIA -->
-        <g class="part" id="p-microglia" tabindex="0" role="button" aria-label="Microglial cells" style="color:var(--micro)">
-          <g stroke="#c084fc" stroke-width="3.6" fill="none" stroke-linecap="round">
-            <path d="M948,186 C936,174 928,168 920,162"/><path d="M960,176 C958,162 956,154 954,144"/>
-            <path d="M976,184 C988,172 996,166 1004,160"/><path d="M946,214 C932,220 924,224 914,230"/>
-            <path d="M974,218 C986,230 994,238 1002,246"/><path d="M960,224 C958,240 956,250 954,262"/>
-          </g>
-          <circle cx="962" cy="200" r="19" fill="#3b0764" stroke="#c084fc" stroke-width="2"/>
-          <g fill="#64748b" opacity=".85">
-            <path d="M1014,150 l18,-9 7,16 -16,9 z"/><path d="M1034,200 l20,5 -5,18 -18,-7 z"/>
-            <path d="M1008,246 l16,-11 11,13 -13,11 z"/>
-          </g>
-          <path d="M1004,160 C1014,164 1022,170 1026,180" stroke="#c084fc" stroke-width="3.6" fill="none" stroke-linecap="round"/>
-          <rect class="hit" x="906" y="130" width="160" height="150"/>
-          <text class="lbl" x="980" y="46" text-anchor="middle" fill="#c084fc">microglial cells</text>
-          <text class="lbl sm" x="980" y="62" text-anchor="middle" fill="#94a3b8">cleanup after injury</text>
-          <text class="lbl sm" x="1064" y="124" text-anchor="middle" fill="#94a3b8">debris</text>
-          <text class="lbl sm" x="980" y="300" text-anchor="middle" fill="#c084fc">engulfs and breaks it down</text>
-        </g>
-      </svg>
-    </div>
-  </div>
-  <div class="below">
-    <div class="chips" id="chipsGlia"></div>
-    <div class="info" id="infoGlia"></div>
-  </div>
-
   <h2 class="sec">Sizes of some neural structures</h2>
   <p class="sub">Each step along this line is ten times the one before it. The whole range, from an ion channel to the largest cell bodies, spans about six orders of magnitude.</p>
   <div class="stage">
@@ -426,7 +321,6 @@
     <b>Sources</b>
     <ol>
       <li>Watson, N. V., &amp; Breedlove, S. M. <i>The Mind&rsquo;s Machine: Foundations of Brain and Behavior</i> (4th ed.), Ch. 1, Structure and Function. The classifications, definitions, and measurements on this page follow this chapter.</li>
-      <li>Herculano-Houzel, S. (2014). The glia/neuron ratio: How it varies uniformly across brain structures and species and what that means for brain physiology and evolution. <i>Glia, 62</i>(9), 1377 to 1391.</li>
       <li>Purves, D., et al. (Eds.). <a href="https://www.ncbi.nlm.nih.gov/books/NBK10799/" target="_blank" rel="noopener"><i>Neuroscience</i> (2nd ed.), NCBI Bookshelf</a>, Chs. 1 and 8.</li>
       <li>Kandel, E. R., Koester, J. D., Mack, S. H., &amp; Siegelbaum, S. A. (2021). <i>Principles of Neural Science</i> (6th ed.), Chs. 2 and 8.</li>
     </ol>
@@ -485,35 +379,6 @@ const JOBS = [
     facts:[["Shape here","multipolar"],["Targets","muscles and glands"],["Axon length","up to about a meter"]] }
 ];
 
-const GLIA = [
-  { id:"oligodendrocyte", name:"Oligodendrocyte", color:"var(--oligo)", tag:"myelin in the brain and spinal cord",
-    body:[
-      "The glial cell that forms myelin in the central nervous system. One oligodendrocyte sends out several extensions and supplies myelin beads to several nearby axons at once, which is why the cell body sits off the axon rather than on it.",
-      "Myelin is fatty insulation wrapped in many layers. It leaves small bare patches between segments, the <b>nodes of Ranvier</b>, and it sharply increases the speed at which a signal travels, since the impulse jumps from one node to the next."
-    ],
-    facts:[["Where","brain and spinal cord"],["Serves","several axons at once"]] },
-
-  { id:"schwann", name:"Schwann cell", color:"var(--schwann)", tag:"myelin in the rest of the body",
-    body:[
-      "The glial cell that makes myelin in the peripheral nervous system. Each Schwann cell wraps itself around one segment of one axon, providing a single bead of myelin, so a long peripheral axon needs a great many of them in a row.",
-      "The result is the same as in the brain. A myelinated axon conducts far faster than a bare one. When myelin is damaged, as it is in multiple sclerosis, conduction slows or fails, and the symptoms follow whichever pathways lost their insulation."
-    ],
-    facts:[["Where","outside the brain and cord"],["Serves","one segment of one axon"]] },
-
-  { id:"astrocyte", name:"Astrocyte", color:"var(--astro)", tag:"blood flow, structure, synapses",
-    body:[
-      "A star-shaped glial cell, named for the Greek <i>astron</i>, with numerous processes running in all directions. They weave around and between neurons, and some stretch from neurons to fine blood vessels.",
-      "Those contacts let them control local blood flow, so that a more active region of the brain receives more blood. Astrocytes also help form the tough outer membranes that wrap the brain, and they release chemical signals that affect how synapses work and whether new ones form."
-    ],
-    facts:[["Shape","star, processes in all directions"],["Jobs","blood flow, membranes, synapses"]] },
-
-  { id:"microglia", name:"Microglial cells", color:"var(--micro)", tag:"cleanup after injury",
-    body:[
-      "Extremely small, mobile glial cells that remove cellular debris from injured or dead cells. When something goes wrong they gather at the site, surround the damage, and break down what is left of it.",
-      "Astrocytes and microglia are not purely protective. Both can make some problems worse, including the harmful swelling that follows a brain injury and degenerative processes such as Alzheimer's disease and Parkinson's disease."
-    ],
-    facts:[["Size","the smallest glia"],["Job","contain and clear injury"]] }
-];
 
 /* ---------------------------------------------------------------------------
    The size scale, drawn on a log axis
@@ -637,13 +502,6 @@ section("figJobs","chipsJobs","infoJobs", JOBS, {
   ],
   facts:[] });
 
-section("figGlia","chipsGlia","infoGlia", GLIA, {
-  name:"Four kinds of glia", color:"var(--muted)", tag:"two that myelinate, two that support",
-  body:[
-    "Glial cells outnumber neurons in the human brain. Early neuroscientists took them for filler holding the neurons in place, which is where the name comes from, since <i>glia</i> is Greek for glue. They do much more than that. Glia supply neurons with raw materials, chemical signals, and structural components, and they take part in information processing.",
-    "Two types, <b>oligodendrocytes</b> and <b>Schwann cells</b>, wrap axons in myelin. <b>Astrocytes</b> manage blood flow and shape synapses. <b>Microglia</b> clean up damage."
-  ],
-  facts:[] });
 </script>
 </body>
 </html>
