@@ -39,10 +39,12 @@
   .info{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--stroke);
     border-left-width:4px;border-radius:14px;padding:14px 18px 16px;min-height:240px;}
   .info .kicker{font:700 11px -apple-system,"Segoe UI",sans-serif;letter-spacing:1.1px;text-transform:uppercase;}
-  .info h2{margin:4px 0 2px;font-size:19px;font-weight:650;}
+  .info h2{margin:4px 0 2px;font-size:19px;font-weight:650;color:currentColor;}
   .info .tag{margin:0 0 9px;font-size:13.5px;color:var(--muted);}
   .info p{margin:0 0 9px;font-size:14px;line-height:1.62;color:#cdd7e6;}
   .info b{color:var(--ink);}
+  .info b.term{color:currentColor;cursor:pointer;border-bottom:1px dotted currentColor;}
+  .info b.term:hover{filter:brightness(1.25);}
   .info a{color:#6ea8fe;text-decoration:none;}
   .info a:hover{text-decoration:underline;}
   .info .facts{margin:10px 0 0;padding:9px 0 0;border-top:1px solid var(--stroke);
@@ -58,8 +60,8 @@
   .chip.on{background:#1d2942;border-color:currentColor;color:#fff;font-weight:600;}
   .chip .dot{width:10px;height:10px;border-radius:50%;flex:none;background:currentColor;
     box-shadow:0 0 8px currentColor;}
-  .chip .nm{color:#cdd7e6;}
-  .chip.on .nm{color:#fff;}
+  .chip .nm{color:currentColor;}
+  .chip.on .nm{color:currentColor;}
 
   .sources{margin-top:20px;font-size:11.5px;color:var(--faint);line-height:1.7;
     border-top:1px solid var(--stroke);padding-top:12px;}
@@ -423,7 +425,22 @@ const DEFAULT = {
 const fig = document.getElementById("fig");
 const infoEl = document.getElementById("info");
 const chipsEl = document.getElementById("chips");
-let pinned = null, hovered = null;
+let pinned = null, hovered = null, spot = null;
+
+/* the words in the panel that name a part, so they can be coloured and made live */
+const TERMS = [
+  ["dendritic spines","dendrites"],["dendritic spine","dendrites"],["dendrites","dendrites"],["dendrite","dendrites"],
+  ["cell body","soma"],["soma","soma"],
+  ["nucleus","nucleus"],
+  ["axon hillock","hillock"],["axon initial segment","hillock"],["initial segment","hillock"],
+  ["axon collaterals","collateral"],["axon collateral","collateral"],["collaterals","collateral"],
+  ["nodes of ranvier","nodes"],["node of ranvier","nodes"],
+  ["myelin sheath","myelin"],["myelin","myelin"],["oligodendrocytes","myelin"],["schwann cells","myelin"],
+  ["axon terminals","terminals"],["terminal buttons","terminals"],["synaptic boutons","terminals"],
+  ["synaptic cleft","synapse"],["synapses","synapse"],["synapse","synapse"],
+  ["nerve fiber","axon"],["axon","axon"]
+];
+const COLORS = {};
 
 PARTS.forEach(p=>{
   const b = document.createElement("button");
@@ -457,9 +474,26 @@ function render(p){
     (facts ? `<div class="facts">${facts}</div>` : "");
 }
 
+/* the words in the panel that name a part light that part up when you point at them */
+function linkTerms(){
+  infoEl.querySelectorAll("b").forEach(b=>{
+    const t = b.textContent.toLowerCase().replace(/[^a-z ]/g,"").trim();
+    const hit = TERMS.find(([word]) => word === t);
+    if(!hit) return;
+    const id = hit[1];
+    b.className = "term";
+    b.style.color = COLORS[id];
+    b.onmouseenter = ()=>{ spot = id; paintFigure(); };
+    b.onmouseleave = ()=>{ spot = null; paintFigure(); };
+    b.onclick = ()=>{ spot = null; pinned = id; hovered = null; paint(); };
+  });
+}
+
 /* hovering previews a part, clicking pins it, and a pinned part stays lit */
-function paint(){
-  const id = hovered || pinned;
+function active(){ return hovered || pinned; }
+
+function paintFigure(){
+  const id = spot || active();
   fig.classList.toggle("sel", !!id);
   PARTS.forEach(x=>{
     const g = document.getElementById("p-"+x.id);
@@ -467,8 +501,21 @@ function paint(){
     const c = chipsEl.querySelector(`[data-id="${x.id}"]`);
     if(c) c.classList.toggle("on", x.id === id);
   });
-  render(PARTS.find(x=>x.id === id) || DEFAULT);
 }
+
+function paint(){
+  const p = PARTS.find(x=>x.id === active()) || DEFAULT;
+  infoEl.style.color = p.color;
+  render(p);
+  linkTerms();
+  paintFigure();
+}
+
+/* read each part's colour off its own chip, so the palette stays in one place */
+PARTS.forEach(p=>{
+  const c = chipsEl.querySelector(`[data-id="${p.id}"]`);
+  COLORS[p.id] = c ? getComputedStyle(c).color : "#e8eef8";
+});
 
 paint();
 </script>
