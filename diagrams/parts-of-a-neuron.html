@@ -144,16 +144,14 @@
               <path d="M436,68 C446,58 452,54 462,46"/><path d="M436,68 C438,54 438,48 440,38"/>
               <path d="M388,56 C396,46 400,40 406,32"/><path d="M388,56 C378,48 372,44 364,36"/>
             </g>
-            <g stroke-width="2.6" opacity=".9">
-              <path d="M170,128 l-12,4"/><path d="M196,150 l10,-8"/><path d="M236,118 l-12,-2"/>
-              <path d="M228,146 l12,-3"/><path d="M265,120 l-12,-4"/><path d="M265,96 l12,-4"/>
-              <path d="M296,146 l-12,-3"/><path d="M304,118 l12,-2"/><path d="M334,150 l-10,-8"/>
-              <path d="M360,128 l12,4"/><path d="M160,86 l-10,-6"/><path d="M372,86 l10,-6"/>
-            </g>
+          </g>
+          <!-- dendritic spines: a stalk with a head, in their own colour -->
+          <g id="spines" stroke="#67e8f9" stroke-width="3" stroke-linecap="round" fill="#67e8f9"></g>
+          <g fill="none" stroke="#38bdf8" stroke-linecap="round">
           </g>
           <rect class="hit" x="46" y="14" width="440" height="180"/>
           <text class="lbl" x="130" y="186" text-anchor="end" fill="#38bdf8">dendrites</text>
-          <text class="lbl sm" x="130" y="202" text-anchor="end" fill="#0e7490">with spines</text>
+          <text class="lbl sm" x="130" y="202" text-anchor="end" fill="#67e8f9">with spines</text>
           <path d="M134,182 C148,170 158,158 168,144" stroke="#0e7490" stroke-width="1.4" fill="none"/>
         </g>
 
@@ -267,6 +265,24 @@
 "use strict";
 
 /* the myelin runs down the axon: five internodes with a bare node between them */
+(function buildSpines(){
+  const g = document.getElementById("spines");
+  const NS = "http://www.w3.org/2000/svg";
+  // [x, y, dx, dy] : where the spine leaves the dendrite, and which way it points
+  const S = [[170,128,-13,5],[196,150,11,-9],[236,118,-13,-3],[228,146,13,-4],
+             [265,120,-13,-5],[265,96,13,-5],[296,146,-13,-4],[304,118,13,-3],
+             [334,150,-11,-9],[360,128,13,5],[160,86,-11,-7],[372,86,11,-7],
+             [186,110,-12,2],[344,110,12,2],[247,84,-11,-4],[283,84,11,-4]];
+  for(const [x,y,dx,dy] of S){
+    const l = document.createElementNS(NS,"path");
+    l.setAttribute("d",`M${x},${y} l${dx},${dy}`);
+    g.appendChild(l);
+    const h = document.createElementNS(NS,"circle");
+    h.setAttribute("cx",x+dx*1.35); h.setAttribute("cy",y+dy*1.35); h.setAttribute("r",3.2);
+    g.appendChild(h);
+  }
+})();
+
 (function buildAxon(){
   const segG = document.getElementById("myeSegs");
   const nodeG = document.getElementById("nodeMarks");
@@ -402,7 +418,7 @@ const PARTS = [
     facts:[["Cleft","20 to 40 nm"],["Three parts","pre-membrane, cleft, post-membrane"],["Crossing time","well under 1 ms"]] }
 ];
 const DEFAULT = {
-  name:"One cell, four zones", color:"var(--muted)", tag:"hover or click any part",
+  name:"One cell, four zones", color:"var(--muted)", tag:"the plan behind every neuron",
   body:[
     "Signals arrive on the <b>dendrites</b>, many of them on <b>dendritic spines</b>, and spread into the <b>cell body</b>, where they are added together. The running total is read at the start of the axon, just past the <b>axon hillock</b>. If it clears threshold, an action potential fires and travels down the <b>axon</b> and its <b>collaterals</b>, jumping between the <b>nodes of Ranvier</b> in the gaps of the <b>myelin sheath</b>, until it reaches the <b>axon terminals</b> and crosses a <b>synapse</b> to the next cell.",
     "Those steps are the neuron's four zones, marked down the left edge: input, integration, conduction, output."
@@ -415,7 +431,7 @@ let pinned = null, hovered = null, spot = null;
 
 /* the words in the panel that name a part, so they can be coloured and made live */
 const TERMS = [
-  ["dendritic spines","dendrites"],["dendritic spine","dendrites"],["dendrites","dendrites"],["dendrite","dendrites"],
+  ["dendritic spines","dendrites","#67e8f9"],["dendritic spine","dendrites","#67e8f9"],["dendrites","dendrites"],["dendrite","dendrites"],
   ["cell body","soma"],["soma","soma"],
   ["nucleus","nucleus"],
   ["axon hillock","hillock"],["axon initial segment","hillock"],["initial segment","hillock"],
@@ -468,7 +484,7 @@ function linkTerms(){
     if(!hit) return;
     const id = hit[1];
     b.className = "term";
-    b.style.color = COLORS[id];
+    b.style.color = hit[2] || COLORS[id];
     b.onmouseenter = ()=>{ spot = id; paintFigure(); };
     b.onmouseleave = ()=>{ spot = null; paintFigure(); };
     b.onclick = ()=>{ spot = null; pinned = id; hovered = null; paint(); };

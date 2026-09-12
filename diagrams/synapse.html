@@ -124,7 +124,7 @@
 <div class="wrap">
   <header>
     <h1>The Synapse</h1>
-    <p>A neuron passes its signal to the next cell by releasing a chemical. Press play to watch the sequence, or click a step or a structure to read what happens there. The same figure can also show where drugs act, since almost every drug that changes behavior does it by interfering with one of these steps.</p>
+    <p>A neuron passes its signal to the next cell by releasing a chemical. The sequence runs in five steps, and almost every drug that changes behavior works by interfering with one of them.</p>
   </header>
 
   <div class="controls">
@@ -278,7 +278,7 @@
 
   <div class="card" id="drugCard">
     <h3>Where drugs act</h3>
-    <p>A <b>ligand</b> is any substance that binds a receptor. A drug that mimics or strengthens a transmitter is an <b>agonist</b>; one that blocks or weakens it is an <b>antagonist</b>. Press the button above the figure to number these sites on the synapse itself.</p>
+    <p>A <b>ligand</b> is any substance that binds a receptor. A drug that mimics or strengthens a transmitter is an <b>agonist</b>; one that blocks or weakens it is an <b>antagonist</b>.</p>
     <div class="druglist" id="druglist"></div>
   </div>
 
@@ -577,7 +577,7 @@ const STEP_INFO = {
   bind:{ n:4, name:"Transmitter binds receptors", color:"var(--tx)", tag:"step 4",
     body:["Transmitter diffuses across the cleft and briefly binds <b>neurotransmitter receptors</b>, proteins in the postsynaptic membrane that recognize that particular transmitter. The fit is usually described as a key in a lock.",
           "An <b>ionotropic receptor</b> is a channel: binding opens it, ions flow, and the postsynaptic membrane potential changes at once. A <b>metabotropic receptor</b> passes the message inward through a <b>G protein</b> and <b>second messengers</b> instead, which is slower but can reach much further into the cell.",
-          "If the change brings the cell closer to threshold it is an <b>excitatory</b> synapse and the change is an EPSP. If it pushes the cell away from threshold it is <b>inhibitory</b> and the change is an IPSP. Use the toggle above the figure to switch between them."]},
+          "If the change brings the cell closer to threshold it is an <b>excitatory</b> synapse and the change is an EPSP. If it pushes the cell away from threshold it is <b>inhibitory</b> and the change is an IPSP."]},
   clear:{ n:5, name:"The signal is cleared", color:"var(--trans)", tag:"step 5",
     body:["Transmitter action is reversed quickly, in two ways. <b>Transporters</b> in the presynaptic membrane bind the molecules and carry them back inside, a process called <b>reuptake</b>, after which they can be recycled. <b>Enzymes</b> break down the rest into inactive pieces.",
           "Clearing matters as much as releasing. Until the cleft is empty, the next release cannot say anything new, and transmitter left sitting on receptors keeps acting."]}
@@ -708,9 +708,9 @@ function select(key){
   else { const s = STEP_INFO[key.slice(5)]; render(s, "Step " + s.n + " of 5"); }
 }
 
-const OVERVIEW = { name:"One signal, five steps", color:"var(--muted)", tag:"press play, or pick a step",
+const OVERVIEW = { name:"One signal, five steps", color:"var(--muted)", tag:"the sequence at a chemical synapse",
   body:["An action potential reaches the terminal, calcium enters, vesicles fuse and release transmitter into the cleft, the transmitter binds receptors on the other side and changes that cell, and then the cleft is cleared by reuptake and by enzymes.",
-        "The whole sequence runs in a couple of milliseconds, and a single neuron does it at thousands of synapses at once. Click any step or any structure to read what happens there."]};
+        "The whole sequence runs in a couple of milliseconds, and a single neuron does it at thousands of synapses at once."]};
 
 /* while playing, the chip for the current step lights up on its own */
 function syncChips(){
