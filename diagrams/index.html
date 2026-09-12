@@ -5,380 +5,418 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Digital Concepts</title>
 <style>
-  :root{
-    --bg:#121212; --panel:#1a1a1a; --panel2:#202020;
-    --text:#e6e6e6; --muted:#9a9a9a; --line:#2b2b2b; --gold:#e4a01b;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--text);
-    font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
-  .wrap{max-width:1150px;margin:0 auto;padding:32px 20px 80px}
-  header{border-top:4px solid var(--gold);padding-top:22px}
-  h1{margin:0;font-size:28px}
-  .sub{color:var(--muted);margin:6px 0 22px}
-  .lede{color:var(--muted);max-width:780px;margin:10px 0 24px;font-size:14.5px;line-height:1.6}
-  .lede a{color:var(--gold)}
-  .controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
-  input[type=search]{flex:1 1 240px;min-width:200px;background:var(--panel);
-    border:1px solid var(--line);color:var(--text);padding:9px 12px;border-radius:8px;font-size:15px}
-  input[type=search]::placeholder{color:#6c6c6c}
-  button{background:var(--panel);border:1px solid var(--line);color:var(--text);
-    padding:9px 14px;border-radius:8px;cursor:pointer;font-size:14px}
-  button:hover{border-color:var(--gold);color:#fff}
-  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:26px}
-  .cats{display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 20px}
-  .cat{background:transparent;border:1px solid var(--line);color:var(--muted);padding:7px 16px;border-radius:999px;cursor:pointer;font-size:14px;font-weight:600}
-  .cat:hover{color:var(--text);border-color:#4a4a4a}
-  .cat.on{background:var(--gold);border-color:var(--gold);color:#1a1a1a}
-  .chip{background:transparent;border:1px solid var(--line);color:var(--muted);
-    padding:5px 12px;border-radius:999px;cursor:pointer;font-size:13px}
-  .chip:hover{border-color:#4a4a4a;color:var(--text)}
-  .chip.on{background:rgba(228,160,27,.14);border-color:var(--gold);color:var(--gold)}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
-  .card{position:relative;background:var(--panel);border:1px solid var(--line);
-    border-radius:12px;overflow:hidden;cursor:pointer;transition:transform .15s,border-color .15s}
-  .card:hover{transform:translateY(-3px);border-color:var(--gold)}
-  .thumb{height:210px;overflow:hidden;background:#0b1220;position:relative}
-  .thumb img{width:100%;height:100%;object-fit:cover;object-position:top}
-  .thumb iframe{width:200%;height:200%;border:0;transform:scale(.5);transform-origin:0 0;pointer-events:none}
-  .badge{position:absolute;top:10px;right:10px;background:var(--gold);color:#1a1a1a;
-    font-size:10px;font-weight:700;letter-spacing:.6px;padding:3px 8px;border-radius:999px;z-index:2}
-  .card-body{padding:13px 15px 16px}
-  .card h3{margin:0 0 7px;font-size:16px;line-height:1.3}
-  .tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px}
-  .tag{font-size:11px;color:var(--gold);border:1px solid rgba(228,160,27,.35);padding:2px 8px;border-radius:999px}
-  .card p{margin:0;font-size:13.5px;color:var(--muted)}
-  .series-strip{margin:0 0 22px}
-  .series-link{display:grid;grid-template-columns:1fr auto;grid-template-areas:"kicker cta" "title cta" "desc cta";gap:2px 20px;align-items:center;background:var(--panel);border:1px solid var(--line);border-left:4px solid #2aa198;border-radius:12px;padding:14px 18px;text-decoration:none;color:var(--text);transition:border-color .15s,transform .15s}
-  .series-link:hover{border-color:#2aa198;transform:translateY(-2px)}
-  .series-kicker{grid-area:kicker;font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:#2aa198;font-weight:700}
-  .series-title{grid-area:title;font-size:18px;font-weight:600}
-  .series-desc{grid-area:desc;font-size:13.5px;color:var(--muted)}
-  .series-cta{grid-area:cta;color:#2aa198;font-size:14px;white-space:nowrap}
-  @media(max-width:600px){.series-link{grid-template-columns:1fr;grid-template-areas:"kicker" "title" "desc" "cta"}}
-  .empty{color:var(--muted);text-align:center;padding:40px 0}
+:root{
+--bg:#121212; --panel:#1a1a1a; --panel2:#202020;
+--text:#e6e6e6; --muted:#9a9a9a; --line:#2b2b2b; --gold:#e4a01b;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+.wrap{max-width:1150px;margin:0 auto;padding:32px 20px 80px}
+header{border-top:4px solid var(--gold);padding-top:22px}
+h1{margin:0;font-size:28px}
+.sub{color:var(--muted);margin:6px 0 22px}
+.lede{color:var(--muted);max-width:780px;margin:10px 0 24px;font-size:14.5px;line-height:1.6}
+.lede a{color:var(--gold)}
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+input[type=search]{flex:1 1 240px;min-width:200px;background:var(--panel);
+border:1px solid var(--line);color:var(--text);padding:9px 12px;border-radius:8px;font-size:15px}
+input[type=search]::placeholder{color:#6c6c6c}
+button{background:var(--panel);border:1px solid var(--line);color:var(--text);
+padding:9px 14px;border-radius:8px;cursor:pointer;font-size:14px}
+button:hover{border-color:var(--gold);color:#fff}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:26px}
+.cats{display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 20px}
+.cat{background:transparent;border:1px solid var(--line);color:var(--muted);padding:7px 16px;border-radius:999px;cursor:pointer;font-size:14px;font-weight:600}
+.cat:hover{color:var(--text);border-color:#4a4a4a}
+.cat.on{background:var(--gold);border-color:var(--gold);color:#1a1a1a}
+.chip{background:transparent;border:1px solid var(--line);color:var(--muted);
+padding:5px 12px;border-radius:999px;cursor:pointer;font-size:13px}
+.chip:hover{border-color:#4a4a4a;color:var(--text)}
+.chip.on{background:rgba(228,160,27,.14);border-color:var(--gold);color:var(--gold)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+.card{position:relative;background:var(--panel);border:1px solid var(--line);
+border-radius:12px;overflow:hidden;cursor:pointer;transition:transform .15s,border-color .15s}
+.card:hover{transform:translateY(-3px);border-color:var(--gold)}
+.thumb{height:210px;overflow:hidden;background:#0b1220;position:relative}
+.thumb img{width:100%;height:100%;object-fit:cover;object-position:top}
+.thumb iframe{width:200%;height:200%;border:0;transform:scale(.5);transform-origin:0 0;pointer-events:none}
+.badge{position:absolute;top:10px;right:10px;background:var(--gold);color:#1a1a1a;
+font-size:10px;font-weight:700;letter-spacing:.6px;padding:3px 8px;border-radius:999px;z-index:2}
+.card-body{padding:13px 15px 16px}
+.card h3{margin:0 0 7px;font-size:16px;line-height:1.3}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px}
+.tag{font-size:11px;color:var(--gold);border:1px solid rgba(228,160,27,.35);padding:2px 8px;border-radius:999px}
+.card p{margin:0;font-size:13.5px;color:var(--muted)}
+.series-strip{margin:0 0 22px}
+.series-link{display:grid;grid-template-columns:1fr auto;grid-template-areas:"kicker cta" "title cta" "desc cta";gap:2px 20px;align-items:center;background:var(--panel);border:1px solid var(--line);border-left:4px solid #2aa198;border-radius:12px;padding:14px 18px;text-decoration:none;color:var(--text);transition:border-color .15s,transform .15s}
+.series-link:hover{border-color:#2aa198;transform:translateY(-2px)}
+.series-kicker{grid-area:kicker;font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:#2aa198;font-weight:700}
+.series-title{grid-area:title;font-size:18px;font-weight:600}
+.series-desc{grid-area:desc;font-size:13.5px;color:var(--muted)}
+.series-cta{grid-area:cta;color:#2aa198;font-size:14px;white-space:nowrap}
+@media(max-width:600px){.series-link{grid-template-columns:1fr;grid-template-areas:"kicker" "title" "desc" "cta"}}
+.empty{color:var(--muted);text-align:center;padding:40px 0}
 
-  .overlay{position:fixed;inset:0;background:rgba(8,8,8,.96);display:none;z-index:60}
-  .overlay.on{display:flex;flex-direction:column}
-  .obar{display:flex;align-items:center;gap:10px;padding:12px 18px;border-bottom:1px solid var(--line);flex-wrap:wrap}
-  .obar .spacer{flex:1}
-  .obar .count{color:var(--muted);font-size:13px}
-  .obar a{color:var(--gold);text-decoration:none;font-size:14px;border:1px solid var(--line);
-    padding:9px 14px;border-radius:8px}
-  .obar a:hover{border-color:var(--gold)}
-  .ostage{flex:1;display:flex;gap:20px;padding:18px;overflow:hidden}
-  .oframe{flex:1 1 100%;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#151513}
-  .oframe iframe{width:100%;height:100%;border:0;display:block}
-  .onotes{flex:1 1 34%;max-width:400px;overflow:auto;padding-right:4px}
-  .onotes h2{margin:0 0 6px;font-size:20px}
-  .note{margin-bottom:16px}
-  .note b{display:block;font-size:11.5px;letter-spacing:.8px;text-transform:uppercase;
-    color:var(--gold);margin-bottom:5px}
-  .note p{margin:0 0 6px;font-size:13.5px;color:#d0d0d0}
-  .note ul{margin:0;padding-left:18px;font-size:13.5px;color:#d0d0d0}
-  .note li{margin-bottom:5px}
-  .mine{border-left:2px solid #3a3a3a;padding-left:12px}
-  .mine p{color:#8a8a8a;font-style:italic}
-  details.cav{margin-top:18px;border-top:1px solid var(--line);padding-top:12px}
-  details.cav summary{cursor:pointer;font-size:11.5px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted)}
-  details.cav summary:hover{color:var(--gold)}
-  details.cav ul{margin:10px 0 0;padding-left:18px;font-size:13px;color:#b8b8b8}
-  details.cav li{margin-bottom:6px}
-  .hint{color:#5f5f5f;font-size:12px;padding:0 18px 12px}
-  @media(max-width:820px){.ostage{flex-direction:column;overflow:auto}.oframe{min-height:60vh}.onotes{max-width:none}}
+.overlay{position:fixed;inset:0;background:rgba(8,8,8,.96);display:none;z-index:60}
+.overlay.on{display:flex;flex-direction:column}
+.obar{display:flex;align-items:center;gap:10px;padding:12px 18px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.obar .spacer{flex:1}
+.obar .count{color:var(--muted);font-size:13px}
+.obar a{color:var(--gold);text-decoration:none;font-size:14px;border:1px solid var(--line);
+padding:9px 14px;border-radius:8px}
+.obar a:hover{border-color:var(--gold)}
+.ostage{flex:1;display:flex;gap:20px;padding:18px;overflow:hidden}
+.oframe{flex:1 1 100%;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#151513}
+.oframe iframe{width:100%;height:100%;border:0;display:block}
+.onotes{flex:1 1 34%;max-width:400px;overflow:auto;padding-right:4px}
+.onotes h2{margin:0 0 6px;font-size:20px}
+.note{margin-bottom:16px}
+.note b{display:block;font-size:11.5px;letter-spacing:.8px;text-transform:uppercase;
+color:var(--gold);margin-bottom:5px}
+.note p{margin:0 0 6px;font-size:13.5px;color:#d0d0d0}
+.note ul{margin:0;padding-left:18px;font-size:13.5px;color:#d0d0d0}
+.note li{margin-bottom:5px}
+.mine{border-left:2px solid #3a3a3a;padding-left:12px}
+.mine p{color:#8a8a8a;font-style:italic}
+details.cav{margin-top:18px;border-top:1px solid var(--line);padding-top:12px}
+details.cav summary{cursor:pointer;font-size:11.5px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted)}
+details.cav summary:hover{color:var(--gold)}
+details.cav ul{margin:10px 0 0;padding-left:18px;font-size:13px;color:#b8b8b8}
+details.cav li{margin-bottom:6px}
+.hint{color:#5f5f5f;font-size:12px;padding:0 18px 12px}
+@media(max-width:820px){.ostage{flex-direction:column;overflow:auto}.oframe{min-height:60vh}.onotes{max-width:none}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <h1>Digital Concepts</h1>
-    <p class="lede">Welcome to this library of animated concepts. The diagrams here are at different stages of development; I work on improving them continuously. However, because the main priority is scientific accuracy, they take a lot of time to develop and to complete. So it is likely some aspect of a diagram might not be complete or accurate. If you find something that needs to be updated, corrected, or fixed, please let me know at <a href="mailto:rivera21@stolaf.edu">rivera21@stolaf.edu</a>.</p>
-  </header>
-  <div class="series-strip">
-    <a class="series-link" href="erp-pipeline.html">
-      <span class="series-kicker">Course series · PSYCH 390</span>
-      <span class="series-title">The ERP pipeline</span>
-      <span class="series-desc">Twelve interactive pages on EEG/ERP methods, from electricity to a publication figure, with their own landing page and step-by-step navigation.</span>
-      <span class="series-cta">Open the series →</span>
-    </a>
-  </div>
+<header>
+<h1>Digital Concepts</h1>
+<p class="lede">Welcome to this library of animated concepts. The diagrams here are at different stages of development; I work on improving them continuously. However, because the main priority is scientific accuracy, they take a lot of time to develop and to complete. So it is likely some aspect of a diagram might not be complete or accurate. If you find something that needs to be updated, corrected, or fixed, please let me know at <a href="mailto:rivera21@stolaf.edu">rivera21@stolaf.edu</a>.</p>
+</header>
+<div class="series-strip">
+<a class="series-link" href="erp-pipeline.html">
+<span class="series-kicker">Course series · PSYCH 390</span>
+<span class="series-title">The ERP pipeline</span>
+<span class="series-desc">Twelve interactive pages on EEG/ERP methods, from electricity to a publication figure, with their own landing page and step-by-step navigation.</span>
+<span class="series-cta">Open the series →</span>
+</a>
+</div>
 
-  <div class="cats" id="cats"></div>
-  <div class="controls">
-    <input type="search" id="q" placeholder="Search titles, tags, notes…">
-    <button id="shuffle">Shuffle ⤮</button>
-    <button id="focusFirst">Focus mode ▸</button>
-  </div>
-  <div class="chips" id="chips"></div>
-  <div class="grid" id="grid"></div>
-  <div class="empty" id="empty" style="display:none">Nothing matches that filter.</div>
+<div class="cats" id="cats"></div>
+<div class="controls">
+<input type="search" id="q" placeholder="Search titles, tags, notes…">
+<button id="shuffle">Shuffle ⬮</button>
+<button id="focusFirst">Focus mode ▸</button>
+</div>
+<div class="chips" id="chips"></div>
+<div class="grid" id="grid"></div>
+<div class="empty" id="empty" style="display:none">Nothing matches that filter.</div>
 </div>
 
 <div class="overlay" id="ov">
-  <div class="obar">
-    <button id="prev">← Prev</button>
-    <button id="next">Next →</button>
-    <span class="count" id="count"></span>
-    <span class="spacer"></span>
-    <span id="extras"></span>
-    <button id="close">Close ✕</button>
-  </div>
-  <div class="ostage">
-    <div class="oframe"><iframe id="oframe" title="diagram"></iframe></div>
-  </div>
-  <div class="hint">← / → to move · Esc to close · open the full page for print versions and controls</div>
+<div class="obar">
+<button id="prev">← Prev</button>
+<button id="next">Next →</button>
+<span class="count" id="count"></span>
+<span class="spacer"></span>
+<span id="extras"></span>
+<button id="close">Close ✕</button>
+</div>
+<div class="ostage">
+<div class="oframe"><iframe id="oframe" title="diagram"></iframe></div>
+</div>
+<div class="hint">← / → to move · Esc to close · open the full page for print versions and controls</div>
 </div>
 
 <script>
 /* ============================================================
-   ADD A DIAGRAM: copy a block, point `file` at its .html,
-   give it a `thumb` (image path) or set thumbLive:true.
-   ============================================================ */
+ADD A DIAGRAM: copy a block, point `file` at its .html,
+give it a `thumb` (image path) or set thumbLive:true.
+============================================================ */
 const DIAGRAMS = [
-  {
-    id:'erp-pipeline',
-    category:'PSYCH 390',
-    title:'The ERP Pipeline',
-    file:'erp-pipeline.html',
-    thumbLive:true,
-    tags:['EEG','ERP','methods','teaching','interactive','PSYCH 390'],
-    label:'COURSE SERIES',
-    blurb:'Twelve interactive pages that follow the EEG/ERP processing pipeline in lab order: electricity, where the EEG comes from, averaging, the EEGLAB GUI, MATLAB basics, filtering, re-referencing, bins and epochs, channel interpolation, artifact detection, scoring, and plotting and scripting.',
-    extras:[],
-    connects:'The Thursday labs of PSYCH 390 (Labs 1 through 10) and Luck (2014). Each page quotes the EEGLAB or ERPLAB call used in that lab.',
-    caveats:[
-      'All signals are simulated with realistic sizes and timing; nothing is a recording from a participant.',
-      'Head models are simplified (homogeneous sphere or half-space; skull blur approximated). Each page states its own simplifications.',
-      'Interpolation uses a distance-weighted average as a stand-in for the spherical spline; BINLISTER matching is simplified to adjacent events.'
-    ],
-    mine:''
-  },
-  {
-    id:'life-multicellular-brains',
-    category:'Neuroscience',
-    title:'Life, Multicellular Organisms, and Brains',
-    file:'life-multicellular-and-brains.html',
-    thumbLive:true,
-    tags:['evolution','neuroanatomy','teaching'],
-    label:'INTERACTIVE',
-    blurb:'The brain as nested subsets, from non-living matter to life, multicellular life, animals with a nervous system, and the brain, with the four thresholds crossed between them.',
-    extras:[],
-    connects:'For lectures on the evolution of nervous systems and where the brain sits within life.',
-    caveats:[
-      'The nesting is conceptual; the four thresholds (abiogenesis, multicellularity, nervous systems, encephalization) simplify long, gradual transitions.'
-    ],
-    mine:''
-  },
-  {
-    id:'brain-composition',
-    category:'Neuroscience',
-    title:'Brain Composition Breakdown',
-    file:'brain-composition.html',
-    thumbLive:true,
-    tags:['neuroanatomy','teaching','reference'],
-    label:'INTERACTIVE',
-    blurb:'What fills the fixed skull by volume, then the ~86 billion neurons broken down by type and where each is found.',
-    extras:[],
-    connects:'For lectures on brain composition, the Monro-Kellie doctrine and neuron counts.',
-    caveats:[
-      'The intracranial split (brain 80% / blood 10% / CSF 10%) is the standard Monro-Kellie figure; the neuron / glia / extracellular sub-split of the tissue is an approximate teaching estimate that varies by region and method.',
-      'Extracellular space is ~16% of the whole intracranial volume, which is ~20% of the brain tissue alone; the two figures use different denominators.',
-      'Neuron and glia numbers are roughly 1:1 (~86B neurons, ~85B non-neuronal cells); the old &ldquo;10 glia per neuron&rdquo; claim is wrong.',
-      'Most brain neurons are cerebellar granule cells: the cerebellum holds ~69B (~80% of the total) in only ~10% of brain mass.',
-      'The by-type percentages are estimates built from regional counts; the pyramidal-vs-interneuron and granule-vs-other splits are approximate.',
-      'Neuron drawings are schematic: characteristic form only, not scale or exact morphology.'
-    ],
-    mine:''
-  },
-  {
-    id:'nervous-tree',
-    category:'Neuroscience',
-    title:"The Nervous System's Family Tree",
-    file:'nervous-system-tree.html',
-    thumb:'tree.svg',
-    tags:['evolution','neuroanatomy','teaching'],
-    label:'SCROLLABLE',
-    blurb:'From LUCA to Homo sapiens, with every relative that branched off along the way. Each carries its neuron count, shared DNA and a life-history bar.',
-    extras:[
-      {label:'Print PDF (A3) ↗', href:'nervous-system-tree.pdf'},
-      {label:'tree.svg ↗', href:'tree.svg'}
-    ],
-    connects:'Complements the Animals, Primate and Hominins evolution lectures; the dates, innovations and life-history values are pulled from those decks.',
-    caveats:[
-      'Neuron counts here are <em>total brain</em> neurons (human ≈86B, chimp ≈28B). The lecture slides cite <em>cortical</em> neurons for the apes (chimp 6 to 7B). Both are correct; they just measure different things.',
-      'The DNA percentages are <em>not one consistent measure</em>. Close relatives are DNA sequence identity (chimp ≈98.8%); distant animals are the share of genes with a human counterpart (mouse ≈85%, chicken ≈65%, fly ≈60%). Do not read the column as a single scale.',
-      'DNA % is deliberately blank where no defensible figure exists: extinct hominins with no recoverable DNA (erectus, habilis, Australopithecus) and the ancestral grade nodes.',
-      'Ancestral grade nodes (First brain, Vertebrate brain, Amniotes and so on) borrow a modern analog for neuron counts and life history. They are grades, not single species.',
-      'The human lifespan bar uses modern life expectancy (~73 yr); the Hominins deck uses ancient 30 to 40 yr.',
-      'Left off to avoid clutter: Paranthropus, sponges, cartilaginous fish.'
-    ],
-    mine:''
-  },
-  {
-    id:'ontogeny-energy',
-    category:'Neuroscience',
-    title:'Energy use across ontogeny',
-    file:'ontogeny-energy.html',
-    thumb:'energy-curve.svg',
-    tags:['physiology','metabolism','development','teaching'],
-    label:'BROKEN AXIS',
-    blurb:'Metabolic rate from conception to death, with gestation, puberty and pregnancy each given their own zoom.',
-    extras:[
-      {label:'energy-curve.svg ↗', href:'energy-curve.svg'}
-    ],
-    connects:'For lectures on ontogeny, energetics and life-history trade-offs.',
-    caveats:[
-      'Constructed reference curves (body mass × mass-specific BMR), not a measured cohort. Shapes are typical; individual points are not data.',
-      'The drop to zero is a graphical device. Metabolism does not decline along that path to zero; the vertical marks where the population mean age at death falls.',
-      '76.5 / 81.4 yr are <em>period</em> life expectancy at birth (CDC 2024). This is a period statistic, not a forecast for anyone alive now.',
-      'The pregnancy bump is <em>absolute</em>. Pontzer et al. (2021) found fat-free-mass-adjusted expenditure does not rise in pregnancy at all; replot per kilogram and the bump nearly vanishes.',
-      'Basal rate only. Total daily expenditure is about 1.4 to 2× these values, and the pregnancy increment is larger on that measure.',
-      'Pre-pubertal sex separation is within noise; the two-colour treatment should not imply a real childhood difference.'
-    ],
-    mine:''
-  },
-  {
-    id:'developmental-timelines',
-    category:'Development',
-    title:'Developmental Timelines',
-    file:'developmental-timelines.html',
-    thumbLive:true,
-    tags:['development','methods','teaching','reference','interactive'],
-    label:'RANGES',
-    blurb:'Milestones from birth to puberty as early-to-late ranges: WHO windows and clinical ranges as bars, the CDC\'s 2022 checklist ages as diamonds, with speech, walking, reading and puberty on one compressed age axis.',
-    extras:[],
-    connects:'For lectures on development and on why surveillance checklists are not norms: the CDC\'s 2022 ages mark where 75% or more of children have passed a milestone, not the average.',
-    caveats:[
-      'CDC checklist ages are deliberately late-typical (the ≥75% criterion of Zubler et al. 2022); a diamond is not a mean.',
-      'Crawling has no CDC diamond: the 2022 revision removed it because some healthy children never crawl.',
-      'Gross motor bars are WHO windows of achievement (1st to 99th percentile); language bars are CHOP clinical ranges; reading and puberty rows are not CDC data (Reading Rockets; NICHD/AAFP).',
-      'Ranges describe populations, not individual children.'
-    ],
-    mine:''
-  },
-  {
-    id:'scale-of-a-neuron',
-    category:'Neuroscience',
-    title:'The Neuron',
-    file:'scale-of-a-neuron.html',
-    thumb:'scale-of-a-neuron.svg',
-    tags:['neuroanatomy','morphology','scale','teaching'],
-    label:'INTERACTIVE',
-    blurb:'A corticospinal pyramidal neuron at true scale: the whole cell body and dendrites shrink to a speck beside a one meter axon. Hover any part to light it up across body, tract and cell, and blow the soma up to everyday objects.',
-    extras:[
-      {label:'scale-of-a-neuron.svg ↗', href:'scale-of-a-neuron.svg'}
-    ],
-    connects:'For lectures on neuron structure, scale and the corticospinal pathway. Pairs with the action potential and brain composition diagrams.',
-    caveats:[
-      'The ~1 m axon is for the giant corticospinal (Betz) neurons that reach the lumbosacral cord; length varies with body height and target segment. Most cortical pyramidal neurons have far shorter axons.',
-      'Soma ≈ 0.06 mm (up to 0.1 mm in the largest Betz cells). The 1:16,000 ratio uses the 0.06 mm figure; with a 0.1 mm soma it is closer to 1:10,000.',
-      'Only length is to scale in the main column. The axon is drawn at a minimum visible width; its true caliber is ~1 to 10 µm, thinner than one pixel here.',
-      'The cell-body zoom is magnified ~350×, and the body silhouette is schematic, not on the ruler scale.',
-      'Anatomical waypoint depths (internal capsule, pyramidal decussation and so on) are approximate positions along the tract, not measured distances.',
-      'The dendritic arbor is drawn procedurally as a representative cell, not a single traced reconstruction.'
-    ],
-    mine:''
-  },
-  {
-    id:'ion-channels',
-    category:'Neuroscience',
-    title:'Ion Channels',
-    file:'ion-channels.html',
-    thumbLive:true,
-    tags:['membrane','neurophysiology','synapses','teaching','animation'],
-    label:'INTERACTIVE',
-    blurb:'The ways ions cross the membrane: leak pores, voltage-gated, ligand-gated and mechanically-gated channels, and the Na⁺/K⁺ pump, each drawn to scale in one 4 nm bilayer.',
-    extras:[],
-    connects:'Pairs with The Action Potential; for lectures on membrane channels and transport.',
-    caveats:[
-      'The out:in flux ratios are a teaching schematic tied to the meter reading, not measured single-channel rates.',
-      'The leak panel settles at the K⁺ equilibrium potential (about -90 mV); whole-cell resting voltage is nearer -70 mV because of a smaller Na⁺ leak that is not shown.',
-      'Channels and the pump are to scale against the 4 nm bilayer, but ions are drawn larger than life so they stay visible.'
-    ],
-    mine:''
-  },
-  {
-    id:'action-potential',
-    category:'Neuroscience',
-    title:'The Action Potential',
-    file:'action-potential.html',
-    thumbLive:true,
-    tags:['neurophysiology','membrane','synapses','teaching','animation'],
-    label:'INTERACTIVE',
-    blurb:'Graded potentials sweep down the dendrites of a pyramidal cell, summate at the soma, and once threshold is crossed an all-or-none spike jumps node to node down the axon to the terminals, recorded by two electrodes.',
-    extras:[],
-    connects:'For lectures on membrane potential, synaptic integration and the action potential. Pairs with a separate zoomed diagram of the ion channels, which are deliberately omitted here.',
-    caveats:[
-      'Ions are deliberately left out. The balls are waves of membrane-voltage change, not moving ions; the Na⁺/K⁺ channel mechanism belongs in a separate zoomed diagram.',
-      'Two colours only: green = depolarising (excitatory graded potentials and the action potential), red = hyperpolarising (inhibitory). The spike is green because it too is a depolarisation.',
-      'Time is not to scale. The spike (~1 to 2 ms) is stretched so it is visible; real EPSPs and IPSPs last tens of milliseconds. A to-scale inset shows the true ratio.',
-      'Amplitudes are a schematic reference, not recorded data. The soma trace is scaled so the summed inputs just reach threshold; the subthreshold trial shows one that falls short.',
-      'Spatial scale is only roughly proportional (~100 µm bar). A real layer-5 pyramidal cell has an apical dendrite over 1 mm and a much longer axon.',
-      'The backpropagating spike on the dendritic electrode is real but is usually treated as beyond an intro course.'
-    ],
-    mine:''
-  },
-  {
-    id:'cortical-rhythms',
-    category:'Neuroscience',
-    title:'Cortical Rhythms',
-    file:'cortical-rhythms.html',
-    thumbLive:true,
-    tags:['neuroanatomy','oscillations','teaching','animation'],
-    label:'INTERACTIVE',
-    blurb:'Three brain views built from the fs_LR/Conte69 surface, switchable between activity, traveling waves (δ/θ/α/γ), lobes and Brodmann areas.',
-    extras:[],
-    connects:'For lectures on cortical organisation and brain rhythms. Pairs with any EEG/oscillations session.',
-    caveats:[
-      'Only the <em>outlines</em> are real geometry (fs_LR/Conte69 32k surface, projected and contoured). Everything painted inside them is modelled.',
-      'The lobe and Brodmann maps are <em>schematic</em>. Each dot takes the nearest landmark-placed seed (a Voronoi partition), not a cytoarchitectural atlas.',
-      'Activity colours are synthetic (a sum of drifting plane waves). No value corresponds to a measured BOLD or connectivity figure.',
-      'The Rate slider is a teaching control the brain does not have. It scales all four bands together, so their true frequency <em>ratios</em> are preserved.',
-      "Alpha's front-to-back direction is the <em>resting</em> case; during active viewing it reverses to back-to-front.",
-      'Delta is the only band shown on the coronal view. Theta, alpha and gamma travel front to back, which on a coronal section runs into the page.',
-      'Conte69 is cortex only: no cerebellum or brainstem, and the coronal notch between the temporal lobes is where the brainstem would sit.',
-      'Wave amplitude is uniform and isotropic here. Real traveling waves vary by region and travel at speeds that depend on fibre direction.'
-    ],
-    mine:''
-  },
-  {
-    id:'spatial-cells',
-    category:'Neuroscience',
-    title:'Spatial Navigation',
-    file:'spatial-cells.html',
-    thumbLive:true,
-    tags:['spatial','hippocampus','teaching','animation'],
-    label:'INTERACTIVE',
-    blurb:'A rat explores, encodes an object location, then recalls it, with the cell types firing in step.',
-    extras:[],
-    connects:'Accompanies Neil Burgess, <em>Neural mechanisms of spatial cognition</em> (Jim Ranck symposium).',
-    caveats:[
-      'One example cell per type, except the boundary and head-direction sets. Real populations tile all locations, distances and directions.',
-      'The green dots are all fields of a <em>single</em> grid cell, not separate cells.',
-      'Head-direction cells are driven here by movement heading; the real variable is where the head points.',
-      'Boundary vector cells fire at a <em>distance</em> from a boundary, not on contact.',
-      'The cue card is decorative; landmark anchoring of the head-direction ring is not modelled.'
-    ],
-    mine:''
-  },
-  {
-    id:'frequencies',
-    category:'Math',
-    title:'Frequencies',
-    file:'frequencies.html',
-    thumbLive:true,
-    tags:['math','waves','frequency','trigonometry','teaching','interactive'],
-    label:'INTERACTIVE',
-    blurb:'Sine waves compared over one shared second: a fixed set from 1 to 100 Hz you can toggle, plus one wave whose frequency and amplitude you set with sliders, with hover readouts, a zoomable time window and a play animation.',
-    extras:[],
-    connects:'For any session that introduces frequency, period and amplitude: waves, oscillations, trigonometric functions or the basics behind EEG rhythms and sound.',
-    caveats:[
-      'Every fixed wave is drawn at the same amplitude; only the slider wave changes height, so the panel isolates frequency from amplitude.',
-      'Past about 20 Hz the cycles pack tighter than the full-second view can separate, which is why the slider stops at 20 Hz and the zoom windows exist for the faster fixed waves.',
-      'These are pure single-frequency sine waves. Real signals such as sound or EEG are sums of many frequencies at once.'
-    ],
-    mine:''
-  }
+{
+id:'erp-pipeline',
+category:'PSYCH 390',
+title:'The ERP Pipeline',
+file:'erp-pipeline.html',
+thumbLive:true,
+tags:['EEG','ERP','methods','teaching','interactive','PSYCH 390'],
+label:'COURSE SERIES',
+blurb:'Twelve interactive pages that follow the EEG/ERP processing pipeline in lab order: electricity, where the EEG comes from, averaging, the EEGLAB GUI, MATLAB basics, filtering, re-referencing, bins and epochs, channel interpolation, artifact detection, scoring, and plotting and scripting.',
+extras:[],
+connects:'The Thursday labs of PSYCH 390 (Labs 1 through 10) and Luck (2014). Each page quotes the EEGLAB or ERPLAB call used in that lab.',
+caveats:[
+'All signals are simulated with realistic sizes and timing; nothing is a recording from a participant.',
+'Head models are simplified (homogeneous sphere or half-space; skull blur approximated). Each page states its own simplifications.',
+'Interpolation uses a distance-weighted average as a stand-in for the spherical spline; BINLISTER matching is simplified to adjacent events.'
+],
+mine:''
+},
+{
+id:'life-multicellular-brains',
+category:'Neuroscience',
+title:'Life, Multicellular Organisms, and Brains',
+file:'life-multicellular-and-brains.html',
+thumbLive:true,
+tags:['evolution','neuroanatomy','teaching'],
+label:'INTERACTIVE',
+blurb:'The brain as nested subsets, from non-living matter to life, multicellular life, animals with a nervous system, and the brain, with the four thresholds crossed between them.',
+extras:[],
+connects:'For lectures on the evolution of nervous systems and where the brain sits within life.',
+caveats:[
+'The nesting is conceptual; the four thresholds (abiogenesis, multicellularity, nervous systems, encephalization) simplify long, gradual transitions.'
+],
+mine:''
+},
+{
+id:'brain-composition',
+category:'Neuroscience',
+title:'Brain Composition Breakdown',
+file:'brain-composition.html',
+thumbLive:true,
+tags:['neuroanatomy','teaching','reference'],
+label:'INTERACTIVE',
+blurb:'What fills the fixed skull by volume, then the ~86 billion neurons broken down by type and where each is found.',
+extras:[],
+connects:'For lectures on brain composition, the Monro-Kellie doctrine and neuron counts.',
+caveats:[
+'The intracranial split (brain 80% / blood 10% / CSF 10%) is the standard Monro-Kellie figure; the neuron / glia / extracellular sub-split of the tissue is an approximate teaching estimate that varies by region and method.',
+'Extracellular space is ~16% of the whole intracranial volume, which is ~20% of the brain tissue alone; the two figures use different denominators.',
+'Neuron and glia numbers are roughly 1:1 (~86B neurons, ~85B non-neuronal cells); the old &ldquo;10 glia per neuron&rdquo; claim is wrong.',
+'Most brain neurons are cerebellar granule cells: the cerebellum holds ~69B (~80% of the total) in only ~10% of brain mass.',
+'The by-type percentages are estimates built from regional counts; the pyramidal-vs-interneuron and granule-vs-other splits are approximate.',
+'Neuron drawings are schematic: characteristic form only, not scale or exact morphology.'
+],
+mine:''
+},
+{
+id:'nervous-tree',
+category:'Neuroscience',
+title:"The Nervous System's Family Tree",
+file:'nervous-system-tree.html',
+thumb:'tree.svg',
+tags:['evolution','neuroanatomy','teaching'],
+label:'SCROLLABLE',
+blurb:'From LUCA to Homo sapiens, with every relative that branched off along the way. Each carries its neuron count, shared DNA and a life-history bar.',
+extras:[
+{label:'Print PDF (A3) ↗', href:'nervous-system-tree.pdf'},
+{label:'tree.svg ↗', href:'tree.svg'}
+],
+connects:'Complements the Animals, Primate and Hominins evolution lectures; the dates, innovations and life-history values are pulled from those decks.',
+caveats:[
+'Neuron counts here are <em>total brain</em> neurons (human ≈86B, chimp ≈28B). The lecture slides cite <em>cortical</em> neurons for the apes (chimp 6 to 7B). Both are correct; they just measure different things.',
+'The DNA percentages are <em>not one consistent measure</em>. Close relatives are DNA sequence identity (chimp ≈98.8%); distant animals are the share of genes with a human counterpart (mouse ≈85%, chicken ≈65%, fly ≈60%). Do not read the column as a single scale.',
+'DNA % is deliberately blank where no defensible figure exists: extinct hominins with no recoverable DNA (erectus, habilis, Australopithecus) and the ancestral grade nodes.',
+'Ancestral grade nodes (First brain, Vertebrate brain, Amniotes and so on) borrow a modern analog for neuron counts and life history. They are grades, not single species.',
+'The human lifespan bar uses modern life expectancy (~73 yr); the Hominins deck uses ancient 30 to 40 yr.',
+'Left off to avoid clutter: Paranthropus, sponges, cartilaginous fish.'
+],
+mine:''
+},
+{
+id:'ontogeny-energy',
+category:'Neuroscience',
+title:'Energy use across ontogeny',
+file:'ontogeny-energy.html',
+thumb:'energy-curve.svg',
+tags:['physiology','metabolism','development','teaching'],
+label:'BROKEN AXIS',
+blurb:'Metabolic rate from conception to death, with gestation, puberty and pregnancy each given their own zoom.',
+extras:[
+{label:'energy-curve.svg ↗', href:'energy-curve.svg'}
+],
+connects:'For lectures on ontogeny, energetics and life-history trade-offs.',
+caveats:[
+'Constructed reference curves (body mass × mass-specific BMR), not a measured cohort. Shapes are typical; individual points are not data.',
+'The drop to zero is a graphical device. Metabolism does not decline along that path to zero; the vertical marks where the population mean age at death falls.',
+'76.5 / 81.4 yr are <em>period</em> life expectancy at birth (CDC 2024). This is a period statistic, not a forecast for anyone alive now.',
+'The pregnancy bump is <em>absolute</em>. Pontzer et al. (2021) found fat-free-mass-adjusted expenditure does not rise in pregnancy at all; replot per kilogram and the bump nearly vanishes.',
+'Basal rate only. Total daily expenditure is about 1.4 to 2× these values, and the pregnancy increment is larger on that measure.',
+'Pre-pubertal sex separation is within noise; the two-colour treatment should not imply a real childhood difference.'
+],
+mine:''
+},
+{
+id:'developmental-timelines',
+category:'Development',
+title:'Developmental Timelines',
+file:'developmental-timelines.html',
+thumbLive:true,
+tags:['development','methods','teaching','reference','interactive'],
+label:'RANGES',
+blurb:'Milestones from birth to puberty as early-to-late ranges: WHO windows and clinical ranges as bars, the CDC\'s 2022 checklist ages as diamonds, with speech, walking, reading and puberty on one compressed age axis.',
+extras:[],
+connects:'For lectures on development and on why surveillance checklists are not norms: the CDC\'s 2022 ages mark where 75% or more of children have passed a milestone, not the average.',
+caveats:[
+'CDC checklist ages are deliberately late-typical (the ≥75% criterion of Zubler et al. 2022); a diamond is not a mean.',
+'Crawling has no CDC diamond: the 2022 revision removed it because some healthy children never crawl.',
+'Gross motor bars are WHO windows of achievement (1st to 99th percentile); language bars are CHOP clinical ranges; reading and puberty rows are not CDC data (Reading Rockets; NICHD/AAFP).',
+'Ranges describe populations, not individual children.'
+],
+mine:''
+},
+{
+id:'scale-of-a-neuron',
+category:'Neuroscience',
+title:'The Neuron',
+file:'scale-of-a-neuron.html',
+thumb:'scale-of-a-neuron.svg',
+tags:['neuroanatomy','morphology','scale','teaching'],
+label:'INTERACTIVE',
+blurb:'A corticospinal pyramidal neuron at true scale: the whole cell body and dendrites shrink to a speck beside a one meter axon. Hover any part to light it up across body, tract and cell, and blow the soma up to everyday objects.',
+extras:[
+{label:'scale-of-a-neuron.svg ↗', href:'scale-of-a-neuron.svg'}
+],
+connects:'For lectures on neuron structure, scale and the corticospinal pathway. Pairs with the action potential and brain composition diagrams.',
+caveats:[
+'The ~1 m axon is for the giant corticospinal (Betz) neurons that reach the lumbosacral cord; length varies with body height and target segment. Most cortical pyramidal neurons have far shorter axons.',
+'Soma ≈ 0.06 mm (up to 0.1 mm in the largest Betz cells). The 1:16,000 ratio uses the 0.06 mm figure; with a 0.1 mm soma it is closer to 1:10,000.',
+'Only length is to scale in the main column. The axon is drawn at a minimum visible width; its true caliber is ~1 to 10 µm, thinner than one pixel here.',
+'The cell-body zoom is magnified ~350×, and the body silhouette is schematic, not on the ruler scale.',
+'Anatomical waypoint depths (internal capsule, pyramidal decussation and so on) are approximate positions along the tract, not measured distances.',
+'The dendritic arbor is drawn procedurally as a representative cell, not a single traced reconstruction.'
+],
+mine:''
+},
+{
+id:'parts-of-a-neuron',
+category:'Neuroscience',
+title:'The Parts of a Neuron',
+file:'parts-of-a-neuron.html',
+thumbLive:true,
+tags:['neuroanatomy','morphology','synapses','teaching','interactive'],
+label:'INTERACTIVE',
+blurb:'One multipolar neuron laid out in signal order. Click any structure, from the dendritic spines to the nodes of Ranvier, to read what it does, with the four functional zones marked along the bottom and the synapse magnified underneath.',
+extras:[],
+connects:'For the first biopsychology lecture on the cells of the nervous system. Terms and definitions follow Watson and Breedlove, <em>The Mind\'s Machine</em>, Chapter 1. Pairs with Types of Neurons and Glia, Ion Channels and The Action Potential.',
+caveats:[
+'Nothing is to scale. A real axon is thousands of times longer than this relative to the cell body, and the synapse panel is magnified far beyond the rest of the figure. The Neuron, above, shows the true proportions.',
+'The axon is drawn with five myelin segments for legibility; a long myelinated axon carries hundreds to thousands of them.',
+'Threshold is given as the textbook figure of about -55 mV. It varies by cell type and by recent activity, and the spike itself belongs to the next chapter.',
+'The dendritic spines are drawn on a spiny cell. Inhibitory contacts land on the shaft and cell body instead, and many interneurons have no spines at all.'
+],
+mine:''
+},
+{
+id:'types-of-neurons',
+category:'Neuroscience',
+title:'Types of Neurons and Glia',
+file:'types-of-neurons.html',
+thumbLive:true,
+tags:['neuroanatomy','morphology','glia','teaching','interactive'],
+label:'INTERACTIVE',
+blurb:'Neurons sorted two ways, by shape (multipolar, bipolar, unipolar) and by job (sensory, interneuron, motor) inside a spinal reflex, plus the four kinds of glial cell and a log scale of neural structures from an ion channel to a cell body.',
+extras:[],
+connects:'For the biopsychology lecture on cell types and glia. Follows Watson and Breedlove, <em>The Mind\'s Machine</em>, Chapter 1, including the size figures from its Figure 1.2. Pairs with The Parts of a Neuron.',
+caveats:[
+'The reflex is schematic. One cell of each kind stands in for whole populations, and the spinal cord is simplified to a white matter oval with a gray matter butterfly.',
+'The three shapes are clean examples. Real cells in each class vary widely, and the unipolar cell drawn here is the touch neuron type.',
+'Glial cells are drawn large enough to read, not to scale against the axons they wrap or the neurons they surround.',
+'The size scale uses the round teaching figures from the chapter. Each is a typical value for a large example of that structure, not a fixed one.'
+],
+mine:''
+},
+{
+id:'ion-channels',
+category:'Neuroscience',
+title:'Ion Channels',
+file:'ion-channels.html',
+thumbLive:true,
+tags:['membrane','neurophysiology','synapses','teaching','animation'],
+label:'INTERACTIVE',
+blurb:'The ways ions cross the membrane: leak pores, voltage-gated, ligand-gated and mechanically-gated channels, and the Na⁺/K⁺ pump, each drawn to scale in one 4 nm bilayer.',
+extras:[],
+connects:'Pairs with The Action Potential; for lectures on membrane channels and transport.',
+caveats:[
+'The out:in flux ratios are a teaching schematic tied to the meter reading, not measured single-channel rates.',
+'The leak panel settles at the K⁺ equilibrium potential (about -90 mV); whole-cell resting voltage is nearer -70 mV because of a smaller Na⁺ leak that is not shown.',
+'Channels and the pump are to scale against the 4 nm bilayer, but ions are drawn larger than life so they stay visible.'
+],
+mine:''
+},
+{
+id:'action-potential',
+category:'Neuroscience',
+title:'The Action Potential',
+file:'action-potential.html',
+thumbLive:true,
+tags:['neurophysiology','membrane','synapses','teaching','animation'],
+label:'INTERACTIVE',
+blurb:'Graded potentials sweep down the dendrites of a pyramidal cell, summate at the soma, and once threshold is crossed an all-or-none spike jumps node to node down the axon to the terminals, recorded by two electrodes.',
+extras:[],
+connects:'For lectures on membrane potential, synaptic integration and the action potential. Pairs with a separate zoomed diagram of the ion channels, which are deliberately omitted here.',
+caveats:[
+'Ions are deliberately left out. The balls are waves of membrane-voltage change, not moving ions; the Na⁺/K⁺ channel mechanism belongs in a separate zoomed diagram.',
+'Two colours only: green = depolarising (excitatory graded potentials and the action potential), red = hyperpolarising (inhibitory). The spike is green because it too is a depolarisation.',
+'Time is not to scale. The spike (~1 to 2 ms) is stretched so it is visible; real EPSPs and IPSPs last tens of milliseconds. A to-scale inset shows the true ratio.',
+'Amplitudes are a schematic reference, not recorded data. The soma trace is scaled so the summed inputs just reach threshold; the subthreshold trial shows one that falls short.',
+'Spatial scale is only roughly proportional (~100 µm bar). A real layer-5 pyramidal cell has an apical dendrite over 1 mm and a much longer axon.',
+'The backpropagating spike on the dendritic electrode is real but is usually treated as beyond an intro course.'
+],
+mine:''
+},
+{
+id:'cortical-rhythms',
+category:'Neuroscience',
+title:'Cortical Rhythms',
+file:'cortical-rhythms.html',
+thumbLive:true,
+tags:['neuroanatomy','oscillations','teaching','animation'],
+label:'INTERACTIVE',
+blurb:'Three brain views built from the fs_LR/Conte69 surface, switchable between activity, traveling waves (δ/θ/α/γ), lobes and Brodmann areas.',
+extras:[],
+connects:'For lectures on cortical organisation and brain rhythms. Pairs with any EEG/oscillations session.',
+caveats:[
+'Only the <em>outlines</em> are real geometry (fs_LR/Conte69 32k surface, projected and contoured). Everything painted inside them is modelled.',
+'The lobe and Brodmann maps are <em>schematic</em>. Each dot takes the nearest landmark-placed seed (a Voronoi partition), not a cytoarchitectural atlas.',
+'Activity colours are synthetic (a sum of drifting plane waves). No value corresponds to a measured BOLD or connectivity figure.',
+'The Rate slider is a teaching control the brain does not have. It scales all four bands together, so their true frequency <em>ratios</em> are preserved.',
+"Alpha's front-to-back direction is the <em>resting</em> case; during active viewing it reverses to back-to-front.",
+'Delta is the only band shown on the coronal view. Theta, alpha and gamma travel front to back, which on a coronal section runs into the page.',
+'Conte69 is cortex only: no cerebellum or brainstem, and the coronal notch between the temporal lobes is where the brainstem would sit.',
+'Wave amplitude is uniform and isotropic here. Real traveling waves vary by region and travel at speeds that depend on fibre direction.'
+],
+mine:''
+},
+{
+id:'spatial-cells',
+category:'Neuroscience',
+title:'Spatial Navigation',
+file:'spatial-cells.html',
+thumbLive:true,
+tags:['spatial','hippocampus','teaching','animation'],
+label:'INTERACTIVE',
+blurb:'A rat explores, encodes an object location, then recalls it, with the cell types firing in step.',
+extras:[],
+connects:'Accompanies Neil Burgess, <em>Neural mechanisms of spatial cognition</em> (Jim Ranck symposium).',
+caveats:[
+'One example cell per type, except the boundary and head-direction sets. Real populations tile all locations, distances and directions.',
+'The green dots are all fields of a <em>single</em> grid cell, not separate cells.',
+'Head-direction cells are driven here by movement heading; the real variable is where the head points.',
+'Boundary vector cells fire at a <em>distance</em> from a boundary, not on contact.',
+'The cue card is decorative; landmark anchoring of the head-direction ring is not modelled.'
+],
+mine:''
+},
+{
+id:'frequencies',
+category:'Math',
+title:'Frequencies',
+file:'frequencies.html',
+thumbLive:true,
+tags:['math','waves','frequency','trigonometry','teaching','interactive'],
+label:'INTERACTIVE',
+blurb:'Sine waves compared over one shared second: a fixed set from 1 to 100 Hz you can toggle, plus one wave whose frequency and amplitude you set with sliders, with hover readouts, a zoomable time window and a play animation.',
+extras:[],
+connects:'For any session that introduces frequency, period and amplitude: waves, oscillations, trigonometric functions or the basics behind EEG rhythms and sound.',
+caveats:[
+'Every fixed wave is drawn at the same amplitude; only the slider wave changes height, so the panel isolates frequency from amplitude.',
+'Past about 20 Hz the cycles pack tighter than the full-second view can separate, which is why the slider stops at 20 Hz and the zoom windows exist for the faster fixed waves.',
+'These are pure single-frequency sine waves. Real signals such as sound or EEG are sums of many frequencies at once.'
+],
+mine:''
+}
 
 ];
 function toRoman(n){const m=[["X",10],["IX",9],["V",5],["IV",4],["I",1]];let r="";for(const [g,v] of m){while(n>=v){r+=g;n-=v;}}return r;}
@@ -390,59 +428,59 @@ let activeTags=new Set(), activeCat='All', query='', view=[], idx=0;
 const allTags=[...new Set(DIAGRAMS.flatMap(d=>d.tags))].sort();
 const chips=document.getElementById('chips');
 allTags.forEach(t=>{
-  const b=document.createElement('button'); b.className='chip'; b.textContent=t;
-  b.onclick=()=>{activeTags.has(t)?activeTags.delete(t):activeTags.add(t);b.classList.toggle('on');render();};
-  chips.appendChild(b);
+const b=document.createElement('button'); b.className='chip'; b.textContent=t;
+b.onclick=()=>{activeTags.has(t)?activeTags.delete(t):activeTags.add(t);b.classList.toggle('on');render();};
+chips.appendChild(b);
 });
 
 // category filter (broad groups: Neuroscience, Math, History, ...)
 const cats=['All', ...new Set(DIAGRAMS.map(d=>d.category).filter(Boolean))];
 const catsEl=document.getElementById('cats');
 cats.forEach(c=>{
-  const b=document.createElement('button'); b.className='cat'+(c==='All'?' on':''); b.textContent=c;
-  b.onclick=()=>{activeCat=c; [...catsEl.children].forEach(x=>x.classList.toggle('on', x.textContent===c)); render();};
-  catsEl.appendChild(b);
+const b=document.createElement('button'); b.className='cat'+(c==='All'?' on':''); b.textContent=c;
+b.onclick=()=>{activeCat=c; [...catsEl.children].forEach(x=>x.classList.toggle('on', x.textContent===c)); render();};
+catsEl.appendChild(b);
 });
 
 const matches=d=>{
-  if(activeCat!=='All' && d.category!==activeCat) return false;
-  if(activeTags.size && !d.tags.some(t=>activeTags.has(t))) return false;
-  if(!query) return true;
-  const hay=(d.title+' '+d.tags.join(' ')+' '+d.blurb+' '+d.caveats.join(' ')+' '+d.connects+' '+d.mine).toLowerCase();
-  return hay.includes(query);
+if(activeCat!=='All' && d.category!==activeCat) return false;
+if(activeTags.size && !d.tags.some(t=>activeTags.has(t))) return false;
+if(!query) return true;
+const hay=(d.title+' '+d.tags.join(' ')+' '+d.blurb+' '+d.caveats.join(' ')+' '+d.connects+' '+d.mine).toLowerCase();
+return hay.includes(query);
 };
 
 function render(){
-  const grid=document.getElementById('grid');
-  view=DIAGRAMS.filter(matches);
-  grid.innerHTML='';
-  document.getElementById('empty').style.display=view.length?'none':'block';
-  view.forEach((d,i)=>{
-    const c=document.createElement('div'); c.className='card'; c.onclick=()=>open_(i);
-    const thumb = d.thumbLive
-      ? `<iframe src="${d.file}" loading="lazy" scrolling="no" tabindex="-1"></iframe>`
-      : `<img src="${d.thumb}" alt="">`;
-    c.innerHTML=`${d.label?`<span class="badge">${d.label}</span>`:''}
-      <div class="thumb">${thumb}</div>
-      <div class="card-body">
-        <h3>${d.num}. ${d.title}</h3>
-        <div class="tags">${d.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
-        <p>${d.blurb}</p>
-      </div>`;
-    grid.appendChild(c);
-  });
+const grid=document.getElementById('grid');
+view=DIAGRAMS.filter(matches);
+grid.innerHTML='';
+document.getElementById('empty').style.display=view.length?'none':'block';
+view.forEach((d,i)=>{
+const c=document.createElement('div'); c.className='card'; c.onclick=()=>open_(i);
+const thumb = d.thumbLive
+? `<iframe src="${d.file}" loading="lazy" scrolling="no" tabindex="-1"></iframe>`
+: `<img src="${d.thumb}" alt="">`;
+c.innerHTML=`${d.label?`<span class="badge">${d.label}</span>`:''}
+<div class="thumb">${thumb}</div>
+<div class="card-body">
+<h3>${d.num}. ${d.title}</h3>
+<div class="tags">${d.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+<p>${d.blurb}</p>
+</div>`;
+grid.appendChild(c);
+});
 }
 
 /* ---------- focus ---------- */
 const ov=document.getElementById('ov');
 function open_(i){ idx=i; paint(); ov.classList.add('on'); }
 function paint(){
-  const d=view[idx]; if(!d) return;
-  document.getElementById('count').textContent=`${idx+1} / ${view.length}`;
-  document.getElementById('oframe').src=d.file;
-  document.getElementById('extras').innerHTML =
-    `<a href="${d.file}" target="_blank">Open full page ↗</a> ` +
-    d.extras.map(e=>`<a href="${e.href}" target="_blank">${e.label}</a>`).join(' ');
+const d=view[idx]; if(!d) return;
+document.getElementById('count').textContent=`${idx+1} / ${view.length}`;
+document.getElementById('oframe').src=d.file;
+document.getElementById('extras').innerHTML =
+`<a href="${d.file}" target="_blank">Open full page ↗</a> ` +
+d.extras.map(e=>`<a href="${e.href}" target="_blank">${e.label}</a>`).join(' ');
 }
 const move=n=>{ if(!view.length)return; idx=(idx+n+view.length)%view.length; paint(); };
 document.getElementById('next').onclick=()=>move(1);
@@ -450,18 +488,18 @@ document.getElementById('prev').onclick=()=>move(-1);
 document.getElementById('close').onclick=()=>{ov.classList.remove('on');document.getElementById('oframe').src='';};
 document.getElementById('focusFirst').onclick=()=>{ if(view.length) open_(0); };
 document.getElementById('shuffle').onclick=()=>{
-  for(let i=DIAGRAMS.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;[DIAGRAMS[i],DIAGRAMS[j]]=[DIAGRAMS[j],DIAGRAMS[i]];}
-  render();
+for(let i=DIAGRAMS.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;[DIAGRAMS[i],DIAGRAMS[j]]=[DIAGRAMS[j],DIAGRAMS[i]];}
+render();
 };
 document.getElementById('q').oninput=e=>{query=e.target.value.toLowerCase().trim();render();};
 addEventListener('keydown',e=>{
-  if(!ov.classList.contains('on')){
-    if(e.key==='r'||e.key==='R'){ if(view.length) open_((Math.random()*view.length)|0); }
-    return;
-  }
-  if(e.key==='Escape'){ov.classList.remove('on');document.getElementById('oframe').src='';}
-  if(e.key==='ArrowRight')move(1);
-  if(e.key==='ArrowLeft')move(-1);
+if(!ov.classList.contains('on')){
+if(e.key==='r'||e.key==='R'){ if(view.length) open_((Math.random()*view.length)|0); }
+return;
+}
+if(e.key==='Escape'){ov.classList.remove('on');document.getElementById('oframe').src='';}
+if(e.key==='ArrowRight')move(1);
+if(e.key==='ArrowLeft')move(-1);
 });
 
 render();
