@@ -52,10 +52,10 @@
   .chip.on .nm{color:#fff;}
 
   .info{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--stroke);
-    border-left-width:4px;border-radius:14px;padding:14px 18px 16px;min-height:210px;}
+    border-left-width:4px;border-radius:14px;padding:14px 18px 16px;min-height:172px;}
   .info .kicker{font:700 11px -apple-system,"Segoe UI",sans-serif;letter-spacing:1.1px;text-transform:uppercase;}
-  .info h3{margin:4px 0 2px;font-size:19px;font-weight:650;}
-  .info .tag{margin:0 0 9px;font-size:13.5px;color:var(--muted);}
+  .info h3{margin:4px 0 8px;font-size:19px;font-weight:650;}
+  .info .tag{margin:-4px 0 9px;font-size:13.5px;color:var(--muted);}
   .info p{margin:0 0 9px;font-size:14px;line-height:1.62;color:#cdd7e6;}
   .info b{color:var(--ink);}
   .info .facts{margin:10px 0 0;padding:9px 0 0;border-top:1px solid var(--stroke);
@@ -86,14 +86,13 @@
 <div class="wrap">
   <header>
     <h1>Types of Neurons</h1>
-    <p>Neurons come in hundreds of shapes and sizes, and they are sorted two ways: by what they look like and by what they do.</p>
+    <p>Neurons come in hundreds of shapes and sizes.</p>
   </header>
 
   <h2 class="sec">Sorted by shape</h2>
-  <p class="sub">Three principal types, each specialized for a particular kind of information processing. In all three the dendrites are the input zone, and in multipolar and bipolar cells the cell body takes synaptic input as well.</p>
   <div class="stage">
     <div class="scroller">
-      <svg class="fig" id="figShapes" viewBox="0 0 980 420" style="min-width:820px" role="img" aria-label="Multipolar, bipolar and unipolar neurons">
+      <svg class="fig" id="figShapes" viewBox="0 0 980 384" style="min-width:820px" role="img" aria-label="Multipolar, bipolar and unipolar neurons">
         <defs>
           <radialGradient id="gSoma" cx="38%" cy="32%">
             <stop offset="0" stop-color="#7c66d4"/><stop offset="1" stop-color="#463a76"/>
@@ -131,7 +130,6 @@
           <text class="lbl sm" x="164" y="50" text-anchor="middle" fill="#94a3b8">many dendrites, one axon</text>
           <text class="lbl sm" x="230" y="276" fill="#34d399">axon</text>
           <text class="lbl sm" x="96" y="160" text-anchor="end" fill="#38bdf8">dendrites</text>
-          <text class="lbl sm" x="164" y="396" text-anchor="middle" fill="#5b6b86">the most common type</text>
         </g>
 
         <!-- BIPOLAR -->
@@ -154,7 +152,6 @@
           <rect class="hit" x="410" y="54" width="170" height="316"/>
           <text class="lbl" x="490" y="34" text-anchor="middle" fill="#38bdf8">bipolar</text>
           <text class="lbl sm" x="490" y="50" text-anchor="middle" fill="#94a3b8">one dendrite, one axon</text>
-          <text class="lbl sm" x="490" y="396" text-anchor="middle" fill="#5b6b86">common in sensory systems such as vision</text>
         </g>
 
         <!-- UNIPOLAR -->
@@ -182,7 +179,6 @@
           <text class="lbl sm" x="800" y="50" text-anchor="middle" fill="#94a3b8">one process, branching in two</text>
           <text class="lbl sm" x="944" y="120" text-anchor="end" fill="#38bdf8">input end</text>
           <text class="lbl sm" x="944" y="286" text-anchor="end" fill="#fb923c">output end</text>
-          <text class="lbl sm" x="800" y="396" text-anchor="middle" fill="#5b6b86">carries touch information into the spinal cord</text>
         </g>
       </svg>
     </div>
@@ -193,7 +189,6 @@
   </div>
 
   <h2 class="sec">Sorted by job</h2>
-  <p class="sub">The same three shapes turn up again when neurons are sorted by what they do. This is a simple spinal reflex: a touch on the skin is carried in by a sensory neuron, passed through an interneuron in the spinal cord, and sent out to the muscle by a motor neuron.</p>
   <div class="stage">
     <div class="scroller">
       <svg class="fig" id="figJobs" viewBox="0 0 1000 372" style="min-width:840px" role="img" aria-label="A spinal reflex showing a sensory neuron, an interneuron and a motor neuron">
@@ -258,7 +253,7 @@
           <circle cx="587" cy="212" r="5" fill="#a78bfa"/>
           <rect class="hit" x="520" y="142" width="82" height="80"/>
           <text class="lbl" x="790" y="144" text-anchor="end" fill="#a78bfa">interneuron</text>
-          <text class="lbl sm" x="790" y="160" text-anchor="end" fill="#5b6b86">neither sensory nor motor</text>
+          <text class="lbl sm" x="790" y="160" text-anchor="end" fill="#5b6b86">multipolar, entirely inside the cord</text>
           <path d="M746,150 C680,160 616,178 572,186" stroke="#6d5bb5" stroke-width="1.4" fill="none"/>
         </g>
 
@@ -300,7 +295,7 @@
   </div>
 
   <h2 class="sec">Sizes of some neural structures</h2>
-  <p class="sub">Each step along this line is ten times the one before it. The whole range, from an ion channel to the largest cell bodies, spans about six orders of magnitude.</p>
+  <p class="sub">Each step along this line is ten times the one before it.</p>
   <div class="stage">
     <div class="scroller">
       <svg class="fig" viewBox="0 0 1000 212" style="min-width:760px" role="img" aria-label="Log scale of neural structure sizes from 0.5 nanometers to 100 micrometers">
@@ -309,7 +304,7 @@
     </div>
   </div>
   <div class="note">
-    Larger structures run off the right end of that line. The cortex is about 3 mm thick, roughly thirty times the width of a large cell body, and an adult human brain is about 15 cm from front to back. In the other direction, a large cell body is about two hundred thousand times wider than the ion channels studded through its membrane.
+    Larger structures run off the right end of the line. The cortex is about 3 mm thick, roughly thirty times the width of a large cell body, and an adult human brain is about 15 cm front to back. At the other end, a large cell body is some two hundred thousand times wider than the ion channels studded through its membrane.
   </div>
 
   <div class="note">
@@ -334,49 +329,49 @@
    Content. Every definition follows Chapter 1.
    --------------------------------------------------------------------------- */
 const SHAPES = [
-  { id:"multipolar", name:"Multipolar neuron", color:"var(--multi)", tag:"many dendrites, one axon",
+  { id:"multipolar", name:"Multipolar neuron", color:"var(--multi)",
     body:[
-      "The most common type of neuron, and the plan used almost everywhere in the brain and spinal cord. A crowd of dendrites spreads out from the cell body, and one axon leaves it.",
-      "That arrangement suits a cell whose job is to weigh a great deal of input at once. Synapses land on the dendrites and on the cell body itself, so both belong to the input zone, and the single axon carries one answer away."
+      "The plan used almost everywhere in the brain and spinal cord, and the most common type. Synapses land on the dendrites and on the cell body itself, so both belong to the input zone, and the one axon carries a single answer away.",
+      "The shape suits a cell that has to weigh a great deal of input at once."
     ],
-    facts:[["Dendrites","many"],["Axons","one"],["Seen in","motor neurons, most interneurons"]] },
+    facts:[["Seen in","motor neurons, most interneurons"]] },
 
-  { id:"bipolar", name:"Bipolar neuron", color:"var(--bi)", tag:"one dendrite, one axon",
+  { id:"bipolar", name:"Bipolar neuron", color:"var(--bi)",
     body:[
-      "A cell with a single dendrite at one end and a single axon at the other, with the cell body in between. Input arrives at one pole and leaves at the opposite one.",
-      "Bipolar cells are especially common in sensory systems, such as vision. A retinal bipolar cell sits between the photoreceptors and the cells that carry signals on toward the brain, taking in one stream of information and passing it along."
+      "Input arrives at one pole and leaves at the opposite one, with the cell body in between.",
+      "Common in sensory systems such as vision. A retinal bipolar cell sits between the photoreceptors and the cells that carry signals on toward the brain, taking in one stream of information and passing it along."
     ],
-    facts:[["Dendrites","one"],["Axons","one"],["Seen in","the retina and other sensory systems"]] },
+    facts:[["Seen in","the retina and other sensory systems"]] },
 
-  { id:"unipolar", name:"Unipolar neuron", color:"var(--uni)", tag:"one process, branching in two",
+  { id:"unipolar", name:"Unipolar neuron", color:"var(--uni)",
     body:[
-      "Also called a monopolar neuron. A single process leaves the cell body and then branches in two directions. One branch ends in fine endings that work like dendrites and make up the input zone. The other ends in terminals and is the output zone.",
-      "Unipolar cells carry touch information from the body into the spinal cord. Because the signal runs straight through the branch point rather than detouring into the cell body, information from the skin reaches the cord quickly."
+      "Also called a monopolar neuron. One branch of the split ends in fine endings that work like dendrites and forms the input zone, and the other ends in terminals and forms the output zone. The cell body sits off to the side of the path the signal takes.",
+      "These cells carry touch from the body into the spinal cord. The signal runs straight through the branch point instead of detouring into the cell body, so it reaches the cord quickly."
     ],
-    facts:[["Processes","one, splitting in two"],["Cell body","off to one side"],["Seen in","touch neurons of the body"]] }
+    facts:[["Seen in","touch neurons of the body"]] }
 ];
 
 const JOBS = [
-  { id:"sensory", name:"Sensory neuron", color:"var(--sens)", tag:"affected directly by the world",
+  { id:"sensory", name:"Sensory neuron", color:"var(--sens)",
     body:[
-      "A nerve cell that is directly affected by changes in the environment, such as light, odor, or touch. Sensory neurons take many different shapes depending on what they detect, and the one drawn here is unipolar, the type that carries touch from the skin.",
-      "Its cell body sits off to the side of the path the signal takes, outside the spinal cord, rather than in the middle of it. These cells can be very long. A sensory neuron reaching from a toe to the spinal cord has a process about a meter in length."
+      "Directly affected by changes in the environment, such as light, odor, or touch. Their shapes vary with what they detect; the one drawn here is the unipolar type that carries touch from the skin.",
+      "They can be very long. A sensory neuron reaching from a toe to the spinal cord has a process about a meter in length."
     ],
-    facts:[["Shape here","unipolar"],["Input from","the skin"],["Sends to","the spinal cord"]] },
+    facts:[["Input from","the skin"],["Sends to","the spinal cord"]] },
 
-  { id:"interneuron", name:"Interneuron", color:"var(--inter)", tag:"neither sensory nor motor",
+  { id:"interneuron", name:"Interneuron", color:"var(--inter)",
     body:[
-      "A nerve cell that receives input from other neurons and sends output to other neurons. Most of the neurons in the brain are interneurons, so most of what the nervous system does is neurons talking to neurons rather than to the world.",
-      "They are often small. An interneuron's axon may measure only a few micrometers, compared with a meter or more for a long sensory or motor axon. In general, larger neurons have more complex inputs and outputs, cover greater distances, and carry information faster."
+      "Takes input from other neurons and sends output to other neurons. Most neurons in the brain are interneurons, so most of what the nervous system does is neurons talking to neurons rather than to the world.",
+      "They are often small. An interneuron's axon may measure only a few micrometers. In general, larger neurons have more complex inputs and outputs, cover greater distances, and carry information faster."
     ],
-    facts:[["Shape here","multipolar"],["Axon length","sometimes only a few µm"],["Share of the brain","most neurons"]] },
+    facts:[["Axon length","sometimes only a few µm"],["Share of the brain","most neurons"]] },
 
-  { id:"motor", name:"Motor neuron", color:"var(--motor)", tag:"the way out to the body",
+  { id:"motor", name:"Motor neuron", color:"var(--motor)",
     body:[
-      "Also called a motoneuron. A neuron that transmits neural messages to muscles or glands. These are large cells with long axons that reach out of the spinal cord and synapse on muscle fibers, causing them to contract.",
-      "Everything the nervous system decides reaches the world through cells like these, as a pattern of firing in motor neurons."
+      "Also called a motoneuron. Carries messages to muscles and glands, with a long axon that leaves the spinal cord and synapses on muscle fibers, causing them to contract.",
+      "Everything the nervous system decides reaches the world this way, as a pattern of firing in motor neurons."
     ],
-    facts:[["Shape here","multipolar"],["Targets","muscles and glands"],["Axon length","up to about a meter"]] }
+    facts:[["Targets","muscles and glands"],["Axon length","up to about a meter"]] }
 ];
 
 
@@ -444,7 +439,7 @@ function section(svgId, chipsId, infoId, items, intro){
     const facts = (it.facts||[]).map(f=>`<span><b>${f[0]}:</b> ${f[1]}</span>`).join("");
     info.innerHTML =
       `<div class="kicker" style="color:${it.color}">${it===intro ? "Overview" : "Cell type"}</div>` +
-      `<h3>${it.name}</h3><p class="tag">${it.tag}</p>` +
+      `<h3>${it.name}</h3>` + (it.tag ? `<p class="tag">${it.tag}</p>` : "") +
       it.body.map(t=>`<p>${t}</p>`).join("") +
       (facts ? `<div class="facts">${facts}</div>` : "");
   }
@@ -487,18 +482,18 @@ function section(svgId, chipsId, infoId, items, intro){
 }
 
 section("figShapes","chipsShapes","infoShapes", SHAPES, {
-  name:"Three principal types", color:"var(--muted)", tag:"multipolar, bipolar, unipolar",
+  name:"Three principal types", color:"var(--muted)",
   body:[
-    "Neurons are classified by shape into three groups: <b>multipolar</b>, with many dendrites and one axon; <b>bipolar</b>, with a single dendrite at one end and a single axon at the other; and <b>unipolar</b>, with one process that branches in two directions after leaving the cell body.",
-    "The shape follows the job. A cell that has to weigh thousands of inputs needs somewhere to put them all, and a cell that relays a single stream of information does not."
+    "The shape follows the job. A cell that has to weigh thousands of inputs needs somewhere to put them all, and a cell that relays a single stream of information does not.",
+    "In all three types the dendrites are the input zone, and in multipolar and bipolar cells the cell body takes synaptic input as well."
   ],
   facts:[] });
 
 section("figJobs","chipsJobs","infoJobs", JOBS, {
-  name:"Three jobs", color:"var(--muted)", tag:"sensory, interneuron, motor",
+  name:"A spinal reflex", color:"var(--muted)",
   body:[
-    "Neurons are also sorted by function. <b>Sensory neurons</b> are affected directly by the world. <b>Motor neurons</b> drive muscles and glands. <b>Interneurons</b> are neither, and they make up most of the brain.",
-    "The reflex drawn here uses all three. Touch the skin and the sensory neuron carries the signal into the spinal cord, an interneuron passes it along, and a motor neuron sends the command out to the muscle. The loop can run without the brain taking part."
+    "The same three shapes turn up again when neurons are sorted by what they do, and this reflex uses all three. Touch the skin and a sensory neuron carries the signal into the spinal cord, an interneuron passes it along, and a motor neuron sends the command out to the muscle.",
+    "The loop can run without the brain taking part."
   ],
   facts:[] });
 
