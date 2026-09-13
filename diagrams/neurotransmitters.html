@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Types of Neurotransmitters</title>
+<style>
+  :root{
+    --bg:#0b1120; --panel:#111a2e; --panel2:#0e1626; --stroke:#243149;
+    --ink:#e8eef8; --muted:#94a3b8; --faint:#5b6b86;
+    --aa:#34d399; --amine:#fbbf24; --pep:#c084fc; --gas:#7dd3fc;
+    --ach:#fbbf24; --da:#c084fc; --ne:#38bdf8; --ser:#fb7185;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  .wrap{max-width:1120px;margin:0 auto;padding:22px 20px 40px;}
+  header h1{font-size:23px;margin:0 0 5px;font-weight:650;letter-spacing:.2px;}
+  header p{margin:0 0 4px;color:var(--muted);font-size:13.5px;max-width:900px;line-height:1.55;}
+
+  h2.sec{font-size:17px;font-weight:650;margin:26px 0 2px;letter-spacing:.2px;}
+  p.sub{margin:0 0 10px;color:var(--muted);font-size:13px;line-height:1.55;max-width:900px;}
+
+  .stage{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--stroke);
+    border-radius:14px;padding:6px 6px 2px;overflow:hidden;}
+  .scroller{overflow-x:auto;overflow-y:hidden;}
+  svg.fig{display:block;width:100%;height:auto;}
+
+  .part{cursor:pointer;}
+  .part:focus{outline:none;}
+  .part:focus-visible .hit{stroke:#fff;stroke-width:2;stroke-dasharray:4 3;}
+  svg.sel .part{opacity:.18;transition:opacity .18s;}
+  svg.sel .part.on{opacity:1;filter:drop-shadow(0 0 7px currentColor);}
+  .hit{fill:transparent;stroke:none;}
+  .lbl{font:600 13px -apple-system,"Segoe UI",sans-serif;pointer-events:none;
+    paint-order:stroke;stroke:#0b1120;stroke-width:4px;stroke-linejoin:round;}
+  .lbl.sm{font-size:11.5px;stroke-width:3.4px;}
+  .caps{font:700 11px -apple-system,"Segoe UI",sans-serif;letter-spacing:1.1px;pointer-events:none;
+    paint-order:stroke;stroke:#0b1120;stroke-width:3px;stroke-linejoin:round;}
+
+  .below{display:grid;grid-template-columns:246px 1fr;gap:14px;margin-top:12px;align-items:start;}
+  .chips{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--stroke);
+    border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:6px;}
+  .chip{display:flex;align-items:center;gap:9px;background:#141d30;border:1px solid var(--stroke);
+    border-radius:9px;padding:8px 11px;cursor:pointer;font-size:13px;color:#cdd7e6;transition:.14s;text-align:left;}
+  .chip:hover{background:#1d2942;border-color:#375073;}
+  .chip.on{background:#1d2942;border-color:currentColor;color:#fff;font-weight:600;}
+  .chip .dot{width:10px;height:10px;border-radius:50%;flex:none;background:currentColor;
+    box-shadow:0 0 8px currentColor;}
+  .chip .nm{color:#cdd7e6;}
+  .chip.on .nm{color:#fff;}
+
+  .info{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--stroke);
+    border-left-width:4px;border-radius:14px;padding:14px 18px 16px;min-height:200px;}
+  .info .kicker{font:700 11px -apple-system,"Segoe UI",sans-serif;letter-spacing:1.1px;text-transform:uppercase;}
+  .info h3{margin:4px 0 8px;font-size:19px;font-weight:650;}
+  .info p{margin:0 0 9px;font-size:14px;line-height:1.62;color:#cdd7e6;}
+  .info b{color:var(--ink);}
+  .info .members{margin:2px 0 10px;font-size:13.5px;line-height:1.6;color:#cdd7e6;}
+  .info .members b{display:block;color:var(--muted);font-size:11px;letter-spacing:1.1px;
+    text-transform:uppercase;font-weight:700;margin-bottom:2px;}
+  .info .facts{margin:10px 0 0;padding:9px 0 0;border-top:1px solid var(--stroke);
+    display:flex;flex-wrap:wrap;gap:7px 20px;font-size:12.5px;color:var(--faint);}
+  .info .facts span b{color:var(--muted);font-weight:600;}
+
+  .card{margin-top:14px;background:linear-gradient(180deg,var(--panel),var(--panel2));
+    border:1px solid var(--stroke);border-radius:14px;padding:12px 16px 14px;}
+  .card h3{margin:0 0 6px;font-size:14px;font-weight:650;}
+  .card p{margin:0 0 8px;font-size:13px;line-height:1.62;color:#cdd7e6;}
+  .card p:last-child{margin-bottom:0;}
+  .card b{color:var(--ink);}
+  .card a{color:#6ea8fe;text-decoration:none;}
+  .card a:hover{text-decoration:underline;}
+
+  table{width:100%;border-collapse:collapse;font-size:12.8px;margin-top:4px;}
+  th{text-align:left;font-weight:650;color:var(--muted);font-size:11px;letter-spacing:1.1px;
+    text-transform:uppercase;padding:0 10px 6px 0;border-bottom:1px solid var(--stroke);}
+  td{padding:8px 10px 8px 0;border-bottom:1px solid #1a2439;color:#cdd7e6;vertical-align:top;line-height:1.5;}
+  tr:last-child td{border-bottom:none;}
+  td.k{color:var(--ink);font-weight:600;white-space:nowrap;}
+
+  .sources{margin-top:20px;font-size:11.5px;color:var(--faint);line-height:1.7;
+    border-top:1px solid var(--stroke);padding-top:12px;}
+  .sources b{color:var(--muted);display:block;margin-bottom:4px;font-size:12px;}
+  .sources a{color:#6ea8fe;text-decoration:none;}
+  .sources a:hover{text-decoration:underline;}
+  .sources ol{margin:0;padding-left:18px;}
+
+  @media (max-width:760px){
+    .below{grid-template-columns:1fr;}
+    .chips{flex-direction:row;flex-wrap:wrap;}
+    .chip{flex:1 1 150px;}
+    td.k{white-space:normal;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Types of Neurotransmitters</h1>
+    <p>Dozens of chemicals carry messages across synapses. They are grouped by what the molecule is made of, and the ones with the widest reach are grouped again by where their axons go.</p>
+  </header>
+
+  <h2 class="sec">Sorted by the molecule</h2>
+  <div class="stage">
+    <div class="scroller">
+      <svg class="fig" id="figFam" viewBox="0 44 1000 210" style="min-width:840px" role="img"
+           aria-label="Four families of neurotransmitters drawn as molecules">
+        <defs>
+          <radialGradient id="gAA" cx="36%" cy="30%">
+            <stop offset="0" stop-color="#4ade80"/><stop offset="1" stop-color="#15803d"/>
+          </radialGradient>
+          <radialGradient id="gAm" cx="36%" cy="30%">
+            <stop offset="0" stop-color="#fcd34d"/><stop offset="1" stop-color="#a16207"/>
+          </radialGradient>
+          <radialGradient id="gPep" cx="36%" cy="30%">
+            <stop offset="0" stop-color="#d8b4fe"/><stop offset="1" stop-color="#6b21a8"/>
+          </radialGradient>
+        </defs>
+
+        <!-- AMINO ACIDS -->
+        <g class="part" id="p-amino" tabindex="0" role="button" aria-label="Amino acid transmitters" style="color:var(--aa)">
+          <path d="M92,150 H58" stroke="#34d399" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <path d="M158,150 H192" stroke="#34d399" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <circle cx="48" cy="150" r="13" fill="#14532d" stroke="#34d399" stroke-width="2.2"/>
+          <circle cx="202" cy="150" r="13" fill="#14532d" stroke="#34d399" stroke-width="2.2"/>
+          <circle cx="125" cy="150" r="35" fill="url(#gAA)" stroke="#6ee7b7" stroke-width="2.4"/>
+          <rect class="hit" x="18" y="96" width="214" height="112"/>
+          <text class="lbl" x="125" y="72" text-anchor="middle" fill="#34d399">amino acids</text>
+          <text class="lbl sm" x="125" y="232" text-anchor="middle" fill="#94a3b8">one amino acid</text>
+        </g>
+
+        <!-- AMINES -->
+        <g class="part" id="p-amines" tabindex="0" role="button" aria-label="Amine transmitters" style="color:var(--amine)">
+          <circle cx="352" cy="162" r="31" fill="url(#gAm)" stroke="#fcd34d" stroke-width="2.4"/>
+          <path d="M378,144 L404,124 L432,132" stroke="#fbbf24" stroke-width="4" fill="none"
+                stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="404" cy="124" r="9" fill="#78350f" stroke="#fbbf24" stroke-width="2"/>
+          <circle cx="440" cy="134" r="13" fill="#78350f" stroke="#fbbf24" stroke-width="2.2"/>
+          <text class="lbl sm" x="440" y="139" text-anchor="middle" fill="#fde68a" stroke="none">N</text>
+          <rect class="hit" x="308" y="96" width="164" height="112"/>
+          <text class="lbl" x="386" y="72" text-anchor="middle" fill="#fbbf24">amines</text>
+          <text class="lbl sm" x="386" y="232" text-anchor="middle" fill="#94a3b8">one amino acid, modified</text>
+        </g>
+
+        <!-- NEUROPEPTIDES -->
+        <g class="part" id="p-peptides" tabindex="0" role="button" aria-label="Neuropeptides" style="color:var(--pep)">
+          <path d="M566,172 C598,140 636,134 668,146 C700,158 722,150 738,136"
+                stroke="#a855f7" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <g fill="url(#gPep)" stroke="#d8b4fe" stroke-width="2">
+            <circle cx="566" cy="172" r="17"/><circle cx="612" cy="145" r="17"/>
+            <circle cx="655" cy="141" r="17"/><circle cx="700" cy="155" r="17"/>
+            <circle cx="740" cy="135" r="17"/>
+          </g>
+          <rect class="hit" x="540" y="106" width="226" height="100"/>
+          <text class="lbl" x="653" y="72" text-anchor="middle" fill="#c084fc">neuropeptides</text>
+          <text class="lbl sm" x="653" y="232" text-anchor="middle" fill="#94a3b8">a short chain of amino acids</text>
+        </g>
+
+        <!-- GASES -->
+        <g class="part" id="p-gases" tabindex="0" role="button" aria-label="Gas transmitters" style="color:var(--gas)">
+          <g fill="none" stroke="#7dd3fc" stroke-dasharray="4 5" stroke-width="1.6">
+            <circle cx="890" cy="152" r="26" opacity=".8"/>
+            <circle cx="890" cy="152" r="44" opacity=".5"/>
+            <circle cx="890" cy="152" r="62" opacity=".28"/>
+          </g>
+          <g fill="#7dd3fc">
+            <circle cx="890" cy="152" r="8"/>
+            <circle cx="858" cy="134" r="3.4" opacity=".8"/><circle cx="924" cy="170" r="3.4" opacity=".8"/>
+            <circle cx="918" cy="122" r="3" opacity=".7"/><circle cx="862" cy="182" r="3" opacity=".7"/>
+            <circle cx="940" cy="140" r="2.6" opacity=".55"/><circle cx="842" cy="164" r="2.6" opacity=".55"/>
+          </g>
+          <rect class="hit" x="820" y="90" width="140" height="124"/>
+          <text class="lbl" x="890" y="72" text-anchor="middle" fill="#7dd3fc">gases</text>
+          <text class="lbl sm" x="890" y="232" text-anchor="middle" fill="#94a3b8">a soluble gas, free to drift</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+  <div class="below">
+    <div class="chips" id="chipsFam"></div>
+    <div class="info" id="infoFam"></div>
+  </div>
+
+  <h2 class="sec">Sorted by where the axons go</h2>
+  <p class="sub">Four transmitter systems, drawn on a midline view of the brain. Each one starts in a small cluster of cell bodies and spreads across most of the forebrain.</p>
+  <div class="stage">
+    <div class="scroller">
+      <svg class="fig" id="figPath" viewBox="112 62 888 472" style="min-width:860px" role="img"
+           aria-label="Midline view of the brain showing cholinergic, dopaminergic, noradrenergic and serotonergic pathways">
+        <defs>
+          <marker id="arA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+            <path d="M0,1 L9,5 L0,9 z" fill="#fbbf24"/></marker>
+          <marker id="arD" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+            <path d="M0,1 L9,5 L0,9 z" fill="#c084fc"/></marker>
+          <marker id="arN" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+            <path d="M0,1 L9,5 L0,9 z" fill="#38bdf8"/></marker>
+          <marker id="arS" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+            <path d="M0,1 L9,5 L0,9 z" fill="#fb7185"/></marker>
+        </defs>
+
+        <!-- brain outline -->
+        <g id="brain">
+          <path d="M598,318 C616,354 632,398 646,436 C656,464 662,492 664,514"
+                fill="none" stroke="#30405f" stroke-width="36" stroke-linecap="round"/>
+          <ellipse cx="770" cy="400" rx="60" ry="48" fill="#1a2740" stroke="#46587a" stroke-width="1.8"/>
+          <g stroke="#3b4f74" stroke-width="1.4" fill="none" opacity=".9">
+            <path d="M720,388 C750,382 788,378 824,384"/><path d="M718,402 C750,398 790,396 826,400"/>
+            <path d="M722,416 C752,414 790,414 822,416"/><path d="M730,430 C756,432 790,434 814,432"/>
+          </g>
+          <path d="M142,256 C140,166 214,106 320,88 C426,70 544,84 626,128
+                   C696,166 726,222 712,274 C700,320 664,346 622,360
+                   C564,378 498,384 442,392 C384,400 318,404 266,386
+                   C204,364 146,330 142,256 Z"
+                fill="#131d33" stroke="#46587a" stroke-width="2"/>
+          <path d="M250,306 C290,256 366,232 448,236 C528,240 578,264 604,296"
+                fill="none" stroke="#33436a" stroke-width="10" stroke-linecap="round" opacity=".8"/>
+          <text class="lbl sm" x="318" y="124" text-anchor="middle" fill="#5b6b86">cerebral cortex</text>
+          <text class="lbl sm" x="770" y="466" text-anchor="middle" fill="#5b6b86">cerebellum</text>
+          <text class="lbl sm" x="690" y="518" text-anchor="start" fill="#5b6b86">spinal cord</text>
+        </g>
+
+        <!-- CHOLINERGIC -->
+        <g class="part" id="p-ach" tabindex="0" role="button" aria-label="Cholinergic system" style="color:var(--ach)">
+          <g fill="none" stroke="#fbbf24" stroke-width="3" stroke-linecap="round" marker-end="url(#arA)" opacity=".95">
+            <path d="M306,324 C254,300 224,240 232,176"/>
+            <path d="M312,318 C330,262 366,206 414,168"/>
+            <path d="M320,330 C382,342 444,344 500,330"/>
+          </g>
+          <ellipse cx="304" cy="330" rx="20" ry="13" fill="#78350f" stroke="#fbbf24" stroke-width="2.2"/>
+          <rect class="hit" x="224" y="160" width="290" height="200"/>
+          <text class="lbl" x="126" y="384" text-anchor="start" fill="#fbbf24">acetylcholine</text>
+          <text class="lbl sm" x="126" y="400" text-anchor="start" fill="#94a3b8">basal forebrain</text>
+          <path d="M182,372 C226,356 274,338 290,332" stroke="#92610f" stroke-width="1.3" fill="none"/>
+        </g>
+
+        <!-- DOPAMINERGIC -->
+        <g class="part" id="p-da" tabindex="0" role="button" aria-label="Dopaminergic system" style="color:var(--da)">
+          <g fill="none" stroke="#c084fc" stroke-width="3" stroke-linecap="round" marker-end="url(#arD)" opacity=".95">
+            <path d="M594,330 C548,306 502,296 462,294"/>
+            <path d="M596,322 C548,258 476,196 406,158"/>
+            <path d="M600,342 C540,362 470,364 396,352"/>
+          </g>
+          <ellipse cx="600" cy="330" rx="18" ry="12" fill="#4c1d95" stroke="#c084fc" stroke-width="2.2"/>
+          <ellipse cx="622" cy="354" rx="14" ry="10" fill="#4c1d95" stroke="#c084fc" stroke-width="2.2"/>
+          <rect class="hit" x="400" y="286" width="216" height="80"/>
+          <text class="lbl" x="856" y="216" text-anchor="start" fill="#c084fc">dopamine</text>
+          <text class="lbl sm" x="856" y="232" text-anchor="start" fill="#94a3b8">ventral tegmental area,</text>
+          <text class="lbl sm" x="856" y="246" text-anchor="start" fill="#94a3b8">substantia nigra</text>
+          <path d="M852,230 C782,268 690,314 632,342" stroke="#7e4fa8" stroke-width="1.3" fill="none"/>
+        </g>
+
+        <!-- NORADRENERGIC -->
+        <g class="part" id="p-ne" tabindex="0" role="button" aria-label="Noradrenergic system" style="color:var(--ne)">
+          <g fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" marker-end="url(#arN)" opacity=".95">
+            <path d="M628,394 C540,344 420,286 300,252"/>
+            <path d="M632,388 C572,314 448,214 342,166"/>
+            <path d="M642,410 C654,448 658,484 660,510"/>
+          </g>
+          <ellipse cx="634" cy="398" rx="15" ry="10" fill="#0c4a6e" stroke="#38bdf8" stroke-width="2.2"/>
+          <rect class="hit" x="300" y="236" width="190" height="52"/>
+          <text class="lbl" x="856" y="316" text-anchor="start" fill="#38bdf8">norepinephrine</text>
+          <text class="lbl sm" x="856" y="332" text-anchor="start" fill="#94a3b8">locus coeruleus</text>
+          <path d="M852,324 C786,340 706,376 650,394" stroke="#2b7ca8" stroke-width="1.3" fill="none"/>
+        </g>
+
+        <!-- SEROTONERGIC -->
+        <g class="part" id="p-5ht" tabindex="0" role="button" aria-label="Serotonergic system" style="color:var(--ser)">
+          <g fill="none" stroke="#fb7185" stroke-width="3" stroke-linecap="round" marker-end="url(#arS)" opacity=".95">
+            <path d="M640,428 C532,380 384,330 252,318"/>
+            <path d="M644,422 C590,348 480,250 376,200"/>
+            <path d="M650,446 C662,480 666,504 668,524"/>
+          </g>
+          <g fill="#881337" stroke="#fb7185" stroke-width="2">
+            <ellipse cx="642" cy="428" rx="13" ry="9"/><ellipse cx="652" cy="452" rx="11" ry="8"/>
+          </g>
+          <rect class="hit" x="252" y="302" width="170" height="50"/>
+          <text class="lbl" x="856" y="404" text-anchor="start" fill="#fb7185">serotonin</text>
+          <text class="lbl sm" x="856" y="420" text-anchor="start" fill="#94a3b8">raphe nuclei</text>
+          <path d="M852,412 C780,424 714,436 666,442" stroke="#a84a58" stroke-width="1.3" fill="none"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+  <div class="below">
+    <div class="chips" id="chipsPath"></div>
+    <div class="info" id="infoPath"></div>
+  </div>
+
+  <h2 class="sec">Receptor subtypes</h2>
+  <p class="sub">What a transmitter does at a synapse depends on the receptor waiting for it, and every transmitter has several. <b>Ionotropic</b> receptors hold a channel and act in a millisecond. <b>Metabotropic</b> receptors work through second messengers and act more slowly.</p>
+  <div class="stage" style="padding:14px 16px 12px;">
+    <table>
+      <tr><th>Transmitter</th><th>Known subtypes</th><th>What they do</th></tr>
+      <tr><td class="k">Glutamate</td>
+          <td>AMPA, kainate, NMDA (ionotropic); mGluRs (metabotropic)</td>
+          <td>AMPA receptors are the most plentiful receptors in the brain. NMDA receptors are central to memory formation.</td></tr>
+      <tr><td class="k">GABA</td>
+          <td>GABA<sub>A</sub> (ionotropic); GABA<sub>B</sub> (metabotropic)</td>
+          <td>GABA<sub>A</sub> lets Cl&minus; into the cell and hyperpolarizes it fast. Benzodiazepines act here, which is why they calm the whole system down.</td></tr>
+      <tr><td class="k">Acetylcholine</td>
+          <td>Nicotinic (ionotropic); muscarinic (metabotropic)</td>
+          <td>Nicotinic receptors drive muscle contraction. Both types carry cholinergic transmission in the cortex.</td></tr>
+      <tr><td class="k">Dopamine</td>
+          <td>D<sub>1</sub> through D<sub>5</sub>, all metabotropic</td>
+          <td>Found throughout the forebrain, and involved in motor control, reward, and higher cognition.</td></tr>
+      <tr><td class="k">Norepinephrine</td>
+          <td>&alpha;<sub>1</sub>, &alpha;<sub>2</sub>, &beta;<sub>1</sub>, &beta;<sub>2</sub>, &beta;<sub>3</sub>, all metabotropic</td>
+          <td>In the body they run sympathetic fight-or-flight responses. In the brain they alert and arouse.</td></tr>
+      <tr><td class="k">Serotonin</td>
+          <td>5-HT<sub>1</sub> through 5-HT<sub>7</sub> families, all metabotropic except 5-HT<sub>3</sub></td>
+          <td>The subtypes differ in where they sit. 5-HT<sub>2</sub> receptors are tied to mood, sleep, and cognition; 5-HT<sub>3</sub> receptors to nausea.</td></tr>
+      <tr><td class="k">Peptides</td>
+          <td>Delta, kappa and mu opioid receptors, CCK, neurotensin, NPY and dozens more, all metabotropic</td>
+          <td>Their jobs follow their location, and include the control of feeding, sexual behavior, and social behavior.</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>What counts as a neurotransmitter</h3>
+    <p>A chemical is treated as a classical transmitter if the presynaptic neuron can make it and store it in the terminal, if it is released when action potentials arrive, if specific receptors on the postsynaptic membrane recognize it, if it changes the postsynaptic cell, and if blocking its release stops the presynaptic cell from having its effect.</p>
+    <p>The gas transmitters break several of those rules and are counted anyway. Each year the list of probable transmitters grows.</p>
+  </div>
+
+  <div class="card">
+    <h3>One neuron, more than one transmitter</h3>
+    <p>A single presynaptic neuron can make and release more than one type of transmitter, which is called <b>co-localization</b>. Neuropeptides are often released this way, alongside a classical transmitter from the same terminal.</p>
+    <p>Which transmitter a given cell uses is the basis for naming it: a cell that runs on acetylcholine is <b>cholinergic</b>, one that runs on dopamine is <b>dopaminergic</b>, and so on through <b>noradrenergic</b> and <b>serotonergic</b>.</p>
+  </div>
+
+  <div class="card">
+    <h3>Where drugs get in</h3>
+    <p>Nearly every psychoactive drug works by changing one of these systems at one step of the synaptic cycle. Those steps, and the drugs that act at each, are laid out on <a href="https://brivera21.github.io/diagrams/synapse.html">The Synapse</a>.</p>
+  </div>
+
+  <div class="sources">
+    <b>Sources</b>
+    <ol>
+      <li>Watson, N. V., &amp; Breedlove, S. M. <i>The Mind&rsquo;s Machine: Foundations of Brain and Behavior</i> (4th ed.), Ch. 3, The Chemistry of Behavior. The families, pathways, and receptor subtypes on this page follow this chapter, including its Table 3.1, Figure 3.4, and Table 3.2.</li>
+      <li>Kandel, E. R., Koester, J. D., Mack, S. H., &amp; Siegelbaum, S. A. (2021). <i>Principles of Neural Science</i> (6th ed.), Chs. 13 and 16.</li>
+      <li>Purves, D., et al. (Eds.). <a href="https://www.ncbi.nlm.nih.gov/books/NBK10799/" target="_blank" rel="noopener"><i>Neuroscience</i> (2nd ed.), NCBI Bookshelf</a>, Chs. 6 and 15.</li>
+    </ol>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+const FAMILIES = [
+  { id:"amino", name:"Amino acid transmitters", color:"var(--aa)",
+    members:["GABA, glutamate, glycine, histamine"],
+    body:[
+      "Most synapses in the brain run on these, and they are among the oldest transmitters in evolutionary terms.",
+      "<b>Glutamate</b> is the most widespread excitatory transmitter and <b>GABA</b> the most widespread inhibitory one. The two are balanced against each other almost everywhere in the central nervous system. Glycine inhibits as well, mostly in the spinal cord and brainstem."
+    ],
+    facts:[["Built from","a single amino acid"],["Share of synapses","most in the brain"]] },
+
+  { id:"amines", name:"Amine transmitters", color:"var(--amine)",
+    members:["Quaternary amine: acetylcholine (ACh)",
+             "Catecholamines: norepinephrine (NE), epinephrine, dopamine (DA)",
+             "Indoleamines: serotonin (5-HT), melatonin"],
+    body:[
+      "Amines are nitrogen compounds related to ammonia, each built by modifying a single amino acid.",
+      "Far fewer synapses use them, but the cells that make them send axons almost everywhere, which is why these four are the systems drawn below and the targets of most drug development."
+    ],
+    facts:[["Built from","one amino acid, modified"],["Reach","brain-wide from small clusters"]] },
+
+  { id:"peptides", name:"Neuropeptides", color:"var(--pep)",
+    members:["Opioid peptides: met-enkephalin, leu-enkephalin, beta-endorphin, dynorphin A",
+             "Others: oxytocin, vasopressin, substance P, cholecystokinin (CCK), neurotensin, neuropeptide Y"],
+    body:[
+      "Short chains of amino acids. The <b>opioid peptides</b> are the body's own painkillers, binding the same receptors as morphine and carrying the same rewarding properties.",
+      "Many of the others were found first in the gut, which is where a name like cholecystokinin comes from, and are made by neurons in the brain and spinal cord as well. Oxytocin and vasopressin come from the hypothalamus and pituitary and reach from urine production to memory to pair bonding."
+    ],
+    facts:[["Built from","a short chain of amino acids"],["Receptors","all metabotropic"]] },
+
+  { id:"gases", name:"Gas transmitters", color:"var(--gas)",
+    members:["Nitric oxide, carbon monoxide"],
+    body:[
+      "These break most of the rules. They are made outside the axon terminal, often in the dendrites, and are never packed into vesicles. The molecule simply diffuses out of the cell as it is produced.",
+      "There is no receptor in the target membrane either. The gas passes straight into the target cell and triggers second messengers inside it. It can also travel backward, from the postsynaptic neuron to the presynaptic one, telling the synapse to change itself, which may be part of how memories are laid down."
+    ],
+    facts:[["Vesicles","none"],["Direction","can run backward across the synapse"]] }
+];
+
+const SYSTEMS = [
+  { id:"ach", name:"Cholinergic", color:"var(--ach)",
+    members:["Acetylcholine"],
+    body:[
+      "Cell bodies sit in nuclei of the <b>basal forebrain</b> and send axons to the cerebral cortex, the amygdala, and the hippocampus.",
+      "Widespread loss of these neurons is associated with Alzheimer's disease, and cutting the pathway in rats interferes with learning and memory. Outside the brain, acetylcholine is the transmitter at the synapse onto muscle."
+    ],
+    facts:[["From","basal forebrain"],["To","cortex, amygdala, hippocampus"]] },
+
+  { id:"da", name:"Dopaminergic", color:"var(--da)",
+    members:["Dopamine"],
+    body:[
+      "Two pathways, both starting in the midbrain. The <b>mesostriatal</b> pathway runs from the substantia nigra to the basal ganglia and is central to motor control; losing a large share of those cells, to toxins or to age, produces the tremors and movement problems of Parkinson's disease.",
+      "The <b>mesolimbocortical</b> pathway runs from the ventral tegmental area to the nucleus accumbens and cortex. It handles reward and the learning that reward drives, and abnormalities in it are associated with some symptoms of schizophrenia."
+    ],
+    facts:[["From","substantia nigra, VTA"],["Cells that make it","about a million, out of 80 billion"]] },
+
+  { id:"ne", name:"Noradrenergic", color:"var(--ne)",
+    members:["Norepinephrine, also called noradrenaline"],
+    body:[
+      "Cell bodies sit in the <b>locus coeruleus</b>, the blue spot of the brainstem, and in the lateral tegmental area. Their axons spread through the cortex, the limbic system, the thalamus, and down the spinal cord.",
+      "In the brain the system alerts and arouses. In the body, norepinephrine released by sympathetic neurons speeds organs up, which is the fight-or-flight response."
+    ],
+    facts:[["From","locus coeruleus, lateral tegmental area"],["Job","alerting and arousal"]] },
+
+  { id:"5ht", name:"Serotonergic", color:"var(--ser)",
+    members:["Serotonin, or 5-HT, for 5-hydroxytryptamine"],
+    body:[
+      "Only about 200,000 neurons in the human brain make serotonin. They are strung along the midline of the midbrain and brainstem in the <b>raphe nuclei</b>, and from there they reach most of the forebrain and the spinal cord.",
+      "They take part in mood, sleep, vision, anxiety, and sexual behavior. Drugs that raise serotonergic activity are common treatments for depression and anxiety, and what any one of them does depends on which 5-HT receptor subtypes it reaches."
+    ],
+    facts:[["From","raphe nuclei"],["Cells that make it","about 200,000"]] }
+];
+
+function section(svgId, chipsId, infoId, items, intro){
+  const svg = document.getElementById(svgId);
+  const chips = document.getElementById(chipsId);
+  const info = document.getElementById(infoId);
+  let sel = null;
+
+  function render(it){
+    info.style.borderLeftColor = it.color;
+    const facts = (it.facts||[]).map(f=>`<span><b>${f[0]}:</b> ${f[1]}</span>`).join("");
+    const mem = (it.members||[]).length
+      ? `<div class="members"><b>${it.memberLabel||"Members"}</b>${it.members.join("<br>")}</div>` : "";
+    info.innerHTML =
+      `<div class="kicker" style="color:${it.color}">${it===intro ? "Overview" : it.kicker||"Family"}</div>` +
+      `<h3>${it.name}</h3>` + mem +
+      it.body.map(t=>`<p>${t}</p>`).join("") +
+      (facts ? `<div class="facts">${facts}</div>` : "");
+  }
+
+  function select(id){
+    sel = id;
+    const it = items.find(x=>x.id===id) || intro;
+    svg.classList.toggle("sel", !!id);
+    items.forEach(x=>{
+      const g = document.getElementById("p-"+x.id);
+      if(g) g.classList.toggle("on", x.id===id);
+      const c = chips.querySelector(`[data-id="${x.id}"]`);
+      if(c) c.classList.toggle("on", x.id===id);
+    });
+    render(it);
+  }
+
+  items.forEach(it=>{
+    const b = document.createElement("button");
+    b.className = "chip"; b.style.color = it.color; b.dataset.id = it.id;
+    b.innerHTML = `<span class="dot"></span><span class="nm">${it.name}</span>`;
+    b.onclick = ()=> select(it.id === sel ? null : it.id);
+    chips.appendChild(b);
+    const g = document.getElementById("p-"+it.id);
+    if(g){
+      g.addEventListener("click", ()=> select(it.id === sel ? null : it.id));
+      g.addEventListener("keydown", e=>{
+        if(e.key==="Enter"||e.key===" "){ e.preventDefault(); select(it.id); }
+      });
+    }
+  });
+
+  const back = document.createElement("button");
+  back.className = "chip"; back.style.color = "var(--muted)";
+  back.innerHTML = `<span class="dot" style="box-shadow:none;opacity:.5"></span><span class="nm">Show all</span>`;
+  back.onclick = ()=> select(null);
+  chips.appendChild(back);
+
+  select(null);
+}
+
+SYSTEMS.forEach(s=>{ s.kicker = "System"; s.memberLabel = "Transmitter"; });
+
+section("figFam","chipsFam","infoFam", FAMILIES, {
+  name:"Four families", color:"var(--muted)",
+  members:[],
+  body:[
+    "Transmitters are grouped by the molecule itself. Three of the families are built from amino acids: one amino acid on its own, one amino acid modified into an amine, or a short chain of them. The gases are the exception, and they are the exception to almost everything else too.",
+    "The family predicts a good deal. It tells you roughly how the molecule is made, how it is stored, and how quickly it acts."
+  ],
+  facts:[] });
+
+section("figPath","chipsPath","infoPath", SYSTEMS, {
+  name:"Four systems", color:"var(--muted)",
+  members:[],
+  body:[
+    "Each of these transmitters is carried by its own set of axons, and each set has its own targets. The same target region can receive two of them, and how that region answers depends on which transmitter arrived and which receptors its cells carry.",
+    "All four project widely from a small number of cells, and that is the vulnerability: killing off one small cluster removes a transmitter from a large stretch of brain, which is what happens in Parkinson's and Alzheimer's diseases."
+  ],
+  facts:[] });
+
+</script>
+</body>
+</html>
