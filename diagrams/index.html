@@ -136,6 +136,21 @@ thumbLive:true,
 tags:['EEG','ERP','methods','teaching','interactive','PSYCH 390'],
 label:'COURSE SERIES',
 blurb:'Twelve interactive pages that follow the EEG/ERP processing pipeline in lab order: electricity, where the EEG comes from, averaging, the EEGLAB GUI, MATLAB basics, filtering, re-referencing, bins and epochs, channel interpolation, artifact detection, scoring, and plotting and scripting.',
+/* In focus mode, Next walks these in order before moving on to the next diagram. */
+steps:[
+{file:'erp-01-electricity.html',       title:'Introduction to Electricity'},
+{file:'erp-02-eeg-signal.html',        title:'The EEG Signal'},
+{file:'erp-03-what-is-an-erp.html',    title:'What Is an ERP?'},
+{file:'erp-04-eeglab-gui.html',        title:'EEGLAB and Data Loading'},
+{file:'erp-05-matlab-intro.html',      title:'MATLAB Introduction'},
+{file:'erp-06-filtering.html',         title:'Filtering'},
+{file:'erp-07-rereferencing.html',     title:'Re-Referencing'},
+{file:'erp-08-bins.html',              title:'Bin Assignment and Epoching'},
+{file:'erp-09-interpolation.html',     title:'Channel Interpolation'},
+{file:'erp-10-artifacts.html',         title:'Artifact Detection'},
+{file:'erp-11-scoring.html',           title:'ERP Scoring and Measurement'},
+{file:'erp-12-plotting-scripting.html',title:'Plotting and Scripting'}
+],
 extras:[],
 connects:'The Thursday labs of PSYCH 390 (Labs 1 through 10) and Luck (2014). Each page quotes the EEGLAB or ERPLAB call used in that lab.',
 caveats:[
@@ -472,7 +487,7 @@ function toRoman(n){const m=[["X",10],["IX",9],["V",5],["IV",4],["I",1]];let r="
 DIAGRAMS.forEach((d,i)=>{d.num=toRoman(i+1);});
 
 /* ---------- state ---------- */
-let activeCat='All', query='', view=[], idx=0;
+let activeCat='All', query='', view=[], seq=[], idx=0;
 
 // category filter (broad groups: Neuroscience, Math, History, ...)
 const cats=['All', ...new Set(DIAGRAMS.map(d=>d.category).filter(Boolean))];
@@ -495,8 +510,9 @@ const grid=document.getElementById('grid');
 view=DIAGRAMS.filter(matches);
 grid.innerHTML='';
 document.getElementById('empty').style.display=view.length?'none':'block';
-view.forEach((d,i)=>{
-const c=document.createElement('div'); c.className='card'; c.onclick=()=>open_(i);
+buildSeq();
+view.forEach(d=>{
+const c=document.createElement('div'); c.className='card'; c.onclick=()=>open_(d.__seq);
 const thumb = d.thumbLive
 ? `<iframe src="${d.file}" loading="lazy" scrolling="no" tabindex="-1"></iframe>`
 : `<img src="${d.thumb}" alt="">`;
@@ -511,17 +527,33 @@ grid.appendChild(c);
 }
 
 /* ---------- focus ---------- */
+/* The focus sequence is not the card list. A diagram that carries `steps`
+   (the ERP pipeline) expands into its landing page followed by each step, so
+   Next walks the series to its end before moving on to the next diagram. */
+function buildSeq(){
+seq=[];
+view.forEach((d,cardNum)=>{
+d.__seq=seq.length;
+seq.push({d, file:d.file, title:d.title, extras:d.extras||[], num:cardNum+1});
+(d.steps||[]).forEach((s,k)=>{
+seq.push({d, file:s.file, title:s.title, extras:[], step:k+1, of:d.steps.length});
+});
+});
+}
+
 const ov=document.getElementById('ov');
 function open_(i){ idx=i; paint(); ov.classList.add('on'); }
 function paint(){
-const d=view[idx]; if(!d) return;
-document.getElementById('count').textContent=`${idx+1} / ${view.length}`;
-document.getElementById('oframe').src=d.file;
+const it=seq[idx]; if(!it) return;
+document.getElementById('count').textContent = it.step
+? `${it.d.title} · ${it.step} of ${it.of}`
+: `${it.num} / ${view.length}`;
+document.getElementById('oframe').src=it.file;
 document.getElementById('extras').innerHTML =
-`<a href="${d.file}" target="_blank">Open full page ↗</a> ` +
-d.extras.map(e=>`<a href="${e.href}" target="_blank">${e.label}</a>`).join(' ');
+`<a href="${it.file}" target="_blank">Open full page ↗</a> ` +
+it.extras.map(e=>`<a href="${e.href}" target="_blank">${e.label}</a>`).join(' ');
 }
-const move=n=>{ if(!view.length)return; idx=(idx+n+view.length)%view.length; paint(); };
+const move=n=>{ if(!seq.length)return; idx=(idx+n+seq.length)%seq.length; paint(); };
 document.getElementById('next').onclick=()=>move(1);
 document.getElementById('prev').onclick=()=>move(-1);
 document.getElementById('close').onclick=()=>{ov.classList.remove('on');document.getElementById('oframe').src='';};
@@ -533,7 +565,7 @@ render();
 document.getElementById('q').oninput=e=>{query=e.target.value.toLowerCase().trim();render();};
 addEventListener('keydown',e=>{
 if(!ov.classList.contains('on')){
-if(e.key==='r'||e.key==='R'){ if(view.length) open_((Math.random()*view.length)|0); }
+if(e.key==='r'||e.key==='R'){ if(view.length) open_(view[(Math.random()*view.length)|0].__seq); }
 return;
 }
 if(e.key==='Escape'){ov.classList.remove('on');document.getElementById('oframe').src='';}
