@@ -36,8 +36,6 @@
   .lbl{font:600 13px -apple-system,"Segoe UI",sans-serif;pointer-events:none;
     paint-order:stroke;stroke:#0b1120;stroke-width:4px;stroke-linejoin:round;}
   .lbl.sm{font-size:11.5px;stroke-width:3.4px;}
-  .caps{font:700 11px -apple-system,"Segoe UI",sans-serif;letter-spacing:1.1px;pointer-events:none;
-    paint-order:stroke;stroke:#0b1120;stroke-width:3px;stroke-linejoin:round;}
 
   .below{display:grid;grid-template-columns:236px 1fr;gap:14px;margin-top:12px;align-items:start;}
   .chips{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--stroke);
@@ -294,19 +292,6 @@
     <div class="info" id="infoJobs"></div>
   </div>
 
-  <h2 class="sec">Sizes of some neural structures</h2>
-  <p class="sub">Each step along this line is ten times the one before it.</p>
-  <div class="stage">
-    <div class="scroller">
-      <svg class="fig" viewBox="0 0 1000 212" style="min-width:760px" role="img" aria-label="Log scale of neural structure sizes from 0.5 nanometers to 100 micrometers">
-        <g id="scaleAxis"></g>
-      </svg>
-    </div>
-  </div>
-  <div class="note">
-    Larger structures run off the right end of the line. The cortex is about 3 mm thick, roughly thirty times the width of a large cell body, and an adult human brain is about 15 cm front to back. At the other end, a large cell body is some two hundred thousand times wider than the ion channels studded through its membrane.
-  </div>
-
   <div class="note">
     <h3>Where this all came from</h3>
     An early argument in neuroscience was whether neurons are separate cells at all, or whether the nervous system is one continuous network. Working from the fine detail of individual cells, Santiago Ramón y Cajal (1852 to 1934) showed that neurons come very close together without quite joining. That finding became the <b>neuron doctrine</b>: neurons and the other cells of the brain are structurally, metabolically, and functionally independent, and information passes between them across tiny gaps, which were later named synapses. Cajal worked this out by looking at stained tissue under a microscope and drawing what he saw, decades before anyone could photograph a synapse. Estimates now run to about 10<sup>15</sup> synapses in a single human brain.
@@ -374,56 +359,6 @@ const JOBS = [
     facts:[["Targets","muscles and glands"],["Axon length","up to about a meter"]] }
 ];
 
-
-/* ---------------------------------------------------------------------------
-   The size scale, drawn on a log axis
-   --------------------------------------------------------------------------- */
-(function scale(){
-  const g = document.getElementById("scaleAxis");
-  const NS = "http://www.w3.org/2000/svg";
-  const x0 = 70, x1 = 940, y = 120;             // nanometers, from 0.1 to 1,000,000
-  const lo = -1, hi = 6;
-  const X = nm => x0 + (Math.log10(nm) - lo) / (hi - lo) * (x1 - x0);
-  const add = (tag, attrs, text) => {
-    const el = document.createElementNS(NS, tag);
-    for(const k in attrs) el.setAttribute(k, attrs[k]);
-    if(text != null) el.textContent = text;
-    g.appendChild(el); return el;
-  };
-  add("path",{d:`M${x0},${y} H${x1}`, stroke:"#3b4a66", "stroke-width":"2", fill:"none"});
-  // a tick at every power of ten; a label only where no structure is marked, so nothing overlaps
-  const decades = [[0.1,"0.1 nm"],[1,"1 nm"],[10,"10 nm"],[100,"100 nm"],
-                   [1000,null],[10000,null],[100000,null],[1000000,"1 mm"]];
-  for(const [v,label] of decades){
-    add("path",{d:`M${X(v)},${y-5} V${y+5}`, stroke:"#3b4a66", "stroke-width":"2", fill:"none"});
-    if(label) add("text",{x:X(v), y:y+24, "text-anchor":"middle", class:"lbl sm", fill:"#5b6b86"}, label);
-  }
-  const marks = [
-    [0.5, "ion channel", "#22c55e", -1],
-    [5, "neuronal membrane", "#c8a869", 1],
-    [20, "synaptic cleft", "#f0abfc", -1],
-    [1000, "synaptic ending", "#fb923c", 1],
-    [10000, "large axon or dendrite", "#34d399", -1],
-    [100000, "large cell body", "#a78bfa", 1],
-  ];
-  for(const [v,label,col,side] of marks){
-    const px = X(v);
-    if(side < 0){
-      add("path",{d:`M${px},${y-6} V${y-30}`, stroke:col, "stroke-width":"1.6", fill:"none", opacity:".7"});
-      add("text",{x:px, y:y-48, "text-anchor":"middle", class:"lbl", fill:col}, label);
-      add("text",{x:px, y:y-34, "text-anchor":"middle", class:"lbl sm", fill:"#5b6b86"},
-          v < 1000 ? v + " nm" : (v/1000) + " µm");
-    } else {
-      add("path",{d:`M${px},${y+6} V${y+40}`, stroke:col, "stroke-width":"1.6", fill:"none", opacity:".7"});
-      add("text",{x:px, y:y+58, "text-anchor":"middle", class:"lbl", fill:col}, label);
-      add("text",{x:px, y:y+74, "text-anchor":"middle", class:"lbl sm", fill:"#5b6b86"},
-          v < 1000 ? v + " nm" : (v/1000) + " µm");
-    }
-    add("circle",{cx:px, cy:y, r:5, fill:col});
-  }
-  add("text",{x:x0, y:26, class:"caps", fill:"#5b6b86"}, "SMALLER");
-  add("text",{x:x1, y:26, "text-anchor":"end", class:"caps", fill:"#5b6b86"}, "LARGER");
-})();
 
 /* ---------------------------------------------------------------------------
    One clickable section: a figure, a list of names, an info panel

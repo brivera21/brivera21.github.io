@@ -120,7 +120,7 @@
 
         <!-- ============ DENDRITES ============ -->
         <g class="part" id="p-dendrites" tabindex="0" role="button" aria-label="Dendrites" style="color:var(--dend)">
-          <g fill="none" stroke="#38bdf8" stroke-linecap="round">
+          <g id="dendPaths" fill="none" stroke="#38bdf8" stroke-linecap="round">
             <g stroke-width="13">
               <path d="M228,180 C198,158 172,132 146,104"/>
               <path d="M247,170 C234,138 226,112 214,80"/>
@@ -267,19 +267,48 @@
 /* the myelin runs down the axon: five internodes with a bare node between them */
 (function buildSpines(){
   const g = document.getElementById("spines");
+  const host = document.getElementById("dendPaths");
+  if(!g || !host) return;
   const NS = "http://www.w3.org/2000/svg";
-  // [x, y, dx, dy] : where the spine leaves the dendrite, and which way it points
-  const S = [[170,128,-13,5],[196,150,11,-9],[236,118,-13,-3],[228,146,13,-4],
-             [265,120,-13,-5],[265,96,13,-5],[296,146,-13,-4],[304,118,13,-3],
-             [334,150,-11,-9],[360,128,13,5],[160,86,-11,-7],[372,86,11,-7],
-             [186,110,-12,2],[344,110,12,2],[247,84,-11,-4],[283,84,11,-4]];
-  for(const [x,y,dx,dy] of S){
-    const l = document.createElementNS(NS,"path");
-    l.setAttribute("d",`M${x},${y} l${dx},${dy}`);
-    g.appendChild(l);
-    const h = document.createElementNS(NS,"circle");
-    h.setAttribute("cx",x+dx*1.35); h.setAttribute("cy",y+dy*1.35); h.setAttribute("r",3.2);
-    g.appendChild(h);
+  /* Spine positions are measured off the dendrite paths themselves, so every stalk
+     starts on the branch surface no matter how the arbor is redrawn. For each branch
+     width we pick positions along the path, take the tangent there, and push the
+     spine out along the normal, alternating sides. */
+  const PLAN = [
+    { sw:"13",  at:[0.65] },
+    { sw:"7.5", at:[0.40, 0.80] },
+    { sw:"4",   at:[0.55] }
+  ];
+  const STALK = 7.5, HEAD = 3.2;
+  let flip = 0;
+  for(const { sw, at } of PLAN){
+    const grp = host.querySelector('g[stroke-width="' + sw + '"]');
+    if(!grp) continue;
+    const half = parseFloat(sw) / 2;
+    for(const p of grp.querySelectorAll("path")){
+      const len = p.getTotalLength();
+      if(!len) continue;
+      for(const f of at){
+        const t = len * f;
+        const a = p.getPointAtLength(Math.max(0, t - 0.6));
+        const b = p.getPointAtLength(Math.min(len, t + 0.6));
+        const base = p.getPointAtLength(t);
+        let tx = b.x - a.x, ty = b.y - a.y;
+        const m = Math.hypot(tx, ty) || 1;
+        tx /= m; ty /= m;
+        let nx = -ty, ny = tx;
+        if(flip++ % 2){ nx = -nx; ny = -ny; }
+        const r0 = half - 0.8, r1 = r0 + STALK;
+        const x0 = base.x + nx * r0, y0 = base.y + ny * r0;
+        const x1 = base.x + nx * r1, y1 = base.y + ny * r1;
+        const l = document.createElementNS(NS, "path");
+        l.setAttribute("d", `M${x0.toFixed(1)},${y0.toFixed(1)} L${x1.toFixed(1)},${y1.toFixed(1)}`);
+        g.appendChild(l);
+        const h = document.createElementNS(NS, "circle");
+        h.setAttribute("cx", x1.toFixed(1)); h.setAttribute("cy", y1.toFixed(1)); h.setAttribute("r", HEAD);
+        g.appendChild(h);
+      }
+    }
   }
 })();
 
