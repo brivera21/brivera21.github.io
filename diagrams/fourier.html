@@ -49,18 +49,16 @@
   .pbtn.on{background:#16223c;border-color:var(--sig);color:var(--ink);font-weight:600;}
   .sweep{font:inherit;font-size:12.5px;color:#04122b;background:var(--wind);border:1px solid var(--wind);
     border-radius:9px;padding:6px 14px;cursor:pointer;font-weight:650;}
+  .hum{font:inherit;font-size:12.5px;color:var(--muted);background:#0e1728;
+    border:1px solid var(--stroke);border-radius:9px;padding:6px 13px;cursor:pointer;}
+  .hum:hover{background:#152039;color:var(--ink);}
+  .hum[aria-pressed="true"]{background:#3a1f22;border-color:var(--cur);color:#fecaca;font-weight:600;}
 
   .readout{background:#0e1728;border:1px solid var(--stroke);border-radius:12px;
     padding:13px 15px;margin-top:16px;}
   .readout h3{margin:0 0 5px;font-size:15px;font-weight:650;}
   .readout p{margin:0;font-size:13px;line-height:1.58;color:#cdd7e6;}
   .readout .live{color:var(--ink);font-weight:600;}
-
-  .try{margin-top:16px;background:linear-gradient(180deg,#131f14,#0e1810);
-    border:1px solid #27402c;border-radius:14px;padding:14px 17px;}
-  .try h3{margin:0 0 6px;font-size:14px;font-weight:650;color:#86efac;}
-  .try ol{margin:0;padding-left:18px;}
-  .try li{font-size:12.8px;line-height:1.6;color:#c7d6c9;margin-bottom:4px;}
 
   .note{margin-top:16px;font-size:12px;color:var(--faint);line-height:1.65;}
   .note b{color:var(--muted);}
@@ -86,15 +84,16 @@
     <div class="presets" id="presets"></div>
     <div class="ctrls">
       <div class="ctrl w1"><label>Wave 1</label>
-        <input type="range" id="f1" min="1" max="20" step="0.5" value="3"><span class="val" id="f1v">3 Hz</span>
+        <input type="range" id="f1" min="1" max="20" step="0.5" value="6"><span class="val" id="f1v">6 Hz</span>
         <input type="range" id="a1" min="0" max="1.5" step="0.05" value="1"><span class="val" id="a1v">1.00</span></div>
       <div class="ctrl w2"><label>Wave 2</label>
-        <input type="range" id="f2" min="1" max="20" step="0.5" value="7"><span class="val" id="f2v">7 Hz</span>
-        <input type="range" id="a2" min="0" max="1.5" step="0.05" value="0.6"><span class="val" id="a2v">0.60</span></div>
+        <input type="range" id="f2" min="1" max="20" step="0.5" value="1"><span class="val" id="f2v">1 Hz</span>
+        <input type="range" id="a2" min="0" max="1.5" step="0.05" value="0"><span class="val" id="a2v">0.00</span></div>
       <div class="ctrl"><label>Noise</label>
         <input type="range" id="nz" min="0" max="1" step="0.05" value="0"><span class="val" id="nzv">0.00</span></div>
       <div class="ctrl"><label>Window</label>
         <input type="range" id="T" min="0.5" max="4" step="0.1" value="2"><span class="val" id="Tv">2.0 s</span></div>
+      <button class="hum" id="humBtn" aria-pressed="false">Add 60 Hz noise</button>
     </div>
   </div>
 
@@ -113,7 +112,7 @@
       <p class="psub">The same signal wrapped around a circle at <span id="wlab">3.00</span> turns per second. The pink dot is the average of the wrapped points.</p>
       <div class="ctrls">
         <div class="ctrl"><label>Winding</label>
-          <input type="range" id="fw" min="0" max="20" step="0.05" value="3"><span class="val" id="fwv">3.00 Hz</span></div>
+          <input type="range" id="fw" min="0" max="20" step="0.05" value="6"><span class="val" id="fwv">6.00 Hz</span></div>
         <button class="sweep" id="sweepBtn">Sweep ▸</button>
       </div>
       <svg id="wind" viewBox="0 0 380 340" role="img"
@@ -131,16 +130,6 @@
   </div>
 
   <div class="readout" id="readout"></div>
-
-  <div class="try">
-    <h3>Try this</h3>
-    <ol>
-      <li>On the two tones preset, drag the winding frequency slowly from 0 to 20 Hz. The pink dot stays near the center except at 3 and 7 Hz, where it swings out. Those are the two waves you built.</li>
-      <li>Set wave 2 to 0 amplitude. One peak. Put it back and move its frequency; the second peak follows it.</li>
-      <li>Choose the close pair (8 and 9 Hz) and drag the window from 2 s down to 0.5 s. The two peaks merge into one, because a window of length T cannot separate frequencies closer than 1/T.</li>
-      <li>Turn the noise up with the alpha preset. The peak survives noise that hides the rhythm completely in the time plot.</li>
-    </ol>
-  </div>
 
   <div class="note" id="note"></div>
 </div>
@@ -163,16 +152,20 @@
    --------------------------------------------------------------------------- */
 
 const N = 800;                 // samples across the window
-const FMAX = 20, FSTEP = 0.05; // spectrum grid
+const HUM_F = 60, HUM_A = 0.4; // mains hum, when switched on
+
+/* The spectrum runs to 20 Hz normally. Switching the hum on pushes the top of
+   the axis past it so the 60 Hz line has somewhere to appear. */
+let FMAX = 20, FSTEP = 0.05;
 
 const PRESETS = [
-  {key:'two',   name:'Two tones',     f1:3,  a1:1,   f2:7, a2:0.6, nz:0,    T:2},
   {key:'one',   name:'One tone',      f1:6,  a1:1,   f2:1, a2:0,   nz:0,    T:2},
+  {key:'two',   name:'Two tones',     f1:3,  a1:1,   f2:7, a2:0.6, nz:0,    T:2},
   {key:'close', name:'Close pair',    f1:8,  a1:1,   f2:9, a2:1,   nz:0,    T:2},
   {key:'alpha', name:'Alpha in noise',f1:10, a1:0.5, f2:1, a2:0,   nz:0.85, T:2}
 ];
 
-const S = {f1:3, a1:1, f2:7, a2:0.6, nz:0, T:2, fw:3, preset:'two'};
+const S = {f1:6, a1:1, f2:1, a2:0, nz:0, T:2, fw:6, hum:false, preset:'one'};
 
 /* one fixed noise draw, so moving a slider does not reshuffle the noise */
 const NOISE = (() => {
@@ -193,7 +186,8 @@ function buildSignal(){
     t[i] = i/N*T;
     s[i] = S.a1*Math.sin(2*Math.PI*S.f1*t[i])
          + S.a2*Math.sin(2*Math.PI*S.f2*t[i])
-         + S.nz*NOISE[i];
+         + S.nz*NOISE[i]
+         + (S.hum ? HUM_A*Math.sin(2*Math.PI*HUM_F*t[i]) : 0);
   }
   let m=0; for(let i=0;i<N;i++) m+=s[i];   // remove the mean so 0 Hz is not a spike
   m/=N; for(let i=0;i<N;i++) s[i]-=m;
@@ -230,25 +224,46 @@ function clear(svg){ while(svg.firstChild) svg.removeChild(svg.firstChild); }
 
 function drawSignal(){
   const svg=document.getElementById('sig'); clear(svg);
-  const W=380,H=422, L=30,R=12,Tp=18,B=34;
+  const W=380,H=422, L=52,R=16,Tp=20,B=46;
   const x=i=>L+(t[i]/S.T)*(W-L-R);
-  let amp=0; for(let i=0;i<N;i++) amp=Math.max(amp,Math.abs(s[i]));
-  amp=Math.max(amp,0.3);
-  const y=v=>Tp+(H-Tp-B)/2 - v/amp*((H-Tp-B)/2);
 
-  el("path",{d:`M${L},${y(0)} H${W-R}`,class:"ax"},svg);
-  for(const tt of [0, S.T/2, S.T]){
-    const px=L+(tt/S.T)*(W-L-R);
-    el("path",{d:`M${px},${Tp} V${H-B}`,class:"gl"},svg);
-    const lb=el("text",{x:px,y:H-18,"text-anchor":"middle",class:"axlbl"},svg);
-    lb.textContent=tt.toFixed(1)+" s";
+  /* round the vertical range up to a half so the tick labels stay tidy */
+  let amp=0; for(let i=0;i<N;i++) amp=Math.max(amp,Math.abs(s[i]));
+  const top=Math.max(0.5, Math.ceil(Math.max(amp,0.3)*2)/2);
+  const mid=Tp+(H-Tp-B)/2, half=(H-Tp-B)/2;
+  const y=v=>mid - v/top*half;
+
+  /* y axis, with ticks and labels */
+  el("path",{d:`M${L},${Tp-6} V${H-B}`,class:"ax"},svg);
+  el("path",{d:`M${L},${Tp-10} l-4,7 h8 z`,fill:"#2b3a55"},svg);
+  for(const v of [top, top/2, 0, -top/2, -top]){
+    const major = (v===top || v===0 || v===-top);
+    el("path",{d:`M${L-(major?5:3)},${y(v)} H${L}`,class:"ax"},svg);
+    if(major){
+      const lb=el("text",{x:L-9,y:y(v)+3.5,"text-anchor":"end",class:"axlbl"},svg);
+      lb.textContent=(v===0?"0":v.toFixed(1));
+    }
   }
+  const ylab=el("text",{x:14,y:mid,"text-anchor":"middle",class:"axlbl",
+                        transform:`rotate(-90 14 ${mid})`},svg);
+  ylab.textContent="amplitude";
+
+  /* x axis along zero, with ticks and labels below the plot */
+  el("path",{d:`M${L},${y(0)} H${W-R+6}`,class:"ax"},svg);
+  el("path",{d:`M${W-R+10},${y(0)} l-7,-4 v8 z`,fill:"#2b3a55"},svg);
+  for(const tt of [0, S.T/4, S.T/2, 3*S.T/4, S.T]){
+    const px=L+(tt/S.T)*(W-L-R);
+    el("path",{d:`M${px},${y(0)-4} V${y(0)+4}`,class:"ax"},svg);
+    el("path",{d:`M${px},${Tp} V${H-B}`,class:"gl"},svg);
+    const lb=el("text",{x:px,y:H-B+16,"text-anchor":"middle",class:"axlbl"},svg);
+    lb.textContent=tt.toFixed(1);
+  }
+  const xt=el("text",{x:(L+W-R)/2,y:H-B+32,"text-anchor":"middle",class:"axlbl"},svg);
+  xt.textContent="time (s)";
+
   let d="";
   for(let i=0;i<N;i++) d += (i?"L":"M")+x(i).toFixed(1)+","+y(s[i]).toFixed(1);
   el("path",{d,fill:"none",stroke:"var(--sig)","stroke-width":1.3,"stroke-linejoin":"round"},svg);
-  const yl=el("text",{x:6,y:y(0)+4,class:"axlbl"},svg); yl.textContent="0";
-  const xt=el("text",{x:(L+W-R)/2,y:H-4,"text-anchor":"middle",class:"axlbl"},svg);
-  xt.textContent="time";
 }
 
 function drawWinding(){
@@ -291,7 +306,8 @@ function drawSpectrum(){
 
   el("path",{d:`M${L},${H-B} H${W-R}`,class:"ax"},svg);
   el("path",{d:`M${L},${Tp} V${H-B}`,class:"ax"},svg);
-  for(let f=0; f<=FMAX; f+=5){
+  const tick = FMAX<=20 ? 5 : 20;
+  for(let f=0; f<=FMAX; f+=tick){
     el("path",{d:`M${x(f)},${Tp} V${H-B}`,class:"gl"},svg);
     const lb=el("text",{x:x(f),y:H-16,"text-anchor":"middle",class:"axlbl"},svg);
     lb.textContent=f;
@@ -342,7 +358,16 @@ function updateReadout(){
 /* ---------------------------------------------------------------------------
    wiring
    --------------------------------------------------------------------------- */
-function recomputeAll(){ buildSignal(); buildSpectrum(); drawSignal(); drawWinding(); drawSpectrum(); updateReadout(); }
+/* the spectrum has to reach past 60 Hz when the hum is switched on */
+function setRange(){
+  const want = S.hum ? 80 : 20;
+  if(want === FMAX) return;
+  FMAX = want; FSTEP = S.hum ? 0.1 : 0.05;
+  const sl = document.getElementById('fw');
+  sl.max = FMAX;
+  if(S.fw > FMAX){ S.fw = FMAX; sl.value = FMAX; }
+}
+function recomputeAll(){ setRange(); buildSignal(); buildSpectrum(); drawSignal(); drawWinding(); drawSpectrum(); updateReadout(); }
 function recomputeWinding(){ drawWinding(); drawSpectrum(); updateReadout(); }
 
 function syncLabels(){
@@ -363,9 +388,10 @@ PRESETS.forEach(p=>{
   b.onclick=()=>{
     Object.assign(S,{f1:p.f1,a1:p.a1,f2:p.f2,a2:p.a2,nz:p.nz,T:p.T,preset:p.key});
     S.fw = p.f1;
-    ['f1','a1','f2','a2','nz','T','fw'].forEach(id=>document.getElementById(id).value=S[id]);
+    ['f1','a1','f2','a2','nz','T'].forEach(id=>document.getElementById(id).value=S[id]);
     [...presetHost.children].forEach(c=>c.classList.toggle('on',c.dataset.key===p.key));
-    syncLabels(); recomputeAll();
+    recomputeAll();
+    document.getElementById('fw').value=S.fw; syncLabels();
   };
   presetHost.appendChild(b);
 });
@@ -382,13 +408,23 @@ document.getElementById('fw').addEventListener('input', e=>{
   S.fw=parseFloat(e.target.value); syncLabels(); recomputeWinding();
 });
 
+const humBtn=document.getElementById('humBtn');
+humBtn.onclick=()=>{
+  S.hum=!S.hum;
+  humBtn.setAttribute('aria-pressed', String(S.hum));
+  humBtn.textContent = S.hum ? "Remove 60 Hz noise" : "Add 60 Hz noise";
+  recomputeAll();
+  document.getElementById('fw').value=S.fw; syncLabels();
+};
+
 let sweeping=null;
 document.getElementById('sweepBtn').onclick=()=>{
   if(sweeping){ clearInterval(sweeping); sweeping=null; document.getElementById('sweepBtn').textContent="Sweep ▸"; return; }
   document.getElementById('sweepBtn').textContent="Stop ■";
   S.fw=0;
+  const step=Math.max(0.1, Math.round(FMAX/200*100)/100);
   sweeping=setInterval(()=>{
-    S.fw=Math.round((S.fw+0.1)*100)/100;
+    S.fw=Math.round((S.fw+step)*100)/100;
     if(S.fw>FMAX){ clearInterval(sweeping); sweeping=null; document.getElementById('sweepBtn').textContent="Sweep ▸"; return; }
     document.getElementById('fw').value=S.fw; syncLabels(); recomputeWinding();
   }, 26);
@@ -401,7 +437,8 @@ document.getElementById('note').innerHTML =
   `in the spectrum; the direction it points is the phase of that component, which is why a peak can sit at any angle. ` +
   `The analysis window is rectangular, ` +
   `which is why each peak sits in a set of small ripples; tapered windows reduce those at the cost of a wider peak. ` +
-  `The alpha preset is simulated, not a recording.` +
+  `The spectrum runs to 20 Hz, and to 80 Hz while the 60 Hz noise is switched on so the line has somewhere to show. ` +
+  `The alpha preset and the 60 Hz line are both simulated, not recordings.` +
   `<div class="reflist">` +
   `<p>Bracewell, R. N. (2000). <i>The Fourier transform and its applications</i> (3rd ed.). McGraw-Hill.</p>` +
   `<p>Cohen, M. X. (2014). <i>Analyzing neural time series data: Theory and practice</i>. MIT Press.</p>` +
