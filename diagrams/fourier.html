@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fourier Analysis</title>
+<style>
+  :root{
+    --bg:#0b1120; --panel:#111a2e; --panel2:#0e1626; --stroke:#243149;
+    --ink:#e8eef8; --muted:#94a3b8; --faint:#5b6b86;
+    --sig:#38bdf8; --wind:#f59e0b; --spec:#34d399; --cur:#f87171; --com:#f472b6;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  .wrap{max-width:1180px;margin:0 auto;padding:22px 20px 44px;}
+  header h1{font-size:22px;margin:0 0 4px;font-weight:650;letter-spacing:.2px;}
+  header p.tagline{margin:0;color:var(--muted);font-size:13.5px;max-width:820px;line-height:1.5;}
+
+  .panel{background:linear-gradient(180deg,var(--panel),var(--panel2));
+    border:1px solid var(--stroke);border-radius:14px;padding:14px 15px 12px;margin-top:16px;}
+  .panel h2{font-size:12.5px;color:var(--muted);margin:0 0 9px;font-weight:600;line-height:1.45;}
+  svg{display:block;width:100%;height:auto;}
+
+  .stage{display:grid;grid-template-columns:minmax(300px,0.9fr) minmax(320px,1.1fr);gap:16px;}
+  @media (max-width:880px){.stage{grid-template-columns:1fr;}}
+  .stage .panel{margin-top:16px;}
+
+  .ctrls{display:flex;flex-wrap:wrap;gap:9px 16px;align-items:center;margin-bottom:11px;}
+  .ctrl{display:flex;align-items:center;gap:8px;font-size:12.5px;color:#cdd7e6;}
+  .ctrl label{color:var(--muted);white-space:nowrap;}
+  .ctrl input[type=range]{width:120px;}
+  .val{font-variant-numeric:tabular-nums;color:var(--ink);font-weight:600;min-width:52px;}
+  .presets{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:11px;}
+  .pbtn{font:inherit;font-size:12.5px;color:var(--muted);background:#0e1728;
+    border:1px solid var(--stroke);border-radius:9px;padding:6px 12px;cursor:pointer;}
+  .pbtn:hover{background:#152039;color:var(--ink);}
+  .pbtn.on{background:#16223c;border-color:var(--sig);color:var(--ink);font-weight:600;}
+  .sweep{font:inherit;font-size:12.5px;color:#04122b;background:var(--wind);border:1px solid var(--wind);
+    border-radius:9px;padding:6px 14px;cursor:pointer;font-weight:650;}
+
+  .readout{background:#0e1728;border:1px solid var(--stroke);border-radius:12px;
+    padding:13px 15px;margin-top:16px;}
+  .readout h3{margin:0 0 5px;font-size:15px;font-weight:650;}
+  .readout p{margin:0;font-size:13px;line-height:1.58;color:#cdd7e6;}
+  .readout .live{color:var(--ink);font-weight:600;}
+
+  .try{margin-top:16px;background:linear-gradient(180deg,#131f14,#0e1810);
+    border:1px solid #27402c;border-radius:14px;padding:14px 17px;}
+  .try h3{margin:0 0 6px;font-size:14px;font-weight:650;color:#86efac;}
+  .try ol{margin:0;padding-left:18px;}
+  .try li{font-size:12.8px;line-height:1.6;color:#c7d6c9;margin-bottom:4px;}
+
+  .note{margin-top:16px;font-size:12px;color:var(--faint);line-height:1.65;}
+  .note b{color:var(--muted);}
+  .note a{color:#7cb8ff;text-decoration:none;word-break:break-word;}
+  .note a:hover{text-decoration:underline;}
+  .reflist{margin-top:10px;}
+  .reflist p{margin:0 0 9px 0;padding-left:2.2em;text-indent:-2.2em;font-size:11.5px;line-height:1.6;color:var(--faint);}
+
+  .ax{stroke:#2b3a55;stroke-width:1;}
+  .axlbl{fill:var(--faint);font-size:10.5px;}
+  .gl{stroke:#1c2942;stroke-width:1;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Fourier Analysis</h1>
+    <p class="tagline">The same signal, seen as a shape in time and as a set of frequencies.</p>
+  </header>
+
+  <div class="panel">
+    <h2>A signal in time. Build it from up to two components, add noise, and set how long a stretch gets analyzed.</h2>
+    <div class="presets" id="presets"></div>
+    <div class="ctrls">
+      <div class="ctrl"><label>Wave 1</label>
+        <input type="range" id="f1" min="1" max="20" step="0.5" value="3"><span class="val" id="f1v">3 Hz</span>
+        <input type="range" id="a1" min="0" max="1.5" step="0.05" value="1"><span class="val" id="a1v">1.00</span></div>
+      <div class="ctrl"><label>Wave 2</label>
+        <input type="range" id="f2" min="1" max="20" step="0.5" value="7"><span class="val" id="f2v">7 Hz</span>
+        <input type="range" id="a2" min="0" max="1.5" step="0.05" value="0.6"><span class="val" id="a2v">0.60</span></div>
+      <div class="ctrl"><label>Noise</label>
+        <input type="range" id="nz" min="0" max="1" step="0.05" value="0"><span class="val" id="nzv">0.00</span></div>
+      <div class="ctrl"><label>Window</label>
+        <input type="range" id="T" min="0.5" max="4" step="0.1" value="2"><span class="val" id="Tv">2.0 s</span></div>
+    </div>
+    <svg id="sig" viewBox="0 0 900 200" role="img"
+         aria-label="The signal plotted against time over the analysis window"></svg>
+  </div>
+
+  <div class="stage">
+    <div class="panel">
+      <h2>The signal wrapped around a circle at <span id="wlab">3.00</span> turns per second. The pink dot is the average of the wrapped points, and it only leaves the center when the winding rate matches a wave in the signal.</h2>
+      <svg id="wind" viewBox="0 0 420 420" role="img"
+           aria-label="The signal wound around a circle at the test frequency, with its center of mass marked"></svg>
+    </div>
+    <div class="panel">
+      <h2>How far the pink dot sits from the center, at every winding frequency. Drag the winding frequency or press Sweep.</h2>
+      <div class="ctrls">
+        <div class="ctrl"><label>Winding frequency</label>
+          <input type="range" id="fw" min="0" max="20" step="0.05" value="3"><span class="val" id="fwv">3.00 Hz</span></div>
+        <button class="sweep" id="sweepBtn">Sweep ▸</button>
+      </div>
+      <svg id="spec" viewBox="0 0 460 300" role="img"
+           aria-label="Magnitude spectrum: distance of the center of mass from the origin against winding frequency"></svg>
+    </div>
+  </div>
+
+  <div class="readout" id="readout"></div>
+
+  <div class="try">
+    <h3>Try this</h3>
+    <ol>
+      <li>On the two tones preset, drag the winding frequency slowly from 0 to 20 Hz. The pink dot stays near the center except at 3 and 7 Hz, where it swings out. Those are the two waves you built.</li>
+      <li>Set wave 2 to 0 amplitude. One peak. Put it back and move its frequency; the second peak follows it.</li>
+      <li>Choose the close pair (8 and 9 Hz) and drag the window from 2 s down to 0.5 s. The two peaks merge into one, because a window of length T cannot separate frequencies closer than 1/T.</li>
+      <li>Turn the noise up with the alpha preset. The peak survives noise that hides the rhythm completely in the time plot.</li>
+    </ol>
+  </div>
+
+  <div class="note" id="note"></div>
+</div>
+
+<script>
+"use strict";
+
+/* ---------------------------------------------------------------------------
+   The transform, done the slow and literal way.
+
+   Winding the signal at frequency f means multiplying each sample by
+   exp(-2*pi*i*f*t) and plotting the result in the plane. The average of those
+   wrapped points is the center of mass. Its distance from the origin is the
+   amount of frequency f in the signal: for a pure sine of amplitude a it comes
+   to exactly a/2, which is what the vertical axis of the spectrum reads.
+
+   This is the discrete-time Fourier transform evaluated on a fine grid of
+   frequencies rather than an FFT. It is far slower and completely transparent,
+   which is the point of the page.
+   --------------------------------------------------------------------------- */
+
+const N = 800;                 // samples across the window
+const FMAX = 20, FSTEP = 0.05; // spectrum grid
+
+const PRESETS = [
+  {key:'two',   name:'Two tones',     f1:3,  a1:1,   f2:7, a2:0.6, nz:0,    T:2},
+  {key:'one',   name:'One tone',      f1:6,  a1:1,   f2:1, a2:0,   nz:0,    T:2},
+  {key:'close', name:'Close pair',    f1:8,  a1:1,   f2:9, a2:1,   nz:0,    T:2},
+  {key:'alpha', name:'Alpha in noise',f1:10, a1:0.5, f2:1, a2:0,   nz:0.85, T:2}
+];
+
+const S = {f1:3, a1:1, f2:7, a2:0.6, nz:0, T:2, fw:3, preset:'two'};
+
+/* one fixed noise draw, so moving a slider does not reshuffle the noise */
+const NOISE = (() => {
+  let seed = 20260921, out = new Float64Array(N);
+  const rnd = () => (seed = (seed*1664525 + 1013904223) >>> 0) / 4294967296;
+  for(let i=0;i<N;i++){                      // Box-Muller
+    const u = Math.max(rnd(), 1e-12), v = rnd();
+    out[i] = Math.sqrt(-2*Math.log(u)) * Math.cos(2*Math.PI*v);
+  }
+  return out;
+})();
+
+let t = new Float64Array(N), s = new Float64Array(N);
+
+function buildSignal(){
+  const T = S.T;
+  for(let i=0;i<N;i++){
+    t[i] = i/N*T;
+    s[i] = S.a1*Math.sin(2*Math.PI*S.f1*t[i])
+         + S.a2*Math.sin(2*Math.PI*S.f2*t[i])
+         + S.nz*NOISE[i];
+  }
+  let m=0; for(let i=0;i<N;i++) m+=s[i];   // remove the mean so 0 Hz is not a spike
+  m/=N; for(let i=0;i<N;i++) s[i]-=m;
+}
+
+/* center of mass of the wound signal at frequency f */
+function com(f){
+  let re=0, im=0;
+  for(let i=0;i<N;i++){
+    const th = 2*Math.PI*f*t[i];
+    re += s[i]*Math.cos(th);
+    im -= s[i]*Math.sin(th);
+  }
+  return {re:re/N, im:im/N, mag:Math.hypot(re/N, im/N)};
+}
+
+let spectrum = [];
+function buildSpectrum(){
+  spectrum = [];
+  for(let f=0; f<=FMAX+1e-9; f+=FSTEP) spectrum.push({f, mag:com(f).mag});
+}
+
+/* ---------------------------------------------------------------------------
+   drawing
+   --------------------------------------------------------------------------- */
+const NS="http://www.w3.org/2000/svg";
+function el(tag,attrs,parent){
+  const e=document.createElementNS(NS,tag);
+  for(const k in attrs) e.setAttribute(k,attrs[k]);
+  if(parent) parent.appendChild(e);
+  return e;
+}
+function clear(svg){ while(svg.firstChild) svg.removeChild(svg.firstChild); }
+
+function drawSignal(){
+  const svg=document.getElementById('sig'); clear(svg);
+  const W=900,H=200, L=44,R=14,Tp=14,B=28;
+  const x=i=>L+(t[i]/S.T)*(W-L-R);
+  let amp=0; for(let i=0;i<N;i++) amp=Math.max(amp,Math.abs(s[i]));
+  amp=Math.max(amp,0.3);
+  const y=v=>Tp+(H-Tp-B)/2 - v/amp*((H-Tp-B)/2);
+
+  el("path",{d:`M${L},${y(0)} H${W-R}`,class:"ax"},svg);
+  for(let k=0;k<=Math.round(S.T*2);k++){
+    const tt=k/2; if(tt>S.T+1e-9) break;
+    const px=L+(tt/S.T)*(W-L-R);
+    el("path",{d:`M${px},${Tp} V${H-B}`,class:"gl"},svg);
+    const lb=el("text",{x:px,y:H-10,"text-anchor":"middle",class:"axlbl"},svg);
+    lb.textContent=tt.toFixed(1)+" s";
+  }
+  let d="";
+  for(let i=0;i<N;i++) d += (i?"L":"M")+x(i).toFixed(1)+","+y(s[i]).toFixed(1);
+  el("path",{d,fill:"none",stroke:"var(--sig)","stroke-width":1.6,"stroke-linejoin":"round"},svg);
+  const yl=el("text",{x:8,y:y(0)+4,class:"axlbl"},svg); yl.textContent="0";
+}
+
+function drawWinding(){
+  const svg=document.getElementById('wind'); clear(svg);
+  const W=420,H=420, CX=210, CY=210, RAD=150;
+  let amp=0; for(let i=0;i<N;i++) amp=Math.max(amp,Math.abs(s[i]));
+  amp=Math.max(amp,0.3);
+
+  for(const r of [RAD/3, 2*RAD/3, RAD])
+    el("circle",{cx:CX,cy:CY,r,fill:"none",class:"gl"},svg);
+  el("path",{d:`M${CX-RAD-12},${CY} H${CX+RAD+12}`,class:"ax"},svg);
+  el("path",{d:`M${CX},${CY-RAD-12} V${CY+RAD+12}`,class:"ax"},svg);
+
+  let d="";
+  for(let i=0;i<N;i++){
+    const th=2*Math.PI*S.fw*t[i], r=s[i]/amp*RAD;
+    const px=CX+r*Math.cos(th), py=CY-r*Math.sin(th);
+    d += (i?"L":"M")+px.toFixed(1)+","+py.toFixed(1);
+  }
+  el("path",{d,fill:"none",stroke:"var(--wind)","stroke-width":1.1,
+             "stroke-linejoin":"round",opacity:.78},svg);
+
+  const c=com(S.fw);
+  const gx=CX+(c.re/amp)*RAD*2, gy=CY-(c.im/amp)*RAD*2;   // x2 so small shifts read
+  el("path",{d:`M${CX},${CY} L${gx.toFixed(1)},${gy.toFixed(1)}`,
+             stroke:"var(--com)","stroke-width":1.6,opacity:.85},svg);
+  const dot=el("circle",{cx:gx.toFixed(1),cy:gy.toFixed(1),r:6,fill:"var(--com)"},svg);
+  dot.style.filter="drop-shadow(0 0 8px rgba(244,114,182,.85))";
+  const lb=el("text",{x:CX,y:H-8,"text-anchor":"middle",class:"axlbl"},svg);
+  lb.textContent="center of mass shown at twice scale";
+}
+
+function drawSpectrum(){
+  const svg=document.getElementById('spec'); clear(svg);
+  const W=460,H=300, L=46,R=14,Tp=14,B=34;
+  let mx=0; for(const p of spectrum) mx=Math.max(mx,p.mag);
+  mx=Math.max(mx,0.1);
+  const x=f=>L+(f/FMAX)*(W-L-R);
+  const y=m=>H-B-(m/(mx*1.12))*(H-Tp-B);
+
+  el("path",{d:`M${L},${H-B} H${W-R}`,class:"ax"},svg);
+  el("path",{d:`M${L},${Tp} V${H-B}`,class:"ax"},svg);
+  for(let f=0; f<=FMAX; f+=5){
+    el("path",{d:`M${x(f)},${Tp} V${H-B}`,class:"gl"},svg);
+    const lb=el("text",{x:x(f),y:H-16,"text-anchor":"middle",class:"axlbl"},svg);
+    lb.textContent=f;
+  }
+  const xt=el("text",{x:(L+W-R)/2,y:H-3,"text-anchor":"middle",class:"axlbl"},svg);
+  xt.textContent="winding frequency (Hz)";
+  for(const m of [0, mx/2, mx]){
+    const lb=el("text",{x:L-6,y:y(m)+3.5,"text-anchor":"end",class:"axlbl"},svg);
+    lb.textContent=m.toFixed(2);
+  }
+
+  let d="";
+  spectrum.forEach((p,i)=>{ d += (i?"L":"M")+x(p.f).toFixed(1)+","+y(p.mag).toFixed(1); });
+  el("path",{d,fill:"none",stroke:"var(--spec)","stroke-width":1.8,"stroke-linejoin":"round"},svg);
+
+  const cur=com(S.fw);
+  el("path",{d:`M${x(S.fw)},${Tp} V${H-B}`,stroke:"var(--cur)","stroke-width":1.3,
+             "stroke-dasharray":"4 3",opacity:.9},svg);
+  const dot=el("circle",{cx:x(S.fw),cy:y(cur.mag),r:5.5,fill:"var(--com)"},svg);
+  dot.style.filter="drop-shadow(0 0 7px rgba(244,114,182,.9))";
+}
+
+/* ---------------------------------------------------------------------------
+   readout
+   --------------------------------------------------------------------------- */
+function nearestComponent(){
+  const comps=[];
+  if(S.a1>0.02) comps.push(S.f1);
+  if(S.a2>0.02) comps.push(S.f2);
+  let best=null, bd=Infinity;
+  for(const f of comps){ const dd=Math.abs(f-S.fw); if(dd<bd){bd=dd; best=f;} }
+  return {f:best, d:bd};
+}
+function updateReadout(){
+  const mag=com(S.fw).mag, near=nearestComponent(), res=1/S.T;
+  const host=document.getElementById('readout');
+  let verdict;
+  if(near.f!==null && near.d<0.35)
+    verdict=`You are winding at the rate of a wave that is really in the signal, so the wrapped points pile up on one side and the average is pulled out to <span class="live">${mag.toFixed(3)}</span>, half that wave's amplitude.`;
+  else
+    verdict=`No wave in the signal turns at this rate, so the wrapped points spread evenly around the circle and their average sits near the center, at <span class="live">${mag.toFixed(3)}</span>.`;
+  host.innerHTML =
+    `<h3>Winding at ${S.fw.toFixed(2)} Hz</h3>` +
+    `<p>${verdict} Sweeping every winding frequency and recording that distance traces the whole spectrum. ` +
+    `This window is ${S.T.toFixed(1)} s long, so frequencies closer together than ${res.toFixed(2)} Hz blur into one peak.</p>`;
+}
+
+/* ---------------------------------------------------------------------------
+   wiring
+   --------------------------------------------------------------------------- */
+function recomputeAll(){ buildSignal(); buildSpectrum(); drawSignal(); drawWinding(); drawSpectrum(); updateReadout(); }
+function recomputeWinding(){ drawWinding(); drawSpectrum(); updateReadout(); }
+
+function syncLabels(){
+  document.getElementById('f1v').textContent=S.f1.toFixed(1)+" Hz";
+  document.getElementById('a1v').textContent=S.a1.toFixed(2);
+  document.getElementById('f2v').textContent=S.f2.toFixed(1)+" Hz";
+  document.getElementById('a2v').textContent=S.a2.toFixed(2);
+  document.getElementById('nzv').textContent=S.nz.toFixed(2);
+  document.getElementById('Tv').textContent=S.T.toFixed(1)+" s";
+  document.getElementById('fwv').textContent=S.fw.toFixed(2)+" Hz";
+  document.getElementById('wlab').textContent=S.fw.toFixed(2);
+}
+
+const presetHost=document.getElementById('presets');
+PRESETS.forEach(p=>{
+  const b=document.createElement('button');
+  b.className='pbtn'+(p.key===S.preset?' on':''); b.textContent=p.name; b.dataset.key=p.key;
+  b.onclick=()=>{
+    Object.assign(S,{f1:p.f1,a1:p.a1,f2:p.f2,a2:p.a2,nz:p.nz,T:p.T,preset:p.key});
+    S.fw = p.f1;
+    ['f1','a1','f2','a2','nz','T','fw'].forEach(id=>document.getElementById(id).value=S[id]);
+    [...presetHost.children].forEach(c=>c.classList.toggle('on',c.dataset.key===p.key));
+    syncLabels(); recomputeAll();
+  };
+  presetHost.appendChild(b);
+});
+
+function bind(id, key, onChange){
+  document.getElementById(id).addEventListener('input', e=>{
+    S[key]=parseFloat(e.target.value);
+    S.preset=null; [...presetHost.children].forEach(c=>c.classList.remove('on'));
+    syncLabels(); onChange();
+  });
+}
+['f1','a1','f2','a2','nz','T'].forEach(id=>bind(id,id,recomputeAll));
+document.getElementById('fw').addEventListener('input', e=>{
+  S.fw=parseFloat(e.target.value); syncLabels(); recomputeWinding();
+});
+
+let sweeping=null;
+document.getElementById('sweepBtn').onclick=()=>{
+  if(sweeping){ clearInterval(sweeping); sweeping=null; document.getElementById('sweepBtn').textContent="Sweep ▸"; return; }
+  document.getElementById('sweepBtn').textContent="Stop ■";
+  S.fw=0;
+  sweeping=setInterval(()=>{
+    S.fw=Math.round((S.fw+0.1)*100)/100;
+    if(S.fw>FMAX){ clearInterval(sweeping); sweeping=null; document.getElementById('sweepBtn').textContent="Sweep ▸"; return; }
+    document.getElementById('fw').value=S.fw; syncLabels(); recomputeWinding();
+  }, 26);
+};
+
+document.getElementById('note').innerHTML =
+  `<b>How this is computed.</b> Every value on this page comes from multiplying the signal by ` +
+  `exp(&minus;2&pi;<i>ift</i>) and averaging, evaluated at each winding frequency in turn rather than by an FFT. ` +
+  `The mean is removed from the signal first, so 0 Hz carries nothing. Only the pink dot's distance from the center is plotted ` +
+  `in the spectrum; the direction it points is the phase of that component, which is why a peak can sit at any angle. ` +
+  `The analysis window is rectangular, ` +
+  `which is why each peak sits in a set of small ripples; tapered windows reduce those at the cost of a wider peak. ` +
+  `The alpha preset is simulated, not a recording.` +
+  `<div class="reflist">` +
+  `<p>Bracewell, R. N. (2000). <i>The Fourier transform and its applications</i> (3rd ed.). McGraw-Hill.</p>` +
+  `<p>Cohen, M. X. (2014). <i>Analyzing neural time series data: Theory and practice</i>. MIT Press.</p>` +
+  `<p>Cooley, J. W., &amp; Tukey, J. W. (1965). An algorithm for the machine calculation of complex Fourier series. <i>Mathematics of Computation, 19</i>(90), 297&ndash;301. <a href="https://doi.org/10.1090/S0025-5718-1965-0178586-1" target="_blank" rel="noopener">https://doi.org/10.1090/S0025-5718-1965-0178586-1</a></p>` +
+  `<p>Fourier, J. B. J. (1822). <i>Th&eacute;orie analytique de la chaleur</i>. Firmin Didot.</p>` +
+  `<p>Luck, S. J. (2014). <i>An introduction to the event-related potential technique</i> (2nd ed.). MIT Press.</p>` +
+  `</div>`;
+
+syncLabels();
+recomputeAll();
+
+/* exposed for numerical checking against a reference implementation */
+window.__fourier = {com, buildSignal, buildSpectrum, S, get s(){return s;}, get t(){return t;}};
+</script>
+</body>
+</html>

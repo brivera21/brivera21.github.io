@@ -480,6 +480,25 @@ caveats:[
 'These are pure single-frequency sine waves. Real signals such as sound or EEG are sums of many frequencies at once.'
 ],
 mine:''
+},
+{
+id:'fourier',
+category:'Math',
+title:'Fourier Analysis',
+file:'fourier.html',
+thumbLive:true,
+tags:['math','waves','frequency','Fourier','spectrum','EEG','methods','teaching','interactive'],
+label:'INTERACTIVE',
+blurb:'Wind a signal around a circle and watch the center of mass swing out whenever the winding rate matches a wave that is really in it. Sweeping every winding rate traces the spectrum, so the time plot and the frequency plot are the same signal seen two ways.',
+extras:[],
+connects:'The step before filtering and time-frequency analysis in PSYCH 390, and a follow-on from Frequencies: that page shows single sine waves, this one takes a mixture apart.',
+caveats:[
+'The transform is evaluated frequency by frequency rather than by an FFT, which is slower but keeps every step visible; the numbers match a reference implementation to 14 decimal places.',
+'The window is rectangular, so each peak sits in a set of side ripples. Tapered windows suppress those at the cost of a broader peak.',
+'Only the magnitude is plotted. The direction the center of mass points is the phase, which the spectrum here throws away.',
+'The alpha preset is a simulated 10 Hz sine in Gaussian noise, not a recording from a participant.'
+],
+mine:''
 }
 
 ];
