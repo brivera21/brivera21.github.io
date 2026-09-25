@@ -41,7 +41,7 @@ font-size:10px;font-weight:700;letter-spacing:.6px;padding:3px 8px;border-radius
 .card-body{padding:13px 15px 16px}
 .card h3{margin:0 0 7px;font-size:16px;line-height:1.3}
 .card p{margin:0;font-size:13.5px;color:var(--muted)}
-.series-strip{margin:0 0 22px}
+.series-strip{margin:0 0 22px;display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px}
 .series-link{display:grid;grid-template-columns:1fr auto;grid-template-areas:"kicker cta" "title cta" "desc cta";gap:2px 20px;align-items:center;background:var(--panel);border:1px solid var(--line);border-left:4px solid #2aa198;border-radius:12px;padding:14px 18px;text-decoration:none;color:var(--text);transition:border-color .15s,transform .15s}
 .series-link:hover{border-color:#2aa198;transform:translateY(-2px)}
 .series-kicker{grid-area:kicker;font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:#2aa198;font-weight:700}
@@ -92,6 +92,12 @@ details.cav li{margin-bottom:6px}
 <span class="series-kicker">Course series · PSYCH 390</span>
 <span class="series-title">The ERP pipeline</span>
 <span class="series-desc">Eleven interactive pages on EEG/ERP methods, from electricity to a publication figure, with their own landing page and step-by-step navigation.</span>
+<span class="series-cta">Open the series →</span>
+</a>
+<a class="series-link" href="matlab-course.html">
+<span class="series-kicker">Course series · PSYCH 390</span>
+<span class="series-title">Intro to MATLAB</span>
+<span class="series-desc">Eight short lessons on the MATLAB you need before EEGLAB, each with a practice window that copies the MATLAB desktop.</span>
 <span class="series-cta">Open the series →</span>
 </a>
 </div>
@@ -531,7 +537,9 @@ mine:''
 
 ];
 function toRoman(n){const m=[["X",10],["IX",9],["V",5],["IV",4],["I",1]];let r="";for(const [g,v] of m){while(n>=v){r+=g;n-=v;}}return r;}
-DIAGRAMS.forEach((d,i)=>{d.num=toRoman(i+1);});
+/* Course series (entries with `steps`) are collections of pages, not diagrams, so they get no numeral. */
+function numberDiagrams(){ DIAGRAMS.filter(d=>!d.steps).forEach((d,i)=>{d.num=toRoman(i+1);}); }
+numberDiagrams();
 
 /* ---------- state ---------- */
 let activeCat='All', query='', view=[], seq=[], idx=0;
@@ -566,7 +574,7 @@ const thumb = d.thumbLive
 c.innerHTML=`${d.label?`<span class="badge">${d.label}</span>`:''}
 <div class="thumb">${thumb}</div>
 <div class="card-body">
-<h3>${d.num}. ${d.title}</h3>
+<h3>${d.steps ? '' : d.num + '. '}${d.title}</h3>
 <p>${d.blurb}</p>
 </div>`;
 grid.appendChild(c);
@@ -581,7 +589,7 @@ function buildSeq(){
 seq=[];
 view.forEach((d,cardNum)=>{
 d.__seq=seq.length;
-seq.push({d, file:d.file, title:d.title, extras:d.extras||[], num:cardNum+1});
+seq.push({d, file:d.file, title:d.title, extras:d.extras||[], num: d.steps ? null : view.filter(x=>!x.steps).indexOf(d)+1});
 (d.steps||[]).forEach((s,k)=>{
 seq.push({d, file:s.file, title:s.title, extras:[], step:k+1, of:d.steps.length});
 });
@@ -594,7 +602,7 @@ function paint(){
 const it=seq[idx]; if(!it) return;
 document.getElementById('count').textContent = it.step
 ? `${it.d.title} · ${it.step} of ${it.of}`
-: `${it.num} / ${view.length}`;
+: it.num === null ? `${it.d.title} · overview` : `${it.num} / ${view.filter(x=>!x.steps).length}`;
 document.getElementById('oframe').src=it.file;
 document.getElementById('extras').innerHTML =
 `<a href="${it.file}" target="_blank">Open full page ↗</a> ` +
@@ -607,6 +615,7 @@ document.getElementById('close').onclick=()=>{ov.classList.remove('on');document
 document.getElementById('focusFirst').onclick=()=>{ if(view.length) open_(0); };
 document.getElementById('shuffle').onclick=()=>{
 for(let i=DIAGRAMS.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;[DIAGRAMS[i],DIAGRAMS[j]]=[DIAGRAMS[j],DIAGRAMS[i]];}
+numberDiagrams();
 render();
 };
 document.getElementById('q').oninput=e=>{query=e.target.value.toLowerCase().trim();render();};
