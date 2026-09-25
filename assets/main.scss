@@ -249,3 +249,49 @@ figure.photo {
 // Override minima's .page-content a colour so the button text stays dark on gold
 .page-content a.begin-button, .post-content a.begin-button { color: #121212; }
 .page-content a.begin-button:hover, .post-content a.begin-button:hover { color: #121212; }
+
+// ---- CV & Contact: two cards side by side, profile links in a row ----
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.2em;
+  margin: 0.4em 0 2.2em;
+}
+.contact-card {
+  border: 1px solid $grey-color-light;
+  border-radius: 10px;
+  background: #1a1a1a;
+  padding: 1.1em 1.4em 0.4em;
+}
+.contact-card h3 {
+  margin: 0 0 0.5em;
+  color: $brand-color;
+  font-size: 1.05em;
+}
+.contact-card h3 + p { margin-top: 0; }
+.contact-card p { margin-bottom: 0.9em; }
+.contact-card .contact-name { font-weight: 600; margin-bottom: 0.2em; }
+.contact-card .begin-button { margin-top: 0; }
+
+.profile-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7em;
+  margin: 0.6em 0 1.6em;
+}
+.page-content a.profile-link {
+  border: 1px solid $grey-color-light;
+  border-radius: 999px;
+  background: #1a1a1a;
+  padding: 0.45em 1.15em;
+  color: $brand-color;
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+.page-content a.profile-link:visited { color: $brand-color; }
+.page-content a.profile-link:hover {
+  border-color: $brand-color;
+  background: #202020;
+  text-decoration: none;
+}
