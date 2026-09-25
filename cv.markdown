@@ -4,27 +4,33 @@ title: CV & Contact
 permalink: /cv/
 ---
 
-## Office Information
-**Dr. Brian Rivera**  
-Visiting Assistant Professor  
-Department of Psychology  
-St. Olaf College  
-Northfield, MN  
-RNS 272
+<div class="contact-grid">
 
-**Email:** rivera21@stolaf.edu
+  <div class="contact-card">
+    <h3>Office</h3>
+    <p class="contact-name">Dr. Brian Rivera</p>
+    <p>Visiting Assistant Professor<br>
+    Department of Psychology<br>
+    St. Olaf College<br>
+    RNS 272, Northfield, MN</p>
+    <p><a href="mailto:rivera21@stolaf.edu">rivera21@stolaf.edu</a></p>
+  </div>
 
-## Office Hours
-**Schedule an appointment:** Book here
+  <div class="contact-card">
+    <h3>Office Hours</h3>
+    <p>Email me to set up a time to meet.</p>
+    <h3>Curriculum Vitae</h3>
+    <p><a class="begin-button" href="{{ '/assets/Rivera_CV.pdf' | relative_url }}">Download CV (PDF)</a></p>
+  </div>
 
-## Academic Profiles
-* **ORCID:** 0000-0002-5189-8717
-* **Google Scholar:** Brian Rivera
-* **ResearchGate:** Brian Rivera Profile
-* **LinkedIn:** Brian Rivera
+</div>
 
----
+## Profiles
 
-## Curriculum Vitae
-
-[**Download my full CV (PDF)**]({{ "/assets/Rivera_CV.pdf" | relative_url }})
+<div class="profile-links">
+  <a class="profile-link" href="https://scholar.google.com/citations?user=Txf6aJYAAAAJ&amp;hl=en" target="_blank" rel="noopener">Google Scholar</a>
+  <a class="profile-link" href="https://orcid.org/0000-0002-5189-8717" target="_blank" rel="noopener">ORCID</a>
+  <a class="profile-link" href="https://www.researchgate.net/profile/Brian-Rivera-3" target="_blank" rel="noopener">ResearchGate</a>
+  <a class="profile-link" href="https://github.com/brivera21" target="_blank" rel="noopener">GitHub</a>
+  <a class="profile-link" href="https://www.linkedin.com/in/brian-rivera-55360652/" target="_blank" rel="noopener">LinkedIn</a>
+</div>
