@@ -91,14 +91,13 @@ Mary Hendrickson '26 was an undergraduate researcher in the Root Lab and a Sprin
 
 </div>
 
-## Lab Resources
-
-### Lab Meetings
-*Meeting schedule and materials will be posted for lab members.*
-
 ## Join the Lab
 
-We welcome undergraduate students interested in gaining research experience in cognitive neuroscience and numerical cognition.
+We'd love to hear from you. The Root Lab is open to St. Olaf students from any major who are curious about how the brain makes sense of numbers. You don't need any experience with EEG or programming. We'll teach you.
+
+Lab members help design experiments, run participants, record and analyze EEG data, and present their work at conferences. Students can also join through programs such as CURI.
+
+If you're interested, email Dr. Rivera at [rivera21@stolaf.edu](mailto:rivera21@stolaf.edu) with a few lines about yourself and what draws you to the lab.
 
 ---
 

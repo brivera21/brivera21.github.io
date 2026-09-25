@@ -12,13 +12,13 @@ permalink: /cv/
     <p>Visiting Assistant Professor<br>
     Department of Psychology<br>
     St. Olaf College<br>
-    RNS 272, Northfield, MN</p>
+    RNS 160A, Northfield, MN</p>
     <p><a href="mailto:rivera21@stolaf.edu">rivera21@stolaf.edu</a></p>
   </div>
 
   <div class="contact-card">
     <h3>Office Hours</h3>
-    <p>Email me to set up a time to meet.</p>
+    <p><a class="begin-button" href="https://calendar.google.com/calendar/appointments/schedules/AcZssZ1d-KK0GCHPUNlttLpMY9vH_ECcg-met-7IcYsWzHf799hqnvsjdrVOixRj-t5jMmSdX3DHppNC?gv=true" target="_blank" rel="noopener">Book an appointment</a></p>
     <h3>Curriculum Vitae</h3>
     <p><a class="begin-button" href="{{ '/assets/Rivera_CV.pdf' | relative_url }}">Download CV (PDF)</a></p>
   </div>
