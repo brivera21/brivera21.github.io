@@ -91,7 +91,7 @@ details.cav li{margin-bottom:6px}
 <a class="series-link" href="erp-pipeline.html">
 <span class="series-kicker">Course series · PSYCH 390</span>
 <span class="series-title">The ERP pipeline</span>
-<span class="series-desc">Twelve interactive pages on EEG/ERP methods, from electricity to a publication figure, with their own landing page and step-by-step navigation.</span>
+<span class="series-desc">Eleven interactive pages on EEG/ERP methods, from electricity to a publication figure, with their own landing page and step-by-step navigation.</span>
 <span class="series-cta">Open the series →</span>
 </a>
 </div>
@@ -135,14 +135,13 @@ file:'erp-pipeline.html',
 thumbLive:true,
 tags:['EEG','ERP','methods','teaching','interactive','PSYCH 390'],
 label:'COURSE SERIES',
-blurb:'Twelve interactive pages that follow the EEG/ERP processing pipeline in lab order: electricity, where the EEG comes from, averaging, the EEGLAB GUI, MATLAB basics, filtering, re-referencing, bins and epochs, channel interpolation, artifact detection, scoring, and plotting and scripting.',
+blurb:'Eleven interactive pages that follow the EEG/ERP processing pipeline in lab order: electricity, where the EEG comes from, averaging, the EEGLAB GUI, filtering, re-referencing, bins and epochs, channel interpolation, artifact detection, scoring, and plotting and scripting, each with the EEGLAB or ERPLAB command used in lab.',
 /* In focus mode, Next walks these in order before moving on to the next diagram. */
 steps:[
 {file:'erp-01-electricity.html',       title:'Introduction to Electricity'},
 {file:'erp-02-eeg-signal.html',        title:'The EEG Signal'},
 {file:'erp-03-what-is-an-erp.html',    title:'What Is an ERP?'},
 {file:'erp-04-eeglab-gui.html',        title:'EEGLAB and Data Loading'},
-{file:'erp-05-matlab-intro.html',      title:'MATLAB Introduction'},
 {file:'erp-06-filtering.html',         title:'Filtering'},
 {file:'erp-07-rereferencing.html',     title:'Re-Referencing'},
 {file:'erp-08-bins.html',              title:'Bin Assignment and Epoching'},
@@ -157,6 +156,35 @@ caveats:[
 'All signals are simulated with realistic sizes and timing; nothing is a recording from a participant.',
 'Head models are simplified (homogeneous sphere or half-space; skull blur approximated). Each page states its own simplifications.',
 'Interpolation uses a distance-weighted average as a stand-in for the spherical spline; BINLISTER matching is simplified to adjacent events.'
+],
+mine:''
+},
+{
+id:'matlab-course',
+category:'PSYCH 390',
+title:'Intro to MATLAB',
+file:'matlab-course.html',
+thumbLive:true,
+tags:['MATLAB','programming','EEGLAB','EEG','methods','teaching','interactive','PSYCH 390','variables','arrays','structs','loops','path'],
+label:'COURSE SERIES',
+blurb:'Eight short lessons on the MATLAB you need before EEGLAB, each with a practice window that copies the MATLAB desktop. The Command Window, variables and the Workspace, folders and the path, text, arrays and matrices, the EEG struct, functions, and loops and scripts, all with EEGLAB examples and a checklist that ticks itself.',
+/* In focus mode, Next walks these in order before moving on to the next diagram. */
+steps:[
+{file:'matlab-01-command-window.html', title:'The Command Window'},
+{file:'matlab-02-variables.html',      title:'Variables and the Workspace'},
+{file:'matlab-03-folders-path.html',   title:'Folders and the Path'},
+{file:'matlab-04-text.html',           title:'Characters and Strings'},
+{file:'matlab-05-arrays.html',         title:'Arrays and Matrices'},
+{file:'matlab-06-structs.html',        title:'Structs and the EEG Variable'},
+{file:'matlab-07-functions.html',      title:'Functions'},
+{file:'matlab-08-loops-scripts.html',  title:'Loops and Scripts'}
+],
+extras:[],
+connects:'The step before the ERP Pipeline series in PSYCH 390: everything a student needs to read and run the EEGLAB commands used in lab.',
+caveats:[
+'The practice window is a small MATLAB model that runs in the browser. It covers the commands in the lessons, not the whole language, and it does not draw plots.',
+'The datasets are simulated (32 channels, 60 s at 500 Hz). pop_eegfiltnew records the filter in EEG.history without changing the numbers.',
+'Error messages follow MATLAB wording for the common mistakes; a few are shortened or add a hint.'
 ],
 mine:''
 },
