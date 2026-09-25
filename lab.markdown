@@ -25,6 +25,17 @@ When not in the classroom or lab, I enjoy thinking about the brain, playing ches
 
 <div class="member" markdown="1">
 
+**Sadé Brooks-Robinson**
+*Undergraduate Research Assistant · Fall 2026 CURI Scholar*
+
+<img src="{{ '/images/sadebrooksrobinson.jpg' | relative_url }}" alt="Sadé Brooks-Robinson" class="site-photo portrait-right" style="width: 220px;">
+
+Sadé Brooks-Robinson is a Mathematics and Biology double major with a concentration in Engineering Studies at St. Olaf College. Sadé is passionate about the intersection of biotechnology and engineering and hopes to pursue a career in biomedical engineering. Beyond the classroom, she is a student-athlete on the St. Olaf Softball team, a Calculus I Supplemental Instruction (SI) leader, an Econ/Math SI Mentor, and a Mathematical Biology undergraduate student researcher. In her free time, she enjoys cooking, watching movies, water sports, photography, and traveling.
+
+</div>
+
+<div class="member" markdown="1">
+
 **Ava Sticka-Jacobs**
 *Undergraduate Researcher · Spring & Summer 2026 CURI Scholar*
 
