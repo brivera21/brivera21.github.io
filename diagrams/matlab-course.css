@@ -1,0 +1,146 @@
+/* Intro to MATLAB lessons: page layout plus the sandbox desktop. */
+:root{
+  --bg:#f6f3ee; --panel:#ffffff; --ink:#1d1f24; --muted:#5c6270; --rule:#e2ddd4;
+  --accent:#0f6e74; --accent-2:#d9573b; --accent-3:#6b5ca5; --gold:#c8962a;
+  --ok:#2f8f4e; --warn:#c2410c; --code-bg:#f0ece4;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --maxw:1320px;
+  --ml-blue:#0072bd;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16.5px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+a:hover{text-decoration-thickness:2px}
+code,pre{font-family:var(--mono);font-size:.9em}
+code{background:var(--code-bg);padding:1px 5px;border-radius:5px}
+
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:var(--maxw);margin:0 auto;padding:14px 20px 0}
+.topbar .series{font-size:14px;color:var(--muted);text-decoration:none}
+.topbar .series:hover{color:var(--accent)}
+.topbar .stepno{font-family:var(--mono);font-size:13px;color:var(--muted)}
+header.hero{max-width:var(--maxw);margin:0 auto;padding:14px 20px 8px}
+header.hero h1{font-size:clamp(26px,3.6vw,36px);line-height:1.15;margin:0 0 4px;font-weight:600;letter-spacing:-.01em}
+header.hero p.q{margin:0;font-size:clamp(16px,2vw,19px);color:var(--muted);font-style:italic}
+
+/* two columns: the lesson on the left, the sandbox pinned on the right */
+.lesson{max-width:var(--maxw);margin:0 auto;padding:10px 20px 30px;display:grid;grid-template-columns:minmax(320px,410px) minmax(0,1fr);gap:24px;align-items:start}
+.lesson-text{min-width:0}
+.lesson-sim{position:sticky;top:10px;min-width:0}
+@media (max-width:1060px){
+  .lesson{grid-template-columns:1fr}
+  .lesson-sim{position:static;order:-1}
+}
+
+.step{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:14px 16px 6px;margin:0 0 14px}
+.step h2{font-size:18px;margin:0 0 6px;font-weight:600;display:flex;gap:10px;align-items:baseline}
+.step h2 .n{font-family:var(--mono);font-size:13px;color:#fff;background:var(--accent);border-radius:999px;min-width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.step p{margin:0 0 10px}
+.step ul,.step ol{margin:0 0 10px 20px;padding:0}
+.step li{margin-bottom:4px}
+.eeg{border-left:3px solid var(--gold);background:#fbf6ea;padding:8px 12px;border-radius:0 8px 8px 0;margin:0 0 10px;font-size:15.5px}
+.eeg b{color:#8a5f0e}
+.warnbox{border-left:3px solid var(--warn);background:#fdf1ea;padding:8px 12px;border-radius:0 8px 8px 0;margin:0 0 10px;font-size:15.5px}
+
+/* runnable code lines */
+.try{margin:0 0 10px;background:#fbfaf7;border:1px solid var(--rule);border-radius:8px;overflow:hidden}
+.try .tl{display:flex;align-items:flex-start;gap:8px;padding:5px 6px 5px 10px;border-top:1px solid #efebe3}
+.try .tl:first-child{border-top:0}
+.try code{background:none;padding:0;flex:1;min-width:0;white-space:pre;overflow-x:auto;font-size:13px;line-height:1.5;padding-top:2px}
+.try .note{white-space:normal}
+.try .note{display:block;font-family:var(--sans);font-size:12.5px;color:var(--muted);margin-top:1px}
+.try button{flex:none;font:500 12px var(--sans);padding:3px 10px;border-radius:999px;border:1px solid var(--accent);background:#fff;color:var(--accent);cursor:pointer}
+.try button:hover{background:var(--accent);color:#fff}
+pre.show{background:var(--code-bg);padding:10px 12px;border-radius:8px;overflow-x:auto;line-height:1.45;margin:0 0 10px;font-size:13px}
+
+.yourturn{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:14px 16px;margin:0 0 14px}
+.yourturn h2{font-size:18px;margin:0 0 6px}
+.yourturn > p{margin:0 0 8px;color:var(--muted);font-size:15px}
+.ms-tasks{list-style:none;margin:0;padding:0;counter-reset:t}
+.ms-task{display:flex;gap:10px;align-items:flex-start;padding:6px 0;border-top:1px solid #f0ece4;font-size:15px}
+.ms-task:first-child{border-top:0}
+.ms-check{flex:none;width:18px;height:18px;border:1.5px solid #b9b3a7;border-radius:5px;margin-top:2px;position:relative;background:#fff}
+.ms-task.done .ms-check{background:var(--ok);border-color:var(--ok)}
+.ms-task.done .ms-check::after{content:"";position:absolute;left:5px;top:1px;width:5px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.ms-task.done .ms-ttext{color:var(--muted)}
+.ms-ttext{flex:1}
+.ms-hint{flex:none;font:500 12px var(--sans);padding:2px 9px;border-radius:999px;border:1px solid var(--rule);background:#fff;color:var(--muted);cursor:pointer}
+.ms-hint:hover{border-color:var(--accent);color:var(--accent)}
+.ms-count{margin:8px 0 0;font-size:13.5px;color:var(--muted);font-family:var(--mono)}
+
+.refs{font-size:14px;color:var(--muted)}
+.refs p{padding-left:1.6em;text-indent:-1.6em;margin:0 0 8px;overflow-wrap:anywhere}
+nav.pager{display:flex;justify-content:space-between;gap:12px;max-width:var(--maxw);margin:10px auto 0;padding:18px 20px;border-top:1px solid var(--rule)}
+nav.pager a{text-decoration:none;font-size:15px;display:flex;flex-direction:column;gap:2px;max-width:48%}
+nav.pager a small{color:var(--muted);font-size:13px}
+nav.pager a.next{text-align:right;margin-left:auto}
+footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;color:var(--muted)}
+
+/* ------------------------------------------------ the sandbox desktop -- */
+.simframe{background:#e9ecf1;border:1px solid #c9ced8;border-radius:10px;padding:8px;box-shadow:0 8px 24px -18px rgba(0,0,0,.35)}
+.simbar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 2px 6px;font-size:12.5px;color:#4a5160}
+.simbar b{font-weight:600;color:#1d1f24}
+.simbar button{font:500 12px var(--sans);padding:3px 10px;border-radius:999px;border:1px solid #b8bfcc;background:#fff;color:#333;cursor:pointer}
+.simbar button:hover{border-color:var(--accent);color:var(--accent)}
+.ms-desk{display:grid;grid-template-columns:minmax(210px,34%) minmax(0,1fr);gap:6px;font-size:12.5px;height:min(600px,calc(100vh - 60px));min-height:420px}
+.ms-col{display:flex;flex-direction:column;gap:6px;min-width:0;min-height:0}
+.ms-p{background:#fff;border:1px solid #c9ced8;border-radius:6px;display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden}
+.ms-p h4{margin:0;padding:4px 9px;font-size:12px;font-weight:600;color:#2b3140;background:linear-gradient(#f7f8fa,#eceff3);border-bottom:1px solid #d5d9e0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ms-folder{flex:1 1 34%}
+.ms-path{flex:1 1 26%}
+.ms-ws{flex:1 1 40%}
+.ms-addr{font-family:var(--mono);font-size:11px;color:#333;padding:4px 8px;border-bottom:1px solid #eceff3;background:#fafbfc;overflow-x:auto;white-space:nowrap}
+.ms-flist,.ms-plist{list-style:none;margin:0;padding:4px 0;overflow:auto;flex:1;font-family:var(--mono);font-size:11.5px;line-height:1.75}
+.ms-flist li{padding:0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:default;outline:none}
+.ms-flist li:hover,.ms-flist li:focus{background:#e8f1fb}
+.ms-flist li::before{display:inline-block;width:16px;color:#8a93a3}
+.ms-flist li.ms-dir{cursor:pointer;color:#1d1f24}
+.ms-flist li.ms-dir::before{content:"▸"}
+.ms-flist li.ms-up::before{content:"↑"}
+.ms-flist li.ms-file::before{content:"·";text-align:center}
+.ms-flist li.ms-mfile{color:#0b5aa8}
+.ms-flist li.ms-fresh{background:#eef8ef}
+.ms-plist{counter-reset:p;padding-left:0}
+.ms-plist li{padding:0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;counter-increment:p}
+.ms-plist li::before{content:counter(p) ". ";color:#8a93a3}
+.ms-plist li.ms-cwdp{color:var(--accent)}
+.ms-plist li.ms-eeg{color:#8a5f0e;background:#fbf6ea}
+.ms-plist li.ms-builtin{color:#8a93a3;font-style:italic}
+.ms-mid{min-width:0}
+.ms-cmd{flex:1 1 auto}
+.ms-cw{flex:1;margin:0;padding:6px 10px;overflow:auto;font-family:var(--mono);font-size:12.5px;line-height:1.4;white-space:pre-wrap;word-break:break-word;color:#111;background:#fff;outline:none}
+.ms-cw .ms-in{color:#1d1f24;font-weight:500}
+.ms-cw .ms-err{color:#d4231b}
+.ms-cw .ms-warn{color:#b35c00}
+.ms-cw .ms-note{color:#5c6270;font-style:italic}
+.ms-inrow{display:flex;align-items:center;gap:6px;border-top:1px solid #e4e7ec;padding:4px 8px;background:#fff}
+.ms-prompt{font-family:var(--mono);font-size:12.5px;color:#1d1f24;font-weight:600}
+.ms-cin{flex:1;min-width:0;font:12.5px var(--mono);border:0;outline:none;padding:4px 2px;background:transparent;color:#111}
+.ms-inrow:focus-within{box-shadow:inset 0 0 0 2px #cfe3f7}
+.ms-wswrap{overflow:auto;flex:1}
+.ms-ws table{border-collapse:collapse;width:100%;font-size:11.5px}
+.ms-ws th{text-align:left;font-weight:500;color:#555;background:#fafbfc;padding:3px 6px;border-bottom:1px solid #e4e7ec;position:sticky;top:0}
+.ms-ws td{padding:3px 6px;border-bottom:1px solid #f1f3f6;font-family:var(--mono);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px}
+.ms-ws td:nth-child(2){max-width:110px}
+.ms-ws td.n{color:#1d1f24;font-weight:500}
+.ms-ws tr.ms-flash td{animation:msflash 1.4s ease-out}
+@keyframes msflash{from{background:#fff1bf}to{background:transparent}}
+.ms-empty{padding:8px;color:#8a93a3;font-style:italic}
+.ms-ed{flex:0 0 46%}
+.ms-edname{font-family:var(--mono);font-weight:500}
+.ms-edbox{flex:1;display:flex;min-height:0;background:#fff}
+.ms-gut{margin:0;padding:6px 6px 6px 8px;text-align:right;color:#a3a9b5;background:#f7f8fa;border-right:1px solid #eceff3;font:12px/1.5 var(--mono);overflow:hidden;user-select:none;min-width:30px}
+.ms-ta{flex:1;border:0;outline:none;resize:none;padding:6px 10px;font:12px/1.5 var(--mono);color:#111;white-space:pre;overflow:auto;background:#fff;tab-size:4}
+.ms-edbar{display:flex;gap:6px;align-items:center;padding:4px 8px;border-top:1px solid #e4e7ec;background:#fafbfc}
+.ms-btn{font:500 12px var(--sans);padding:3px 12px;border-radius:999px;border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer}
+.ms-btn.ghost{background:#fff;color:var(--accent)}
+.ms-edmsg{font-size:11.5px;color:#6b7280;margin-left:4px}
+@media (prefers-reduced-motion: reduce){ .ms-ws tr.ms-flash td{animation:none} }
+@media (max-width:1060px){ .ms-desk{height:520px} }
+@media (max-width:760px){
+  .ms-desk{grid-template-columns:1fr;height:auto}
+  .ms-left{order:2}.ms-mid{order:1}
+  .ms-cmd{height:300px;flex:none}.ms-ed{height:260px;flex:none}
+  .ms-folder,.ms-ws,.ms-path{max-height:190px}
+}

@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Command Window · Intro to MATLAB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="matlab-course.css">
+</head>
+<body>
+<div class="topbar">
+  <a class="series" href="matlab-course.html">Intro to MATLAB · for EEGLAB</a>
+  <span class="stepno">lesson 1 / 8</span>
+</div>
+<header class="hero">
+  <h1>The Command Window</h1>
+  <p class="q">Type a command, press Enter, and MATLAB answers.</p>
+</header>
+
+<div class="lesson">
+  <div class="lesson-text">
+    <section class="step">
+      <h2><span class="n">1</span>What you are looking at</h2>
+<p>MATLAB opens with several panels. The practice window on the right copies the three you need first:</p>
+      <ul>
+        <li><b>Command Window</b>, in the middle: where you type. MATLAB answers underneath.</li>
+        <li><b>Workspace</b>, on the right: every variable MATLAB is holding in memory right now.</li>
+        <li><b>Current Folder</b>, on the left: the folder MATLAB is working in, and the files inside it.</li>
+      </ul>
+      <p>Your copy of MATLAB may arrange them differently. A fourth panel, the Editor, is where scripts are written. It shows up in lesson 7.</p>
+    </section>
+    <section class="step">
+      <h2><span class="n">2</span>The prompt</h2>
+<p>The <code>&gt;&gt;</code> in the Command Window is the prompt. It means MATLAB is waiting for you. Type a command after it, press Enter, and the answer appears below. Try these, either by typing them or with the Run buttons:</p>
+<pre class="try">2 + 3
+500 * 2  # 2 seconds of EEG recorded at 500 samples per second
+10 / 4</pre>
+      <p>MATLAB uses <code>*</code> for multiply, <code>/</code> for divide, and <code>^</code> for a power. It follows the usual order of operations, so add parentheses when you mean something else:</p>
+<pre class="try">2 ^ 10
+(0.1 + 30) / 2</pre>
+    </section>
+    <section class="step">
+      <h2><span class="n">3</span>ans holds the last answer</h2>
+<p>When you calculate something without giving the result a name, MATLAB puts it in a variable called <code>ans</code>. Look at the Workspace: <code>ans</code> appeared there after your first command. Each new unnamed result replaces the old one, and you can use <code>ans</code> in the next command.</p>
+<pre class="try">500 * 60  # samples in one minute at 500 Hz
+ans * 5  # samples in five minutes</pre>
+      <p><code>ans</code> is fine for a quick check. For anything you want to keep, give it a name of your own, which is the next lesson.</p>
+    </section>
+    <section class="step">
+      <h2><span class="n">4</span>Clearing the screen and repeating a command</h2>
+<p><code>clc</code> wipes the text in the Command Window. It only cleans the screen. Everything in the Workspace stays.</p>
+<pre class="try">clc</pre>
+      <p>Click in the command line and press the <b>up arrow (↑)</b> to bring back what you typed before. Press it again to go further back. You can edit the line before pressing Enter, which saves retyping a long command that had one typo.</p>
+    </section>
+    <section class="step">
+      <h2><span class="n">5</span>Error messages</h2>
+<p>When MATLAB cannot make sense of a command, it prints a message in red and does nothing else. Nothing is broken. Read the message, fix the line, and run it again.</p>
+<pre class="try">5 +
+eegdata</pre>
+      <p>The first is missing a number after the <code>+</code>. The second asks for something called <code>eegdata</code>, and MATLAB has no variable or function by that name. "Unrecognized function or variable" is the error you will see most. It almost always means a typo, a variable you have not made yet, or a function MATLAB cannot find (lesson 3).</p>
+    </section>
+    <section class="step">
+      <h2><span class="n">6</span>Comments</h2>
+<p>Anything after a <code>%</code> is a comment. MATLAB skips it; it is there for the person reading.</p>
+<pre class="try">500 * 2   % samples in two seconds</pre>
+      <div class="eeg"><b>In EEGLAB.</b> Each menu choice you make in EEGLAB runs a MATLAB command, the same kind you are typing here. Once you can read those commands, you can repeat a whole analysis by running them again, and that is what the later lessons build toward.</div>
+    </section>
+    <section class="yourturn">
+      <h2>Your turn</h2>
+      <p>Each box ticks itself when you do it in the practice window. Stuck? "show me" puts a command in the window for you.</p>
+      <div id="tasks"></div>
+    </section>
+    <section class="refs">
+      <h2 style="font-size:16px;color:var(--ink);margin:18px 0 8px">References</h2>
+      <p>The MathWorks, Inc. (2025). <i>MATLAB documentation</i>. <a href="https://www.mathworks.com/help/matlab/">https://www.mathworks.com/help/matlab/</a></p>
+    </section>
+  </div>
+  <div class="lesson-sim" id="sim" aria-label="Practice window: a small copy of the MATLAB desktop"></div>
+</div>
+
+<nav class="pager">
+  <a class="prev" href="matlab-course.html"><small>Back to</small><span>Intro to MATLAB</span></a>
+  <a class="next" href="matlab-02-variables.html"><small>Next</small><span>Variables and the Workspace</span></a>
+</nav>
+<footer>Intro to MATLAB for EEGLAB, lesson 1 of 8. Written for PSYCH 390 at St. Olaf College. The practice window is a small model of MATLAB that runs in your browser; nothing is sent anywhere.</footer>
+
+<script src="matlab-sim.js"></script>
+<script>
+window.LESSON = {
+  panels: ['folder', 'command', 'workspace'],
+  tasks: [
+    {text: 'Do a calculation with <code>+</code>, <code>-</code>, <code>*</code>, or <code>/</code>.', hint: '500 * 2', check: c => !c.err && /[\d)]\s*[-+*\/^]\s*\(?\d/.test(c.src)},
+    {text: 'Use <code>ans</code> in a new calculation.', hint: 'ans * 5', check: c => !c.err && /\bans\b/.test(c.src) && c.src !== 'ans'},
+    {text: 'Clear the Command Window.', hint: 'clc', check: c => c.src === 'clc'},
+    {text: 'Bring back an earlier command with ↑ and run it again.', check: c => c.core.S.hist.filter(h => h === c.src).length >= 2},
+    {text: 'Make MATLAB show an error, and read what it says.', hint: 'eegdata', check: c => !!c.err},
+    {text: 'Put a comment after a calculation.', hint: '60 * 500   % samples in a minute', check: c => !c.err && /%/.test(c.src)}
+  ]
+};
+</script>
+<script src="matlab-lesson.js"></script>
+</body>
+</html>

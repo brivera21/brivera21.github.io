@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Intro to MATLAB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="matlab-course.css">
+</head>
+<body>
+<style>
+.hub{max-width:1100px;margin:0 auto;padding:6px 20px 30px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:8px 0 22px}
+.card{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:14px 16px;text-decoration:none;color:var(--ink);transition:border-color .15s, transform .15s}
+.card:hover{border-color:var(--accent);transform:translateY(-1px)}
+.card .num{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.card h2{margin:0;font-size:18px;font-weight:600;color:var(--accent)}
+.card p{margin:0;font-size:15px}
+.card .k{display:flex;flex-wrap:wrap;gap:5px;margin-top:auto;padding-top:6px}
+.card .k code{font-size:12px}
+.how{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:14px 18px;margin:0 0 14px}
+.how h2{font-size:18px;margin:0 0 8px}
+.how p,.how li{font-size:15.5px}
+.how ul{margin:0 0 8px 20px;padding:0}
+@media (prefers-reduced-motion: reduce){.card{transition:none}.card:hover{transform:none}}
+</style>
+<div class="topbar" style="max-width:1100px">
+  <a class="series" href="index.html">← Digital Concepts</a>
+  <span class="stepno">8 lessons</span>
+</div>
+<header class="hero" style="max-width:1100px">
+  <h1>Intro to MATLAB</h1>
+  <p class="q">The MATLAB you need before EEGLAB, one short lesson at a time.</p>
+</header>
+<main class="hub">
+  <div class="cards">
+    <a class="card" href="matlab-01-command-window.html">
+      <span class="num">Lesson 1</span>
+      <h2>The Command Window</h2>
+      <p>The prompt, arithmetic, <code>ans</code>, <code>clc</code>, the up arrow, and how to read an error message.</p>
+      <span class="k"><code>&gt;&gt;</code><code>ans</code><code>clc</code><code>%</code></span>
+    </a>
+    <a class="card" href="matlab-02-variables.html">
+      <span class="num">Lesson 2</span>
+      <h2>Variables and the Workspace</h2>
+      <p>Naming values, the semicolon, naming rules, and seeing and clearing what MATLAB holds in memory.</p>
+      <span class="k"><code>=</code><code>;</code><code>who</code><code>whos</code><code>clear</code></span>
+    </a>
+    <a class="card" href="matlab-03-folders-path.html">
+      <span class="num">Lesson 3</span>
+      <h2>Folders and the Path</h2>
+      <p>Where MATLAB looks for files and functions, and how to put EEGLAB on the path.</p>
+      <span class="k"><code>pwd</code><code>cd</code><code>ls</code><code>addpath</code><code>which</code><code>eeglab</code></span>
+    </a>
+    <a class="card" href="matlab-04-text.html">
+      <span class="num">Lesson 4</span>
+      <h2>Characters and Strings</h2>
+      <p>Character vectors and strings, joining text, and building file names with <code>sprintf</code>.</p>
+      <span class="k"><code>'text'</code><code>"text"</code><code>sprintf</code><code>strcmp</code></span>
+    </a>
+    <a class="card" href="matlab-05-arrays.html">
+      <span class="num">Lesson 5</span>
+      <h2>Arrays and Matrices</h2>
+      <p>Vectors and matrices, counting from 1, the colon, and why EEG data is a channels-by-time matrix.</p>
+      <span class="k"><code>[ ]</code><code>x(end)</code><code>A(2, :)</code><code>mean(x, 2)</code><code>.*</code></span>
+    </a>
+    <a class="card" href="matlab-06-structs.html">
+      <span class="num">Lesson 6</span>
+      <h2>Structs and the EEG Variable</h2>
+      <p>Structs and fields, then a loaded dataset: <code>EEG.srate</code>, <code>EEG.data</code>, channel labels, and events.</p>
+      <span class="k"><code>s.field</code><code>pop_loadset</code><code>EEG.data</code><code>EEG.chanlocs</code></span>
+    </a>
+    <a class="card" href="matlab-07-functions.html">
+      <span class="num">Lesson 7</span>
+      <h2>Functions</h2>
+      <p>Inputs and outputs, help, the <code>EEG = pop_...(EEG, ...)</code> pattern, and writing a function file.</p>
+      <span class="k"><code>f(x)</code><code>[a, b] = f(x)</code><code>help</code><code>function</code></span>
+    </a>
+    <a class="card" href="matlab-08-loops-scripts.html">
+      <span class="num">Lesson 8</span>
+      <h2>Loops and Scripts</h2>
+      <p>for loops, cell arrays of participant IDs, <code>if</code>, and a script that filters every participant.</p>
+      <span class="k"><code>for</code><code>{ }</code><code>if</code><code>script</code></span>
+    </a>
+  </div>
+  <section class="how">
+    <h2>How each lesson works</h2>
+    <ul>
+      <li>The lesson is on the left and a practice window on the right. The practice window copies the MATLAB desktop: Current Folder, Workspace, Command Window, and in lessons 7 and 8 the Editor.</li>
+      <li>Every example has a Run button, or you can type it yourself. Typing is better practice.</li>
+      <li>"Your turn" at the end lists a few things to do. Each one ticks itself when you do it.</li>
+      <li>"Start over" resets the practice window. Nothing is saved between visits.</li>
+    </ul>
+  </section>
+  <section class="how">
+    <h2>What the practice window is, and is not</h2>
+    <p>It is a small model of MATLAB that runs in your browser. It understands the commands in these lessons, gives MATLAB's error messages for the common mistakes, and has a pretend computer with an EEGLAB folder and three datasets. The data are simulated: 32 channels, 60 seconds at 500 Hz. It does not draw plots or open the EEGLAB window, and <code>pop_eegfiltnew</code> records the filter without changing the numbers.</p>
+    <p>To follow along in real MATLAB, download EEGLAB from <a href="https://sccn.ucsd.edu/eeglab/download.php">the EEGLAB download page</a>, unzip it into your <code>Documents/MATLAB</code> folder, and start at lesson 3 to put it on the path. Your version number will differ from the <code>eeglab2025.1</code> used here.</p>
+  </section>
+  <section class="how">
+    <h2>Where this leads</h2>
+    <p>The <a href="erp-pipeline.html">ERP Pipeline</a> series picks up from here: filtering, re-referencing, epoching, artifact detection, and measurement, each with the EEGLAB or ERPLAB command used in lab.</p>
+  </section>
+</main>
+<footer>Intro to MATLAB for EEGLAB. Written for PSYCH 390 at St. Olaf College.</footer>
+</body>
+</html>

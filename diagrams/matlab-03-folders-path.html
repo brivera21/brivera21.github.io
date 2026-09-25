@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Folders and the Path · Intro to MATLAB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="matlab-course.css">
+</head>
+<body>
+<div class="topbar">
+  <a class="series" href="matlab-course.html">Intro to MATLAB · for EEGLAB</a>
+  <span class="stepno">lesson 3 / 8</span>
+</div>
+<header class="hero">
+  <h1>Folders and the Path</h1>
+  <p class="q">MATLAB looks for files in the current folder first, then along the path.</p>
+</header>
+
+<div class="lesson">
+  <div class="lesson-text">
+    <section class="step">
+      <h2><span class="n">1</span>Where am I?</h2>
+<p><code>pwd</code> ("print working directory") shows the current folder, the same one named at the top of the Current Folder panel. <code>ls</code> lists what is inside it.</p>
+<pre class="try">pwd
+ls</pre>
+    </section>
+    <section class="step">
+      <h2><span class="n">2</span>Moving between folders</h2>
+<p><code>cd</code> ("change directory") moves into a folder. <code>cd ..</code> goes up one level. Double-clicking a folder in the Current Folder panel does the same thing.</p>
+<pre class="try">cd psych390
+ls
+cd data
+ls
+cd ..
+pwd</pre>
+      <p><code>cd data</code> is a <b>relative</b> path: it starts from wherever you are. A <b>full</b> path starts from the top of the disk and works from anywhere. On a Mac it starts with <code>/Users/</code>; on Windows it starts with a drive letter, like <code>C:\Users\</code>.</p>
+<pre class="try">cd /Users/student/Documents/MATLAB/psych390</pre>
+    </section>
+    <section class="step">
+      <h2><span class="n">3</span>Why the current folder matters for data</h2>
+<p>A file name without a full path is looked up in the current folder. The same command can find a file from one folder and miss it from another.</p>
+<pre class="try">isfile('data/sub-01.set')
+cd ..
+isfile('data/sub-01.set')
+cd psych390</pre>
+      <p><code>fullfile</code> joins folder and file names with the right separator for the computer, which keeps a script working on both Mac and Windows.</p>
+<pre class="try">fullfile('data', 'sub-01.set')</pre>
+    </section>
+    <section class="step">
+      <h2><span class="n">4</span>The search path</h2>
+<p>Functions are files too: <code>mean</code> is a file called <code>mean.m</code>. When you type a name, MATLAB checks the current folder, then each folder on its <b>search path</b> in order (the Path panel). MATLAB's own functions are always on the path. EEGLAB's are not until you add them.</p>
+<pre class="try">which mean
+which eeglab
+eeglab</pre>
+    </section>
+    <section class="step">
+      <h2><span class="n">5</span>Putting EEGLAB on the path</h2>
+<p><code>addpath</code> adds a folder to the path. Give it the full path to the EEGLAB folder you downloaded; the version number in the name will match your download. Then run <code>eeglab</code>, and it adds its own subfolders. Watch the Path panel as you go.</p>
+<pre class="try">addpath('/Users/student/Documents/MATLAB/eeglab2025.1')
+which eeglab
+which pop_loadset
+eeglab
+which pop_loadset</pre>
+      <p><code>pop_loadset</code> lives in a subfolder (<code>functions/popfunc</code>), so MATLAB could not find it until <code>eeglab</code> ran and added that subfolder.</p>
+      <div class="warnbox">Add only the top EEGLAB folder, not "with subfolders". EEGLAB's installation guide asks you to let <code>eeglab</code> add the rest itself.</div>
+    </section>
+    <section class="step">
+      <h2><span class="n">6</span>Making it stick</h2>
+<p>MATLAB forgets <code>addpath</code> changes when it quits. <code>savepath</code> (or Save in the Set Path window, opened with <code>pathtool</code>) keeps them for next time. On a shared lab computer you may not be allowed to save the path. Then put the <code>addpath</code> line at the top of your script instead.</p>
+<pre class="try">savepath</pre>
+      <div class="eeg"><b>In EEGLAB.</b> Two errors cause most lost time in the lab. "Unrecognized function or variable 'eeglab'" means EEGLAB is not on the path; fix it with <code>addpath</code>. A file-not-found error from <code>pop_loadset</code> means MATLAB is looking in the wrong folder; fix it with <code>cd</code> or a full <code>'filepath'</code>.</div>
+    </section>
+    <section class="yourturn">
+      <h2>Your turn</h2>
+      <p>Each box ticks itself when you do it in the practice window. Stuck? "show me" puts a command in the window for you.</p>
+      <div id="tasks"></div>
+    </section>
+    <section class="refs">
+      <h2 style="font-size:16px;color:var(--ink);margin:18px 0 8px">References</h2>
+      <p>The MathWorks, Inc. (2025). <i>MATLAB documentation</i>. <a href="https://www.mathworks.com/help/matlab/">https://www.mathworks.com/help/matlab/</a></p>
+      <p>EEGLAB Wiki. (n.d.). <i>Installing EEGLAB</i>. <a href="https://eeglab.org/tutorials/01_Install/Install.html">https://eeglab.org/tutorials/01_Install/Install.html</a></p>
+      <p>Luck, S. J. (2022). <i>Applied event-related potential data analysis</i>. LibreTexts. <a href="https://doi.org/10.18115/D5QG92">https://doi.org/10.18115/D5QG92</a></p>
+    </section>
+  </div>
+  <div class="lesson-sim" id="sim" aria-label="Practice window: a small copy of the MATLAB desktop"></div>
+</div>
+
+<nav class="pager">
+  <a class="prev" href="matlab-02-variables.html"><small>Previous</small><span>Variables and the Workspace</span></a>
+  <a class="next" href="matlab-04-text.html"><small>Next</small><span>Characters and Strings</span></a>
+</nav>
+<footer>Intro to MATLAB for EEGLAB, lesson 3 of 8. Written for PSYCH 390 at St. Olaf College. The practice window is a small model of MATLAB that runs in your browser; nothing is sent anywhere.</footer>
+
+<script src="matlab-sim.js"></script>
+<script>
+window.LESSON = {
+  panels: ['folder', 'path', 'command', 'workspace'],
+  tasks: [
+    {text: 'Show the current folder.', hint: 'pwd', check: c => c.src === 'pwd'},
+    {text: 'Move into the <code>psych390</code> folder.', hint: 'cd psych390', check: c => /\/psych390(\/|$)/.test(c.cwd)},
+    {text: 'List the files in the <code>data</code> folder.', hint: 'ls data', check: c => !c.err && /^(ls|dir)\b/.test(c.src) && (/\/data$/.test(c.cwd) || /data/.test(c.src))},
+    {text: 'Go up one level.', hint: 'cd ..', check: c => /^cd\s+\.\.;?$/.test(c.src) && !c.err},
+    {text: 'Ask for <code>eeglab</code> before it is on the path, and read the answer.', hint: 'which eeglab', check: c => /eeglab/.test(c.src) && !c.path.some(p => /eeglab/.test(p))},
+    {text: 'Add the EEGLAB folder to the path.', hint: "addpath('/Users/student/Documents/MATLAB/eeglab2025.1')", check: c => c.path.some(p => /eeglab2025\.1$/.test(p))},
+    {text: 'Start EEGLAB.', hint: 'eeglab', check: c => c.core.S.eeglabStarted}
+  ]
+};
+</script>
+<script src="matlab-lesson.js"></script>
+</body>
+</html>

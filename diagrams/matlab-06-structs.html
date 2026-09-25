@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Structs and the EEG Variable · Intro to MATLAB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="matlab-course.css">
+</head>
+<body>
+<div class="topbar">
+  <a class="series" href="matlab-course.html">Intro to MATLAB · for EEGLAB</a>
+  <span class="stepno">lesson 6 / 8</span>
+</div>
+<header class="hero">
+  <h1>Structs and the EEG Variable</h1>
+  <p class="q">A struct is one variable with named parts, and EEG is a struct.</p>
+</header>
+
+<div class="lesson">
+  <div class="lesson-text">
+    <section class="step">
+      <h2><span class="n">1</span>Fields</h2>
+<p>A <b>struct</b> keeps related values together under one name. Each value sits in a named <b>field</b>, reached with a dot.</p>
+<pre class="try">info.subject = 'sub-01';
+info.srate = 500;
+info.condition = 'oddball';
+info
+info.srate
+fieldnames(info)</pre>
+    </section>
+    <section class="step">
+      <h2><span class="n">2</span>Loading a dataset</h2>
+<p>EEGLAB is already on the path and started in this lesson, and the current folder is <code>psych390</code>. <code>pop_loadset</code> reads a dataset from disk and hands it back as a struct, stored here in <code>EEG</code>.</p>
+<pre class="try">EEG = pop_loadset('filename', 'sub-01.set', 'filepath', 'data');
+EEG</pre>
+      <p>Typing <code>EEG</code> lists every field with its value, or its size when the value is too big to show.</p>
+    </section>
+    <section class="step">
+      <h2><span class="n">3</span>The fields you will use most</h2>
+<pre class="try">EEG.srate  # samples per second
+EEG.nbchan  # number of channels
+EEG.pnts  # time points per epoch (the whole recording, before epoching)
+EEG.pnts / EEG.srate  # seconds of recording
+size(EEG.data)</pre>
+      <p><code>EEG.data</code> has 32 rows, one per channel, and 30,000 columns: 60 seconds times 500 samples per second. After the data are cut into epochs it gains a third dimension, one layer per trial, and <code>EEG.trials</code> counts them.</p>
+    </section>
+    <section class="step">
+      <h2><span class="n">4</span>Indexing into EEG.data</h2>
+<p>This is the matrix indexing from the last lesson, on real-sized data. The voltages are in microvolts; <code>EEG.times</code> gives the time of each column in milliseconds.</p>
+<pre class="try">EEG.data(14, 1:5)  # channel 14, first five samples
+EEG.times(1:5)
+mean(EEG.data(14, :))</pre>
+    </section>
+    <section class="step">
+      <h2><span class="n">5</span>Structs inside structs</h2>
+<p>Some fields hold struct arrays, one element per channel or per event. Pick the element with parentheses, then the field with a dot.</p>
+<pre class="try">EEG.chanlocs
+EEG.chanlocs(14).labels
+EEG.event(1)
+EEG.event(1).type
+numel(EEG.event)</pre>
+      <p>Leave out the index and you ask for all 32 labels at once. MATLAB prints them one after another; to keep them as a list, wrap the request in braces.</p>
+<pre class="try">labels = {EEG.chanlocs.labels}</pre>
+    </section>
+    <section class="step">
+      <h2><span class="n">6</span>Changing a field</h2>
+<pre class="try">EEG.setname = 'sub-01 practice';
+EEG.setname</pre>
+      <p>This changes the copy in memory only. The file on disk stays the same until you save it with <code>pop_saveset</code> (lesson 8).</p>
+      <div class="eeg"><b>In EEGLAB.</b> The main EEGLAB window shows the dataset name, the number of channels, the frames per epoch, the number of events, and the sampling rate. Those come straight from <code>EEG.setname</code>, <code>EEG.nbchan</code>, <code>EEG.pnts</code>, <code>EEG.event</code>, and <code>EEG.srate</code>.</div>
+    </section>
+    <section class="yourturn">
+      <h2>Your turn</h2>
+      <p>Each box ticks itself when you do it in the practice window. Stuck? "show me" puts a command in the window for you.</p>
+      <div id="tasks"></div>
+    </section>
+    <section class="refs">
+      <h2 style="font-size:16px;color:var(--ink);margin:18px 0 8px">References</h2>
+      <p>The MathWorks, Inc. (2025). <i>MATLAB documentation</i>. <a href="https://www.mathworks.com/help/matlab/">https://www.mathworks.com/help/matlab/</a></p>
+      <p>EEGLAB Wiki. (n.d.). <i>EEGLAB data structures</i>. <a href="https://eeglab.org/tutorials/ConceptsGuide/Data_Structures.html">https://eeglab.org/tutorials/ConceptsGuide/Data_Structures.html</a></p>
+      <p>Delorme, A., &amp; Makeig, S. (2004). EEGLAB: An open source toolbox for analysis of single-trial EEG dynamics including independent component analysis. <i>Journal of Neuroscience Methods, 134</i>(1), 9 to 21. <a href="https://doi.org/10.1016/j.jneumeth.2003.10.009">https://doi.org/10.1016/j.jneumeth.2003.10.009</a></p>
+    </section>
+  </div>
+  <div class="lesson-sim" id="sim" aria-label="Practice window: a small copy of the MATLAB desktop"></div>
+</div>
+
+<nav class="pager">
+  <a class="prev" href="matlab-05-arrays.html"><small>Previous</small><span>Arrays and Matrices</span></a>
+  <a class="next" href="matlab-07-functions.html"><small>Next</small><span>Functions</span></a>
+</nav>
+<footer>Intro to MATLAB for EEGLAB, lesson 6 of 8. Written for PSYCH 390 at St. Olaf College. The practice window is a small model of MATLAB that runs in your browser; nothing is sent anywhere.</footer>
+
+<script src="matlab-sim.js"></script>
+<script>
+window.LESSON = {
+  panels: ['folder', 'command', 'workspace'],
+  setup: ["addpath('/Users/student/Documents/MATLAB/eeglab2025.1')", 'eeglab', 'clear', 'cd psych390'],
+  greeting: 'Practice copy of MATLAB. EEGLAB is on the path and started, and the current folder is psych390.',
+  tasks: [
+    {text: 'Make a struct of your own with at least two fields.', hint: "info.subject = 'sub-01'; info.srate = 500;", check: c => [...c.W].some(([k, v]) => v.t === 'struct' && !/^(EEG|ALLEEG|STUDY)$/.test(k) && v.r*v.c === 1 && Object.keys(v.a[0]).length >= 2)},
+    {text: 'Load <code>sub-01.set</code> into <code>EEG</code>.', hint: "EEG = pop_loadset('filename', 'sub-01.set', 'filepath', 'data');", check: c => { const e = c.raw('EEG'); return e && e.t === 'struct' && e.a[0] && 'data' in e.a[0]; }},
+    {text: 'Show the sampling rate.', hint: 'EEG.srate', check: c => !c.err && /EEG\.srate/.test(c.src)},
+    {text: 'Find the size of <code>EEG.data</code>.', hint: 'size(EEG.data)', check: c => !c.err && /size\(\s*EEG\.data/.test(c.src)},
+    {text: 'Get the label of one channel.', hint: 'EEG.chanlocs(14).labels', check: c => !c.err && /EEG\.chanlocs\(\s*\d+\s*\)\.labels/.test(c.src)},
+    {text: 'Get the type of the first event.', hint: 'EEG.event(1).type', check: c => !c.err && /EEG\.event\(\s*1\s*\)\.type/.test(c.src)},
+    {text: 'Rename the dataset in memory.', hint: "EEG.setname = 'sub-01 practice';", check: c => { const e = c.raw('EEG'); return !c.err && e && e.a[0] && e.a[0].setname && e.a[0].setname.s !== 'sub-01'; }}
+  ]
+};
+</script>
+<script src="matlab-lesson.js"></script>
+</body>
+</html>

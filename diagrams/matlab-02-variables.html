@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Variables and the Workspace · Intro to MATLAB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="matlab-course.css">
+</head>
+<body>
+<div class="topbar">
+  <a class="series" href="matlab-course.html">Intro to MATLAB · for EEGLAB</a>
+  <span class="stepno">lesson 2 / 8</span>
+</div>
+<header class="hero">
+  <h1>Variables and the Workspace</h1>
+  <p class="q">Give a value a name, and MATLAB keeps it until you clear it.</p>
+</header>
+
+<div class="lesson">
+  <div class="lesson-text">
+    <section class="step">
+      <h2><span class="n">1</span>Making a variable</h2>
+<p>A variable is a name with a value stored under it. The <code>=</code> sign means "store", not "equals": read <code>srate = 500</code> as "srate gets 500". Watch <code>srate</code> appear in the Workspace. Typing the name alone shows its value.</p>
+<pre class="try">srate = 500
+srate</pre>
+    </section>
+    <section class="step">
+      <h2><span class="n">2</span>Using variables</h2>
+<p>Once a value has a name, you can use the name in calculations.</p>
+<pre class="try">seconds = 120
+nSamples = srate * seconds</pre>
+      <p>MATLAB worked out <code>nSamples</code> once, when you pressed Enter. If you change <code>srate</code> now, <code>nSamples</code> does not update by itself. Run the calculation again to get the new value.</p>
+<pre class="try">srate = 250
+nSamples
+nSamples = srate * seconds</pre>
+    </section>
+    <section class="step">
+      <h2><span class="n">3</span>The semicolon</h2>
+<p>A semicolon at the end of a line tells MATLAB to do the work without printing the result. The variable is still made; it just does not echo.</p>
+<pre class="try">nChans = 32;
+nChans</pre>
+      <p>Scripts end almost every line with a semicolon. A dataset with 32 channels and 30,000 time points holds 960,000 numbers, and you do not want them all printed.</p>
+    </section>
+    <section class="step">
+      <h2><span class="n">4</span>Naming rules</h2>
+<ul>
+        <li>Start with a letter, then use letters, digits, or underscores: <code>sub01</code>, <code>n_trials</code>, <code>nSamples</code>.</li>
+        <li>No spaces and no hyphens. MATLAB reads <code>sub-01</code> as "sub minus 1".</li>
+        <li>Capitals matter. <code>EEG</code>, <code>eeg</code>, and <code>Eeg</code> are three different names.</li>
+        <li>Do not reuse the name of a function. After <code>mean = 7</code>, <code>mean</code> is a number and the averaging function is hidden until you clear it.</li>
+      </ul>
+<pre class="try">sub-01 = 5
+Srate  # capital S: a different name from srate
+mean = 7
+mean([1 2 3])  # MATLAB now reads this as indexing into the number 7
+clear mean
+mean([1 2 3])</pre>
+    </section>
+    <section class="step">
+      <h2><span class="n">5</span>Seeing and clearing the Workspace</h2>
+<p><code>who</code> lists your variables. <code>whos</code> adds the size, memory, and class of each. <code>clear name</code> removes one variable; <code>clear</code> on its own removes them all.</p>
+<pre class="try">who
+whos
+clear seconds
+clear</pre>
+      <p>Do not mix up <code>clc</code> and <code>clear</code>. <code>clc</code> cleans the screen and keeps your variables. <code>clear</code> deletes the variables and leaves the screen alone.</p>
+      <div class="eeg"><b>In EEGLAB.</b> EEGLAB keeps the dataset you are working on in a variable called <code>EEG</code>, and all loaded datasets in <code>ALLEEG</code>. <code>clear</code> removes them from memory, not from your disk. Lab scripts often start with <code>clear</code> so nothing left over from an earlier session sneaks into the analysis.</div>
+    </section>
+    <section class="yourturn">
+      <h2>Your turn</h2>
+      <p>Each box ticks itself when you do it in the practice window. Stuck? "show me" puts a command in the window for you.</p>
+      <div id="tasks"></div>
+    </section>
+    <section class="refs">
+      <h2 style="font-size:16px;color:var(--ink);margin:18px 0 8px">References</h2>
+      <p>The MathWorks, Inc. (2025). <i>MATLAB documentation</i>. <a href="https://www.mathworks.com/help/matlab/">https://www.mathworks.com/help/matlab/</a></p>
+    </section>
+  </div>
+  <div class="lesson-sim" id="sim" aria-label="Practice window: a small copy of the MATLAB desktop"></div>
+</div>
+
+<nav class="pager">
+  <a class="prev" href="matlab-01-command-window.html"><small>Previous</small><span>The Command Window</span></a>
+  <a class="next" href="matlab-03-folders-path.html"><small>Next</small><span>Folders and the Path</span></a>
+</nav>
+<footer>Intro to MATLAB for EEGLAB, lesson 2 of 8. Written for PSYCH 390 at St. Olaf College. The practice window is a small model of MATLAB that runs in your browser; nothing is sent anywhere.</footer>
+
+<script src="matlab-sim.js"></script>
+<script>
+window.LESSON = {
+  panels: ['folder', 'command', 'workspace'],
+  tasks: [
+    {text: 'Store 500 in a variable called <code>srate</code>.', hint: 'srate = 500', check: c => c.v('srate') === 500},
+    {text: 'Make a variable with a semicolon at the end, so nothing prints.', hint: 'nChans = 32;', check: c => !c.err && /^\w+\s*=.*;\s*$/.test(c.src)},
+    {text: 'Work out <code>nSamples</code> from <code>srate</code> and <code>seconds</code>.', hint: 'nSamples = srate * seconds', check: c => !c.err && c.has('nSamples') && /srate/.test(c.src) && /seconds/.test(c.src)},
+    {text: 'List your variables with <code>who</code> or <code>whos</code>.', hint: 'whos', check: c => c.src === 'who' || c.src === 'whos'},
+    {text: 'Remove one variable with <code>clear</code> and its name.', hint: 'clear seconds', check: c => /^clear\s+\w/.test(c.src) && !/\ball\b/.test(c.src)},
+    {text: 'Empty the whole Workspace.', hint: 'clear', check: c => /^clear(\s+all)?;?$/.test(c.src) && c.W.size === 0}
+  ]
+};
+</script>
+<script src="matlab-lesson.js"></script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Characters and Strings · Intro to MATLAB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="matlab-course.css">
+</head>
+<body>
+<div class="topbar">
+  <a class="series" href="matlab-course.html">Intro to MATLAB · for EEGLAB</a>
+  <span class="stepno">lesson 4 / 8</span>
+</div>
+<header class="hero">
+  <h1>Characters and Strings</h1>
+  <p class="q">Single quotes and double quotes make two different kinds of text.</p>
+</header>
+
+<div class="lesson">
+  <div class="lesson-text">
+    <section class="step">
+      <h2><span class="n">1</span>Character vectors</h2>
+<p>Text in single quotes is a <b>character vector</b>, class <code>char</code>: a row of characters, one per letter. <code>'sub-01'</code> is 1 row by 6 characters, and you can index single characters just like numbers in an array.</p>
+<pre class="try">subj = 'sub-01'
+class(subj)
+size(subj)
+subj(1:3)
+subj(end)</pre>
+    </section>
+    <section class="step">
+      <h2><span class="n">2</span>Strings</h2>
+<p>Text in double quotes is a <b>string</b>, class <code>string</code>. A string holds the whole piece of text as one value, so its size is 1-by-1. <code>strlength</code> counts its characters.</p>
+<pre class="try">s = "sub-01"
+class(s)
+size(s)
+strlength(s)</pre>
+      <p>Strings arrived in newer versions of MATLAB. EEGLAB is written around character vectors, so use <b>single quotes</b> for file names and options you pass to EEGLAB.</p>
+    </section>
+    <section class="step">
+      <h2><span class="n">3</span>Joining text</h2>
+<p>Character vectors join with square brackets, the same way arrays do. Strings join with <code>+</code>.</p>
+<pre class="try">['sub-' '02' '.set']
+"sub-" + "02" + ".set"</pre>
+    </section>
+    <section class="step">
+      <h2><span class="n">4</span>Numbers inside text</h2>
+<p>To put a number into a file name, turn it into text first. <code>num2str</code> does that. <code>sprintf</code> fills a template: <code>%d</code> is a whole number, <code>%02d</code> pads it to two digits, <code>%s</code> is text, and <code>%.1f</code> is a number with one decimal.</p>
+<pre class="try">n = 3;
+['sub-0' num2str(n) '.set']
+sprintf('sub-%02d.set', n)
+sprintf('sub-%02d.set', 12)
+sprintf('%s filtered at %.1f Hz', 'sub-03', 0.1)</pre>
+      <p>With <code>%02d</code>, participant 3 becomes <code>sub-03</code> and participant 12 becomes <code>sub-12</code>, so one template covers everyone. Lesson 8 uses this in a loop.</p>
+    </section>
+    <section class="step">
+      <h2><span class="n">5</span>Two traps</h2>
+<p>Adding a number to a character vector does not join them. MATLAB turns each character into its character code and adds to that. And <code>==</code> compares text one character at a time, so it fails when the lengths differ. Use <code>strcmp</code> to ask whether two pieces of text are the same.</p>
+<pre class="try">'sub-' + 1  # four numbers, not 'sub-1'
+strcmp(subj, 'sub-01')
+subj == 'sub-1'</pre>
+      <div class="eeg"><b>In EEGLAB.</b> <code>pop_loadset('filename', 'sub-01.set', 'filepath', 'data')</code> is four pieces of text. The first and third name an option and the second and fourth give its value. Inside the dataset, the set name, the channel labels, and the event codes are character vectors too.</div>
+    </section>
+    <section class="yourturn">
+      <h2>Your turn</h2>
+      <p>Each box ticks itself when you do it in the practice window. Stuck? "show me" puts a command in the window for you.</p>
+      <div id="tasks"></div>
+    </section>
+    <section class="refs">
+      <h2 style="font-size:16px;color:var(--ink);margin:18px 0 8px">References</h2>
+      <p>The MathWorks, Inc. (2025). <i>MATLAB documentation</i>. <a href="https://www.mathworks.com/help/matlab/">https://www.mathworks.com/help/matlab/</a></p>
+    </section>
+  </div>
+  <div class="lesson-sim" id="sim" aria-label="Practice window: a small copy of the MATLAB desktop"></div>
+</div>
+
+<nav class="pager">
+  <a class="prev" href="matlab-03-folders-path.html"><small>Previous</small><span>Folders and the Path</span></a>
+  <a class="next" href="matlab-05-arrays.html"><small>Next</small><span>Arrays and Matrices</span></a>
+</nav>
+<footer>Intro to MATLAB for EEGLAB, lesson 4 of 8. Written for PSYCH 390 at St. Olaf College. The practice window is a small model of MATLAB that runs in your browser; nothing is sent anywhere.</footer>
+
+<script src="matlab-sim.js"></script>
+<script>
+window.LESSON = {
+  panels: ['folder', 'command', 'workspace'],
+  tasks: [
+    {text: 'Make a character vector with single quotes.', hint: "subj = 'sub-01'", check: c => !c.err && /^\w+\s*=\s*'/.test(c.src)},
+    {text: 'Make a string with double quotes.', hint: 's = "sub-01"', check: c => !c.err && /^\w+\s*=\s*"/.test(c.src)},
+    {text: 'Ask what class a variable is.', hint: 'class(subj)', check: c => !c.err && /^class\(/.test(c.src)},
+    {text: 'Join pieces of text into a name that ends in <code>.set</code>.', hint: "['sub-' '02' '.set']", check: c => !c.err && /\.set/.test(c.src) && /\[|\+/.test(c.src)},
+    {text: 'Build a file name with <code>sprintf</code>.', hint: "sprintf('sub-%02d.set', 7)", check: c => !c.err && /sprintf\(/.test(c.src)},
+    {text: 'Compare two pieces of text with <code>strcmp</code>.', hint: "strcmp('sub-01', 'sub-01')", check: c => !c.err && /strcmp\(/.test(c.src)}
+  ]
+};
+</script>
+<script src="matlab-lesson.js"></script>
+</body>
+</html>

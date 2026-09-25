@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arrays and Matrices · Intro to MATLAB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="matlab-course.css">
+</head>
+<body>
+<div class="topbar">
+  <a class="series" href="matlab-course.html">Intro to MATLAB · for EEGLAB</a>
+  <span class="stepno">lesson 5 / 8</span>
+</div>
+<header class="hero">
+  <h1>Arrays and Matrices</h1>
+  <p class="q">One name holds many numbers, counted from 1.</p>
+</header>
+
+<div class="lesson">
+  <div class="lesson-text">
+    <section class="step">
+      <h2><span class="n">1</span>Row and column vectors</h2>
+<p>Square brackets make an array. Spaces or commas separate numbers along a row; a semicolon starts a new row.</p>
+<pre class="try">amps = [4.2 3.9 5.1 4.8]
+col = [1; 2; 3]
+size(amps)
+size(col)</pre>
+      <p><code>size</code> always answers rows first, then columns.</p>
+    </section>
+    <section class="step">
+      <h2><span class="n">2</span>Counting from 1</h2>
+<p>Parentheses pick elements out of an array. MATLAB counts from 1, and <code>end</code> means the last one.</p>
+<pre class="try">amps(1)
+amps(end)
+amps(2:3)
+amps(0)
+amps(5)</pre>
+      <p>There is no element 0, and asking past the end is an error that tells you how many elements there are.</p>
+    </section>
+    <section class="step">
+      <h2><span class="n">3</span>The colon operator</h2>
+<p><code>start:step:stop</code> counts from start to stop. Leave out the step and it counts by 1. It is the quick way to make a time axis.</p>
+<pre class="try">1:5
+0:0.25:1
+t = 0:0.002:1;  # one second of time points at 500 Hz
+numel(t)
+t(1:4)</pre>
+      <p>At 500 Hz a sample comes every 2 ms, so one second from 0 to 1 holds 501 time points: 500 steps plus the starting point.</p>
+    </section>
+    <section class="step">
+      <h2><span class="n">4</span>Matrices: rows and columns</h2>
+<p>A matrix has rows and columns. Index it with two numbers, row first. A colon on its own means "all of them".</p>
+<pre class="try">A = [1 2 3; 4 5 6]
+A(2, 3)
+A(1, :)
+A(:, 2)
+size(A)</pre>
+    </section>
+    <section class="step">
+      <h2><span class="n">5</span>EEG data is a matrix</h2>
+<p>EEG is stored as a matrix with one row per channel and one column per time point. Here is a pretend dataset with 4 channels and 10 time points of random numbers:</p>
+<pre class="try">data = rand(4, 10)
+data(2, :)  # channel 2, every time point
+data(:, 1:5)  # every channel, the first five time points
+mean(data, 2)  # one average per channel
+mean(data)  # one average per time point</pre>
+      <p>The second input to <code>mean</code> picks the direction. <code>mean(data, 2)</code> averages across columns, giving one number per channel. <code>mean(data)</code> on its own averages down each column, giving one number per time point, which answers a different question.</p>
+    </section>
+    <section class="step">
+      <h2><span class="n">6</span>Math on whole arrays</h2>
+<p>Math with a single number applies to every element. To combine two arrays element by element, put a dot in front of the operator: <code>.*</code>, <code>./</code>, <code>.^</code>. Without the dot, <code>*</code> is matrix multiplication from linear algebra, which needs matching inner sizes.</p>
+<pre class="try">amps * 2
+amps .^ 2
+A * A
+A .* A</pre>
+      <div class="eeg"><b>In EEGLAB.</b> <code>EEG.data</code> is this kind of matrix. <code>EEG.data(14, :)</code> is channel 14 across the whole recording, and <code>mean(EEG.data, 2)</code> gives one average per channel. The next lesson does this on a loaded dataset.</div>
+    </section>
+    <section class="yourturn">
+      <h2>Your turn</h2>
+      <p>Each box ticks itself when you do it in the practice window. Stuck? "show me" puts a command in the window for you.</p>
+      <div id="tasks"></div>
+    </section>
+    <section class="refs">
+      <h2 style="font-size:16px;color:var(--ink);margin:18px 0 8px">References</h2>
+      <p>The MathWorks, Inc. (2025). <i>MATLAB documentation</i>. <a href="https://www.mathworks.com/help/matlab/">https://www.mathworks.com/help/matlab/</a></p>
+    </section>
+  </div>
+  <div class="lesson-sim" id="sim" aria-label="Practice window: a small copy of the MATLAB desktop"></div>
+</div>
+
+<nav class="pager">
+  <a class="prev" href="matlab-04-text.html"><small>Previous</small><span>Characters and Strings</span></a>
+  <a class="next" href="matlab-06-structs.html"><small>Next</small><span>Structs and the EEG Variable</span></a>
+</nav>
+<footer>Intro to MATLAB for EEGLAB, lesson 5 of 8. Written for PSYCH 390 at St. Olaf College. The practice window is a small model of MATLAB that runs in your browser; nothing is sent anywhere.</footer>
+
+<script src="matlab-sim.js"></script>
+<script>
+window.LESSON = {
+  panels: ['folder', 'command', 'workspace'],
+  tasks: [
+    {text: 'Make a row of numbers with square brackets.', hint: 'amps = [4.2 3.9 5.1 4.8]', check: c => !c.err && /^\w+\s*=\s*\[[^;\]]*\]\s*;?$/.test(c.src)},
+    {text: 'Get the last element with <code>end</code>.', hint: 'amps(end)', check: c => !c.err && /\(\s*end\s*\)/.test(c.src)},
+    {text: 'Make a time axis with <code>start:step:stop</code>.', hint: 't = 0:0.002:1;', check: c => !c.err && /[\d.]+\s*:\s*[\d.]+\s*:\s*[\d.]+/.test(c.src)},
+    {text: 'Take one whole row of a matrix with <code>:</code>.', hint: 'A(1, :)', check: c => !c.err && /\(\s*\w+\s*,\s*:\s*\)/.test(c.src)},
+    {text: 'Average each row with <code>mean(x, 2)</code>.', hint: 'mean(data, 2)', check: c => !c.err && /mean\(.+,\s*2\s*\)/.test(c.src)},
+    {text: 'Multiply two arrays element by element.', hint: 'A .* A', check: c => !c.err && /\.\*/.test(c.src)}
+  ]
+};
+</script>
+<script src="matlab-lesson.js"></script>
+</body>
+</html>

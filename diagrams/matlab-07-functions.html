@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Functions · Intro to MATLAB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="matlab-course.css">
+</head>
+<body>
+<div class="topbar">
+  <a class="series" href="matlab-course.html">Intro to MATLAB · for EEGLAB</a>
+  <span class="stepno">lesson 7 / 8</span>
+</div>
+<header class="hero">
+  <h1>Functions</h1>
+  <p class="q">Inputs go in the parentheses; outputs come back on the left.</p>
+</header>
+
+<div class="lesson">
+  <div class="lesson-text">
+    <section class="step">
+      <h2><span class="n">1</span>Calling a function</h2>
+<p>A function takes inputs in parentheses and hands back an output. Without a name on the left, the output goes to <code>ans</code>.</p>
+<pre class="try">x = [4 8 15 16 23 42];
+mean(x)
+avg = mean(x)
+round(3.14159, 2)</pre>
+    </section>
+    <section class="step">
+      <h2><span class="n">2</span>More than one output</h2>
+<p>Some functions return several outputs. Ask for them with square brackets on the left, in the order the function gives them.</p>
+<pre class="try">[biggest, where] = max(x)
+[nChans, nPoints] = size(rand(32, 1000))</pre>
+    </section>
+    <section class="step">
+      <h2><span class="n">3</span>Reading the help</h2>
+<p><code>help</code> followed by a function name prints a short description of the inputs and outputs. The full MATLAB documentation has a page for every function, with examples.</p>
+<pre class="try">help mean
+help round</pre>
+    </section>
+    <section class="step">
+      <h2><span class="n">4</span>EEGLAB functions take the dataset in and give it back</h2>
+<p>Most EEGLAB processing functions start with <code>pop_</code>. They take the dataset as their first input and return the changed dataset. Options come as name and value pairs: <code>'locutoff', 0.1</code> means "set the low cutoff to 0.1 Hz".</p>
+<pre class="try">EEG = pop_loadset('filename', 'sub-01.set', 'filepath', 'data');
+EEG = pop_eegfiltnew(EEG, 'locutoff', 0.1, 'hicutoff', 30);</pre>
+      <p>The <code>EEG</code> inside the parentheses is the dataset going in. The <code>EEG =</code> on the left stores the result under the same name, replacing the old one.</p>
+    </section>
+    <section class="step">
+      <h2><span class="n">5</span>The missing <code>EEG =</code></h2>
+<p>Leave out <code>EEG =</code> and the result goes to <code>ans</code>. <code>EEG</code> itself does not change, and nothing warns you, which makes this one of the most common mistakes in EEGLAB scripts. <code>pop_select</code> keeps only some channels, so its effect is easy to see:</p>
+<pre class="try">pop_select(EEG, 'channel', 1:10);
+EEG.nbchan  # still 32: the smaller dataset went to ans
+EEG = pop_select(EEG, 'channel', 1:10);
+EEG.nbchan</pre>
+    </section>
+    <section class="step">
+      <h2><span class="n">6</span>Writing your own function</h2>
+<p>The Editor shows <code>secondsToSamples.m</code>, a function file in the <code>psych390</code> folder. Its first line says what comes out (<code>n</code>), what it is called, and what goes in (<code>sec</code> and <code>srate</code>). The comment lines under it become its help. The file name must match the function name.</p>
+<pre class="try">n = secondsToSamples(2, 500)
+help secondsToSamples
+which secondsToSamples</pre>
+      <p>Inside the function, <code>sec</code> and <code>srate</code> live in the function's own workspace, so they never show up in yours. Like any function, it has to be in the current folder or on the path:</p>
+<pre class="try">cd ..
+secondsToSamples(2, 500)
+cd psych390</pre>
+      <p>Now change the function in the Editor, for example to return milliseconds with <code>n = sec * 1000;</code>, press Save, and call it again.</p>
+    </section>
+    <section class="yourturn">
+      <h2>Your turn</h2>
+      <p>Each box ticks itself when you do it in the practice window. Stuck? "show me" puts a command in the window for you.</p>
+      <div id="tasks"></div>
+    </section>
+    <section class="refs">
+      <h2 style="font-size:16px;color:var(--ink);margin:18px 0 8px">References</h2>
+      <p>The MathWorks, Inc. (2025). <i>MATLAB documentation</i>. <a href="https://www.mathworks.com/help/matlab/">https://www.mathworks.com/help/matlab/</a></p>
+      <p>Delorme, A., &amp; Makeig, S. (2004). EEGLAB: An open source toolbox for analysis of single-trial EEG dynamics including independent component analysis. <i>Journal of Neuroscience Methods, 134</i>(1), 9 to 21. <a href="https://doi.org/10.1016/j.jneumeth.2003.10.009">https://doi.org/10.1016/j.jneumeth.2003.10.009</a></p>
+    </section>
+  </div>
+  <div class="lesson-sim" id="sim" aria-label="Practice window: a small copy of the MATLAB desktop"></div>
+</div>
+
+<nav class="pager">
+  <a class="prev" href="matlab-06-structs.html"><small>Previous</small><span>Structs and the EEG Variable</span></a>
+  <a class="next" href="matlab-08-loops-scripts.html"><small>Next</small><span>Loops and Scripts</span></a>
+</nav>
+<footer>Intro to MATLAB for EEGLAB, lesson 7 of 8. Written for PSYCH 390 at St. Olaf College. The practice window is a small model of MATLAB that runs in your browser; nothing is sent anywhere.</footer>
+
+<script src="matlab-sim.js"></script>
+<script>
+window.LESSON = {
+  panels: ['folder', 'editor', 'command', 'workspace'],
+  setup: ["addpath('/Users/student/Documents/MATLAB/eeglab2025.1')", 'eeglab', 'clear', 'cd psych390'],
+  editorFile: {path: '/Users/student/Documents/MATLAB/psych390/secondsToSamples.m', fresh: false, text:
+"function n = secondsToSamples(sec, srate)\n% secondsToSamples  Convert a duration in seconds to a number of samples.\n%   n = secondsToSamples(sec, srate) returns how many samples\n%   are recorded in sec seconds at srate samples per second.\nn = sec * srate;\nend\n"},
+  greeting: 'Practice copy of MATLAB. EEGLAB is on the path and started, and the current folder is psych390.',
+  tasks: [
+    {text: 'Store the output of a function in a variable.', hint: 'avg = mean(x)', check: c => !c.err && /^\w+\s*=\s*\w+\(/.test(c.src)},
+    {text: 'Get two outputs from <code>max</code>.', hint: '[biggest, where] = max([4 8 15 16 23 42])', check: c => !c.err && /^\[.+,.+\]\s*=\s*max\(/.test(c.src)},
+    {text: 'Read the help for a function.', hint: 'help mean', check: c => /^help\s+\w+/.test(c.src)},
+    {text: 'Run a <code>pop_</code> function and keep the result in <code>EEG</code>.', hint: "EEG = pop_eegfiltnew(EEG, 'locutoff', 0.1, 'hicutoff', 30);", check: c => !c.err && /^EEG\s*=\s*pop_(eegfiltnew|select)\(\s*EEG/.test(c.src)},
+    {text: 'Call <code>secondsToSamples</code>.', hint: 'n = secondsToSamples(2, 500)', check: c => !c.err && /secondsToSamples\(/.test(c.src)},
+    {text: 'Change the function, save it, and call it again.', check: c => { const t = c.core.readFile('/Users/student/Documents/MATLAB/psych390/secondsToSamples.m'); return !c.err && /secondsToSamples\(/.test(c.src) && t && !/n = sec \* srate;/.test(t); }}
+  ]
+};
+</script>
+<script src="matlab-lesson.js"></script>
+</body>
+</html>

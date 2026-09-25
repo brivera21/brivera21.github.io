@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loops and Scripts · Intro to MATLAB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="matlab-course.css">
+</head>
+<body>
+<div class="topbar">
+  <a class="series" href="matlab-course.html">Intro to MATLAB · for EEGLAB</a>
+  <span class="stepno">lesson 8 / 8</span>
+</div>
+<header class="hero">
+  <h1>Loops and Scripts</h1>
+  <p class="q">Write the steps once and let a loop run them for every participant.</p>
+</header>
+
+<div class="lesson">
+  <div class="lesson-text">
+    <section class="step">
+      <h2><span class="n">1</span>A for loop</h2>
+<p>A <code>for</code> loop runs the lines between <code>for</code> and <code>end</code> once for each value. On a single line, separate the parts with commas.</p>
+<pre class="try">for i = 1:3, disp(i), end</pre>
+<pre class="try block">for i = 1:3
+    fprintf('Participant %d\n', i);
+end</pre>
+      <p>Each time around, <code>i</code> takes the next value: 1, then 2, then 3. The indenting is for the reader; MATLAB goes by <code>for</code> and <code>end</code>.</p>
+    </section>
+    <section class="step">
+      <h2><span class="n">2</span>Looping over participants</h2>
+<p>Put the <code>sprintf</code> template from lesson 4 inside a loop and you get every file name.</p>
+<pre class="try block">for s = 1:3
+    fname = sprintf('sub-%02d.set', s);
+    disp(fname)
+end</pre>
+    </section>
+    <section class="step">
+      <h2><span class="n">3</span>Lists of names: cell arrays</h2>
+<p>When participant IDs do not follow a pattern, keep them in a <b>cell array</b>, made with curly braces. A cell array can hold text of different lengths side by side.</p>
+<pre class="try">subjects = {'sub-01', 'sub-02', 'sub-03'}
+subjects{2}
+subjects(2)
+numel(subjects)</pre>
+      <p>Braces take the text out: <code>subjects{2}</code> is <code>'sub-02'</code>. Parentheses give back a smaller cell array, <code>{'sub-02'}</code>, which EEGLAB will not accept as a file name.</p>
+<pre class="try block">for s = 1:numel(subjects)
+    fprintf('Next up: %s\n', subjects{s});
+end</pre>
+    </section>
+    <section class="step">
+      <h2><span class="n">4</span>Checking before you load</h2>
+<p><code>if</code> runs lines only when a condition is true, and <code>else</code> handles the rest. Here the loop checks each file and skips the ones that are missing.</p>
+<pre class="try block">for s = 1:4
+    fname = sprintf('sub-%02d.set', s);
+    if isfile(fullfile('data', fname))
+        fprintf('%s found\n', fname);
+    else
+        fprintf('%s is missing, skipping it\n', fname);
+    end
+end</pre>
+    </section>
+    <section class="step">
+      <h2><span class="n">5</span>A script</h2>
+<p>A <b>script</b> is a file of commands that runs from top to bottom when you press Run or type its name. The Editor holds <code>process_all.m</code>. It loads each participant, filters the data, and saves a copy with <code>_filt</code> added to the name. Read it, press <b>Run</b>, and watch new files appear in the Current Folder (open <code>data</code>).</p>
+<pre class="try">process_all
+ls data</pre>
+    </section>
+    <section class="step">
+      <h2><span class="n">6</span>When a script stops with an error</h2>
+<p>In the Editor, change <code>'sub-03'</code> to <code>'sub-3'</code>, press Run, and read the message. It names the file MATLAB could not find and the line of the script where it stopped. Every line before that one already ran, so sub-01 and sub-02 were filtered and saved. Put the name back, and run it again.</p>
+      <div class="eeg"><b>In EEGLAB.</b> The ERP pipeline labs build this kind of script one step at a time: filter, re-reference, cut epochs, mark artifacts, average. Once a step works for one participant, a loop runs it for all of them. See <a href="erp-12-plotting-scripting.html">Plotting and Scripting</a> in the ERP pipeline series.</div>
+    </section>
+    <section class="yourturn">
+      <h2>Your turn</h2>
+      <p>Each box ticks itself when you do it in the practice window. Stuck? "show me" puts a command in the window for you.</p>
+      <div id="tasks"></div>
+    </section>
+    <section class="refs">
+      <h2 style="font-size:16px;color:var(--ink);margin:18px 0 8px">References</h2>
+      <p>The MathWorks, Inc. (2025). <i>MATLAB documentation</i>. <a href="https://www.mathworks.com/help/matlab/">https://www.mathworks.com/help/matlab/</a></p>
+      <p>Delorme, A., &amp; Makeig, S. (2004). EEGLAB: An open source toolbox for analysis of single-trial EEG dynamics including independent component analysis. <i>Journal of Neuroscience Methods, 134</i>(1), 9 to 21. <a href="https://doi.org/10.1016/j.jneumeth.2003.10.009">https://doi.org/10.1016/j.jneumeth.2003.10.009</a></p>
+      <p>Luck, S. J. (2022). <i>Applied event-related potential data analysis</i>. LibreTexts. <a href="https://doi.org/10.18115/D5QG92">https://doi.org/10.18115/D5QG92</a></p>
+    </section>
+  </div>
+  <div class="lesson-sim" id="sim" aria-label="Practice window: a small copy of the MATLAB desktop"></div>
+</div>
+
+<nav class="pager">
+  <a class="prev" href="matlab-07-functions.html"><small>Previous</small><span>Functions</span></a>
+  <a class="next" href="matlab-course.html"><small>Back to</small><span>Intro to MATLAB</span></a>
+</nav>
+<footer>Intro to MATLAB for EEGLAB, lesson 8 of 8. Written for PSYCH 390 at St. Olaf College. The practice window is a small model of MATLAB that runs in your browser; nothing is sent anywhere.</footer>
+
+<script src="matlab-sim.js"></script>
+<script>
+window.LESSON = {
+  panels: ['folder', 'editor', 'command', 'workspace'],
+  setup: ["addpath('/Users/student/Documents/MATLAB/eeglab2025.1')", 'eeglab', 'clear', 'cd psych390'],
+  editorFile: {path: '/Users/student/Documents/MATLAB/psych390/process_all.m', fresh: false, text:
+"% process_all.m  Filter every participant and save a copy.\n% Run it from the psych390 folder, with EEGLAB on the path.\n\nsubjects = {'sub-01', 'sub-02', 'sub-03'};\n\nfor s = 1:numel(subjects)\n    name = subjects{s};\n\n    % load\n    EEG = pop_loadset('filename', [name '.set'], 'filepath', 'data');\n\n    % filter: 0.1 Hz high-pass and 30 Hz low-pass\n    EEG = pop_eegfiltnew(EEG, 'locutoff', 0.1, 'hicutoff', 30);\n\n    % save under a new name so the original stays untouched\n    EEG = pop_saveset(EEG, 'filename', [name '_filt.set'], 'filepath', 'data');\n\n    fprintf('Done with %s\\n', name);\nend\n"},
+  greeting: 'Practice copy of MATLAB. EEGLAB is on the path and started, and the current folder is psych390.',
+  tasks: [
+    {text: 'Run a <code>for</code> loop.', hint: 'for i = 1:3, disp(i), end', check: c => !c.err && /^\s*for\b/.test(c.src)},
+    {text: 'Build file names with <code>sprintf</code> inside a loop.', hint: "for s = 1:3, disp(sprintf('sub-%02d.set', s)), end", check: c => !c.err && /\bfor\b/.test(c.src) && /sprintf/.test(c.src)},
+    {text: 'Make a cell array of participant IDs.', hint: "subjects = {'sub-01', 'sub-02', 'sub-03'}", check: c => [...c.W.values()].some(v => v.t === 'cell' && v.a.length >= 2 && v.a.every(x => x.t === 'char'))},
+    {text: 'Take the text out of a cell with braces.', hint: 'subjects{2}', check: c => !c.err && /\w\{\s*\w+\s*\}/.test(c.src)},
+    {text: 'Run the script <code>process_all</code>.', hint: 'process_all', check: c => !c.err && (c.src === 'process_all' || c.src === '%run process_all')},
+    {text: 'Find the new <code>_filt</code> files.', hint: 'ls data', check: c => !c.err && /^(ls|dir)\b/.test(c.src) && !!c.core.node('/Users/student/Documents/MATLAB/psych390/data/sub-01_filt.set')},
+    {text: 'Break the script on purpose, run it, and read the error.', check: c => !!c.err && (c.src === 'process_all' || c.src === '%run process_all')}
+  ]
+};
+</script>
+<script src="matlab-lesson.js"></script>
+</body>
+</html>
