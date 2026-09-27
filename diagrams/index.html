@@ -91,13 +91,13 @@ details.cav li{margin-bottom:6px}
 <a class="series-link" href="erp-pipeline.html">
 <span class="series-kicker">Course series · PSYCH 390</span>
 <span class="series-title">The ERP pipeline</span>
-<span class="series-desc">Eleven interactive pages on EEG/ERP methods, from electricity to a publication figure, with their own landing page and step-by-step navigation.</span>
+<span class="series-desc">Eleven interactive pages on the ERP data analysis pipeline, from electricity to publication.</span>
 <span class="series-cta">Open the series →</span>
 </a>
 <a class="series-link" href="matlab-course.html">
 <span class="series-kicker">Course series · PSYCH 390</span>
 <span class="series-title">Intro to MATLAB</span>
-<span class="series-desc">Eight short lessons on the MATLAB you need before EEGLAB, each with a practice window that copies the MATLAB desktop.</span>
+<span class="series-desc">Eight interactive lessons on MATLAB basics for EEGLAB.</span>
 <span class="series-cta">Open the series →</span>
 </a>
 </div>
@@ -141,7 +141,7 @@ file:'erp-pipeline.html',
 thumbLive:true,
 tags:['EEG','ERP','methods','teaching','interactive','PSYCH 390'],
 label:'COURSE SERIES',
-blurb:'Eleven interactive pages that follow the EEG/ERP processing pipeline in lab order: electricity, where the EEG comes from, averaging, the EEGLAB GUI, filtering, re-referencing, bins and epochs, channel interpolation, artifact detection, scoring, and plotting and scripting, each with the EEGLAB or ERPLAB command used in lab.',
+blurb:'Eleven interactive pages on the ERP data analysis pipeline: electricity, the EEG signal, averaging, the EEGLAB GUI, filtering, re-referencing, bins and epochs, channel interpolation, artifact detection, scoring, and plotting and scripting.',
 /* In focus mode, Next walks these in order before moving on to the next diagram. */
 steps:[
 {file:'erp-01-electricity.html',       title:'Introduction to Electricity'},
@@ -173,7 +173,7 @@ file:'matlab-course.html',
 thumbLive:true,
 tags:['MATLAB','programming','EEGLAB','EEG','methods','teaching','interactive','PSYCH 390','variables','arrays','structs','loops','path'],
 label:'COURSE SERIES',
-blurb:'Eight short lessons on the MATLAB you need before EEGLAB, each with a practice window that copies the MATLAB desktop. The Command Window, variables and the Workspace, folders and the path, text, arrays and matrices, the EEG struct, functions, and loops and scripts, all with EEGLAB examples and a checklist that ticks itself.',
+blurb:'Eight interactive lessons on MATLAB basics for EEGLAB: the Command Window, variables and the Workspace, folders and the path, text, arrays and matrices, the EEG struct, functions, and loops and scripts.',
 /* In focus mode, Next walks these in order before moving on to the next diagram. */
 steps:[
 {file:'matlab-01-command-window.html', title:'The Command Window'},
@@ -202,7 +202,7 @@ file:'life-multicellular-and-brains.html',
 thumbLive:true,
 tags:['evolution','neuroanatomy','teaching'],
 label:'INTERACTIVE',
-blurb:'The brain as nested subsets, from non-living matter to life, multicellular life, animals with a nervous system, and the brain, with the four thresholds crossed between them.',
+blurb:'The brain as nested subsets: non-living matter, life, multicellular life, animals with a nervous system, and the brain, with the four thresholds between them.',
 extras:[],
 connects:'For lectures on the evolution of nervous systems and where the brain sits within life.',
 caveats:[
@@ -218,7 +218,7 @@ file:'brain-composition.html',
 thumbLive:true,
 tags:['neuroanatomy','teaching','reference'],
 label:'INTERACTIVE',
-blurb:'What fills the fixed skull by volume, then the ~86 billion neurons broken down by type and where each is found.',
+blurb:'The volume inside the skull by tissue, and the ~86 billion neurons by type and location.',
 extras:[],
 connects:'For lectures on brain composition, the Monro-Kellie doctrine and neuron counts.',
 caveats:[
@@ -239,7 +239,7 @@ file:'nervous-system-tree.html',
 thumb:'tree.svg',
 tags:['evolution','neuroanatomy','teaching'],
 label:'SCROLLABLE',
-blurb:'From LUCA to Homo sapiens, with every relative that branched off along the way. Each carries its neuron count, shared DNA and a life-history bar.',
+blurb:'From LUCA to Homo sapiens, with every lineage that branched off along the way, each with its neuron count, shared DNA, and life-history bar.',
 extras:[
 {label:'Print PDF (A3) ↗', href:'nervous-system-tree.pdf'},
 {label:'tree.svg ↗', href:'tree.svg'}
@@ -263,7 +263,7 @@ file:'ontogeny-energy.html',
 thumb:'energy-curve.svg',
 tags:['physiology','metabolism','development','teaching'],
 label:'BROKEN AXIS',
-blurb:'Metabolic rate from conception to death, with gestation, puberty and pregnancy each given their own zoom.',
+blurb:'Metabolic rate from conception to death, with separate views of gestation, puberty, and pregnancy.',
 extras:[
 {label:'energy-curve.svg ↗', href:'energy-curve.svg'}
 ],
@@ -286,7 +286,7 @@ file:'developmental-timelines.html',
 thumbLive:true,
 tags:['development','methods','teaching','reference','interactive'],
 label:'RANGES',
-blurb:'Milestones from birth to puberty as early-to-late ranges: WHO windows and clinical ranges as bars, the CDC\'s 2022 checklist ages as diamonds, with speech, walking, reading and puberty on one compressed age axis.',
+blurb:'Speech, walking, reading, and puberty milestones from birth to adolescence: WHO windows and clinical ranges as bars and CDC 2022 checklist ages as diamonds, on one compressed age axis.',
 extras:[],
 connects:'For lectures on development and on why surveillance checklists are not norms: the CDC\'s 2022 ages mark where 75% or more of children have passed a milestone, not the average.',
 caveats:[
@@ -305,7 +305,7 @@ file:'scale-of-a-neuron.html',
 thumb:'scale-of-a-neuron.svg',
 tags:['neuroanatomy','morphology','scale','teaching'],
 label:'INTERACTIVE',
-blurb:'A corticospinal pyramidal neuron at true scale: the whole cell body and dendrites shrink to a speck beside a one meter axon. Hover any part to light it up across body, tract and cell, and blow the soma up to everyday objects.',
+blurb:'A corticospinal pyramidal neuron at true scale: the soma and dendrites beside a one-meter axon, with size comparisons to everyday objects.',
 extras:[
 {label:'scale-of-a-neuron.svg ↗', href:'scale-of-a-neuron.svg'}
 ],
@@ -328,7 +328,7 @@ file:'parts-of-a-neuron.html',
 thumbLive:true,
 tags:['neuroanatomy','morphology','synapses','teaching','interactive'],
 label:'INTERACTIVE',
-blurb:'One multipolar neuron drawn from the dendrites down to the terminals. Hover or click any structure, from the dendritic spines to the nodes of Ranvier, to read what it does, with the four functional zones marked down the side.',
+blurb:'One multipolar neuron from dendrites to terminals, with each structure labeled, from dendritic spines to nodes of Ranvier, and the four functional zones.',
 extras:[],
 connects:'For the first biopsychology lecture on the cells of the nervous system. Terms and definitions follow Watson and Breedlove, <em>The Mind\'s Machine</em>, Chapter 1. Pairs with Types of Neurons and Glia, Ion Channels and The Action Potential.',
 caveats:[
@@ -347,7 +347,7 @@ file:'types-of-neurons.html',
 thumbLive:true,
 tags:['neuroanatomy','morphology','teaching','interactive'],
 label:'INTERACTIVE',
-blurb:'Neurons sorted two ways, by shape (multipolar, bipolar, unipolar) and by job (sensory, interneuron, motor) inside a spinal reflex, with a log scale of neural structures from an ion channel to a cell body.',
+blurb:'Neurons by shape (multipolar, bipolar, unipolar) and by function (sensory, interneuron, motor) in a spinal reflex.',
 extras:[],
 connects:'For the biopsychology lecture on cell types. Follows Watson and Breedlove, <em>The Mind\'s Machine</em>, Chapter 1, including the size figures from its Figure 1.2. Pairs with The Parts of a Neuron and Glial Cells.',
 caveats:[
@@ -365,7 +365,7 @@ file:'glial-cells.html',
 thumbLive:true,
 tags:['neuroanatomy','glia','myelin','teaching','interactive'],
 label:'INTERACTIVE',
-blurb:'The four kinds of glial cell drawn side by side: one oligodendrocyte myelinating segments on two different axons, a Schwann cell making a single bead, an astrocyte with an endfoot on a capillary, and microglia breaking down debris.',
+blurb:'Four glial cell types: an oligodendrocyte myelinating two axons, a Schwann cell myelinating one segment, an astrocyte with an endfoot on a capillary, and microglia clearing debris.',
 extras:[],
 connects:'For the biopsychology lecture on the cells of the nervous system. Follows Watson and Breedlove, <em>The Mind\'s Machine</em>, Chapter 1. Pairs with The Parts of a Neuron and Types of Neurons.',
 caveats:[
@@ -384,7 +384,7 @@ file:'ion-channels.html',
 thumbLive:true,
 tags:['membrane','neurophysiology','synapses','teaching','animation'],
 label:'INTERACTIVE',
-blurb:'The ways ions cross the membrane: leak pores, voltage-gated, ligand-gated and mechanically-gated channels, and the Na⁺/K⁺ pump, each drawn to scale in one 4 nm bilayer.',
+blurb:'Leak, voltage-gated, ligand-gated, and mechanically gated channels and the Na⁺/K⁺ pump, drawn to scale in a 4 nm bilayer.',
 extras:[],
 connects:'Pairs with The Action Potential; for lectures on membrane channels and transport.',
 caveats:[
@@ -402,7 +402,7 @@ file:'action-potential.html',
 thumbLive:true,
 tags:['neurophysiology','membrane','synapses','teaching','animation'],
 label:'INTERACTIVE',
-blurb:'Graded potentials sweep down the dendrites of a pyramidal cell, summate at the soma, and once threshold is crossed an all-or-none spike jumps node to node down the axon to the terminals, recorded by two electrodes.',
+blurb:'Graded potentials in the dendrites of a pyramidal cell, summation at the soma, and an all-or-none action potential conducted node to node to the terminals, recorded at two electrodes.',
 extras:[],
 connects:'For lectures on membrane potential, synaptic integration and the action potential. Pairs with a separate zoomed diagram of the ion channels, which are deliberately omitted here.',
 caveats:[
@@ -423,7 +423,7 @@ file:'synapse.html',
 thumbLive:true,
 tags:['neurophysiology','synapses','neurotransmitters','teaching','animation','interactive'],
 label:'INTERACTIVE',
-blurb:'The five steps of chemical transmission, animated. The action potential arrives, calcium enters, vesicles fuse and release transmitter into the cleft, receptors answer on the other side, and the cleft is cleared by reuptake and by enzymes. A second layer numbers the places where drugs act.',
+blurb:'The five steps of chemical transmission: action potential arrival, calcium entry, vesicle fusion and release, receptor binding, and clearance by reuptake and enzymes, with the sites where drugs act.',
 extras:[],
 connects:'For the lectures on synaptic transmission and neuropharmacology. Follows Watson and Breedlove, <em>The Mind\'s Machine</em>, Chapter 3, including its Figures 3.1, 3.2 and 3.7. Pairs with The Parts of a Neuron and with Ion Channels.',
 caveats:[
@@ -443,7 +443,7 @@ file:'neurotransmitters.html',
 thumbLive:true,
 tags:['neurochemistry','neurotransmitters','pharmacology','teaching','interactive'],
 label:'INTERACTIVE',
-blurb:'The four families of transmitter molecules, the four systems that reach the whole brain from a handful of cells, and the receptor subtypes that decide what each transmitter does when it arrives.',
+blurb:'The four families of neurotransmitters, the four diffuse modulatory systems, and the receptor subtypes for each transmitter.',
 extras:[],
 connects:'For the lectures on neurochemistry and neuropharmacology. Follows Watson and Breedlove, <em>The Mind\'s Machine</em>, Chapter 3, including its Table 3.1, Figure 3.4 and Table 3.2. Pairs with The Synapse.',
 caveats:[
@@ -462,7 +462,7 @@ file:'cortical-rhythms.html',
 thumbLive:true,
 tags:['neuroanatomy','oscillations','teaching','animation'],
 label:'INTERACTIVE',
-blurb:'Three brain views built from the fs_LR/Conte69 surface, switchable between activity, traveling waves (δ/θ/α/γ), lobes and Brodmann areas.',
+blurb:'Three views of the cortical surface (fs_LR/Conte69) showing activity, traveling waves (δ, θ, α, γ), lobes, and Brodmann areas.',
 extras:[],
 connects:'For lectures on cortical organisation and brain rhythms. Pairs with any EEG/oscillations session.',
 caveats:[
@@ -485,7 +485,7 @@ file:'spatial-cells.html',
 thumbLive:true,
 tags:['spatial','hippocampus','teaching','animation'],
 label:'INTERACTIVE',
-blurb:'A rat explores, encodes an object location, then recalls it, with the cell types firing in step.',
+blurb:'A rat explores, encodes an object location, and recalls it, with place, grid, head-direction, border, and object-vector cells firing.',
 extras:[],
 connects:'Accompanies Neil Burgess, <em>Neural mechanisms of spatial cognition</em> (Jim Ranck symposium).',
 caveats:[
@@ -505,7 +505,7 @@ file:'frequencies.html',
 thumbLive:true,
 tags:['math','waves','frequency','trigonometry','teaching','interactive'],
 label:'INTERACTIVE',
-blurb:'Sine waves compared over one shared second: a fixed set from 1 to 100 Hz you can toggle, plus one wave whose frequency and amplitude you set with sliders, with hover readouts, a zoomable time window and a play animation.',
+blurb:'Sine waves from 1 to 100 Hz over one second, plus one wave with adjustable frequency and amplitude.',
 extras:[],
 connects:'For any session that introduces frequency, period and amplitude: waves, oscillations, trigonometric functions or the basics behind EEG rhythms and sound.',
 caveats:[
@@ -523,7 +523,7 @@ file:'fourier.html',
 thumbLive:true,
 tags:['math','waves','frequency','Fourier','spectrum','EEG','methods','teaching','interactive'],
 label:'INTERACTIVE',
-blurb:'Wind a signal around a circle and watch the center of mass swing out whenever the winding rate matches a wave that is really in it. Sweeping every winding rate traces the spectrum, so the time plot and the frequency plot are the same signal seen two ways.',
+blurb:'Fourier analysis as a winding machine: a signal wound around a circle at each frequency, its center of mass, and the spectrum beside the time signal.',
 extras:[],
 connects:'The step before filtering and time-frequency analysis in PSYCH 390, and a follow-on from Frequencies: that page shows single sine waves, this one takes a mixture apart.',
 caveats:[
