@@ -36,6 +36,15 @@ Sadé Brooks-Robinson is a Mathematics and Biology double major with a concentra
 
 <div class="member" markdown="1">
 
+**Sam Zins**
+*Undergraduate Research Assistant · Fall 2026 CURI Scholar*
+
+Sam Zins is a junior Psychology and Biology major at St. Olaf College with a concentration in Neuroscience. He is interested in sleep and memory and plans a research career studying sleep from a neuroscience perspective. In his spare time, Sam enjoys all kinds of exercise, competitive memory, lucid dreaming, and watching movies.
+
+</div>
+
+<div class="member" markdown="1">
+
 **Ava Sticka-Jacobs**
 *Undergraduate Researcher · Spring & Summer 2026 CURI Scholar*
 
