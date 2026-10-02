@@ -39,6 +39,8 @@ Sadé Brooks-Robinson is a Mathematics and Biology double major with a concentra
 **Sam Zins**
 *Undergraduate Research Assistant · Fall 2026 CURI Scholar*
 
+<img src="{{ '/images/samzins.jpg' | relative_url }}" alt="Sam Zins" class="site-photo portrait-right" style="width: 220px;">
+
 Sam Zins is a junior Psychology and Biology major at St. Olaf College with a concentration in Neuroscience. He is interested in sleep and memory and plans a research career studying sleep from a neuroscience perspective. In his spare time, Sam enjoys all kinds of exercise, competitive memory, lucid dreaming, and watching movies.
 
 </div>
@@ -104,7 +106,7 @@ Mary Hendrickson '26 was an undergraduate researcher in the Root Lab and a Sprin
 
 We'd love to hear from you. The Root Lab is open to St. Olaf students from any major who are curious about how the brain makes sense of numbers. You don't need any experience with EEG or programming. We'll teach you.
 
-Lab members help design experiments, run participants, record and analyze EEG data, and present their work at conferences. Students can also join through programs such as CURI.
+Lab members run participants, record and analyze EEG data, and present their work at conferences. Students can also join through programs such as CURI.
 
 If you're interested, email Dr. Rivera at [rivera21@stolaf.edu](mailto:rivera21@stolaf.edu) with a few lines about yourself and what draws you to the lab.
 
