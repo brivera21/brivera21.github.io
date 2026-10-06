@@ -47,6 +47,17 @@ Sam Zins is a junior Psychology and Biology major at St. Olaf College with a con
 
 <div class="member" markdown="1">
 
+**Ella Leitner**
+*Undergraduate Research Assistant · Fall 2026*
+
+<img src="{{ '/images/ellaleitner.jpg' | relative_url }}" alt="Ella Leitner" class="site-photo portrait-right" style="width: 220px;">
+
+Ella Leitner is a Psychology major with a concentration in Neuroscience at St. Olaf College. She is passionate about cognitive psychology and neuroscience, with special interests in psychopathy and neuropsychopharmacology. She plans to attend graduate school and pursue a career in neuroscience research. Outside of class, Ella works as a florist in downtown Northfield. In her free time, she enjoys traveling, reading, painting, yoga, and video games.
+
+</div>
+
+<div class="member" markdown="1">
+
 **Ava Sticka-Jacobs**
 *Undergraduate Researcher · Spring & Summer 2026 CURI Scholar*
 
