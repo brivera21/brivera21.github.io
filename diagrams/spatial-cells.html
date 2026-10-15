@@ -112,6 +112,8 @@ Schematic model based on Neil Burgess, "Neural mechanisms of spatial cognition."
 
   var keys = {x:0.30, y:0.80};
   var pc = {x:keys.x, y:keys.y};
+  // object vector cell: field sits at a fixed distance and direction from the key (Hoydal et al. 2019)
+  var ovf = {x:keys.x+0.15, y:keys.y-0.12}, OVR=0.08;
 
   var DPREF=0.15, DSIG=0.06;
   function gauss(x){return Math.exp(-(x*x)/(2*DSIG*DSIG));}
@@ -180,7 +182,7 @@ Schematic model based on Neil Burgess, "Neural mechanisms of spatial cognition."
     var bSw=0,bNw=0;
     if(r.x>WX0 && r.x<WX1){ if(r.y<WALLY) bSw=gauss((WALLY-r.y)-DPREF); else bNw=gauss((r.y-WALLY)-DPREF); }
     var bS=Math.max(bSe,bSw), bN=Math.max(bNe,bNw);
-    var ovc=clamp(1 - d(r.x,r.y,keys.x,keys.y)/0.24);
+    var ovc=clamp(1 - d(r.x,r.y,ovf.x,ovf.y)/OVR);
     var hde=clamp(1 - angDiff(st.hd,0)/0.8);
     var hdw=clamp(1 - angDiff(st.hd,Math.PI)/0.8);
     var hdn=clamp(1 - angDiff(st.hd,-Math.PI/2)/0.8);
@@ -329,9 +331,11 @@ Schematic model based on Neil Burgess, "Neural mechanisms of spatial cognition."
       if(f.place>0.05){ ctx.fillStyle=col.place; ctx.globalAlpha=0.12+0.18*f.place; ctx.fill(); }
       ctx.globalAlpha=1;
 
-      ctx.beginPath(); ctx.arc(X(keys.x),Y(keys.y), 0.24*inner, 0, 7);
+      ctx.beginPath(); ctx.arc(X(ovf.x),Y(ovf.y), OVR*inner, 0, 7);
       ctx.strokeStyle=col.ovc; ctx.setLineDash([4,4]); ctx.globalAlpha=f.ovc>0.05?0.8:0.2; ctx.lineWidth=1.5;
-      ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha=1;
+      ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(X(keys.x),Y(keys.y)); ctx.lineTo(X(ovf.x),Y(ovf.y)); ctx.stroke();
+      ctx.setLineDash([]); ctx.globalAlpha=1;
     }
 
     if(st.phase==='retrieve'){
@@ -405,7 +409,7 @@ Schematic model based on Neil Burgess, "Neural mechanisms of spatial cognition."
   var topDefs=[
     {id:'place', name:'Place cell', sub:'fires at one location', c:col.place, shape:'pyramidal'},
     {id:'grid', name:'Grid cell', sub:'fires on a hex lattice', c:col.grid, shape:'stellate'},
-    {id:'ovc', name:'Object vector cell', sub:'fires near the key', c:col.ovc, shape:'multipolar'}
+    {id:'ovc', name:'Object vector cell', sub:'fires at a set distance and direction from the key', c:col.ovc, shape:'multipolar'}
   ];
   var bvcDefs=[ {id:'bS',label:'to South'},{id:'bN',label:'to North'},{id:'bE',label:'to East'},{id:'bW',label:'to West'} ];
   var hdDefs=[ {id:'hdn', label:'North', rot:0},{id:'hde', label:'East', rot:90},{id:'hds', label:'South', rot:180},{id:'hdw', label:'West', rot:270} ];
