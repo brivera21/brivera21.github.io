@@ -145,7 +145,7 @@
               <path d="M388,56 C396,46 400,40 406,32"/><path d="M388,56 C378,48 372,44 364,36"/>
             </g>
           </g>
-          <!-- dendritic spines: a stalk with a head, in their own colour -->
+          <!-- dendritic spines: a stalk with a head, in their own color -->
           <g id="spines" stroke="#67e8f9" stroke-width="3" stroke-linecap="round" fill="#67e8f9"></g>
           <g fill="none" stroke="#38bdf8" stroke-linecap="round">
           </g>
@@ -458,7 +458,7 @@ const fig = document.getElementById("fig");
 const infoEl = document.getElementById("info");
 let pinned = null, hovered = null, spot = null;
 
-/* the words in the panel that name a part, so they can be coloured and made live */
+/* the words in the panel that name a part, so they can be colored and made live */
 const TERMS = [
   ["dendritic spines","dendrites","#67e8f9"],["dendritic spine","dendrites","#67e8f9"],["dendrites","dendrites"],["dendrite","dendrites"],
   ["cell body","soma"],["soma","soma"],
@@ -486,7 +486,7 @@ PARTS.forEach(p=>{
   });
 });
 
-/* resolve each part's colour once, so the term links can use it */
+/* resolve each part's color once, so the term links can use it */
 (function(){
   const probe = document.createElement("span");
   probe.style.display = "none";

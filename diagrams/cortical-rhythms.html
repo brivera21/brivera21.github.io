@@ -116,7 +116,7 @@
 <body>
 <div class="wrap">
   <h1>Cortical rhythms and areas</h1>
-  <p class="sub">Three standard planes (sagittal, coronal, axial). The silhouettes come from the real <strong>fs_LR / Conte69</strong> symmetric cortical surface (32k mesh; lateral and axial from projections, coronal from a cross-section). Switch the colouring below. <em>Activity</em> shows a drifting jet-colormap field with sweeping neural pulses. <em>Traveling waves</em> shows theta, alpha, and gamma cortical rhythms moving along the front-to-back axis. <em>Lobes</em> and <em>Brodmann areas</em> show schematic, landmark-based parcellations that are approximate and not a cytoarchitectural atlas.</p>
+  <p class="sub">Three standard planes (sagittal, coronal, axial). The silhouettes come from the real <strong>fs_LR / Conte69</strong> symmetric cortical surface (32k mesh; lateral and axial from projections, coronal from a cross-section). Switch the coloring below. <em>Activity</em> shows a drifting jet-colormap field with sweeping neural pulses. <em>Traveling waves</em> shows theta, alpha, and gamma cortical rhythms moving along the front-to-back axis. <em>Lobes</em> and <em>Brodmann areas</em> show schematic, landmark-based parcellations that are approximate and not a cytoarchitectural atlas.</p>
   <div class="controls">
     <button id="pulseBtn">Fire a pulse</button>
     <button id="pauseBtn">Pause</button>
@@ -238,7 +238,7 @@ function drawArrow(ctx, x1, y1, x2, y2, color) {
 // ---------------------------------------------------------------------------
 // Schematic lobe + Brodmann-area maps. IMPORTANT: these are APPROXIMATE,
 // positioned by anatomical landmarks - NOT a cytoarchitectural atlas. Each dot
-// is assigned to the nearest labelled seed point (a Voronoi partition).
+// is assigned to the nearest labeled seed point (a Voronoi partition).
 // ---------------------------------------------------------------------------
 
 const LOBE_COLORS = {
@@ -471,7 +471,7 @@ class BrainField {
   }
 
   // Flag dots that sit on a lobe or Brodmann-area boundary, so those seams can
-  // be drawn as thin outlines between the coloured regions.
+  // be drawn as thin outlines between the colored regions.
   markEdges() {
     const cell = 10, grid = new Map();
     const key = (cx, cy) => cx + "," + cy;
@@ -739,7 +739,7 @@ function setup() {
   fields.push(makeField("superior", superiorOutline(), { fissure: { yTop: 12, yBot: 86, half: 1.6 } }));
 }
 
-// Legend reflects the active colour mode.
+// Legend reflects the active color mode.
 function renderLegend() {
   const el = document.getElementById("legend");
   if (!el) return;
@@ -754,7 +754,7 @@ function renderLegend() {
       '<span class="item">' + sw(WAVE.theta.hex) + '&theta; Theta 4 to 8 Hz. Back&rarr;front</span>' +
       '<span class="item">' + sw(WAVE.alpha.hex) + '&alpha; Alpha 8 to 12 Hz. Front&rarr;back (resting)</span>' +
       '<span class="item">' + sw(WAVE.gamma.hex) + '&gamma; Gamma 30+ Hz. Local ripples at occipital pole</span>' +
-      '<span class="item note" style="width:100%">Higher frequency gives tighter, faster fronts. Gamma stays local. Delta also crosses hemispheres: the <strong>coronal</strong> view shows its left↔right sweep, the top view shows it travelling diagonally. Theta, alpha and gamma travel front to back only, so the coronal view shows Delta alone. The <strong>Rate</strong> slider scales all rhythms together. It is a pedagogical speed control, not a real brain parameter.</span>';
+      '<span class="item note" style="width:100%">Higher frequency gives tighter, faster fronts. Gamma stays local. Delta also crosses hemispheres: the <strong>coronal</strong> view shows its left↔right sweep, the top view shows it traveling diagonally. Theta, alpha and gamma travel front to back only, so the coronal view shows Delta alone. The <strong>Rate</strong> slider scales all rhythms together. It is a pedagogical speed control, not a real brain parameter.</span>';
   } else if (colorMode === "lobes") {
     const names = { frontal:"Frontal", parietal:"Parietal", temporal:"Temporal",
                     occipital:"Occipital", insula:"Insula", limbic:"Limbic / cingulate" };
@@ -824,7 +824,7 @@ pauseBtn.addEventListener("click", () => {
   if (!paused) last = performance.now();
 });
 
-// colour-mode buttons
+// color-mode buttons
 document.querySelectorAll(".mode-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
     colorMode = btn.dataset.mode;
@@ -879,7 +879,7 @@ requestAnimationFrame(frame);
 <ol>
 <li><a href="https://academic.oup.com/cercor/article-abstract/22/10/2241/286589" target="_blank" rel="noopener">Van Essen et&nbsp;al., Parcellations and hemispheric asymmetries of human cerebral cortex analyzed on surface-based atlases, <i>Cereb. Cortex</i> 2012</a> (the fs_LR / Conte69 cortical surface the silhouettes are taken from).</li>
 <li><a href="https://www.science.org/doi/10.1126/science.1099745" target="_blank" rel="noopener">Buzs&aacute;ki &amp; Draguhn, Neuronal oscillations in cortical networks, <i>Science</i> 2004</a> (the delta, theta, alpha and gamma frequency bands).</li>
-<li><a href="https://www.nature.com/articles/nrn.2018.20" target="_blank" rel="noopener">Muller et&nbsp;al., Cortical travelling waves: mechanisms and computational principles, <i>Nat. Rev. Neurosci.</i> 2018</a> (travelling waves of cortical activity).</li>
+<li><a href="https://www.nature.com/articles/nrn.2018.20" target="_blank" rel="noopener">Muller et&nbsp;al., Cortical travelling waves: mechanisms and computational principles, <i>Nat. Rev. Neurosci.</i> 2018</a> (traveling waves of cortical activity).</li>
 <li>Brodmann, <i>Vergleichende Lokalisationslehre der Grosshirnrinde</i> (1909), the origin of the numbered cytoarchitectonic areas. The lobe and area boundaries shown here are schematic and landmark-based, not a registered cytoarchitectural atlas.</li>
 </ol>
 </div>

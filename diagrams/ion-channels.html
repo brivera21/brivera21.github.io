@@ -271,7 +271,7 @@ function resizeAll(){
     P.cssW=cssW; P.cssH=cssH; P.dpr=dpr; P.S=s;
     P.canvas.style.height = cssH+"px";
     P.canvas.width = Math.max(1,Math.round(cssW*dpr)); P.canvas.height = Math.max(1,Math.round(cssH*dpr));
-    P.oX = 0; P.oY = (cssH - P.worldH*s)/2;             // centre vertically when zoomed out
+    P.oX = 0; P.oY = (cssH - P.worldH*s)/2;             // center vertically when zoomed out
     P.viewMax = cssW/s;                                 // visible width in nm (membrane fills it)
     layoutPanel(P);
     seedIons(P);
@@ -794,7 +794,7 @@ function drawIons(P, front){
 
 /* ---- gate + S4 helpers ---- */
 function gate(cx,gy,halfPore,openv,col){
-  // ONE pair of hinged flaps for BOTH states: closed -> tips meet in the centre and seal the pore;
+  // ONE pair of hinged flaps for BOTH states: closed -> tips meet in the center and seal the pore;
   // open -> the same flaps swing straight down and the pore is clear. Same object, different angle.
   const Lp=halfPore, phi=openv*(Math.PI/2);
   const lx=cx-halfPore, rx=cx+halfPore;
