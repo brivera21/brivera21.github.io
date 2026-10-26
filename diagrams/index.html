@@ -195,6 +195,24 @@ caveats:[
 mine:''
 },
 {
+id:'ica',
+category:'PSYCH 390',
+title:'Independent Component Analysis',
+file:'ica.html',
+thumbLive:true,
+tags:['EEG','ERP','ICA','artifacts','methods','teaching','interactive','PSYCH 390'],
+label:'INTERACTIVE',
+blurb:'Two figures on ICA for EEG: six simulated channels unmixed into components with scalp maps, where a blink can be removed and the ERP checked against the true source, and a two-source, two-sensor demonstration of why independence is enough to unmix.',
+extras:[],
+connects:'Companion to Artifact Detection in the ERP Pipeline series and to Luck (2014), Chapter 6.',
+caveats:[
+'All signals are simulated from four known sources and six channels; real decompositions have as many components as channels and are harder to read.',
+'The page runs FastICA; EEGLAB\'s runica is extended infomax. The two reach the same kind of answer by different routes.',
+'Scalp maps are a distance-weighted interpolation over six electrodes, not a spherical spline.'
+],
+mine:''
+},
+{
 id:'life-multicellular-brains',
 category:'Neuroscience',
 title:'Life, Multicellular Organisms, and Brains',

@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Independent Component Analysis · ERP pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===== SHARED STYLE: copy verbatim into every page ===== */
+:root{
+  --bg:#f6f3ee; --panel:#ffffff; --ink:#1d1f24; --muted:#5c6270; --rule:#e2ddd4;
+  --accent:#0f6e74; --accent-2:#d9573b; --accent-3:#6b5ca5; --gold:#c8962a;
+  --ok:#2f8f4e; --warn:#c2410c; --code-bg:#f0ece4;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --maxw:1040px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+a:hover{text-decoration-thickness:2px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:var(--maxw);margin:0 auto;padding:14px 20px 0}
+.topbar .series{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.topbar .series:hover{color:var(--accent)}
+.topbar .step{font-family:var(--mono);font-size:13px;color:var(--muted)}
+header.hero{max-width:var(--maxw);margin:0 auto;padding:18px 20px 10px}
+header.hero h1{font-size:clamp(26px,4vw,38px);line-height:1.15;margin:0 0 6px;font-weight:600;letter-spacing:-.01em}
+header.hero p.q{margin:0;font-size:clamp(17px,2.2vw,20px);color:var(--muted);font-style:italic}
+main{max-width:var(--maxw);margin:0 auto;padding:8px 20px 40px}
+.stage{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:16px;box-shadow:0 1px 0 rgba(0,0,0,.02),0 8px 24px -18px rgba(0,0,0,.25)}
+.stage .canvas-wrap{position:relative;width:100%}
+.stage canvas,.stage svg{display:block;width:100%;height:auto}
+.controls{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:flex-end;margin-top:14px;padding-top:14px;border-top:1px solid var(--rule)}
+.control{display:flex;flex-direction:column;gap:4px;min-width:150px;flex:1 1 150px}
+.control label{font-size:13px;color:var(--muted);letter-spacing:.02em}
+.control .val{font-family:var(--mono);font-size:13px;color:var(--ink)}
+.control input[type=range]{width:100%;accent-color:var(--accent)}
+.control select,.control input[type=text],.control textarea{font:inherit;font-size:15px;padding:6px 8px;border:1px solid var(--rule);border-radius:8px;background:#fff;color:var(--ink)}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px}
+button{font:inherit;font-size:14px;font-weight:500;padding:8px 14px;border-radius:999px;border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer}
+button.secondary{background:#fff;color:var(--accent)}
+button.ghost{background:transparent;border-color:var(--rule);color:var(--ink)}
+button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+button:disabled{opacity:.5;cursor:not-allowed}
+.readout{display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:12px;font-family:var(--mono);font-size:13.5px;color:var(--muted)}
+.readout b{color:var(--ink);font-weight:500}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12.5px;font-family:var(--mono);border:1px solid var(--rule);background:var(--code-bg)}
+.pill.ok{color:var(--ok);border-color:var(--ok)}
+.pill.warn{color:var(--warn);border-color:var(--warn)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13.5px;color:var(--muted);margin-top:8px}
+.legend span::before{content:"";display:inline-block;width:18px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle;background:var(--sw)}
+section.prose{max-width:720px;margin:28px auto 0;padding:0}
+section.prose h2{font-size:22px;margin:28px 0 8px;font-weight:600}
+section.prose p{margin:0 0 14px}
+section.prose ol,section.prose ul{margin:0 0 14px 22px;padding:0}
+section.prose li{margin-bottom:6px}
+code,pre{font-family:var(--mono);font-size:.92em}
+code{background:var(--code-bg);padding:1px 5px;border-radius:5px}
+pre{background:var(--code-bg);padding:12px 14px;border-radius:10px;overflow-x:auto;line-height:1.45}
+pre code{background:none;padding:0}
+.refs{font-size:14.5px;color:var(--muted)}
+.refs p{padding-left:1.6em;text-indent:-1.6em}
+nav.pager{display:flex;justify-content:space-between;gap:12px;max-width:var(--maxw);margin:30px auto 0;padding:18px 20px;border-top:1px solid var(--rule)}
+nav.pager a{text-decoration:none;font-size:15px;display:flex;flex-direction:column;gap:2px;max-width:48%}
+nav.pager a small{color:var(--muted);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+nav.pager a.next{text-align:right;margin-left:auto}
+footer{max-width:var(--maxw);margin:0 auto;padding:0 20px 40px;font-size:13px;color:var(--muted)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:600px){
+  body{font-size:16px}
+  .stage{padding:12px;border-radius:10px}
+  .control{min-width:120px}
+}
+@media (prefers-reduced-motion: reduce){ .anim-hint{display:none} }
+/* ===== END SHARED STYLE ===== */
+.fig-num{margin:14px 0 0;font-size:15px;color:var(--ink)}
+.fig-title{margin:2px 0 10px;font-size:15px;color:var(--ink)}
+.fig-note{font-size:14.5px;color:var(--muted);margin-top:10px;max-width:var(--maxw)}
+.refs p,.refs a,.readout span{overflow-wrap:anywhere}
+.ctlgroup{display:flex;flex-wrap:wrap;gap:14px 22px;flex:1 1 100%}
+.ctlgroup h3{flex:1 1 100%;margin:0;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.icrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px;font-size:14px;color:var(--muted)}
+.icrow button{padding:5px 12px;font-family:var(--mono);font-size:13px}
+.icrow button[aria-pressed="true"]{background:var(--accent-2);border-color:var(--accent-2)}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="series" href="index.html">← Digital Concepts · PSYCH 390</a>
+  <span class="step">companion to the ERP pipeline</span>
+</div>
+<header class="hero">
+  <h1>Independent Component Analysis</h1>
+  <p class="q">How can a blink be subtracted from every channel at once?</p>
+</header>
+
+<main>
+  <p class="fig-num"><b>Figure 1</b></p>
+  <p class="fig-title"><i>Unmixing Six Channels of Simulated EEG into Independent Components</i></p>
+  <div class="stage" id="stage1">
+    <div class="canvas-wrap">
+      <canvas id="cv1" aria-label="Panel A: six EEG channels over several seconds, the recording in gray and the cleaned version in teal. Panel B: six independent components found by ICA, each with its scalp map and time course; components marked for removal are coral. Panel C: averaged ERPs at Fp1 and Pz from the recording, the cleaned data, and the true brain source. Panel D: a grid of correlations between each component and each of the four true sources."></canvas>
+    </div>
+    <div class="legend">
+      <span style="--sw:#9aa0aa">recorded channels</span>
+      <span style="--sw:#0f6e74">after removing the marked components</span>
+      <span style="--sw:#c8962a">true brain source</span>
+      <span style="--sw:#d9573b">component marked for removal</span>
+    </div>
+    <div class="icrow" id="icrow"><span>Remove:</span></div>
+    <div class="controls">
+      <div class="ctlgroup">
+        <h3>The decomposition</h3>
+        <div class="control">
+          <label for="iter">ICA iteration <span class="val" id="iterv"></span></label>
+          <input type="range" id="iter" min="0" max="1" value="1" step="1">
+        </div>
+        <div class="control">
+          <label for="dur">Data length <span class="val" id="durv"></span></label>
+          <input type="range" id="dur" min="2" max="20" value="8" step="1">
+        </div>
+        <div class="control">
+          <label for="noise">Sensor noise <span class="val" id="noisev"></span></label>
+          <input type="range" id="noise" min="0" max="12" value="1.5" step="0.5">
+        </div>
+        <div class="control" style="flex:0 1 auto">
+          <label>&nbsp;</label>
+          <div class="btnrow"><button id="rerun">Run ICA again</button><button class="ghost" id="newdata">New data</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="readout" id="ro1"></div>
+    <pre style="margin-top:12px;font-size:13px"><code id="code1"></code></pre>
+  </div>
+  <p class="fig-note">The page builds the recording from four sources it knows (a parietal ERP, occipital alpha, blinks, and temporal muscle), mixes them into six channels, adds sensor noise, and runs ICA on the result. That is why Panel D can grade the components. The algorithm here is FastICA; EEGLAB's <code>runica</code> is extended infomax, which reaches the same kind of answer by a different route.</p>
+
+  <p class="fig-num" style="margin-top:34px"><b>Figure 2</b></p>
+  <p class="fig-title"><i>Two Sources, Two Sensors: Why Independence Is Enough to Unmix</i></p>
+  <div class="stage" id="stage2">
+    <div class="canvas-wrap">
+      <canvas id="cv2" aria-label="Left: a scatter plot of the two sensor signals against each other, with two axes drawn at the current rotation. Middle: the two signals recovered by projecting onto those axes. Right: a curve of non-Gaussianity against rotation angle, with the current angle marked and the PCA and ICA answers labeled."></canvas>
+    </div>
+    <div class="legend">
+      <span style="--sw:#0f6e74">recovered signal 1</span>
+      <span style="--sw:#6b5ca5">recovered signal 2</span>
+      <span style="--sw:#c8962a">true sources</span>
+    </div>
+    <div class="controls">
+      <div class="ctlgroup">
+        <h3>The unmixing</h3>
+        <div class="control">
+          <label for="mix">How mixed the sensors are <span class="val" id="mixv"></span></label>
+          <input type="range" id="mix" min="0" max="1" value="0.6" step="0.05">
+        </div>
+        <div class="control">
+          <label for="theta">Rotation <span class="val" id="thetav"></span></label>
+          <input type="range" id="theta" min="0" max="180" value="20" step="1">
+        </div>
+        <div class="control" style="flex:0 1 auto">
+          <label>Step</label>
+          <div class="btnrow"><button class="secondary" id="whiten" aria-pressed="true">Whiten first</button><button class="ghost" id="snapPCA">Go to PCA answer</button><button class="ghost" id="snapICA">Go to ICA answer</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="readout" id="ro2"></div>
+  </div>
+  <p class="fig-note">Source 1 is a slow triangle wave, source 2 is a spiky signal. Both are far from Gaussian, in opposite directions. The sensors each hear a different mixture of the two.</p>
+
+  <section class="prose">
+    <h2>What You Are Looking At</h2>
+    <p>Every EEG channel is a weighted sum of whatever is generating voltage at that moment: cortical sources, the eyes, scalp muscle, the heart, and line noise. Each generator reaches every electrode, with weights fixed by where it sits in the head. ICA assumes exactly that picture. It takes the channels as the only input, and searches for a set of time courses that are as statistically independent of each other as possible, together with the weights that would mix them back into the recorded channels. If the assumption holds, one of the time courses is the blink, its weights are the blink's scalp map, and removing it from the sum removes the blink from every channel at once, leaving the rest of the trial intact (Makeig et al., 1996; Jung et al., 2000).</p>
+    <p>In Figure 1 the recording is six channels: Fp1 and Fp2 over the eyes, Cz, Pz, Oz, and a VEOG electrode below the left eye. Panel A shows the recording in gray and the cleaned version in teal. Panel B shows the six components ICA found, each with the scalp map that is its column of the mixing matrix. A map that is strongly positive at Fp1 and Fp2 and negative at VEOG is the signature of a blink: the eyeball is a dipole, and a blink moves the lid across it so the potential flips sign above and below the eye. Panel C shows the averaged ERP at Fp1 and Pz, and Panel D grades each component against the four true sources, which the page knows because it made them.</p>
+    <p>Figure 2 strips the problem to two sources and two sensors. Each dot in the scatter plot is one moment in time, placed by the voltage at the two sensors. The sources' cloud is a band, uniform across the triangle wave and long and tapering along the spiky one, and mixing slants it. Whitening, a step every ICA algorithm takes first, undoes the slant and the scaling, but it cannot know the rotation: every rotation of a whitened cloud is equally uncorrelated. That is where independence does the work. Projections of a mixture are closer to Gaussian than the sources themselves, so the rotation that makes the projections least Gaussian is the one that recovers the sources (Hyvärinen &amp; Oja, 2000). The curve on the right measures that, and ICA is the search for its peak.</p>
+
+    <h2>Try This</h2>
+    <ol>
+      <li>In Figure 1, find the blink component. Its map is bright at Fp1 and Fp2 and inverted at VEOG, its time course has the same bumps as the top channels, and in Panel D it sits on the blink column with a correlation near 1. Click its button to remove it. The teal traces lose the bumps and the Fp1 ERP in Panel C moves onto the true one.</li>
+      <li>Remove the parietal ERP component instead. The teal Pz average collapses. ICA cannot tell brain from artifact; it only separates. The decision about what to subtract is yours, and it is the step where damage is done.</li>
+      <li>Drag the iteration slider to 0. The six components are an arbitrary rotation of the whitened channels and every one is a mixture. Step forward and watch them pull apart. Most of the separation happens in the first few iterations.</li>
+      <li>Set data length to 2 seconds. The decomposition degrades: maps blur and the Panel D grid loses its clean diagonal. ICA needs many samples to estimate the statistics it relies on, and a common rule of thumb is at least 20 to 30 times the square of the number of channels (Onton et al., 2006). For 32 channels at 250 Hz that is at least a minute and a half of clean data; for 64 channels, six minutes or more.</li>
+      <li>Raise sensor noise to 10 µV. The two extra components, which with little noise are leftovers, now carry real variance, and the four source components get noisier. Independent noise at each electrode is not a single source with a fixed map, so it has no clean solution.</li>
+      <li>In Figure 2, turn off Whiten first and slide the rotation. No angle recovers the sources from the raw parallelogram. Turn whitening back on and go to the PCA answer: the axes are uncorrelated but each recovered signal still contains both sources. Go to the ICA answer: the recovered signals match the gold ones, and the correlation between the two projections is zero at that angle, exactly as it was at every other angle.</li>
+    </ol>
+
+    <h2>Why It Matters for the Pipeline</h2>
+    <p>Artifact detection throws a trial away. ICA keeps the trial and subtracts the artifact, which matters when participants blink on most trials, when the task itself causes eye movements, or when the trial count is small. The costs are a model assumption that is never exactly true, a decomposition that takes minutes on real data, and a judgment call for each component. Luck (2014, Chapter 6) treats ICA as the standard correction for blinks and recommends rejection for everything else.</p>
+    <p>Three things decide whether a decomposition is any good. The first is data length, above. The second is what goes in. ICA finds a single set of fixed weights, so slow drift, a channel that went bad halfway through, and large non-stereotyped artifacts all pull components toward themselves and should be removed before ICA, not after. A 1 Hz high-pass filter before decomposition gives markedly better components (Winkler et al., 2015); many labs run ICA on a 1 Hz filtered copy and then apply the resulting weights to the 0.1 Hz data they will actually analyze. The third is rank. ICA can only find as many components as there are independent channels. Average-referencing removes one dimension and each interpolated channel removes another, so after either step tell the algorithm to look for fewer components, or interpolate after ICA rather than before.</p>
+    <p>In EEGLAB the decomposition is <code>EEG = pop_runica(EEG, 'icatype', 'runica', 'extended', 1);</code>, which stores the unmixing matrix in <code>EEG.icaweights</code> and <code>EEG.icasphere</code> (Delorme &amp; Makeig, 2004). The extended algorithm handles sources that are flatter than Gaussian, like alpha and line noise, as well as the spiky ones (Lee et al., 1999). <code>EEG = pop_iclabel(EEG, 'default');</code> then labels each component as brain, eye, muscle, heart, line noise, channel noise, or other, with probabilities, using a classifier trained on thousands of labeled components (Pion-Tonachini et al., 2019). Treat the labels as a second opinion and inspect the map, the time course, and the power spectrum of each component before removing it. Eye components come first and are rarely more than two or three; a decomposition where many components look like eye activity usually means the data were not clean enough going in. Removal is <code>EEG = pop_subcomp(EEG, [3 7], 0);</code>, with the component numbers in the brackets. Afterwards, interpolate any channels you dropped, epoch, and run artifact detection on what remains, because ICA does not catch everything.</p>
+    <p>Two properties of the output trip people up. Components have no natural sign or scale: the algorithm can flip one and double its map without changing the data, so a blink map can come out blue at the front rather than red. And the order is by variance explained, not by importance, so the blink is often component 1 simply because blinks are large.</p>
+
+    <h2 id="refs">References</h2>
+    <div class="refs">
+      <p>Bell, A. J., &amp; Sejnowski, T. J. (1995). An information-maximization approach to blind separation and blind deconvolution. <i>Neural Computation, 7</i>(6), 1129&ndash;1159. <a href="https://doi.org/10.1162/neco.1995.7.6.1129">https://doi.org/10.1162/neco.1995.7.6.1129</a></p>
+      <p>Delorme, A., &amp; Makeig, S. (2004). EEGLAB: An open source toolbox for analysis of single-trial EEG dynamics including independent component analysis. <i>Journal of Neuroscience Methods, 134</i>(1), 9&ndash;21. <a href="https://doi.org/10.1016/j.jneumeth.2003.10.009">https://doi.org/10.1016/j.jneumeth.2003.10.009</a></p>
+      <p>Hyv&auml;rinen, A., &amp; Oja, E. (2000). Independent component analysis: Algorithms and applications. <i>Neural Networks, 13</i>(4&ndash;5), 411&ndash;430. <a href="https://doi.org/10.1016/S0893-6080(00)00026-5">https://doi.org/10.1016/S0893-6080(00)00026-5</a></p>
+      <p>Jung, T.-P., Makeig, S., Humphries, C., Lee, T.-W., McKeown, M. J., Iragui, V., &amp; Sejnowski, T. J. (2000). Removing electroencephalographic artifacts by blind source separation. <i>Psychophysiology, 37</i>(2), 163&ndash;178. <a href="https://doi.org/10.1111/1469-8986.3720163">https://doi.org/10.1111/1469-8986.3720163</a></p>
+      <p>Lee, T.-W., Girolami, M., &amp; Sejnowski, T. J. (1999). Independent component analysis using an extended infomax algorithm for mixed subgaussian and supergaussian sources. <i>Neural Computation, 11</i>(2), 417&ndash;441. <a href="https://doi.org/10.1162/089976699300016719">https://doi.org/10.1162/089976699300016719</a></p>
+      <p>Luck, S. J. (2014). <i>An introduction to the event-related potential technique</i> (2nd ed.). MIT Press.</p>
+      <p>Makeig, S., Bell, A. J., Jung, T.-P., &amp; Sejnowski, T. J. (1996). Independent component analysis of electroencephalographic data. In D. S. Touretzky, M. C. Mozer, &amp; M. E. Hasselmo (Eds.), <i>Advances in neural information processing systems 8</i> (pp. 145&ndash;151). MIT Press.</p>
+      <p>Onton, J., Westerfield, M., Townsend, J., &amp; Makeig, S. (2006). Imaging human EEG dynamics using independent component analysis. <i>Neuroscience &amp; Biobehavioral Reviews, 30</i>(6), 808&ndash;822. <a href="https://doi.org/10.1016/j.neubiorev.2006.06.007">https://doi.org/10.1016/j.neubiorev.2006.06.007</a></p>
+      <p>Pion-Tonachini, L., Kreutz-Delgado, K., &amp; Makeig, S. (2019). ICLabel: An automated electroencephalographic independent component classifier, dataset, and website. <i>NeuroImage, 198</i>, 181&ndash;197. <a href="https://doi.org/10.1016/j.neuroimage.2019.05.026">https://doi.org/10.1016/j.neuroimage.2019.05.026</a></p>
+      <p>Winkler, I., Debener, S., M&uuml;ller, K.-R., &amp; Tangermann, M. (2015). On the influence of high-pass filtering on ICA-based artifact reduction. <i>2015 37th Annual International Conference of the IEEE Engineering in Medicine and Biology Society (EMBC)</i>, 4101&ndash;4105. <a href="https://doi.org/10.1109/EMBC.2015.7319296">https://doi.org/10.1109/EMBC.2015.7319296</a></p>
+    </div>
+  </section>
+</main>
+
+<nav class="pager">
+  <a class="prev" href="erp-10-artifacts.html"><small>Related</small><span>Artifact Detection</span></a>
+  <a class="next" href="erp-pipeline.html"><small>Back to</small><span>The ERP Pipeline</span></a>
+</nav>
+<footer>Companion to the ERP pipeline series for PSYCH 390, St. Olaf College. Built as a standalone page; nothing is sent anywhere.</footer>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const TEAL='#0f6e74',CORAL='#d9573b',PURPLE='#6b5ca5',GOLD='#c8962a',GRAY='#9aa0aa',INK='#1d1f24',MUTED='#5c6270',RULE='#e2ddd4';
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- deterministic noise ---------- */
+let seed=7;function rnd(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;}
+function gaussRnd(){return Math.sqrt(-2*Math.log(rnd()+1e-12))*Math.cos(2*Math.PI*rnd());}
+function gauss(t,mu,sd){return Math.exp(-0.5*((t-mu)/sd)**2);}
+
+/* ---------- small-matrix linear algebra ---------- */
+function zeros(n,m){return Array.from({length:n},()=>new Float64Array(m));}
+function matmul(A,B){const n=A.length,m=B[0].length,k=B.length,C=zeros(n,m);for(let i=0;i<n;i++)for(let p=0;p<k;p++){const a=A[i][p];if(a===0)continue;for(let j=0;j<m;j++)C[i][j]+=a*B[p][j];}return C;}
+function transpose(A){const n=A.length,m=A[0].length,T=zeros(m,n);for(let i=0;i<n;i++)for(let j=0;j<m;j++)T[j][i]=A[i][j];return T;}
+// Jacobi eigendecomposition of a symmetric matrix. Returns eigenvalues and eigenvectors (as columns of V).
+function jacobi(S){const n=S.length,A=S.map(r=>Float64Array.from(r)),V=zeros(n,n);for(let i=0;i<n;i++)V[i][i]=1;
+  for(let sweep=0;sweep<60;sweep++){let off=0;for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)off+=A[i][j]*A[i][j];if(off<1e-22)break;
+    for(let p=0;p<n;p++)for(let q=p+1;q<n;q++){if(Math.abs(A[p][q])<1e-300)continue;
+      const th=(A[q][q]-A[p][p])/(2*A[p][q]),t=Math.sign(th||1)/(Math.abs(th)+Math.sqrt(th*th+1)),c=1/Math.sqrt(t*t+1),s=t*c;
+      for(let k=0;k<n;k++){const akp=A[k][p],akq=A[k][q];A[k][p]=c*akp-s*akq;A[k][q]=s*akp+c*akq;}
+      for(let k=0;k<n;k++){const apk=A[p][k],aqk=A[q][k];A[p][k]=c*apk-s*aqk;A[q][k]=s*apk+c*aqk;}
+      for(let k=0;k<n;k++){const vkp=V[k][p],vkq=V[k][q];V[k][p]=c*vkp-s*vkq;V[k][q]=s*vkp+c*vkq;}}}
+  return {vals:A.map((r,i)=>r[i]),V};}
+// (M M^T)^(-1/2) M : symmetric decorrelation
+function symDecor(M){const MMt=matmul(M,transpose(M)),{vals,V}=jacobi(MMt);const n=M.length,D=zeros(n,n);for(let i=0;i<n;i++)D[i][i]=1/Math.sqrt(Math.max(vals[i],1e-12));return matmul(matmul(matmul(V,D),transpose(V)),M);}
+function corr(a,b,N){let ma=0,mb=0;for(let k=0;k<N;k++){ma+=a[k];mb+=b[k];}ma/=N;mb/=N;let sab=0,saa=0,sbb=0;for(let k=0;k<N;k++){const x=a[k]-ma,y=b[k]-mb;sab+=x*y;saa+=x*x;sbb+=y*y;}return sab/Math.sqrt(saa*sbb+1e-18);}
+function kurt(a,N){let m=0;for(let k=0;k<N;k++)m+=a[k];m/=N;let s2=0,s4=0;for(let k=0;k<N;k++){const d=a[k]-m;s2+=d*d;s4+=d*d*d*d;}s2/=N;s4/=N;return s4/(s2*s2)-3;}
+
+/* ---------- FastICA (symmetric, tanh), keeping every iteration ---------- */
+function fastICA(X,N,initSeed){
+  const n=X.length;const mean=new Float64Array(n),Xc=zeros(n,N);
+  for(let i=0;i<n;i++){let s=0;for(let k=0;k<N;k++)s+=X[i][k];mean[i]=s/N;for(let k=0;k<N;k++)Xc[i][k]=X[i][k]-mean[i];}
+  const C=zeros(n,n);for(let i=0;i<n;i++)for(let j=i;j<n;j++){let s=0;for(let k=0;k<N;k++)s+=Xc[i][k]*Xc[j][k];C[i][j]=C[j][i]=s/N;}
+  const {vals,V}=jacobi(C);
+  const Dm=zeros(n,n),Dp=zeros(n,n);for(let i=0;i<n;i++){const v=Math.max(vals[i],1e-9);Dm[i][i]=1/Math.sqrt(v);Dp[i][i]=Math.sqrt(v);}
+  const Wh=matmul(Dm,transpose(V)), dewhite=matmul(V,Dp);          // Z = Wh Xc ; Xc = dewhite Z
+  const Z=matmul(Wh,Xc);
+  const keep=seed;seed=initSeed;let W=zeros(n,n);for(let i=0;i<n;i++)for(let j=0;j<n;j++)W[i][j]=gaussRnd();seed=keep;
+  W=symDecor(W);const hist=[W];
+  for(let it=0;it<120;it++){
+    const Y=matmul(W,Z),Wn=zeros(n,n);
+    for(let i=0;i<n;i++){let gp=0;const g=new Float64Array(N);for(let k=0;k<N;k++){const t=Math.tanh(Y[i][k]);g[k]=t;gp+=1-t*t;}gp/=N;
+      for(let j=0;j<n;j++){let s=0;const z=Z[j];for(let k=0;k<N;k++)s+=g[k]*z[k];Wn[i][j]=s/N-gp*W[i][j];}}
+    const W2=symDecor(Wn);let conv=0;for(let i=0;i<n;i++){let d=0;for(let j=0;j<n;j++)d+=W2[i][j]*W[i][j];conv=Math.max(conv,Math.abs(1-Math.abs(d)));}
+    W=W2;hist.push(W);if(conv<1e-6)break;
+  }
+  return {hist,Z,dewhite,mean,n,N};
+}
+// components and mixing matrix for one W; ordered by variance explained, like EEGLAB
+function unmixAt(ica,W){
+  const {Z,dewhite,n,N}=ica;const S=matmul(W,Z),A=matmul(dewhite,transpose(W));   // A: channels x components
+  const order=[...Array(n).keys()].sort((a,b)=>{let va=0,vb=0;for(let c=0;c<n;c++){va+=A[c][a]**2;vb+=A[c][b]**2;}return vb-va;});
+  const S2=order.map(i=>S[i]),A2=zeros(n,n);for(let c=0;c<n;c++)order.forEach((i,j)=>A2[c][j]=A[c][i]);
+  return {S:S2,A:A2};
+}
+
+/* ======================================================================
+   FIGURE 1: six channels, four known sources
+   ====================================================================== */
+const FS=250,DMAX=20,NMAX=FS*DMAX;
+const CH=['Fp1','Fp2','Cz','Pz','Oz','VEOG'];
+const POS=[[-0.31,0.95],[0.31,0.95],[0,0],[0,-0.5],[0,-0.95],[-0.31,1.28]];
+const SRC=['parietal ERP','alpha','blink','muscle'];
+const AT=[[1.5,0.4,100,10],[1.5,0.4,92,3],[7.0,1.5,28,2],[12.0,4.0,9,1],[5.0,9.0,3,0.8],[0.5,0.2,-55,8]];   // µV per unit source
+function erp(t){return -0.45*gauss(t,100,20)+1.0*gauss(t,330,70)-0.25*gauss(t,560,120);}
+let S=[],events=[],Xclean=[],X=[],dataSeed=11,icaSeed=5;
+function makeSources(){
+  S=[0,1,2,3].map(()=>new Float64Array(NMAX));events=[];
+  for(let t=300;t<DMAX*1000-900;t+=800+rnd()*400)events.push(t);
+  events.forEach(te=>{const k0=Math.round(te/1000*FS);for(let k=k0;k<Math.min(NMAX,k0+FS);k++)S[0][k]+=erp((k-k0)/FS*1000);});
+  const ph=rnd()*6.28,ph2=rnd()*6.28;for(let k=0;k<NMAX;k++){const t=k/FS;const env=0.08+0.92*Math.max(0,Math.sin(2*Math.PI*0.33*t+ph2))**4;S[1][k]=env*Math.sin(2*Math.PI*10*t+ph);}
+  for(let t=600+rnd()*800;t<DMAX*1000-300;t+=1200+rnd()*2300){const amp=0.7+rnd()*0.5,sd=55+rnd()*35;const k0=Math.round(t/1000*FS);for(let k=Math.max(0,k0-FS/2);k<Math.min(NMAX,k0+FS/2);k++)S[2][k]+=amp*gauss((k-k0)/FS*1000,0,sd);}
+  for(let t=900+rnd()*1000;t<DMAX*1000-400;t+=1000+rnd()*1500){const len=150+rnd()*250;const k0=Math.round(t/1000*FS),k1=Math.min(NMAX,k0+Math.round(len/1000*FS));let e=0;for(let k=k0;k<k1;k++){e=0.2*e+gaussRnd();S[3][k]=e*0.9*(0.4+0.6*Math.sin(Math.PI*(k-k0)/(k1-k0)));}}
+  Xclean=CH.map((_,c)=>{const x=new Float64Array(NMAX);for(let k=0;k<NMAX;k++){let v=0;for(let s=0;s<4;s++)v+=AT[c][s]*S[s][k];x[k]=v;}return x;});
+}
+let noiseBank=[];
+function makeNoise(){noiseBank=CH.map(()=>{const x=new Float64Array(NMAX);for(let k=0;k<NMAX;k++)x[k]=gaussRnd();return x;});}
+let P1={dur:8,noise:1.5,iter:1},ica=null,cur=null,removed=new Set(),N=0;
+function buildX(){N=P1.dur*FS;X=CH.map((_,c)=>{const x=new Float64Array(N);for(let k=0;k<N;k++)x[k]=Xclean[c][k]+P1.noise*noiseBank[c][k];return x;});}
+function runICA(){buildX();ica=fastICA(X,N,icaSeed);const sl=$('iter');sl.max=ica.hist.length-1;sl.value=ica.hist.length-1;P1.iter=ica.hist.length-1;removed.clear();buildICButtons();update1();}
+function update1(){cur=unmixAt(ica,ica.hist[P1.iter]);$('iterv').textContent=`${P1.iter} / ${ica.hist.length-1}`;$('durv').textContent=P1.dur+' s';$('noisev').textContent=P1.noise+' µV';draw1();}
+function buildICButtons(){const row=$('icrow');[...row.querySelectorAll('button')].forEach(b=>b.remove());
+  CH.forEach((_,i)=>{const b=document.createElement('button');b.className='ghost';b.textContent='IC'+(i+1);b.setAttribute('aria-pressed','false');b.onclick=()=>{if(removed.has(i))removed.delete(i);else removed.add(i);b.setAttribute('aria-pressed',removed.has(i)?'true':'false');draw1();};row.appendChild(b);});}
+
+/* cleaned data = mean + A[:,keep] S[keep] */
+function cleaned(){const n=6,out=CH.map(()=>new Float64Array(N));for(let c=0;c<n;c++){const o=out[c];for(let k=0;k<N;k++)o[k]=ica.mean[c];for(let i=0;i<n;i++){if(removed.has(i))continue;const a=cur.A[c][i],s=cur.S[i];for(let k=0;k<N;k++)o[k]+=a*s[k];}}return out;}
+function avgERP(x,c,trueSrc){const T0=-200,T1=800,NT=Math.round((T1-T0)/1000*FS),acc=new Float64Array(NT);let n=0;
+  events.forEach(te=>{const k0=Math.round((te+T0)/1000*FS);if(k0<0||k0+NT>N)return;n++;let bl=0,nb=0;for(let k=0;k<NT;k++)if(T0+k/FS*1000<0){bl+=x[k0+k];nb++;}bl/=nb;for(let k=0;k<NT;k++)acc[k]+=x[k0+k]-bl;});
+  for(let k=0;k<NT;k++)acc[k]/=Math.max(1,n);return acc;}
+
+/* ---------- drawing ---------- */
+const cv1=$('cv1'),cx1=cv1.getContext('2d');
+function sizeCanvas(cv,W,H){const dpr=Math.min(2,window.devicePixelRatio||1);cv.width=W*dpr;cv.height=H*dpr;cv.style.aspectRatio=W+'/'+H;const c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);return c;}
+function trace(c,x,x0,x1,y0,h,scale,N0,N1,color,lw){c.beginPath();for(let k=N0;k<N1;k++){const px=x0+(k-N0)/(N1-N0)*(x1-x0),py=y0-x[k]/scale*h/2;k===N0?c.moveTo(px,py):c.lineTo(px,py);}c.strokeStyle=color;c.lineWidth=lw;c.stroke();}
+function maxAbs(x,N0,N1){let m=1e-9;for(let k=N0;k<N1;k++)m=Math.max(m,Math.abs(x[k]));return m;}
+function label(c,s,x,y,o={}){c.font=(o.w||400)+' '+(o.size||12)+'px "IBM Plex Sans",system-ui,sans-serif';c.fillStyle=o.color||MUTED;c.textAlign=o.align||'left';c.textBaseline=o.base||'alphabetic';c.fillText(s,x,y);}
+function mono(c,s,x,y,o={}){c.font=(o.w||400)+' '+(o.size||11.5)+'px "IBM Plex Mono",ui-monospace,monospace';c.fillStyle=o.color||MUTED;c.textAlign=o.align||'left';c.textBaseline=o.base||'alphabetic';c.fillText(s,x,y);}
+function divColor(v){ // -1..1 -> blue..white..red
+  const t=Math.max(-1,Math.min(1,v));const r=t>0?[217,87,59]:[42,96,180];const a=Math.abs(t);return `rgb(${Math.round(255+(r[0]-255)*a)},${Math.round(255+(r[1]-255)*a)},${Math.round(255+(r[2]-255)*a)})`;}
+function scalpMap(c,cx,cy,R,w,hot){
+  const m=Math.max(...w.map(Math.abs),1e-9);const g=Math.max(1,Math.round(R/9));
+  for(let gy=-R-6;gy<=R+6;gy+=g)for(let gx=-R;gx<=R;gx+=g){const nx=gx/R,ny=-gy/R;if(nx*nx+ny*ny>1.02)continue;let num=0,den=0;
+    for(let i=0;i<6;i++){const d2=(nx-POS[i][0])**2+(ny-POS[i][1])**2+0.02;const wt=1/(d2*d2);num+=wt*w[i];den+=wt;}
+    c.fillStyle=divColor(num/den/m);c.fillRect(cx+gx-g/2,cy+gy-g/2,g+0.5,g+0.5);}
+  c.beginPath();c.arc(cx,cy,R,0,7);c.strokeStyle=hot?CORAL:INK;c.lineWidth=hot?1.8:1;c.stroke();
+  c.beginPath();c.moveTo(cx-5,cy-R+1);c.lineTo(cx,cy-R-5);c.lineTo(cx+5,cy-R+1);c.stroke();   // nose
+  POS.forEach((p,i)=>{c.beginPath();c.arc(cx+p[0]*R,cy-p[1]*R,i===5?2.6:2.2,0,7);c.fillStyle=divColor(w[i]/m);c.fill();c.strokeStyle=INK;c.lineWidth=.8;c.stroke();});
+}
+function draw1(){
+  const W=1040,H=800,c=sizeCanvas(cv1,W,H);c.clearRect(0,0,W,H);
+  const Xc=cleaned();
+  // ---- Panel A: channels
+  const A={x0:52,x1:596,y0:30,h:340};label(c,'A  Recorded channels (gray) and cleaned (teal)',A.x0-36,A.y0-10,{color:INK,w:600,size:13});
+  const rowH=A.h/6;
+  CH.forEach((name,i)=>{const yc=A.y0+rowH*(i+0.5);const sc=Math.max(maxAbs(X[i],0,N),maxAbs(Xc[i],0,N));
+    c.strokeStyle=RULE;c.lineWidth=1;c.beginPath();c.moveTo(A.x0,yc);c.lineTo(A.x1,yc);c.stroke();
+    trace(c,X[i],A.x0,A.x1,yc,rowH*0.9,sc,0,N,GRAY,1);trace(c,Xc[i],A.x0,A.x1,yc,rowH*0.9,sc,0,N,TEAL,1);
+    label(c,name,A.x0-6,yc+4,{align:'right',color:INK,w:500});mono(c,'±'+Math.round(sc)+' µV',A.x1-2,yc-rowH*0.42+8,{align:'right',size:10.5});});
+  for(let s=0;s<=P1.dur;s+=P1.dur>10?5:P1.dur>4?2:1){const px=A.x0+s/P1.dur*(A.x1-A.x0);mono(c,s+' s',px,A.y0+A.h+14,{align:'center'});}
+  // ---- Panel B: components
+  const B={x0:690,x1:1024,y0:30,h:340,map:22};label(c,'B  Independent components, with scalp maps',628,B.y0-10,{color:INK,w:600,size:13});
+  const w6=[];for(let i=0;i<6;i++){w6.push(CH.map((_,ch)=>cur.A[ch][i]));}
+  for(let i=0;i<6;i++){const yc=B.y0+rowH*(i+0.5),hot=removed.has(i);const sc=maxAbs(cur.S[i],0,N);
+    scalpMap(c,B.x0-30,yc,B.map,w6[i],hot);
+    c.strokeStyle=RULE;c.lineWidth=1;c.beginPath();c.moveTo(B.x0,yc);c.lineTo(B.x1,yc);c.stroke();
+    trace(c,cur.S[i],B.x0,B.x1,yc,rowH*0.9,sc,0,N,hot?CORAL:INK,1);
+    mono(c,'IC'+(i+1),B.x0-62,yc+4,{align:'right',color:hot?CORAL:INK,w:500});}
+  mono(c,'red + / blue −  (each map on its own scale)',B.x1,B.y0+B.h+14,{align:'right',size:10.5});
+  // ---- Panel C: ERPs
+  const C={y0:420,h:300};const nev=events.filter(t=>t+800<P1.dur*1000).length;label(c,'C  Averaged ERP across '+nev+(nev===1?' event':' events'),16,C.y0-10,{color:INK,w:600,size:13});
+  [['Fp1',0],['Pz',3]].forEach(([nm,ch],j)=>{const x0=52+j*285,x1=x0+255,yc=C.y0+C.h/2;
+    const trueX=new Float64Array(N);for(let k=0;k<N;k++)trueX[k]=AT[ch][0]*S[0][k];
+    const raw=avgERP(X[ch]),cl=avgERP(Xc[ch]),tr=avgERP(trueX);const NT=raw.length;
+    const sc=Math.max(maxAbs(raw,0,NT),maxAbs(cl,0,NT),maxAbs(tr,0,NT));
+    c.strokeStyle=RULE;c.beginPath();c.moveTo(x0,yc);c.lineTo(x1,yc);c.moveTo(x0+0.2*(x1-x0),C.y0+10);c.lineTo(x0+0.2*(x1-x0),C.y0+C.h-20);c.stroke();
+    trace(c,raw,x0,x1,yc,C.h*0.8,sc,0,NT,GRAY,1.4);trace(c,tr,x0,x1,yc,C.h*0.8,sc,0,NT,GOLD,2);trace(c,cl,x0,x1,yc,C.h*0.8,sc,0,NT,TEAL,1.6);
+    label(c,nm,x0,C.y0+6,{color:INK,w:600});mono(c,'±'+sc.toFixed(1)+' µV',x1,C.y0+6,{align:'right',size:10.5});
+    [-200,0,200,400,600,800].forEach(t=>mono(c,t,x0+(t+200)/1000*(x1-x0),C.y0+C.h-4,{align:'center',size:10.5}));mono(c,'ms',x1+22,C.y0+C.h-4,{size:10.5});
+    const rms=(a,b)=>{let s=0;for(let k=0;k<NT;k++)s+=(a[k]-b[k])**2;return Math.sqrt(s/NT);};mono(c,`RMS error vs true: gray ${rms(raw,tr).toFixed(1)} µV  teal ${rms(cl,tr).toFixed(1)} µV`,x0,C.y0+C.h+16,{size:11});});
+  // ---- Panel D: grading grid
+  const D={x0:690,y0:420,cw:76,rh:40};label(c,'D  |r| between each component and each true source',628,D.y0-10,{color:INK,w:600,size:13});
+  SRC.forEach((s,j)=>label(c,s,D.x0+D.cw*(j+0.5),D.y0+8,{align:'center',size:11.5}));
+  for(let i=0;i<6;i++){const hot=removed.has(i);mono(c,'IC'+(i+1),D.x0-10,D.y0+22+D.rh*(i+0.6),{align:'right',color:hot?CORAL:INK,w:500});
+    for(let j=0;j<4;j++){const r=Math.abs(corr(cur.S[i],S[j],N));const x=D.x0+D.cw*j,y=D.y0+20+D.rh*i;
+      c.fillStyle=`rgba(15,110,116,${(0.05+0.85*r*r).toFixed(3)})`;c.fillRect(x+2,y+2,D.cw-4,D.rh-4);
+      mono(c,r.toFixed(2),x+D.cw/2,y+D.rh/2+4,{align:'center',color:r>0.6?'#fff':INK,w:r>0.6?500:400});}}
+  mono(c,'a clean decomposition has one dark cell per column',D.x0,D.y0+20+D.rh*6+16,{size:11});
+  // readout
+  const bestBlink=[...Array(6).keys()].reduce((b,i)=>Math.abs(corr(cur.S[i],S[2],N))>Math.abs(corr(cur.S[b],S[2],N))?i:b,0);
+  const rem=[...removed].sort().map(i=>i+1);
+  $('ro1').innerHTML=`<span>samples <b>${N}</b> (${P1.dur} s × ${FS} Hz)</span><span>rule of thumb for 6 channels: ≥ <b>${Math.ceil(20*36/FS*10)/10}–${Math.ceil(30*36/FS*10)/10} s</b></span><span>best match to the blink source: <b>IC${bestBlink+1}</b></span><span>removed: <b>${rem.length?rem.join(', '):'none'}</b></span>`;
+  $('code1').textContent=`EEG = pop_runica(EEG, 'icatype', 'runica', 'extended', 1);   % decompose: EEG.icaweights, EEG.icasphere\nEEG = pop_iclabel(EEG, 'default');                        % label each component\nEEG = pop_subcomp(EEG, [${rem.join(' ')}], 0);                              % subtract the listed components`;
+}
+$('iter').addEventListener('input',e=>{P1.iter=+e.target.value;update1();});
+$('dur').addEventListener('input',e=>{P1.dur=+e.target.value;runICA();});
+$('noise').addEventListener('input',e=>{P1.noise=+e.target.value;runICA();});
+$('rerun').addEventListener('click',()=>{icaSeed=(icaSeed*7+3)%1000+1;runICA();});
+$('newdata').addEventListener('click',()=>{dataSeed=(dataSeed*13+5)%1000+1;seed=dataSeed;makeSources();makeNoise();runICA();});
+seed=dataSeed;makeSources();makeNoise();runICA();
+
+/* ======================================================================
+   FIGURE 2: two sources, two sensors
+   ====================================================================== */
+const N2=1500;const s1=new Float64Array(N2),s2=new Float64Array(N2);
+seed=99;{let e=0;for(let k=0;k<N2;k++){s1[k]=2*Math.abs(2*((k/110)%1)-1)-1;const u=rnd();e=0.55*e+(u<0.5?Math.log(2*u):-Math.log(2*(1-u)));s2[k]=e;}}
+function standardize(x){let m=0;for(let k=0;k<N2;k++)m+=x[k];m/=N2;let v=0;for(let k=0;k<N2;k++)v+=(x[k]-m)**2;v=Math.sqrt(v/N2);for(let k=0;k<N2;k++)x[k]=(x[k]-m)/v;}
+standardize(s1);standardize(s2);
+let P2={mix:0.6,theta:20,whiten:true};
+const cv2=$('cv2');
+function fig2State(){
+  const m=P2.mix,A=[[1,0.85*m],[0.7*m,1]];
+  const x1=new Float64Array(N2),x2=new Float64Array(N2);for(let k=0;k<N2;k++){x1[k]=A[0][0]*s1[k]+A[0][1]*s2[k];x2[k]=A[1][0]*s1[k]+A[1][1]*s2[k];}
+  const C=[[0,0],[0,0]];for(let k=0;k<N2;k++){C[0][0]+=x1[k]*x1[k];C[0][1]+=x1[k]*x2[k];C[1][1]+=x2[k]*x2[k];}C[0][0]/=N2;C[0][1]/=N2;C[1][0]=C[0][1];C[1][1]/=N2;
+  const {vals,V}=jacobi(C);const pcaAngle=Math.atan2(V[1][0],V[0][0])*180/Math.PI;
+  let z1=x1,z2=x2;
+  if(P2.whiten){z1=new Float64Array(N2);z2=new Float64Array(N2);const d0=1/Math.sqrt(vals[0]),d1=1/Math.sqrt(vals[1]);
+    for(let k=0;k<N2;k++){const p0=V[0][0]*x1[k]+V[1][0]*x2[k],p1=V[0][1]*x1[k]+V[1][1]*x2[k];z1[k]=d0*p0;z2[k]=d1*p1;}}
+  const proj=(th)=>{const a=th*Math.PI/180,ca=Math.cos(a),sa=Math.sin(a),y1=new Float64Array(N2),y2=new Float64Array(N2);for(let k=0;k<N2;k++){y1[k]=ca*z1[k]+sa*z2[k];y2[k]=-sa*z1[k]+ca*z2[k];}return [y1,y2];};
+  const curve=[];let best=0,bestJ=-1;for(let th=0;th<180;th+=1){const [y1,y2]=proj(th);const J=Math.abs(kurt(y1,N2))+Math.abs(kurt(y2,N2));curve.push(J);if(J>bestJ){bestJ=J;best=th;}}
+  const [y1,y2]=proj(P2.theta);
+  return {z1,z2,y1,y2,curve,best,pcaAngle:P2.whiten?0:((pcaAngle%180)+180)%180};
+}
+function draw2(){
+  const W=1040,H=400,c=sizeCanvas(cv2,W,H);c.clearRect(0,0,W,H);const st=fig2State();
+  $('mixv').textContent=P2.mix.toFixed(2);$('thetav').textContent=P2.theta+'°';
+  // scatter
+  const Sx={cx:170,cy:205,R:150};label(c,P2.whiten?'Whitened sensor signals':'Raw sensor signals',Sx.cx,24,{align:'center',color:INK,w:600,size:13});
+  c.strokeStyle=RULE;c.beginPath();c.moveTo(Sx.cx-Sx.R,Sx.cy);c.lineTo(Sx.cx+Sx.R,Sx.cy);c.moveTo(Sx.cx,Sx.cy-Sx.R);c.lineTo(Sx.cx,Sx.cy+Sx.R);c.stroke();
+  let m=0;for(let k=0;k<N2;k+=2)m=Math.max(m,Math.abs(st.z1[k]),Math.abs(st.z2[k]));const k2=Sx.R*0.92/m;
+  c.fillStyle='rgba(29,31,36,0.35)';for(let k=0;k<N2;k+=2){c.beginPath();c.arc(Sx.cx+st.z1[k]*k2,Sx.cy-st.z2[k]*k2,1.6,0,7);c.fill();}
+  const a=P2.theta*Math.PI/180;[[Math.cos(a),Math.sin(a),TEAL,'1'],[-Math.sin(a),Math.cos(a),PURPLE,'2']].forEach(([ux,uy,col,nm])=>{c.strokeStyle=col;c.lineWidth=2.2;c.beginPath();c.moveTo(Sx.cx-ux*Sx.R,Sx.cy+uy*Sx.R);c.lineTo(Sx.cx+ux*Sx.R,Sx.cy-uy*Sx.R);c.stroke();label(c,'axis '+nm,Sx.cx+ux*(Sx.R+14),Sx.cy-uy*(Sx.R+14)+4,{align:'center',color:col,w:600,size:12});});
+  mono(c,'sensor 1 →',Sx.cx+Sx.R,Sx.cy+Sx.R+28,{align:'right'});mono(c,'sensor 2 ↑',Sx.cx-Sx.R,Sx.cy-Sx.R-10);
+  // recovered traces
+  const T={x0:380,x1:700,y0:60,rh:150};label(c,'Recovered signals, with the true source each one matches',T.x0,24,{color:INK,w:600,size:13});
+  const show=300;
+  [[st.y1,TEAL],[st.y2,PURPLE]].forEach(([y,col],i)=>{const yc=T.y0+T.rh*i+T.rh/2;
+    const r1=corr(y,s1,N2),r2=corr(y,s2,N2);const srcT=Math.abs(r1)>Math.abs(r2)?s1:s2,rr=Math.abs(r1)>Math.abs(r2)?r1:r2;const sg=Math.sign(rr)||1;
+    const sc=Math.max(maxAbs(y,0,show),maxAbs(srcT,0,show));
+    c.strokeStyle=RULE;c.beginPath();c.moveTo(T.x0,yc);c.lineTo(T.x1,yc);c.stroke();
+    const tmp=new Float64Array(show);for(let k=0;k<show;k++)tmp[k]=sg*srcT[k];
+    trace(c,tmp,T.x0,T.x1,yc,T.rh*0.8,sc,0,show,GOLD,2.2);trace(c,y,T.x0,T.x1,yc,T.rh*0.8,sc,0,show,col,1.4);
+    mono(c,`|r| with its source ${Math.abs(rr).toFixed(2)}   kurtosis ${kurt(y,N2).toFixed(2)}`,T.x0,yc+T.rh/2-2,{size:11,color:col});});
+  // non-Gaussianity curve
+  const G={x0:760,x1:1020,y0:60,y1:330};label(c,'Non-Gaussianity of the two projections',G.x0,24,{color:INK,w:600,size:13});
+  const Jmax=Math.max(...st.curve)*1.05;c.strokeStyle=RULE;c.beginPath();c.moveTo(G.x0,G.y1);c.lineTo(G.x1,G.y1);c.moveTo(G.x0,G.y0);c.lineTo(G.x0,G.y1);c.stroke();
+  c.beginPath();st.curve.forEach((J,th)=>{const px=G.x0+th/180*(G.x1-G.x0),py=G.y1-J/Jmax*(G.y1-G.y0);th?c.lineTo(px,py):c.moveTo(px,py);});c.strokeStyle=INK;c.lineWidth=1.6;c.stroke();
+  const mark=(th,col,txt,dy)=>{const px=G.x0+th/180*(G.x1-G.x0);c.strokeStyle=col;c.setLineDash([3,3]);c.beginPath();c.moveTo(px,G.y0);c.lineTo(px,G.y1);c.stroke();c.setLineDash([]);label(c,txt,px,G.y0-dy,{align:'center',color:col,size:11,w:600});};
+  mark(st.pcaAngle,GRAY,'PCA',6);mark(st.best,GOLD,'ICA',6);
+  const px=G.x0+P2.theta/180*(G.x1-G.x0),py=G.y1-st.curve[P2.theta]/Jmax*(G.y1-G.y0);c.beginPath();c.arc(px,py,5,0,7);c.fillStyle=TEAL;c.fill();
+  [0,45,90,135,180].forEach(t=>mono(c,t+'°',G.x0+t/180*(G.x1-G.x0),G.y1+16,{align:'center',size:10.5}));mono(c,'|kurt y1| + |kurt y2|',G.x1,G.y0+12,{align:'right',size:10.5});
+  $('ro2').innerHTML=`<span>correlation between the two recovered signals: <b>${corr(st.y1,st.y2,N2).toFixed(2)}</b>${P2.whiten?' (zero at every rotation once whitened)':''}</span><span>ICA answer: <b>${st.best}°</b></span><span>PCA answer: <b>${Math.round(st.pcaAngle)}°</b></span>`;
+}
+$('mix').addEventListener('input',e=>{P2.mix=+e.target.value;draw2();});
+$('theta').addEventListener('input',e=>{P2.theta=+e.target.value;draw2();});
+$('whiten').addEventListener('click',e=>{P2.whiten=!P2.whiten;e.target.setAttribute('aria-pressed',P2.whiten);draw2();});
+function animateTo(target){if(reduced){P2.theta=target;$('theta').value=target;draw2();return;}const step=()=>{const d=target-P2.theta;if(Math.abs(d)<=2){P2.theta=target;}else P2.theta+=Math.sign(d)*2;$('theta').value=P2.theta;draw2();if(P2.theta!==target)requestAnimationFrame(step);};step();}
+$('snapPCA').addEventListener('click',()=>animateTo(Math.round(fig2State().pcaAngle)));
+$('snapICA').addEventListener('click',()=>animateTo(fig2State().best));
+draw2();
+let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{draw1();draw2();},120);});
+})();
+</script>
+</body>
+</html>
